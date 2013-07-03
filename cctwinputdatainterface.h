@@ -6,9 +6,10 @@
 class CctwInputDataInterface : public CctwChunkedDataInterface
 {
 public:
-  CctwInputDataInterface(CctwVector3D<int> dim,        // Data set dimension
-                         CctwVector3D<int> chunkSize,  // Chunk size
-                         CctwVector3D<double> scale);
+  CctwInputDataInterface(CctwIntVector3D dim,        // Data set dimension
+                         CctwIntVector3D chunkSize,  // Chunk size
+                         CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
+                         CctwDoubleVector3D scale);  // Real offset of pixel 1,1,1
 
 public:
   virtual int useChunk(int nx, int ny, int nz) = 0;

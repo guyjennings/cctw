@@ -1,6 +1,6 @@
 #include "cctwinputdatainterface.h"
 
-CctwInputDataInterface::CctwInputDataInterface(CctwVector3D<int> dim, CctwVector3D<int> chunkSize, CctwVector3D<double> scale)
-  : CctwChunkedDataInterface(dim, chunkSize, scale)
+CctwInputDataInterface::CctwInputDataInterface(CctwIntVector3D dim, CctwIntVector3D chunkSize, CctwDoubleVector3D origin, CctwDoubleVector3D scale)
+  : CctwChunkedDataInterface(dim, chunkSize, origin, scale)
 {
 }

@@ -6,9 +6,10 @@
 class CctwOutputDataInterface : public CctwChunkedDataInterface
 {
 public:
-  CctwOutputDataInterface(CctwVector3D<int> dim,        // Data set dimension
-                          CctwVector3D<int> chunkSize,  // Chunk size
-                          CctwVector3D<double> scale);
+  CctwOutputDataInterface(CctwIntVector3D dim,        // Data set dimension
+                          CctwIntVector3D chunkSize,  // Chunk size
+                          CctwDoubleVector3D origin,
+                          CctwDoubleVector3D scale);
 
 public:
   virtual int useChunk(int nx, int ny, int nz) = 0;
