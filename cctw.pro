@@ -26,7 +26,9 @@ SOURCES += main.cpp \
     cctwmatrix3x3.cpp \
     cctwcrystalcoordinatetransform.cpp \
     cctwrotationtransform.cpp \
-    cctwcompoundtransform.cpp
+    cctwcompoundtransform.cpp \
+    cctwoutputchunkindex.cpp \
+    cctwcommandline.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -39,4 +41,6 @@ HEADERS += \
     cctwmatrix3x3.h \
     cctwcrystalcoordinatetransform.h \
     cctwrotationtransform.h \
-    cctwcompoundtransform.h
+    cctwcompoundtransform.h \
+    cctwoutputchunkindex.h \
+    cctwcommandline.h
