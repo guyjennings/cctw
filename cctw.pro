@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     cctwrotationtransform.cpp \
     cctwcompoundtransform.cpp \
     cctwoutputchunkindex.cpp \
-    cctwcommandline.cpp
+    cctwcommandline.cpp \
+    cctwchunkeddatainterface.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -43,4 +44,5 @@ HEADERS += \
     cctwrotationtransform.h \
     cctwcompoundtransform.h \
     cctwoutputchunkindex.h \
-    cctwcommandline.h
+    cctwcommandline.h \
+    cctwchunkeddatainterface.h
