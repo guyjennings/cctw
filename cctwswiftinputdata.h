@@ -9,6 +9,10 @@ public:
   CctwSwiftInputData();
 
 public:
+  static CctwSwiftInputData *createNew(int argc, char *argv[]);
+                                              // Allocate and return a swift input data object according to the command line passed
+                                              // in argc and argv
+
   virtual int useChunk(int nx, int ny, int nz);
                                               // Indicate that we'll want to be using chunk number nx,ny,nz of the input data.
                                               // Return an identifier by which the chunk can be referenced, or a negative number on failure

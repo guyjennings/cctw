@@ -4,6 +4,11 @@ CctwRotationTransform::CctwRotationTransform()
 {
 }
 
+CctwRotationTransform *CctwRotationTransform::createNew(int argc, char *argv[])
+{
+  return new CctwRotationTransform();
+}
+
 CctwVector3D CctwRotationTransform::forward(CctwVector3D a)
 {
   return a;

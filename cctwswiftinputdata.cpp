@@ -5,6 +5,11 @@ CctwSwiftInputData::CctwSwiftInputData()
 {
 }
 
+CctwSwiftInputData *CctwSwiftInputData::createNew(int argc, char *argv[])
+{
+  return new CctwSwiftInputData();
+}
+
 int CctwSwiftInputData::useChunk(int nx, int ny, int nz)
 {
   return -1;

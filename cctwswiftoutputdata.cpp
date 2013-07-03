@@ -5,6 +5,11 @@ CctwSwiftOutputData::CctwSwiftOutputData()
 {
 }
 
+CctwSwiftOutputData *CctwSwiftOutputData::createNew(int argc, char *argv[])
+{
+  return new CctwSwiftOutputData();
+}
+
 int CctwSwiftOutputData::useChunk(int nx, int ny, int nz)
 {
   return -1;
