@@ -2,9 +2,10 @@
 #include <stdlib.h>
 
 CctwSwiftOutputData::CctwSwiftOutputData()
-  : CctwOutputDataInterface(CctwVector3D<int>(2048,2048,2048),
-                            CctwVector3D<int>(100,100,100),
-                            CctwVector3D<double>(0.1,0.1,0.1))
+  : CctwOutputDataInterface(CctwIntVector3D(2048,2048,2048),
+                            CctwIntVector3D(100,100,100),
+                            CctwDoubleVector3D(-204.8,-204.8,-204.8),
+                            CctwDoubleVector3D(0.1,0.1,0.1))
 {
 }
 

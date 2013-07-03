@@ -2,9 +2,10 @@
 #include <stdlib.h>
 
 CctwSwiftInputData::CctwSwiftInputData()
-  : CctwInputDataInterface(CctwVector3D<int>(2048,2048,3600),
-                           CctwVector3D<int>(100,100,100),
-                           CctwVector3D<double>(0.1, 0.1, 0.1))
+  : CctwInputDataInterface(CctwIntVector3D(2048,2048,3600),
+                           CctwIntVector3D(100,100,100),
+                           CctwDoubleVector3D(-204.8, -204.8, 0.0),
+                           CctwDoubleVector3D(0.1, 0.1, 0.1))
 {
 }
 
