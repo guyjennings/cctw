@@ -6,14 +6,25 @@
 class CctwChunkedDataInterface
 {
 public:
-  CctwChunkedDataInterface(CctwVector3D<int> dim,        // Data set dimension
-                           CctwVector3D<int> chunkSize,  // Chunk size
-                           CctwVector3D<double> scale);
+  CctwChunkedDataInterface(CctwIntVector3D dim,        // Data set dimension
+                           CctwIntVector3D chunkSize,  // Chunk size
+                           CctwDoubleVector3D origin,
+                           CctwDoubleVector3D scale);
+
+public:
+  CctwIntVector3D     dimensions() const   { return m_Dimensions; }
+  CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
+  CctwDoubleVector3D  origin() const       { return m_Origin; }
+  CctwDoubleVector3D  scale() const        { return m_Scale; }
+
+  CctwDoubleVector3D  toReal(CctwIntVector3D vec);
+  CctwIntVector3D     toPixel(CctwDoubleVector3D vec);
 
 private:
-  CctwVector3D<int>     m_Dimensions;
-  CctwVector3D<int>     m_ChunkSize;
-  CctwVector3D<double>  m_Scale;
+  CctwIntVector3D     m_Dimensions;
+  CctwIntVector3D     m_ChunkSize;
+  CctwDoubleVector3D  m_Origin;
+  CctwDoubleVector3D  m_Scale;
 };
 
 #endif // CCTWCHUNKEDDATAINTERFACE_H
