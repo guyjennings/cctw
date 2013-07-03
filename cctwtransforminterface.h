@@ -8,9 +8,9 @@ class CctwTransformInterface
 public:
   CctwTransformInterface();
 
-  virtual CctwVector3D<double> forward(CctwVector3D<double> a) = 0;
+  virtual CctwDoubleVector3D forward(CctwDoubleVector3D) = 0;
                                           // Transform from input to output space coordinates
-  virtual CctwVector3D<double> inverse(CctwVector3D<double> q) = 0;
+  virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q) = 0;
                                           // Back transform from output to input space coordinates
 };
 

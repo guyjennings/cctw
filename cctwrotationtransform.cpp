@@ -9,12 +9,12 @@ CctwRotationTransform *CctwRotationTransform::createNew(int argc, char *argv[])
   return new CctwRotationTransform();
 }
 
-CctwVector3D<double> CctwRotationTransform::forward(CctwVector3D<double> a)
+CctwDoubleVector3D CctwRotationTransform::forward(CctwDoubleVector3D a)
 {
   return a;
 }
 
-CctwVector3D<double> CctwRotationTransform::inverse(CctwVector3D<double> q)
+CctwDoubleVector3D CctwRotationTransform::inverse(CctwDoubleVector3D q)
 {
   return q;
 }

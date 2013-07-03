@@ -9,9 +9,9 @@ public:
   CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2);
 
 public:
-  virtual CctwVector3D<double> forward(CctwVector3D<double> a);
+  virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);
                                           // Transform from input to output space coordinates
-  virtual CctwVector3D<double> inverse(CctwVector3D<double> q);
+  virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q);
                                           // Back transform from output to input space coordinates
 
 private:

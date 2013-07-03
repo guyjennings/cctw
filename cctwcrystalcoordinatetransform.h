@@ -13,9 +13,9 @@ public:
                                           // Allocate and return a new crystal coordinate transformation object
                                           // based on the command line parameters passed in argc and argv
 
-  virtual CctwVector3D<double> forward(CctwVector3D<double> a);
+  virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);
                                           // Transform from input to output space coordinates
-  virtual CctwVector3D<double> inverse(CctwVector3D<double> q);
+  virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q);
                                           // Back transform from output to input space coordinates
 };
 

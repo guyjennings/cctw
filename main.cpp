@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   CctwOutputChunkIndex chunk = CctwOutputChunkIndex::createNew(argc, argv);
 
   if (transformer) {
-    printf("Trasformation starting\n");
+    printf("Transformation of chunk [%d,%d,%d] starting\n", chunk.nx(), chunk.ny(), chunk.nz());
     transformer->transformChunk(chunk.nx(), chunk.ny(), chunk.nz());
     printf("Transformation finished\n");
   } else {
