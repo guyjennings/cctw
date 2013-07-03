@@ -7,16 +7,16 @@ CctwCompoundTransform::CctwCompoundTransform(CctwTransformInterface *t1, CctwTra
 {
 }
 
-CctwVector3D CctwCompoundTransform::forward(CctwVector3D a)
+CctwVector3D<double> CctwCompoundTransform::forward(CctwVector3D<double> a)
 {
-  CctwVector3D t1 = m_Transform1->forward(a);
+  CctwVector3D<double> t1 = m_Transform1->forward(a);
 
   return m_Transform2->forward(t1);
 }
 
-CctwVector3D CctwCompoundTransform::inverse(CctwVector3D q)
+CctwVector3D<double> CctwCompoundTransform::inverse(CctwVector3D<double> q)
 {
-  CctwVector3D i1 = m_Transform2->inverse(q);
+  CctwVector3D<double> i1 = m_Transform2->inverse(q);
 
   return m_Transform1->inverse(i1);
 }

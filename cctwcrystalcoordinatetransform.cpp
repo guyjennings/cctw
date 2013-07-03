@@ -9,12 +9,12 @@ CctwCrystalCoordinateTransform *CctwCrystalCoordinateTransform::createNew(int ar
   return new CctwCrystalCoordinateTransform();
 }
 
-CctwVector3D CctwCrystalCoordinateTransform::forward(CctwVector3D a)
+CctwVector3D<double> CctwCrystalCoordinateTransform::forward(CctwVector3D<double> a)
 {
   return a;
 }
 
-CctwVector3D CctwCrystalCoordinateTransform::inverse(CctwVector3D q)
+CctwVector3D<double> CctwCrystalCoordinateTransform::inverse(CctwVector3D<double> q)
 {
   return q;
 }

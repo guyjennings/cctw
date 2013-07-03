@@ -1,10 +1,14 @@
 #ifndef CCTWOUTPUTDATAINTERFACE_H
 #define CCTWOUTPUTDATAINTERFACE_H
 
-class CctwOutputDataInterface
+#include "cctwchunkeddatainterface.h"
+
+class CctwOutputDataInterface : public CctwChunkedDataInterface
 {
 public:
-  CctwOutputDataInterface();
+  CctwOutputDataInterface(CctwVector3D<int> dim,        // Data set dimension
+                          CctwVector3D<int> chunkSize,  // Chunk size
+                          CctwVector3D<double> scale);
 
 public:
   virtual int useChunk(int nx, int ny, int nz) = 0;
