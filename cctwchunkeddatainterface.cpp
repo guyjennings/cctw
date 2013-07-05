@@ -19,3 +19,17 @@ CctwIntVector3D     CctwChunkedDataInterface::toPixel(CctwDoubleVector3D vec)
 
   return CctwIntVector3D(pix.x(), pix.y(), pix.z());
 }
+
+CctwIntVector3D     CctwChunkedDataInterface::chunkStart(CctwIntVector3D chunkIdx)
+{
+  // Return pixel coords of start of chunk chunkIdx
+
+  return m_ChunkSize*chunkIdx;
+}
+
+CctwIntVector3D     CctwChunkedDataInterface::chunkIndex(CctwIntVector3D pixelCoord)
+{
+  // Return index of chunk containing given pixel
+
+  return pixelCoord / m_ChunkSize;
+}

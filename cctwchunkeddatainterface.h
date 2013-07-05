@@ -20,6 +20,9 @@ public:
   CctwDoubleVector3D  toReal(CctwIntVector3D vec);
   CctwIntVector3D     toPixel(CctwDoubleVector3D vec);
 
+  CctwIntVector3D     chunkStart(CctwIntVector3D chunkIdx);    // Return pixel coords of start of chunk chunkIdx
+  CctwIntVector3D     chunkIndex(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
+
 private:
   CctwIntVector3D     m_Dimensions;
   CctwIntVector3D     m_ChunkSize;

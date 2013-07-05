@@ -31,13 +31,8 @@ CctwTransformer *CctwTransformer::createNew(int argc, char *argv[],
 
 void CctwTransformer::transformChunk(int nx, int ny, int nz)
 {
-  CctwIntVector3D dim  = m_OutputData->dimensions();
-  CctwIntVector3D chnk = m_OutputData->chunkSize();
-  CctwDoubleVector3D orig = m_OutputData->origin();
-  CctwDoubleVector3D scal = m_OutputData->scale();
-
-  CctwIntVector3D start = chnk*CctwIntVector3D(nx,ny,nz);
-  CctwIntVector3D end   = start+chnk;
+  CctwIntVector3D start = m_OutputData -> chunkStart(CctwIntVector3D(nx,ny,nz));
+  CctwIntVector3D end   = m_OutputData -> chunkStart(CctwIntVector3D(nx+1,ny+1,nz+1));
 
   bool first = true;
   CctwDoubleVector3D min, max;
