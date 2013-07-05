@@ -2,16 +2,18 @@
 
 template <typename T>
 CctwVector3D<T>::CctwVector3D(T x, T y, T z)
-  : m_X(x),
-    m_Y(y),
-    m_Z(z)
 {
+  m_Vector[0] = x;
+  m_Vector[1] = y;
+  m_Vector[2] = z;
 }
 
 template <typename T>
 CctwVector3D<T>::CctwVector3D()
-  : m_X(0), m_Y(0), m_Z(0)
 {
+  m_Vector[0] = 0;
+  m_Vector[1] = 0;
+  m_Vector[2] = 0;
 }
 
 template <typename T>
