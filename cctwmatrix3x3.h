@@ -2,6 +2,7 @@
 #define CCTWMATRIX3X3_H
 
 #include "cctwvector3d.h"
+#include <stdlib.h>
 
 template <typename T>
 class CctwMatrix3x3
@@ -21,6 +22,9 @@ public:
 
   CctwVector3D<T>  operator* (const CctwVector3D<T>& vec) const;  // Matrix*Vector multiplication
 
+  double         determinant() const;
+  CctwMatrix3x3  inverted(bool *invertible = NULL) const;
+
   void setToIdentity();
 
   template <typename T1>
@@ -28,6 +32,11 @@ public:
 
   template <typename T1>
   friend class CctwVector3D;
+
+  static CctwMatrix3x3 rotationMatrix(double r1, double r2, double r3);
+  static CctwMatrix3x3 rotX(double r);
+  static CctwMatrix3x3 rotY(double r);
+  static CctwMatrix3x3 rotZ(double r);
 
 private:
   T m_Matrix[3][3];

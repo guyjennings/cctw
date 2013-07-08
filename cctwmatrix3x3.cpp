@@ -1,4 +1,5 @@
 #include "cctwmatrix3x3.h"
+#include <math.h>
 
 template <typename T>
 CctwMatrix3x3<T>::CctwMatrix3x3()
@@ -109,6 +110,141 @@ void CctwMatrix3x3<T>::setToIdentity()
           }
       }
   }
+}
+
+template <typename T>
+double CctwMatrix3x3<T>::determinant() const
+{
+  double
+      a = m_Matrix[0][0],
+      b = m_Matrix[1][0],
+      c = m_Matrix[2][0],
+      d = m_Matrix[0][1],
+      e = m_Matrix[1][1],
+      f = m_Matrix[2][1],
+      g = m_Matrix[0][2],
+      h = m_Matrix[1][2],
+      k = m_Matrix[2][2];
+
+  return a*(e*k - f*h) + b*(f*g - d*k) + c*(d*h - e*g);
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::inverted(bool *invertible) const
+{
+  CctwMatrix3x3<T> inv;
+  double det = determinant();
+
+  if (det != 0.0) {
+    double
+        a = m_Matrix[0][0],
+        b = m_Matrix[1][0],
+        c = m_Matrix[2][0],
+        d = m_Matrix[0][1],
+        e = m_Matrix[1][1],
+        f = m_Matrix[2][1],
+        g = m_Matrix[0][2],
+        h = m_Matrix[1][2],
+        k = m_Matrix[2][2];
+
+    inv.m_Matrix[0][0] = (e*k - f*h)/det;
+    inv.m_Matrix[1][0] =-(b*k - c*h)/det;
+    inv.m_Matrix[2][0] = (b*f - c*e)/det;
+
+    inv.m_Matrix[0][1] =-(d*k - f*g)/det;
+    inv.m_Matrix[1][1] = (a*k - c*g)/det;
+    inv.m_Matrix[2][1] =-(a*f - c*d)/det;
+
+    inv.m_Matrix[0][2] = (d*h - e*g)/det;
+    inv.m_Matrix[1][2] =-(a*h - b*g)/det;
+    inv.m_Matrix[2][2] = (a*e - b*d)/det;
+
+    if (invertible) {
+      *invertible = true;
+    }
+  } else {
+    if (invertible) {
+      *invertible = false;
+    }
+  }
+
+  return inv;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::rotationMatrix(double r1, double r2, double r3)
+{
+  CctwMatrix3x3<T> rx = CctwMatrix3x3<T>::rotX(r1);
+  CctwMatrix3x3<T> ry = CctwMatrix3x3<T>::rotY(r2);
+  CctwMatrix3x3<T> rz = CctwMatrix3x3<T>::rotZ(r3);
+
+  return rx*ry*rz;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::rotX(double r)
+{
+  CctwMatrix3x3<T> res;
+  T cosr = ::cos(r),
+    sinr = ::sin(r);
+
+  res.m_Matrix[0][0] = 1;
+  res.m_Matrix[1][0] = 0;
+  res.m_Matrix[2][0] = 0;
+
+  res.m_Matrix[0][1] = 0;
+  res.m_Matrix[1][1] = cosr;
+  res.m_Matrix[2][1] = sinr;
+
+  res.m_Matrix[0][2] = 0;
+  res.m_Matrix[1][2] = -sinr;
+  res.m_Matrix[2][2] = cosr;
+
+  return res;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::rotY(double r)
+{
+  CctwMatrix3x3<T> res;
+  T cosr = ::cos(r),
+    sinr = ::sin(r);
+
+  res.m_Matrix[0][0] = cosr;
+  res.m_Matrix[1][0] = 0;
+  res.m_Matrix[2][0] = -sinr;
+
+  res.m_Matrix[0][1] = 0;
+  res.m_Matrix[1][1] = 1;
+  res.m_Matrix[2][1] = 0;
+
+  res.m_Matrix[0][2] = sinr;
+  res.m_Matrix[1][2] = 0;
+  res.m_Matrix[2][2] = cosr;
+
+  return res;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::rotZ(double r)
+{
+  CctwMatrix3x3<T> res;
+  T cosr = ::cos(r),
+    sinr = ::sin(r);
+
+  res.m_Matrix[0][0] = cosr;
+  res.m_Matrix[1][0] = sinr;
+  res.m_Matrix[2][0] = 0;
+
+  res.m_Matrix[0][1] = -sinr;
+  res.m_Matrix[1][1] = cosr;
+  res.m_Matrix[2][1] = 0;
+
+  res.m_Matrix[0][2] = 0;
+  res.m_Matrix[1][2] = 0;
+  res.m_Matrix[2][2] = 1;
+
+  return res;
 }
 
 template class CctwMatrix3x3<int>;

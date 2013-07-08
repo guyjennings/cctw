@@ -11,7 +11,8 @@ public:
   CctwTransformer(CctwInputDataInterface *input,    // The input data
                   CctwOutputDataInterface *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
-                  int osx, int osy, int osz);       // Oversampling factors
+                  int osx, int osy, int osz,        // Oversampling factors
+                  int nTests);
 
 public:
   static CctwTransformer *createNew(int argc, char *argv[],
@@ -26,6 +27,8 @@ public:
                                                 // Transform chunk number nx,ny,nz of the output space
                                                 // If parameters are invalid just do nothing
 
+  void performTests();
+
 private:
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;
@@ -33,6 +36,7 @@ private:
   int                      m_OversampleX;
   int                      m_OversampleY;
   int                      m_OversampleZ;
+  int                      m_Tests;
 };
 
 #endif // CCTWTRANSFORMER_H
