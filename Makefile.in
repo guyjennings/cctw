@@ -1,0 +1,70 @@
+
+CCTW = libcctw.so
+
+all: $(CCTW)
+
+CXX = g++
+
+SRC = $(shell find . -name "*.cpp")
+
+DEPS := $(patsubst %.cpp, %.d, $(SRC))
+OBJS := $(patsubst %.cpp, %.o, $(SRC))
+
+ifeq ($(V),1)
+	QUIET_COMPILE = 0
+else
+	QUIET_COMPILE = 1
+endif
+
+ifeq ($(QUIET_COMPILE),1)
+  # Prints a short description of the action, does not show command
+  Q=@echo
+  E=@
+else
+  # Echoes the entire command
+  Q=@echo >/dev/null
+  E=
+endif
+
+CXXFLAGS := -fPIC
+
+INCLUDES := -I .
+
+CXXFLAGS += $(INCLUDES)
+
+dirname = $(patsubst %/,%,$(dir $(1)))
+
+deps: $(DEPS)
+
+%.d: %.cpp
+	$(Q) "  DEP		$(@)"
+	$(E) CC="$(CXX)" ./maint/depend.sh \
+             $(call dirname, $(<)) $(<) $(@) $(CFLAGS)
+
+ifeq (,$(filter clean deps,$(MAKECMDGOALS)))
+ -include $(DEPS)
+endif
+
+%.o: %.cpp
+	$(Q) "  CXX		$(@)"
+	$(E) $(CXX) $(CXXFLAGS) \
+             -c $(<) -o $(@)
+
+$(CCTW): $(OBJS)
+	$(Q) "  LINK		$(@)"
+	$(E) $(CXX) -shared -o $(CCTW) $(OBJS)
+
+clean:
+	$(Q) "  CLEAN"
+	$(E) rm -fv $(CCTW) $(OBJS) $(DEPS)
+
+distclean: clean
+	$(Q) "  DISTCLEAN"
+	$(E) rm -fv configure Makefile
+
+debug_build:
+	$(E) echo "OBJS:"
+	$(E) echo $(OBJS) | sort | xargs -n 1 echo " "
+
+.PHONY: clean debug_build
+

@@ -1,0 +1,6 @@
+*~
+*.o
+*.d
+configure
+Makefile
+libcctw.so

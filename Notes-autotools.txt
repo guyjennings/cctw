@@ -1,0 +1,12 @@
+
+Autotools-based build method:
+
+Scrips are currently placeholders for simplicity.
+
+run:
+
+----
+./autogen.sh
+./configure
+make
+----
