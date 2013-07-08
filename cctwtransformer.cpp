@@ -109,6 +109,18 @@ void CctwTransformer::performTests()
       double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
 
       printf("Iter %d.0: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
+
+      double x = (double)random();
+      double y = (double)random();
+      double z = (double)random();
+
+      CctwDoubleVector3D v1(x,y,z);
+      CctwDoubleVector3D v2 = m1*v1;
+      CctwDoubleVector3D v3 = m2*v2;
+
+      double sum4 = (v1 - v3).length();
+
+      printf("Iter %d.1: Len %g\n", i, sum4);
     }
 
     {
@@ -134,7 +146,7 @@ void CctwTransformer::performTests()
       double sum2 = fabs(m3(0,1)) + fabs(m3(0,2)) + fabs(m3(1,2));
       double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
 
-      printf("Iter %d.1: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
+      printf("Iter %d.2: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
     }
   }
 }

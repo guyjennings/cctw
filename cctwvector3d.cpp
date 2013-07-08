@@ -1,4 +1,5 @@
 #include "cctwvector3d.h"
+#include <math.h>
 
 template <typename T>
 CctwVector3D<T>::CctwVector3D(T x, T y, T z)
@@ -78,6 +79,68 @@ CctwVector3D<T> CctwVector3D<T>::max(const CctwVector3D<T> &vec) const
   return CctwVector3D<T>((x()>vec.x()?x():vec.x()),
                          (y()>vec.y()?y():vec.y()),
                          (z()>vec.z()?z():vec.z()));
+}
+
+template <typename T>
+T CctwVector3D<T>::length() const
+{
+  return ::sqrt(lengthSquared());
+}
+
+template <typename T>
+T CctwVector3D<T>::lengthSquared() const
+{
+  return x()*x() + y()*y() + z()*z();
+}
+
+template <typename T>
+CctwVector3D<T> CctwVector3D<T>::normalized() const
+{
+  T len = length();
+
+  if (::fabs(len) < 1e-10) {
+    return CctwVector3D<T>();
+  } else {
+    T sqrtLen = ::sqrt(len);
+    return CctwVector3D(x() / sqrtLen,
+                        y() / sqrtLen,
+                        z() / sqrtLen);
+  }
+}
+
+template <typename T>
+void CctwVector3D<T>::normalize()
+{
+  T len = length();
+
+  if (::fabs(len) < 1e-10) {
+    return;
+  } else {
+    T sqrtLen = ::sqrt(len);
+    m_Vector[0] /= sqrtLen;
+    m_Vector[1] /= sqrtLen;
+    m_Vector[2] /= sqrtLen;
+  }
+}
+
+template <typename T>
+T CctwVector3D<T>::dotProduct(const CctwVector3D<T> &v1, const CctwVector3D<T> &v2)
+{
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
+template <typename T>
+CctwVector3D<T> CctwVector3D<T>::crossProduct(const CctwVector3D<T>& v1, const CctwVector3D<T>& v2)
+{
+  return CctwVector3D<T>(v1.y()*v2.z() - v1.z()*v2.y(),
+                         v1.z()*v2.x() - v1.x()*v2.z(),
+                         v1.x()*v2.y() - v1.y()*v2.x());
+}
+
+template <typename T>
+CctwVector3D<T> CctwVector3D<T>::normal(const CctwVector3D<T> &v1, const CctwVector3D<T> &v2)
+{
+  return crossProduct(v1, v2).normalized();
 }
 
 template class CctwVector3D<int>;

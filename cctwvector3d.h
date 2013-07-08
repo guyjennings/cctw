@@ -26,7 +26,17 @@ public:
   CctwVector3D<T> operator*(const T val) const;
   CctwVector3D<T> operator/(const T val) const;
 
-//  template <typename T2>
+  T length() const;
+  T lengthSquared() const;
+
+  CctwVector3D<T> normalized() const;
+  void normalize();
+
+  static T dotProduct(const CctwVector3D<T>& v1, const CctwVector3D<T>& v2);
+  static CctwVector3D<T> crossProduct(const CctwVector3D<T> &v1, const CctwVector3D<T> &v2);
+  static CctwVector3D<T> normal(const CctwVector3D<T>& v1, const CctwVector3D<T>& v2);
+
+  //  template <typename T2>
 //  CctwVector3D<T> operator+(const CctwVector3D<T2> &vec) const;
 
 //  template <typename T2>
