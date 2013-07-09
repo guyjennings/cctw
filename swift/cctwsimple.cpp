@@ -5,6 +5,8 @@
 #include <cctwtransformer.h>
 #include <cctwtransforminterface.h>
 
+#include <swift/cctwsimple.h>
+
 static bool chunkFromBlob(const void *blob,
                           CctwChunkedDataInterface *chunk)
 {
@@ -22,7 +24,6 @@ void CctwSimpleTransform(int osx, int osy, int osz,
 
  /*
   CctwInputDataInterface *inputInterface = ...;
-
 
   CctwTransformInterface *xform = new CctwTransformInterface();
   CctwTransformer *transformer =

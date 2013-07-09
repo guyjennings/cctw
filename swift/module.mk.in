@@ -3,19 +3,39 @@
 
 DIR := swift
 
+SWIG := swig
 TCLSH := tclsh
 
-TCL_CCTW = $(DIR)/libtclcctw.so
+TCL_INCLUDE = -I /home/wozniak/sfw/tcl-8.5.11/include
+
+SO_NAME := libtclcctw.so
+TCL_CCTW = $(DIR)/$(SO_NAME)
 
 swift_package: $(TCL_CCTW) $(DIR)/pkgIndex.tcl
 
-PKG_SRC := $(DIR)/cctwsimple.cpp
+PKG_SRC := $(DIR)/cctwsimple.cpp $(DIR)/cctw_wrap.cpp
 
 PKG_OBJ := $(patsubst %.cpp, %.o, $(PKG_SRC))
 
 PKG_DEPS := $(patsubst %.cpp, %.d, $(PKG_SRC))
 
-ifeq (,$(filter clean deps,$(MAKECMDGOALS)))
+$(DIR)/cctw_wrap.cpp: $(DIR)/cctw.i
+	$(Q) "  SWIG		$(<)"
+	$(E) $(SWIG) -c++ -o $(@) $(<)
+	$(E) sed -i 's/Cctw_Init/Tclcctw_Init/' $(@)
+
+$(DIR)/cctw_wrap.o: $(DIR)/cctw_wrap.cpp
+	$(Q) "  CXX		$(@)"
+	$(E) $(CXX) $(CXXFLAGS) \
+             $(TCL_INCLUDE) \
+             -c $(<) -o $(@)
+
+$(DIR)/cctw_wrap.d: $(DIR)/cctw_wrap.cpp
+	$(Q) "  DEP		$(@)"
+	$(E) CC="$(CXX)" ./maint/depend.sh \
+             $(call dirname, $(<)) $(<) $(@) $(CFLAGS) $(TCL_INCLUDE) -I .
+
+ifeq (,$(filter clean clean_swift deps,$(MAKECMDGOALS)))
  -include $(PKG_DEPS)
 endif
 
@@ -24,15 +44,21 @@ $(TCL_CCTW): $(PKG_OBJ) $(CCTW)
 	$(E) $(CXX) -shared -o $(TCL_CCTW) $(PKG_OBJ) \
 	            -L . -l cctw -Wl,-rpath -Wl,$(PWD)
 
-$(DIR)/pkgIndex.tcl: $(DIR)/make-package.tcl
+$(DIR)/pkgIndex.tcl: $(DIR)/make-package.tcl $(DIR)/module.mk
 	$(Q) "  TCL PKG 	$(@)"
-	$(E) $(TCLSH) \
+	$(E) \
              LEAF_PKG=cctw LEAF_VERSION=0.0 \
-             LEAF_SO=$(TCL_CCTW) LEAF_TCL=cctw.tcl \
-	     $(<) > $(@)
+             LEAF_SO=$(SO_NAME) LEAF_TCL=cctw.tcl \
+	     $(TCLSH) $(<) > $(@)
 
-clean::
-	rm -fv $(PKG_OBJ) $(TCL_CCTW)
+clean:: clean_swift
+
+clean_swift:
+	$(Q) "  CLEAN swift/"
+	$(E) rm -fv $(TCL_CCTW) $(DIR)/pkgIndex.tcl
+	$(E) rm -fv $(DIR)/*.o $(DIR)/*.d
+	$(E) rm -fv $(DIR)/cctw_wrap.cpp
 
 distclean::
-	rm -fv $(DIR)/module.mk
+	$(Q) "  DISTCLEAN swift/"
+	$(E) rm -fv $(DIR)/module.mk
