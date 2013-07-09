@@ -5,7 +5,7 @@ all: $(CCTW)
 
 CXX = g++
 
-SRC = $(shell find . -name "*.cpp")
+SRC := $(shell find . -name "*.cpp")
 
 DEPS := $(patsubst %.cpp, %.d, $(SRC))
 OBJS := $(patsubst %.cpp, %.o, $(SRC))
@@ -41,6 +41,8 @@ deps: $(DEPS)
 	$(E) CC="$(CXX)" ./maint/depend.sh \
              $(call dirname, $(<)) $(<) $(@) $(CFLAGS)
 
+include swift/module.mk
+
 ifeq (,$(filter clean deps,$(MAKECMDGOALS)))
  -include $(DEPS)
 endif
@@ -54,17 +56,32 @@ $(CCTW): $(OBJS)
 	$(Q) "  LINK		$(@)"
 	$(E) $(CXX) -shared -o $(CCTW) $(OBJS)
 
-clean:
+clean::
 	$(Q) "  CLEAN"
 	$(E) rm -fv $(CCTW) $(OBJS) $(DEPS)
+	$(E) rm -fv deps_contents.txt
 
-distclean: clean
+distclean:: clean
 	$(Q) "  DISTCLEAN"
 	$(E) rm -fv configure Makefile
 
 debug_build:
+	$(E) echo "DEPS:"
+	$(E) echo $(DEPS) | sort | xargs -n 1 echo " "
+	$(E) echo
 	$(E) echo "OBJS:"
 	$(E) echo $(OBJS) | sort | xargs -n 1 echo " "
+	$(E) echo
+
+check_includes: deps_contents.txt
+	$(Q) "  CHECK.SH"
+	$(E) maint/check.sh deps_contents.txt
+
+EXISTING_D = $(shell find . -name '*.d')
+
+deps_contents.txt:
+	$(Q) "  SH		$(@)"
+	$(E) maint/collect.sh $(@) $(EXISTING_D)
 
 .PHONY: clean debug_build
 

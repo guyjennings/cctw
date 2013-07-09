@@ -1,3 +1,6 @@
-#!/bin/sh
+#!/bin/bash -e
 
-cp -uv Makefile.in Makefile
+for F in Makefile.in **/*.mk.in
+do
+  cp -uv ${F} ${F%.in}
+done

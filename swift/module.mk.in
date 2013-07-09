@@ -1,0 +1,38 @@
+
+# This module builds the Swift/T compatible CCTW package
+
+DIR := swift
+
+TCLSH := tclsh
+
+TCL_CCTW = $(DIR)/libtclcctw.so
+
+swift_package: $(TCL_CCTW) $(DIR)/pkgIndex.tcl
+
+PKG_SRC := $(DIR)/cctwsimple.cpp
+
+PKG_OBJ := $(patsubst %.cpp, %.o, $(PKG_SRC))
+
+PKG_DEPS := $(patsubst %.cpp, %.d, $(PKG_SRC))
+
+ifeq (,$(filter clean deps,$(MAKECMDGOALS)))
+ -include $(PKG_DEPS)
+endif
+
+$(TCL_CCTW): $(PKG_OBJ) $(CCTW)
+	$(Q) "  LINK		$(@)"
+	$(E) $(CXX) -shared -o $(TCL_CCTW) $(PKG_OBJ) \
+	            -L . -l cctw -Wl,-rpath -Wl,$(PWD)
+
+$(DIR)/pkgIndex.tcl: $(DIR)/make-package.tcl
+	$(Q) "  TCL PKG 	$(@)"
+	$(E) $(TCLSH) \
+             LEAF_PKG=cctw LEAF_VERSION=0.0 \
+             LEAF_SO=$(TCL_CCTW) LEAF_TCL=cctw.tcl \
+	     $(<) > $(@)
+
+clean::
+	rm -fv $(PKG_OBJ) $(TCL_CCTW)
+
+distclean::
+	rm -fv $(DIR)/module.mk
