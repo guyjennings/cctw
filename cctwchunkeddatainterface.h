@@ -11,7 +11,12 @@ public:
                            CctwDoubleVector3D origin,
                            CctwDoubleVector3D scale);
 
+  CctwChunkedDataInterface();
+
 public:
+
+  void                initialize(void *buffer);
+
   CctwIntVector3D     dimensions() const   { return m_Dimensions; }
   CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
   CctwDoubleVector3D  origin() const       { return m_Origin; }

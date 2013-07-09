@@ -8,6 +8,14 @@ CctwChunkedDataInterface::CctwChunkedDataInterface(CctwIntVector3D dim, CctwIntV
 {
 }
 
+CctwChunkedDataInterface::CctwChunkedDataInterface()
+{
+}
+
+void                CctwChunkedDataInterface::initialize(void *buffer)
+{
+}
+
 CctwDoubleVector3D  CctwChunkedDataInterface::toReal(CctwIntVector3D vec)
 {
   return m_Origin+m_Scale*CctwDoubleVector3D(vec.x(), vec.y(), vec.z());
