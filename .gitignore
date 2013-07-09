@@ -1,6 +1,7 @@
 *~
 *.o
+*.so
 *.d
 configure
 Makefile
-libcctw.so
+module.mk
