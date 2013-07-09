@@ -15,7 +15,7 @@ public:
 
 public:
 
-  void                initialize(void *buffer);
+  void                initialize(void *buffer); // Initialize from byte buffer
 
   CctwIntVector3D     dimensions() const   { return m_Dimensions; }
   CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
