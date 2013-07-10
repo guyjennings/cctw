@@ -1,15 +1,18 @@
 
 /**
  * TEST 1
- * Just test that we can call the C++ layer
+ * Test call to CctwRequisites
  * */
 
-import blob;
+import io;
 
 import cctw;
 
 main
 {
-  blob i = blob_null();
-  blob o = CctwTransform(1,1,1,i,1);
+  int r[] = CctwRequisites(2,2,2);
+  foreach v,i in r
+  {
+    printf("v[%i]: %i", i, v);
+  }
 }
