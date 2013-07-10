@@ -40,9 +40,14 @@ main
     {
       foreach k in [0:max_k-1]
       {
-        int requisites[] = CctwRequisites(i, j, k);
+        int requisiteIDs[] = CctwRequisites(i, j, k);
         int count = size(requisites);
-        outputs[i][j][k] = CctwTransform(i, j, k, r, count);
+        blob requisites[];
+        foreach r, m in requisiteIDs
+        {
+          requisites[m] = r;
+        }
+        outputs[i][j][k] = CctwTransform(i, j, k, requisites, count);
       }
     }
   }
