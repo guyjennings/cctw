@@ -86,6 +86,12 @@ void CctwTransformer::transformChunk(int nx, int ny, int nz)
   printf("Z Min: %g Max: %g\n", min.z(), max.z());
 }
 
+int CctwTransformer::XYZtoID(int max_x, int max_y, int max_z,
+                             int x, int y, int z)
+{
+  return x*max_y*max_z + y*max_z + z;
+}
+
 void CctwTransformer::performTests()
 {
   printf("Performing tests\n");

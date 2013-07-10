@@ -29,6 +29,9 @@ public:
                                                 // Transform chunk number nx,ny,nz of the output space
                                                 // If parameters are invalid just do nothing
 
+  static int XYZtoID(int max_x, int max_y, int max_z,
+                     int x, int y, int z);
+
   void performTests();
 
 private:
