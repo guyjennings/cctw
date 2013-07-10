@@ -14,6 +14,8 @@ public:
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests);
 
+  static const int MAX_REQUISITES = 128;
+
 public:
   static CctwTransformer *createNew(int argc, char *argv[],
                                     CctwInputDataInterface *input,    // The input data
