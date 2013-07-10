@@ -1,8 +1,6 @@
 
 (int r[]) CctwRequisites(int osx, int osy, int osz)
-"cctw" "0.0"
-[ "set <<r>> [ cctw::requisites <<osx>> <<osy>> <<osz>> ]" ];
-
+"cctw" "0.0" "requisites";
 
 (blob o) CctwTransform(int osx, int osy, int osz, blob i, int count)
 "cctw" "0.0"
