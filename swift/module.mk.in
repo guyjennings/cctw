@@ -19,7 +19,7 @@ PKG_OBJ := $(patsubst %.cpp, %.o, $(PKG_SRC))
 
 PKG_DEPS := $(patsubst %.cpp, %.d, $(PKG_SRC))
 
-$(DIR)/cctw_wrap.cpp: $(DIR)/cctw.i
+$(DIR)/cctw_wrap.cpp: $(DIR)/cctw.i $(DIR)/cctwsimple.h
 	$(Q) "  SWIG		$(<)"
 	$(E) $(SWIG) -c++ -o $(@) $(<)
 	$(E) sed -i 's/Cctw_Init/Tclcctw_Init/' $(@)
