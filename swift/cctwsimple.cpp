@@ -70,8 +70,7 @@ static int fileLength(std::ifstream& stream)
 
 static int chunkFileReadBytes(void *output, char *filename)
 {
-
-  system("pwd");
+  // system("pwd");
 
   ifstream stream(filename, ifstream::binary);
   if (! stream)
