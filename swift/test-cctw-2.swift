@@ -28,7 +28,7 @@ main
       foreach k in [0:max_k-1]
       {
         blob t = CctwLoadFragment(i, j, k);
-        int r = CctwIndicesToID(i, j, k);
+        int r = CctwXYZToID(i, j, k);
         inputs[r] = t;
       }
     }
