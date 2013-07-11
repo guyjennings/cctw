@@ -9,6 +9,7 @@
  * */
 
 import blob;
+import sys;
 
 import cctw;
 
@@ -20,6 +21,8 @@ main
 {
   blob outputs[][][];
 
+  string data = argv("data");
+
   int inputTotal = MAX_X*MAX_Y*MAX_Z;
   blob inputs[];
   foreach x in [0:MAX_X-1]
@@ -28,7 +31,7 @@ main
     {
       foreach z in [0:MAX_Z-1]
       {
-        blob t = CctwLoadChunk(MAX_X, MAX_Y, MAX_Z, x, y, z, "data");
+        blob t = CctwLoadChunk(MAX_X, MAX_Y, MAX_Z, x, y, z, data);
         int r = CctwXYZToID(MAX_X, MAX_Y, MAX_Z, x, y, z);
         inputs[r] = t;
       }

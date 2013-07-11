@@ -5,3 +5,7 @@
 configure
 Makefile
 module.mk
+.cproject
+.project
+.gitignore
+adlb.clog2
