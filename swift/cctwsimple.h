@@ -10,6 +10,14 @@
 
 int CctwMaxRequisites(void);
 
+int CctwMaxChunk(void);
+
+int CctwXYZtoID(int max_x, int max_y, int max_z,
+                int x, int y, int z);
+
+int CctwLoadChunk(int max_x, int max_y, int max_z,
+                  int x, int y, int z, char* d, void* output);
+
 int CctwRequisites(int max_x, int max_y, int max_z,
                    int osx, int osy, int osz, int* output);
 

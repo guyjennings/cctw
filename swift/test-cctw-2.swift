@@ -12,23 +12,24 @@ import blob;
 
 import cctw;
 
+global const int MAX_X = 3;
+global const int MAX_Y = 3;
+global const int MAX_Z = 3;
+
 main
 {
-  int max_i;
-  int max_j;
-  int max_k;
   blob outputs[][][];
 
-  int inputTotal = max_i*max_j*max_k;
+  int inputTotal = MAX_X*MAX_Y*MAX_Z;
   blob inputs[];
-  foreach i in [0:max_i-1]
+  foreach x in [0:MAX_X-1]
   {
-    foreach j in [0:max_j-1]
+    foreach y in [0:MAX_Y-1]
     {
-      foreach k in [0:max_k-1]
+      foreach z in [0:MAX_Z-1]
       {
-        blob t = CctwLoadFragment(i, j, k);
-        int r = CctwXYZToID(i, j, k);
+        blob t = CctwLoadChunk(MAX_X, MAX_Y, MAX_Z, x, y, z, "data");
+        int r = CctwXYZToID(MAX_X, MAX_Y, MAX_Z, x, y, z);
         inputs[r] = t;
       }
     }
