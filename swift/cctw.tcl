@@ -15,7 +15,9 @@ namespace eval cctw {
         set d [ lindex $inputs 6 ]
 
         rule [ list $max_x $max_y $max_z $x $y $z ] \
-            "cctw::load_chunk_body $r $max_x $max_y $max_z $x $y $z $d"
+            "cctw::load_chunk_body $r $max_x $max_y $max_z $x $y $z $d" \
+            type $turbine::WORK
+
     }
 
    proc load_chunk_body { r max_x max_y max_z x y z d } {
@@ -41,7 +43,7 @@ namespace eval cctw {
             error "CctwLoadChunk failed!"
         }
 
-        set p_ptr [ blobutils_cast_to_int $p ]
+        set p_ptr [ blobutils_cast_to_long $p ]
         adlb::store_blob $r $p_ptr $count
     }
 
