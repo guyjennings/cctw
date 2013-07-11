@@ -4,6 +4,7 @@
 "cctw" "0.0"
 [ "set <<r>> [ CctwXYZtoID <<max_x>> <<max_y>> <<max_z>> <<x>> <<y>> <<z>> ]" ];
 
+@dispatch=WORKER
 (blob r) CctwLoadChunk(int max_x, int max_y, int max_z,
                        int x, int y, int z, string directory)
 "cctw" "0.0" "load_chunk";
