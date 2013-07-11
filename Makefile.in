@@ -26,7 +26,7 @@ else
   E=
 endif
 
-CXXFLAGS := -fPIC
+CXXFLAGS := -fPIC -Wall
 
 INCLUDES := -I .
 
