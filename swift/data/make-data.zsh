@@ -2,13 +2,12 @@
 
 # Copy chunk.tiff to chunk-x-y-z.tiff
 
-cd $(dirname $0)
+MAX_X=10
+MAX_Y=10
+MAX_Z=10
 
-pwd
-
-MAX_X=3
-MAX_Y=3
-MAX_Z=3
+TOTAL=$(( MAX_X * MAX_Y * MAX_Z ))
+declare TOTAL
 
 for x in {0..$((${MAX_X}-1))}
 do
