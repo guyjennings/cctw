@@ -14,7 +14,9 @@ public:
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests);
 
-  static const int MAX_REQUISITES = 128;
+  static const int MAX_CHUNK = 8*1024*1024; // Maximal size of a disk-resident chunk
+
+  static const int MAX_REQUISITES = 128; // Maximal number of chunks required to produce an output chunk
 
 public:
   static CctwTransformer *createNew(int argc, char *argv[],
