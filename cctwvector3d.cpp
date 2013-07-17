@@ -38,7 +38,9 @@ CctwVector3D<T> CctwVector3D<T>::operator*(const CctwVector3D<T> &vec) const
 template <typename T>
 CctwVector3D<T> CctwVector3D<T>::operator/(const CctwVector3D<T> &vec) const
 {
-  return CctwVector3D<T>(x()/vec.x(), y()/vec.y(), z()/vec.z());
+  return CctwVector3D<T>(floor((double)x()/(double)vec.x()),
+                         floor((double)y()/(double)vec.y()),
+                         floor((double)z()/(double)vec.z()));
 }
 
 template <typename T>

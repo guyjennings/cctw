@@ -4,6 +4,7 @@
 #include "cctwinputdatainterface.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwtransforminterface.h"
+#include "cctwinputchunkindex.h"
 
 class CctwTransformer
 {
@@ -13,6 +14,7 @@ public:
                   CctwTransformInterface *xform,    // The transform
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests);
+  virtual ~CctwTransformer();
 
   static const int MAX_CHUNK = 8*1024*1024; // Maximal size of a disk-resident chunk
 
@@ -37,6 +39,9 @@ public:
   void performTests();
 
 private:
+  void markInputChunkNeeded(CctwIntVector3D idx);
+
+private:
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;
   CctwTransformInterface  *m_Transform;
@@ -44,6 +49,9 @@ private:
   int                      m_OversampleY;
   int                      m_OversampleZ;
   int                      m_Tests;
+  CctwIntVector3D          m_ChunkCount;
+  int                      m_ChunksTotal;
+  int                     *m_ChunksUsed;
 };
 
 #endif // CCTWTRANSFORMER_H

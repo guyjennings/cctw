@@ -15,8 +15,20 @@ CctwTransformer::CctwTransformer(CctwInputDataInterface *input,
     m_OversampleX(osx),
     m_OversampleY(osy),
     m_OversampleZ(osz),
-    m_Tests(nTests)
+    m_Tests(nTests),
+    m_ChunkCount(input->chunkCount()),
+    m_ChunksTotal(m_ChunkCount.x()*m_ChunkCount.y()*m_ChunkCount.z()),
+    m_ChunksUsed(NULL)
 {
+  m_ChunksUsed = new int[m_ChunksTotal];
+
+  printf("CctwTransformer::CctwTransformer - Chunk Count : [%d,%d,%d], total %d\n",
+         m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(), m_ChunksTotal);
+}
+
+CctwTransformer::~CctwTransformer()
+{
+  delete [] m_ChunksUsed;
 }
 
 CctwTransformer *CctwTransformer::createNew(int argc, char *argv[],
@@ -41,8 +53,31 @@ CctwTransformer *CctwTransformer::createNew(int argc, char *argv[],
 
 void CctwTransformer::transformChunk(int nx, int ny, int nz)
 {
+  static int logCount = 0;
+
+  CctwDoubleVector3D inLow = m_InputData->toReal(CctwIntVector3D(0,0,0));
+  CctwDoubleVector3D inHigh = m_InputData->toReal(m_InputData->dimensions());
+
+  printf("Input Data range [%g,%g,%g] to [%g,%g,%g]\n",
+         inLow.x(), inLow.y(), inLow.z(),
+         inHigh.x(), inHigh.y(), inHigh.z());
+
+  CctwDoubleVector3D outLow = m_OutputData->toReal(CctwIntVector3D(0,0,0));
+  CctwDoubleVector3D outHigh = m_OutputData->toReal(m_OutputData->dimensions());
+
+  printf("Output Data range [%g,%g,%g] to [%g,%g,%g]\n",
+         outLow.x(), outLow.y(), outLow.z(),
+         outHigh.x(), outHigh.y(), outHigh.z());
+
   CctwIntVector3D start = m_OutputData -> chunkStart(CctwIntVector3D(nx,ny,nz));
   CctwIntVector3D end   = m_OutputData -> chunkStart(CctwIntVector3D(nx+1,ny+1,nz+1));
+
+  CctwDoubleVector3D startReal = m_OutputData->toReal(start);
+  CctwDoubleVector3D endReal   = m_OutputData->toReal(end);
+
+  printf("Transformed data range [%g,%g,%g] to [%g,%g,%g]\n",
+         startReal.x(), startReal.y(), startReal.z(),
+         endReal.x(), endReal.y(), endReal.z());
 
   bool first = true;
   CctwDoubleVector3D min, max;
@@ -61,6 +96,19 @@ void CctwTransformer::transformChunk(int nx, int ny, int nz)
           min = min.min(inv);
           max = max.max(inv);
         }
+
+        CctwIntVector3D realp = m_OutputData->toPixel(real);
+        CctwIntVector3D invp = m_InputData->toPixel(inv);
+
+        CctwIntVector3D chk = m_InputData->chunkIndex(invp);
+
+        if (logCount++ < 100) {
+          printf("%3d: [%g,%g,%g] -> [%g,%g,%g] == ", logCount, real.x(), real.y(), real.z(), inv.x(), inv.y(), inv.z());
+          printf("%3d: [%d,%d,%d] -> [%d,%d,%d] -> [%d,%d,%d]\n", logCount, realp.x(), realp.y(), realp.z(), invp.x(), invp.y(), invp.z(),
+                 chk.x(), chk.y(), chk.z());
+        }
+
+        markInputChunkNeeded(chk);
       }
     }
   }
@@ -84,6 +132,42 @@ void CctwTransformer::transformChunk(int nx, int ny, int nz)
   printf("X Min: %g Max: %g\n", min.x(), max.x());
   printf("Y Min: %g Max: %g\n", min.y(), max.y());
   printf("Z Min: %g Max: %g\n", min.z(), max.z());
+
+
+}
+
+void CctwTransformer::markInputChunkNeeded(CctwIntVector3D idx)
+{
+  static int errCount = 0;
+  static int chnkCount = 0;
+
+  if (idx.x() >= 0 && idx.x() < m_ChunkCount.x() &&
+      idx.y() >= 0 && idx.y() < m_ChunkCount.y() &&
+      idx.z() >= 0 && idx.z() < m_ChunkCount.z()) {
+    int n = XYZtoID(m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(),
+                    idx.x(), idx.y(), idx.z());
+
+    if (n >= 0 && n < m_ChunksTotal) {
+      if (m_ChunksUsed) {
+        if (m_ChunksUsed[n] == false) {
+          m_ChunksUsed[n] = true;
+
+          if (chnkCount++ < 100) {
+            printf("Chunk %d used\n", n);
+          }
+        }
+      }
+    } else {
+      if (errCount++ < 100) {
+        printf("n (%d) out of range [0..%d)\n", n, m_ChunksTotal);
+      }
+    }
+  } else {
+    if (errCount++ < 100) {
+      printf("idx (%d,%d,%d) out of range [[0,0,0]..[%d,%d,%d])\n",
+             idx.x(), idx.y(), idx.z(), m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z());
+    }
+  }
 }
 
 int CctwTransformer::XYZtoID(int max_x, int max_y, int max_z,

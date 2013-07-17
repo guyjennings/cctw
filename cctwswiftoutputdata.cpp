@@ -4,7 +4,7 @@
 CctwSwiftOutputData::CctwSwiftOutputData()
   : CctwOutputDataInterface(CctwIntVector3D(2048,2048,2048),
                             CctwIntVector3D(100,100,100),
-                            CctwDoubleVector3D(-204.8,-204.8,-204.8),
+                            CctwDoubleVector3D(-102.4,-102.4,-102.4),
                             CctwDoubleVector3D(0.1,0.1,0.1))
 {
 }

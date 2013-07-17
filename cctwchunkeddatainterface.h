@@ -27,12 +27,15 @@ public:
 
   CctwIntVector3D     chunkStart(CctwIntVector3D chunkIdx);    // Return pixel coords of start of chunk chunkIdx
   CctwIntVector3D     chunkIndex(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
+  CctwIntVector3D     chunkIndex(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
+  CctwIntVector3D     chunkCount() const;
 
 private:
   CctwIntVector3D     m_Dimensions;
   CctwIntVector3D     m_ChunkSize;
   CctwDoubleVector3D  m_Origin;
   CctwDoubleVector3D  m_Scale;
+  CctwIntVector3D     m_ChunkCount;
 };
 
 #endif // CCTWCHUNKEDDATAINTERFACE_H
