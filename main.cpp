@@ -7,8 +7,17 @@
 #include "cctwtransformer.h"
 #include "cctwoutputchunkindex.h"
 
+#ifdef USE_QT
+#include "cctwqtapplication.h"
+#endif
+
 int main(int argc, char *argv[])
 {
+#ifdef USE_QT
+  CctwqtApplication *app = new CctwqtApplication(argc, argv);
+
+  app->exec();
+#else
   CctwSwiftInputData  *inputData  = CctwSwiftInputData::createNew(argc, argv);
   CctwSwiftOutputData *outputData = CctwSwiftOutputData::createNew(argc, argv);
   CctwCrystalCoordinateTransform *xtalTransform = CctwCrystalCoordinateTransform::createNew(argc, argv);
@@ -49,4 +58,5 @@ int main(int argc, char *argv[])
   } else {
     printf("No transformation performed\n");
   }
+#endif
 }

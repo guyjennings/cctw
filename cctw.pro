@@ -4,16 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT          += core gui network script
 
-QT       -= gui
+TARGET       = cctw
+#CONFIG      += console qt
+INCLUDEPATH += cctwqt
 
-TARGET = cctw
-CONFIG   += console
-CONFIG   -= app_bundle
+DEFINES     += USE_QT
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets concurrent
 
 TEMPLATE = app
-
 
 SOURCES += main.cpp \
     cctwinputdatainterface.cpp \
@@ -31,7 +32,11 @@ SOURCES += main.cpp \
     cctwcommandline.cpp \
     cctwchunkeddatainterface.cpp \
     cctwinputchunkindex.cpp \
-    cctwchunkindex.cpp
+    cctwchunkindex.cpp \
+    cctwqt/cctwqtapplication.cpp \
+    cctwqt/cctwtqinputdata.cpp \
+    cctwqt/cctwqtoutputdata.cpp \
+    cctwqt/cctwqtmainwindow.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -49,4 +54,11 @@ HEADERS += \
     cctwcommandline.h \
     cctwchunkeddatainterface.h \
     cctwinputchunkindex.h \
-    cctwchunkindex.h
+    cctwchunkindex.h \
+    cctwqt/cctwqtapplication.h \
+    cctwqt/cctwtqinputdata.h \
+    cctwqt/cctwqtoutputdata.h \
+    cctwqt/cctwqtmainwindow.h
+
+FORMS += \
+    cctwqt/cctwqtmainwindow.ui
