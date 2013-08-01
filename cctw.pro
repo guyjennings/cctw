@@ -16,6 +16,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets concurrent
 
 TEMPLATE = app
 
+include(cctwqt/qceplib-code/qceplib.pri)
+
 SOURCES += main.cpp \
     cctwinputdatainterface.cpp \
     cctwoutputdatainterface.cpp \
