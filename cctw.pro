@@ -36,9 +36,9 @@ SOURCES += main.cpp \
     cctwinputchunkindex.cpp \
     cctwchunkindex.cpp \
     cctwqt/cctwqtapplication.cpp \
-    cctwqt/cctwtqinputdata.cpp \
     cctwqt/cctwqtoutputdata.cpp \
-    cctwqt/cctwqtmainwindow.cpp
+    cctwqt/cctwqtmainwindow.cpp \
+    cctwqt/cctwqtinputdata.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -58,9 +58,9 @@ HEADERS += \
     cctwinputchunkindex.h \
     cctwchunkindex.h \
     cctwqt/cctwqtapplication.h \
-    cctwqt/cctwtqinputdata.h \
     cctwqt/cctwqtoutputdata.h \
-    cctwqt/cctwqtmainwindow.h
+    cctwqt/cctwqtmainwindow.h \
+    cctwqt/cctwqtinputdata.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui
