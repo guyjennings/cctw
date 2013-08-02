@@ -86,7 +86,7 @@ CctwVector3D<T> CctwVector3D<T>::max(const CctwVector3D<T> &vec) const
 template <typename T>
 T CctwVector3D<T>::length() const
 {
-  return ::sqrt(lengthSquared());
+  return ::sqrt((double) lengthSquared());
 }
 
 template <typename T>
@@ -100,10 +100,10 @@ CctwVector3D<T> CctwVector3D<T>::normalized() const
 {
   T len = length();
 
-  if (::fabs(len) < 1e-10) {
+  if (::fabs((double)len) < 1e-10) {
     return CctwVector3D<T>();
   } else {
-    T sqrtLen = ::sqrt(len);
+    T sqrtLen = ::sqrt((double)len);
     return CctwVector3D(x() / sqrtLen,
                         y() / sqrtLen,
                         z() / sqrtLen);
@@ -115,10 +115,10 @@ void CctwVector3D<T>::normalize()
 {
   T len = length();
 
-  if (::fabs(len) < 1e-10) {
+  if (::fabs((double)len) < 1e-10) {
     return;
   } else {
-    T sqrtLen = ::sqrt(len);
+    T sqrtLen = ::sqrt((double)len);
     m_Vector[0] /= sqrtLen;
     m_Vector[1] /= sqrtLen;
     m_Vector[2] /= sqrtLen;
