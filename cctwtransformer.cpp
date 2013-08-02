@@ -180,6 +180,7 @@ void CctwTransformer::performTests()
 {
   printf("Performing tests\n");
 
+#ifndef WIN32
   for (int i=0; i<m_Tests; i++) {
     {
       double rot1 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
@@ -239,4 +240,5 @@ void CctwTransformer::performTests()
       printf("Iter %d.2: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
     }
   }
+#endif
 }
