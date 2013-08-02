@@ -64,3 +64,18 @@ HEADERS += \
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui
+
+OTHER_FILES += Doxyfile
+
+QMAKE_EXTRA_TARGETS += dox
+
+dox.commands = "("
+dox.commands += cat $${PWD}/Doxyfile ;
+dox.commands += echo "PROJECT_NAME=\"CCTW\"" ;
+dox.commands += echo "PROJECT_NUMBER=$${VERSION}" ;
+dox.commands += echo "INPUT=\"$${PWD}\"" ;
+dox.commands += echo "INPUT+=\"$${PWD}\"/cctwqt/" ;
+dox.commands += echo "ALIASES=\"projectnumber=$${VERSION}\""
+dox.commands += ")" > Doxyfile.out ;
+dox.commands += doxygen < Doxyfile.out -
+dox.depends = FORCE $${PWD}/Doxyfile
