@@ -39,7 +39,12 @@ SOURCES += main.cpp \
     cctwqt/cctwqtoutputdata.cpp \
     cctwqt/cctwqtmainwindow.cpp \
     cctwqt/cctwqtinputdata.cpp \
-    cctwqt/cctwqtscriptengine.cpp
+    cctwqt/cctwqtscriptengine.cpp \
+    cctwqt/cctwqtsetupinputdialog.cpp \
+    cctwqt/cctwqtsetupoutputdialog.cpp \
+    cctwqt/cctwqtsetuptransformdialog.cpp \
+    cctwqt/cctwqttransformonedialog.cpp \
+    cctwqt/cctwqtsetupslicedialog.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -62,10 +67,20 @@ HEADERS += \
     cctwqt/cctwqtoutputdata.h \
     cctwqt/cctwqtmainwindow.h \
     cctwqt/cctwqtinputdata.h \
-    cctwqt/cctwqtscriptengine.h
+    cctwqt/cctwqtscriptengine.h \
+    cctwqt/cctwqtsetupinputdialog.h \
+    cctwqt/cctwqtsetupoutputdialog.h \
+    cctwqt/cctwqtsetuptransformdialog.h \
+    cctwqt/cctwqttransformonedialog.h \
+    cctwqt/cctwqtsetupslicedialog.h
 
 FORMS += \
-    cctwqt/cctwqtmainwindow.ui
+    cctwqt/cctwqtmainwindow.ui \
+    cctwqt/cctwqtsetupinputdialog.ui \
+    cctwqt/cctwqtsetupoutputdialog.ui \
+    cctwqt/cctwqtsetuptransformdialog.ui \
+    cctwqt/cctwqttransformonedialog.ui \
+    cctwqt/cctwqtsetupslicedialog.ui
 
 OTHER_FILES += Doxyfile
 

@@ -23,9 +23,9 @@
      </widget>
     </item>
     <item row="2" column="4">
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="m_TransformSlice">
       <property name="text">
-       <string>Cmd 5</string>
+       <string>Slice</string>
       </property>
      </widget>
     </item>
@@ -33,9 +33,9 @@
      <widget class="QLineEdit" name="m_OutputData"/>
     </item>
     <item row="2" column="3">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="m_SetupSliceButton">
       <property name="text">
-       <string>Cmd 4</string>
+       <string>Setup Slice...</string>
       </property>
      </widget>
     </item>
@@ -43,16 +43,16 @@
      <widget class="QLineEdit" name="m_InputData"/>
     </item>
     <item row="2" column="2">
-     <widget class="QPushButton" name="pushButton_6">
+     <widget class="QPushButton" name="m_TransformAllButton">
       <property name="text">
-       <string>Cmd 3</string>
+       <string>Transform All</string>
       </property>
      </widget>
     </item>
     <item row="2" column="5">
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="QPushButton" name="m_HaltButton">
       <property name="text">
-       <string>Cmd 6</string>
+       <string>Halt</string>
       </property>
      </widget>
     </item>
@@ -64,30 +64,30 @@
      </widget>
     </item>
     <item row="0" column="5">
-     <widget class="QPushButton" name="m_InputDataButton">
+     <widget class="QPushButton" name="m_InputSetupButton">
       <property name="text">
-       <string>Browse...</string>
+       <string>Setup Input...</string>
       </property>
      </widget>
     </item>
     <item row="1" column="5">
-     <widget class="QPushButton" name="m_OutputDataButton">
+     <widget class="QPushButton" name="m_OutputSetupButton">
       <property name="text">
-       <string>Browse...</string>
+       <string>Setup Output...</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QPushButton" name="pushButton_5">
+     <widget class="QPushButton" name="m_TransformOneButton">
       <property name="text">
-       <string>Cmd 2</string>
+       <string>Transform One...</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="m_SetupTransformButton">
       <property name="text">
-       <string>Cmd 1</string>
+       <string>Setup Transform...</string>
       </property>
      </widget>
     </item>
