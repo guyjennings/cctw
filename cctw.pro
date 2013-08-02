@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtapplication.cpp \
     cctwqt/cctwqtoutputdata.cpp \
     cctwqt/cctwqtmainwindow.cpp \
-    cctwqt/cctwqtinputdata.cpp
+    cctwqt/cctwqtinputdata.cpp \
+    cctwqt/cctwqtscriptengine.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -60,7 +61,8 @@ HEADERS += \
     cctwqt/cctwqtapplication.h \
     cctwqt/cctwqtoutputdata.h \
     cctwqt/cctwqtmainwindow.h \
-    cctwqt/cctwqtinputdata.h
+    cctwqt/cctwqtinputdata.h \
+    cctwqt/cctwqtscriptengine.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui

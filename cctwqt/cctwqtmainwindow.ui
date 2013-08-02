@@ -16,7 +16,11 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="3" column="0" colspan="6">
-     <widget class="QTextEdit" name="m_OutputMessages"/>
+     <widget class="QTextEdit" name="m_OutputMessages">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="2" column="4">
      <widget class="QPushButton" name="pushButton_3">
@@ -87,6 +91,20 @@
       </property>
      </widget>
     </item>
+    <item row="5" column="1" colspan="5">
+     <widget class="QProgressBar" name="m_ProgressBar">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="m_ProgressLabel">
+      <property name="text">
+       <string>Progress</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
@@ -94,17 +112,10 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1" colspan="5">
-     <widget class="QProgressBar" name="m_ProgressBar">
-      <property name="value">
-       <number>24</number>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="m_ProgressLabel">
-      <property name="text">
-       <string>Progress</string>
+    <item row="4" column="0" colspan="6">
+     <widget class="QLineEdit" name="m_CommandInput">
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
       </property>
      </widget>
     </item>
