@@ -73,7 +73,6 @@ QMAKE_EXTRA_TARGETS += dox
 
 dox.commands = "("
 dox.commands += cat $${PWD}/Doxyfile ;
-dox.commands += echo "PROJECT_NAME=\"CCTW\"" ;
 dox.commands += echo "PROJECT_NUMBER=$${VERSION}" ;
 dox.commands += echo "INPUT=\"$${PWD}\"" ;
 dox.commands += echo "INPUT+=\"$${PWD}\"/cctwqt/" ;
