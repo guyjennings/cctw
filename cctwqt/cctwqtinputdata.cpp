@@ -13,6 +13,7 @@ int CctwqtInputData::useChunk(int nx, int ny, int nz)
 
 double CctwqtInputData::readData(int chunkId, int dx, int dy, int dz)
 {
+  return 0;
 }
 
 void CctwqtInputData::releaseChunk(int chunkId)

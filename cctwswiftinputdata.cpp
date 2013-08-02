@@ -22,6 +22,8 @@ int CctwSwiftInputData::useChunk(int nx, int ny, int nz)
 double CctwSwiftInputData::readData(int chunkId, int dx, int dy, int dz)
 {
   ::abort();
+
+  return 0;
 }
 
 void CctwSwiftInputData::releaseChunk(int chunkId)
