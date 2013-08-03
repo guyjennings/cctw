@@ -11,8 +11,11 @@
 CctwqtApplication::CctwqtApplication(int argc, char *argv[]) :
   QApplication(argc, argv),
   m_Window(NULL),
+  m_InputDataManager(NULL),
   m_InputData(NULL),
+  m_OutputDataManager(NULL),
   m_OutputData(NULL),
+  m_OutputSliceDataManager(NULL),
   m_OutputSliceData(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
@@ -24,10 +27,26 @@ CctwqtApplication::CctwqtApplication(int argc, char *argv[]) :
 
 void CctwqtApplication::initialize()
 {
-  m_Window           = new CctwqtMainWindow(this);
-  m_InputData        = new CctwqtInputData(this);
-  m_OutputData       = new CctwqtOutputData(this);
-  m_OutputSliceData  = new CctwqtOutputSliceData();
+  m_Window                  = new CctwqtMainWindow(this);
+
+  m_InputDataManagerThread  = new CctwqtDataFrameManagerThread(this);
+  m_InputDataManagerThread  -> start();
+
+  m_InputDataManager        = m_InputDataManagerThread->manager();
+  m_InputData               = new CctwqtInputData(m_InputDataManager);
+
+  m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
+  m_OutputDataManagerThread -> start();
+
+  m_OutputDataManager       = m_OutputDataManagerThread->manager();
+  m_OutputData              = new CctwqtOutputData(m_OutputDataManager);
+
+  m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
+  m_OutputSliceDataManagerThread  -> start();
+
+  m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
+  m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
+
   m_Transform        = new CctwCrystalCoordinateTransform();
   m_Transformer      = new CctwTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
   m_SliceTransform   = new CctwCrystalCoordinateTransform();

@@ -6,6 +6,8 @@
 #include "cctwinputdatainterface.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwtransformer.h"
+#include "cctwqtdataframemanager.h"
+#include "cctwqtdataframemanagerthread.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -24,15 +26,21 @@ public slots:
   void evaluateCommand(QString cmd);
 
 private:
-  CctwqtMainWindow        *m_Window;
-  CctwInputDataInterface  *m_InputData;
-  CctwOutputDataInterface *m_OutputData;
-  CctwOutputDataInterface *m_OutputSliceData;
-  CctwTransformInterface  *m_Transform;
-  CctwTransformer         *m_Transformer;
-  CctwTransformInterface  *m_SliceTransform;
-  CctwTransformer         *m_SliceTransformer;
-  CctwqtScriptEngine      *m_ScriptEngine;
+  CctwqtMainWindow              *m_Window;
+  CctwqtDataFrameManager        *m_InputDataManager;
+  CctwqtDataFrameManagerThread  *m_InputDataManagerThread;
+  CctwInputDataInterface        *m_InputData;
+  CctwqtDataFrameManager        *m_OutputDataManager;
+  CctwqtDataFrameManagerThread  *m_OutputDataManagerThread;
+  CctwOutputDataInterface       *m_OutputData;
+  CctwqtDataFrameManager        *m_OutputSliceDataManager;
+  CctwqtDataFrameManagerThread  *m_OutputSliceDataManagerThread;
+  CctwOutputDataInterface       *m_OutputSliceData;
+  CctwTransformInterface        *m_Transform;
+  CctwTransformer               *m_Transformer;
+  CctwTransformInterface        *m_SliceTransform;
+  CctwTransformer               *m_SliceTransformer;
+  CctwqtScriptEngine            *m_ScriptEngine;
 };
 
 #endif // CCTWQTAPPLICATION_H

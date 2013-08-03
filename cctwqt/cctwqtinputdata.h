@@ -2,13 +2,15 @@
 #define CCTWQTINPUTDATA_H
 
 #include <QObject>
+#include <QVector>
 #include "cctwinputdatainterface.h"
+#include "cctwqtdatachunk.h"
 
 class CctwqtInputData : public QObject, public CctwInputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtInputData(QObject *parent = 0);
+  explicit CctwqtInputData(CctwqtDataFrameManager *manager = 0);
   
 signals:
   
@@ -29,6 +31,10 @@ public:
                                               // Indicate that we've finished with a chunk of input data - chunkId is an identifier returned
                                               // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
                                               // is invalid.
+
+private:
+  CctwqtDataFrameManager      *m_Manager;
+  QVector< CctwqtDataChunk* >  m_DataChunks;
 };
 
 #endif // CCTWQTINPUTDATA_H
