@@ -30,6 +30,8 @@ private:
   CctwOutputDataInterface *m_OutputSliceData;
   CctwTransformInterface  *m_Transform;
   CctwTransformer         *m_Transformer;
+  CctwTransformInterface  *m_SliceTransform;
+  CctwTransformer         *m_SliceTransformer;
   CctwqtScriptEngine      *m_ScriptEngine;
 };
 

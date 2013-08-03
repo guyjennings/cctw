@@ -13,21 +13,26 @@ CctwqtApplication::CctwqtApplication(int argc, char *argv[]) :
   m_Window(NULL),
   m_InputData(NULL),
   m_OutputData(NULL),
+  m_OutputSliceData(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
+  m_SliceTransform(NULL),
+  m_SliceTransformer(NULL),
   m_ScriptEngine(NULL)
 {
 }
 
 void CctwqtApplication::initialize()
 {
-  m_Window        = new CctwqtMainWindow(this);
-  m_InputData     = new CctwqtInputData(this);
-  m_OutputData    = new CctwqtOutputData(this);
-  m_OutputSliceData = new CctwqtOutputSliceData();
-  m_Transform     = new CctwCrystalCoordinateTransform();
-  m_Transformer   = new CctwTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
-  m_ScriptEngine  = new CctwqtScriptEngine(this, NULL);
+  m_Window           = new CctwqtMainWindow(this);
+  m_InputData        = new CctwqtInputData(this);
+  m_OutputData       = new CctwqtOutputData(this);
+  m_OutputSliceData  = new CctwqtOutputSliceData();
+  m_Transform        = new CctwCrystalCoordinateTransform();
+  m_Transformer      = new CctwTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
+  m_SliceTransform   = new CctwCrystalCoordinateTransform();
+  m_SliceTransformer = new CctwTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, 0);
+  m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
 
   m_Window->show();
 }
