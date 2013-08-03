@@ -7,14 +7,19 @@ namespace Ui {
 class CctwqtSetupTransformDialog;
 }
 
+class CctwqtMainWindow;
+
 class CctwqtSetupTransformDialog : public QDialog
 {
   Q_OBJECT
   
 public:
-  explicit CctwqtSetupTransformDialog(QWidget *parent = 0);
+  explicit CctwqtSetupTransformDialog(CctwqtMainWindow *parent);
   ~CctwqtSetupTransformDialog();
   
+public slots:
+  void accept();
+
 private:
   Ui::CctwqtSetupTransformDialog *ui;
 };

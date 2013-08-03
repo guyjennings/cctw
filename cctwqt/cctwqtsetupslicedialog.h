@@ -7,14 +7,19 @@ namespace Ui {
 class CctwqtSetupSliceDialog;
 }
 
+class CctwqtMainWindow;
+
 class CctwqtSetupSliceDialog : public QDialog
 {
   Q_OBJECT
   
 public:
-  explicit CctwqtSetupSliceDialog(QWidget *parent = 0);
+  explicit CctwqtSetupSliceDialog(CctwqtMainWindow *parent);
   ~CctwqtSetupSliceDialog();
   
+public slots:
+  void accept();
+
 private:
   Ui::CctwqtSetupSliceDialog *ui;
 };

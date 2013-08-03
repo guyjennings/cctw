@@ -7,14 +7,19 @@ namespace Ui {
 class CctwqtSetupOutputDialog;
 }
 
+class CctwqtMainWindow;
+
 class CctwqtSetupOutputDialog : public QDialog
 {
   Q_OBJECT
   
 public:
-  explicit CctwqtSetupOutputDialog(QWidget *parent = 0);
+  explicit CctwqtSetupOutputDialog(CctwqtMainWindow *parent);
   ~CctwqtSetupOutputDialog();
   
+public slots:
+  void accept();
+
 private:
   Ui::CctwqtSetupOutputDialog *ui;
 };

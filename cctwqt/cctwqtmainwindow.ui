@@ -23,7 +23,7 @@
      </widget>
     </item>
     <item row="2" column="4">
-     <widget class="QPushButton" name="m_TransformSlice">
+     <widget class="QPushButton" name="m_TransformSliceButton">
       <property name="text">
        <string>Slice</string>
       </property>
@@ -64,14 +64,14 @@
      </widget>
     </item>
     <item row="0" column="5">
-     <widget class="QPushButton" name="m_InputSetupButton">
+     <widget class="QPushButton" name="m_SetupInputButton">
       <property name="text">
        <string>Setup Input...</string>
       </property>
      </widget>
     </item>
     <item row="1" column="5">
-     <widget class="QPushButton" name="m_OutputSetupButton">
+     <widget class="QPushButton" name="m_SetupOutputButton">
       <property name="text">
        <string>Setup Output...</string>
       </property>
@@ -94,7 +94,7 @@
     <item row="5" column="1" colspan="5">
      <widget class="QProgressBar" name="m_ProgressBar">
       <property name="value">
-       <number>24</number>
+       <number>0</number>
       </property>
      </widget>
     </item>
