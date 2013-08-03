@@ -27,6 +27,7 @@ private:
   CctwqtMainWindow        *m_Window;
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;
+  CctwOutputDataInterface *m_OutputSliceData;
   CctwTransformInterface  *m_Transform;
   CctwTransformer         *m_Transformer;
   CctwqtScriptEngine      *m_ScriptEngine;

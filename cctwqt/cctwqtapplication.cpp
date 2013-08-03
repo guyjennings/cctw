@@ -2,6 +2,7 @@
 #include "cctwqtmainwindow.h"
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
+#include "cctwqtoutputslicedata.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwtransformer.h"
 #include <QScriptValue>
@@ -23,6 +24,7 @@ void CctwqtApplication::initialize()
   m_Window        = new CctwqtMainWindow(this);
   m_InputData     = new CctwqtInputData(this);
   m_OutputData    = new CctwqtOutputData(this);
+  m_OutputSliceData = new CctwqtOutputSliceData();
   m_Transform     = new CctwCrystalCoordinateTransform();
   m_Transformer   = new CctwTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
   m_ScriptEngine  = new CctwqtScriptEngine(this, NULL);
