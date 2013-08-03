@@ -46,7 +46,10 @@ SOURCES += main.cpp \
     cctwqt/cctwqttransformonedialog.cpp \
     cctwqt/cctwqtsetupslicedialog.cpp \
     cctwqt/cctwqtoutputslicedata.cpp \
-    cctwqt/cctwqtdataframe.cpp
+    cctwqt/cctwqtdataframe.cpp \
+    cctwqt/cctwqtdatachunk.cpp \
+    cctwqt/cctwqtdataframemanager.cpp \
+    cctwqt/cctwqtdataframemanagerthread.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -76,7 +79,10 @@ HEADERS += \
     cctwqt/cctwqttransformonedialog.h \
     cctwqt/cctwqtsetupslicedialog.h \
     cctwqt/cctwqtoutputslicedata.h \
-    cctwqt/cctwqtdataframe.h
+    cctwqt/cctwqtdataframe.h \
+    cctwqt/cctwqtdatachunk.h \
+    cctwqt/cctwqtdataframemanager.h \
+    cctwqt/cctwqtdataframemanagerthread.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \
