@@ -96,6 +96,12 @@ T CctwVector3D<T>::lengthSquared() const
 }
 
 template <typename T>
+T CctwVector3D<T>::volume() const
+{
+  return x()*y()*z();
+}
+
+template <typename T>
 CctwVector3D<T> CctwVector3D<T>::normalized() const
 {
   T len = length();

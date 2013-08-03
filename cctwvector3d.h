@@ -28,6 +28,7 @@ public:
 
   T length() const;
   T lengthSquared() const;
+  T volume() const;
 
   CctwVector3D<T> normalized() const;
   void normalize();
