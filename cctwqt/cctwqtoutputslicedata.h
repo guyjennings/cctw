@@ -3,12 +3,14 @@
 
 #include <QObject>
 #include "cctwoutputdatainterface.h"
+#include "cctwqtdatachunk.h"
+#include "cctwqtdataframemanager.h"
 
 class CctwqtOutputSliceData : public QObject, public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputSliceData(QObject *parent=0);
+  explicit CctwqtOutputSliceData(CctwqtDataFrameManager *manager);
 
 signals:
 
@@ -29,6 +31,9 @@ public:
                                               // Indicate that we've finished with a chunk of output data - chunkId is an identifier returned
                                               // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
                                               // is invalid.
+private:
+  CctwqtDataFrameManager      *m_Manager;
+  QVector< CctwqtDataChunk* >  m_DataChunks;
 };
 
 #endif // CCTWQTOUTPUTSLICEDATA_H

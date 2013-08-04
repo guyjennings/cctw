@@ -2,8 +2,8 @@
 
 CctwqtOutputData::CctwqtOutputData(CctwqtDataFrameManager *manager) :
   QObject(),
-  m_Manager(manager),
-  CctwOutputDataInterface(CctwIntVector3D(100,100,100), CctwIntVector3D(10,10,10), CctwDoubleVector3D(0,0,0), CctwDoubleVector3D(1,1,1))
+  CctwOutputDataInterface(CctwIntVector3D(100,100,100), CctwIntVector3D(10,10,10), CctwDoubleVector3D(0,0,0), CctwDoubleVector3D(1,1,1)),
+m_Manager(manager)
 {
   int n = chunkCount().volume();
 
