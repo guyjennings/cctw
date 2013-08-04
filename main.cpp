@@ -16,9 +16,13 @@ int main(int argc, char *argv[])
 #ifdef USE_QT
   CctwqtApplication *app = new CctwqtApplication(argc, argv);
 
+//  int appArgc = qApp->argc();
+
+//  printf("appArgc = %d\n", appArgc);
+
   app->initialize();
 
-  app->exec();
+  return app->exec();
 #else
   CctwSwiftInputData  *inputData  = CctwSwiftInputData::createNew(argc, argv);
   CctwSwiftOutputData *outputData = CctwSwiftOutputData::createNew(argc, argv);

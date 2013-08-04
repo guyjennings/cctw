@@ -16,7 +16,7 @@ class CctwqtApplication : public QApplication
 {
   Q_OBJECT
 public:
-  explicit CctwqtApplication(int argc, char *argv[]);
+  explicit CctwqtApplication(int &argc, char *argv[]);
   void initialize();
 
 signals:

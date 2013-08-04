@@ -45,6 +45,11 @@ private:
   QPointer<CctwqtSetupTransformDialog> m_SetupTransformDialog;
   QPointer<CctwqtSetupSliceDialog>     m_SetupSliceDialog;
   QPointer<CctwqtTransformOneDialog>   m_TransformOneDialog;
+//  CctwqtSetupInputDialog      *m_SetupInputDialog;
+//  CctwqtSetupOutputDialog     *m_SetupOutputDialog;
+//  CctwqtSetupTransformDialog  *m_SetupTransformDialog;
+//  CctwqtSetupSliceDialog      *m_SetupSliceDialog;
+//  CctwqtTransformOneDialog    *m_TransformOneDialog;
 };
 
 #endif // CCTWQTMAINWINDOW_H

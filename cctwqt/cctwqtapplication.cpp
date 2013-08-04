@@ -8,7 +8,7 @@
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
 
-CctwqtApplication::CctwqtApplication(int argc, char *argv[]) :
+CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QApplication(argc, argv),
   m_Window(NULL),
   m_InputDataManager(NULL),
@@ -28,6 +28,9 @@ CctwqtApplication::CctwqtApplication(int argc, char *argv[]) :
 void CctwqtApplication::initialize()
 {
   m_Window                  = new CctwqtMainWindow(this);
+
+//  QMainWindow *win = new QMainWindow();
+//  win -> show();
 
   m_InputDataManagerThread  = new CctwqtDataFrameManagerThread(this);
   m_InputDataManagerThread  -> start();
