@@ -50,11 +50,19 @@ void CctwqtApplication::initialize()
   m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
   m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
 
-  m_Transform        = new CctwCrystalCoordinateTransform();
-  m_Transformer      = new CctwTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
-  m_SliceTransform   = new CctwCrystalCoordinateTransform();
-  m_SliceTransformer = new CctwTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, 0);
+  m_Transform        = new CctwqtCrystalCoordinateTransform();
+  m_Transformer      = new CctwqtTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
+  m_SliceTransform   = new CctwqtCrystalCoordinateTransform();
+  m_SliceTransformer = new CctwqtTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, 0);
   m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
+
+  m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
+  m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
+  m_ScriptEngine->globalObject().setProperty("outputSliceData", m_ScriptEngine->newQObject(m_OutputSliceData));
+  m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
+  m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
+  m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
+  m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
 
   m_Window->show();
 }

@@ -3,11 +3,13 @@
 
 #include <QApplication>
 #include "cctwqtmainwindow.h"
-#include "cctwinputdatainterface.h"
-#include "cctwoutputdatainterface.h"
-#include "cctwtransformer.h"
+#include "cctwqtinputdata.h"
+#include "cctwqtoutputdata.h"
+#include "cctwqtoutputslicedata.h"
 #include "cctwqtdataframemanager.h"
 #include "cctwqtdataframemanagerthread.h"
+#include "cctwqttransformer.h"
+#include "cctwqtcrystalcoordinatetransform.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -26,21 +28,21 @@ public slots:
   void evaluateCommand(QString cmd);
 
 private:
-  CctwqtMainWindow              *m_Window;
-  CctwqtDataFrameManager        *m_InputDataManager;
-  CctwqtDataFrameManagerThread  *m_InputDataManagerThread;
-  CctwInputDataInterface        *m_InputData;
-  CctwqtDataFrameManager        *m_OutputDataManager;
-  CctwqtDataFrameManagerThread  *m_OutputDataManagerThread;
-  CctwOutputDataInterface       *m_OutputData;
-  CctwqtDataFrameManager        *m_OutputSliceDataManager;
-  CctwqtDataFrameManagerThread  *m_OutputSliceDataManagerThread;
-  CctwOutputDataInterface       *m_OutputSliceData;
-  CctwTransformInterface        *m_Transform;
-  CctwTransformer               *m_Transformer;
-  CctwTransformInterface        *m_SliceTransform;
-  CctwTransformer               *m_SliceTransformer;
-  CctwqtScriptEngine            *m_ScriptEngine;
+  CctwqtMainWindow                  *m_Window;
+  CctwqtDataFrameManager            *m_InputDataManager;
+  CctwqtDataFrameManagerThread      *m_InputDataManagerThread;
+  CctwqtInputData                   *m_InputData;
+  CctwqtDataFrameManager            *m_OutputDataManager;
+  CctwqtDataFrameManagerThread      *m_OutputDataManagerThread;
+  CctwqtOutputData                  *m_OutputData;
+  CctwqtDataFrameManager            *m_OutputSliceDataManager;
+  CctwqtDataFrameManagerThread      *m_OutputSliceDataManagerThread;
+  CctwqtOutputSliceData             *m_OutputSliceData;
+  CctwqtCrystalCoordinateTransform  *m_Transform;
+  CctwqtTransformer                 *m_Transformer;
+  CctwqtCrystalCoordinateTransform  *m_SliceTransform;
+  CctwqtTransformer                 *m_SliceTransformer;
+  CctwqtScriptEngine                *m_ScriptEngine;
 };
 
 #endif // CCTWQTAPPLICATION_H
