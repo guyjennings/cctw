@@ -8,7 +8,7 @@ CctwqtDataFrameManagerThread::CctwqtDataFrameManagerThread(QObject *parent) :
 
 void CctwqtDataFrameManagerThread::run()
 {
-  m_Manager.fetchAndStoreOrdered(new CctwqtDataFrameManager());
+  m_Manager.fetchAndStoreOrdered(new CctwqtDataFrameManager(parent()));
 
   exec();
 }

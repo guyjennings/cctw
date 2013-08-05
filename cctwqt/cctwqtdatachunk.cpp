@@ -1,7 +1,7 @@
 #include "cctwqtdatachunk.h"
 
-CctwqtDataChunk::CctwqtDataChunk(CctwChunkedDataInterface *data, CctwqtDataFrameManager *manager) :
-  QObject(),
+CctwqtDataChunk::CctwqtDataChunk(CctwChunkedDataInterface *data, CctwqtDataFrameManager *manager, QObject *parent) :
+  CctwqtObject(parent),
   m_Data(data),
   m_Manager(manager)
 {

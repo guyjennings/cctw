@@ -1,12 +1,12 @@
 #ifndef CCTWQTOUTPUTSLICEDATA_H
 #define CCTWQTOUTPUTSLICEDATA_H
 
-#include <QObject>
+#include "cctwqtobject.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwqtdatachunk.h"
 #include "cctwqtdataframemanager.h"
 
-class CctwqtOutputSliceData : public QObject, public CctwOutputDataInterface
+class CctwqtOutputSliceData : public CctwqtObject, public CctwOutputDataInterface
 {
   Q_OBJECT
 public:

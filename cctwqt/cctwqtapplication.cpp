@@ -36,13 +36,13 @@ void CctwqtApplication::initialize()
   m_InputDataManagerThread  -> start();
 
   m_InputDataManager        = m_InputDataManagerThread->manager();
-  m_InputData               = new CctwqtInputData(m_InputDataManager);
+  m_InputData               = new CctwqtInputData(m_InputDataManager, this);
 
   m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
   m_OutputDataManagerThread -> start();
 
   m_OutputDataManager       = m_OutputDataManagerThread->manager();
-  m_OutputData              = new CctwqtOutputData(m_OutputDataManager);
+  m_OutputData              = new CctwqtOutputData(m_OutputDataManager, this);
 
   m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
   m_OutputSliceDataManagerThread  -> start();
@@ -50,10 +50,10 @@ void CctwqtApplication::initialize()
   m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
   m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
 
-  m_Transform        = new CctwqtCrystalCoordinateTransform();
-  m_Transformer      = new CctwqtTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, 0);
-  m_SliceTransform   = new CctwqtCrystalCoordinateTransform();
-  m_SliceTransformer = new CctwqtTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, 0);
+  m_Transform        = new CctwqtCrystalCoordinateTransform(this);
+  m_Transformer      = new CctwqtTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, this);
+  m_SliceTransform   = new CctwqtCrystalCoordinateTransform(this);
+  m_SliceTransformer = new CctwqtTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, this);
   m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
 
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));

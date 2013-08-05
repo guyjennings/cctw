@@ -1,17 +1,17 @@
 #ifndef CCTWQTOUTPUTDATA_H
 #define CCTWQTOUTPUTDATA_H
 
-#include <QObject>
+#include "cctwqtobject.h"
 #include <QVector>
 #include "cctwoutputdatainterface.h"
 #include "cctwqtdatachunk.h"
 #include "cctwqtdataframemanager.h"
 
-class CctwqtOutputData : public QObject, public CctwOutputDataInterface
+class CctwqtOutputData : public CctwqtObject, public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputData(CctwqtDataFrameManager *manager);
+  explicit CctwqtOutputData(CctwqtDataFrameManager *manager, QObject *parent=0);
   
 signals:
   

@@ -1,15 +1,15 @@
 #ifndef CCTWQTDATAFRAME_H
 #define CCTWQTDATAFRAME_H
 
-#include <QObject>
+#include "cctwqtobject.h"
 #include <QVector>
 #include <QAtomicInt>
 
-class CctwqtDataFrame : public QObject
+class CctwqtDataFrame : public CctwqtObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataFrame(int dimx, int dimy, QAtomicInt *refcounter = 0);
+  explicit CctwqtDataFrame(int dimx, int dimy, QAtomicInt *refcounter, QObject *parent);
   virtual ~CctwqtDataFrame();
 
 signals:

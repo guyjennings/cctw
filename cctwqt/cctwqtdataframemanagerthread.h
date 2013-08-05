@@ -3,7 +3,8 @@
 
 #include <QThread>
 #include <QAtomicPointer>
-#include "cctwqtdataframemanager.h"
+
+class CctwqtDataFrameManager;
 
 class CctwqtDataFrameManagerThread : public QThread
 {

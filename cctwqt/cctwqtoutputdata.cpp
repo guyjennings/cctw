@@ -1,7 +1,7 @@
 #include "cctwqtoutputdata.h"
 
-CctwqtOutputData::CctwqtOutputData(CctwqtDataFrameManager *manager) :
-  QObject(),
+CctwqtOutputData::CctwqtOutputData(CctwqtDataFrameManager *manager, QObject *parent) :
+  CctwqtObject(parent),
   CctwOutputDataInterface(CctwIntVector3D(100,100,100), CctwIntVector3D(10,10,10), CctwDoubleVector3D(0,0,0), CctwDoubleVector3D(1,1,1)),
 m_Manager(manager)
 {
@@ -10,7 +10,7 @@ m_Manager(manager)
   m_DataChunks.resize(n);
 
   for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwqtDataChunk(this, manager);
+    m_DataChunks[i] = new CctwqtDataChunk(this, manager, this);
   }
 }
 

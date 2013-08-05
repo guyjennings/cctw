@@ -1,7 +1,7 @@
 #include "cctwqtdataframe.h"
 
-CctwqtDataFrame::CctwqtDataFrame(int dimx, int dimy, QAtomicInt *refcounter) :
-  QObject(NULL),
+CctwqtDataFrame::CctwqtDataFrame(int dimx, int dimy, QAtomicInt *refcounter, QObject *parent) :
+  CctwqtObject(parent),
   m_Counter(refcounter),
   m_DimX(dimx),
   m_DimY(dimy),

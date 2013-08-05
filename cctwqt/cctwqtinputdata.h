@@ -1,16 +1,16 @@
 #ifndef CCTWQTINPUTDATA_H
 #define CCTWQTINPUTDATA_H
 
-#include <QObject>
+#include "cctwqtobject.h"
 #include <QVector>
 #include "cctwinputdatainterface.h"
 #include "cctwqtdatachunk.h"
 
-class CctwqtInputData : public QObject, public CctwInputDataInterface
+class CctwqtInputData : public CctwqtObject, public CctwInputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtInputData(CctwqtDataFrameManager *manager = 0);
+  explicit CctwqtInputData(CctwqtDataFrameManager *manager, QObject *parent = 0);
   
 signals:
   

@@ -1,10 +1,10 @@
 #ifndef CCTWQTTRANSFORMER_H
 #define CCTWQTTRANSFORMER_H
 
-#include <QObject>
+#include "cctwqtobject.h"
 #include "cctwtransformer.h"
 
-class CctwqtTransformer : public QObject, public CctwTransformer
+class CctwqtTransformer : public CctwqtObject, public CctwTransformer
 {
   Q_OBJECT
 public:
@@ -12,7 +12,7 @@ public:
                              CctwOutputDataInterface *output,  // The output data
                              CctwTransformInterface *xform,    // The transform
                              int osx, int osy, int osz,
-                             QObject *parent = 0);
+                             QObject *parent);
   
 signals:
   

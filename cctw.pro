@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtdataframemanager.cpp \
     cctwqt/cctwqtdataframemanagerthread.cpp \
     cctwqt/cctwqttransformer.cpp \
-    cctwqt/cctwqtcrystalcoordinatetransform.cpp
+    cctwqt/cctwqtcrystalcoordinatetransform.cpp \
+    cctwqt/cctwqtobject.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -86,7 +87,8 @@ HEADERS += \
     cctwqt/cctwqtdataframemanager.h \
     cctwqt/cctwqtdataframemanagerthread.h \
     cctwqt/cctwqttransformer.h \
-    cctwqt/cctwqtcrystalcoordinatetransform.h
+    cctwqt/cctwqtcrystalcoordinatetransform.h \
+    cctwqt/cctwqtobject.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \
