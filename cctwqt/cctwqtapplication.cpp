@@ -89,14 +89,16 @@ void CctwqtApplication::evaluateCommand(QString cmd)
 
 void CctwqtApplication::readSettings()
 {
-  QSettings settings;
+  QSettings settings("xray.aps.anl.gov", "cctw");
 
   readSettings(&settings);
 }
 
 void CctwqtApplication::readSettings(QString path)
 {
-  QSettings settings(path);
+  QSettings settings(path, QSettings::IniFormat);
+
+  printMessage(tr("Reading settings from %1").arg(path));
 
   readSettings(&settings);
 }
@@ -148,14 +150,16 @@ void CctwqtApplication::readSettings(QSettings *settings)
 
 void CctwqtApplication::writeSettings()
 {
-  QSettings settings;
+  QSettings settings("xray.aps.anl.gov", "cctw");
 
   writeSettings(&settings);
 }
 
 void CctwqtApplication::writeSettings(QString path)
 {
-  QSettings settings(path);
+  QSettings settings(path, QSettings::IniFormat);
+
+  printMessage(tr("Writing settings to %1").arg(path));
 
   writeSettings(&settings);
 }

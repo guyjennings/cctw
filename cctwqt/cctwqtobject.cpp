@@ -2,7 +2,8 @@
 #include "qcepproperty.h"
 
 CctwqtObject::CctwqtObject(QObject *parent) :
-  QObject(parent)
+  QObject(parent),
+  m_Name(QcepSettingsSaverWPtr(), this, "name", "", "Object Name")
 {
 }
 
@@ -20,5 +21,5 @@ void CctwqtObject::writeSettings(QSettings *set, QString section)
 
 void CctwqtObject::readSettings(QSettings *set, QString section)
 {
-  QcepProperty::writeSettings(this, &staticMetaObject, section, set);
+  QcepProperty::readSettings(this, &staticMetaObject, section, set);
 }
