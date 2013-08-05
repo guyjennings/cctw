@@ -2,6 +2,7 @@
 #define CCTWQTOBJECT_H
 
 #include <QObject>
+#include <QSettings>
 
 class CctwqtObject : public QObject
 {
@@ -13,6 +14,10 @@ signals:
 
 public slots:
   virtual void printMessage(QString msg);
+
+public:
+  virtual void writeSettings(QSettings *set, QString section);
+  virtual void readSettings(QSettings *set, QString section);
 };
 
 #endif // CCTWQTOBJECT_H

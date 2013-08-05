@@ -27,6 +27,15 @@ public slots:
   void printMessage(QString msg);
   void evaluateCommand(QString cmd);
 
+  void writeSettings();
+  void readSettings();
+  void writeSettings(QString path);
+  void readSettings(QString path);
+
+private:
+  void readSettings(QSettings *settings);
+  void writeSettings(QSettings *settings);
+
 private:
   CctwqtMainWindow                  *m_Window;
   CctwqtDataFrameManager            *m_InputDataManager;

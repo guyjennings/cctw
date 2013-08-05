@@ -7,6 +7,7 @@
 #include "cctwtransformer.h"
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
+#include "qcepproperty.h"
 
 CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QApplication(argc, argv),
@@ -56,8 +57,11 @@ void CctwqtApplication::initialize()
   m_SliceTransformer = new CctwqtTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, this);
   m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
 
+  m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
+  m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
+  m_ScriptEngine->globalObject().setProperty("outputSliceDataManager", m_ScriptEngine->newQObject(m_OutputSliceDataManager));
   m_ScriptEngine->globalObject().setProperty("outputSliceData", m_ScriptEngine->newQObject(m_OutputSliceData));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
   m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
@@ -80,5 +84,123 @@ void CctwqtApplication::evaluateCommand(QString cmd)
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
 
     printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+  }
+}
+
+void CctwqtApplication::readSettings()
+{
+  QSettings settings;
+
+  readSettings(&settings);
+}
+
+void CctwqtApplication::readSettings(QString path)
+{
+  QSettings settings(path);
+
+  readSettings(&settings);
+}
+
+void CctwqtApplication::readSettings(QSettings *settings)
+{
+  QcepProperty::readSettings(this, &staticMetaObject, "cctw", settings, true);
+
+  if (m_InputDataManager) {
+    m_InputDataManager->readSettings(settings, "inputDataManager");
+  }
+
+  if (m_InputData) {
+    m_InputData->readSettings(settings, "inputData");
+  }
+
+  if (m_OutputDataManager) {
+    m_OutputDataManager->readSettings(settings, "outputDataManager");
+  }
+
+  if (m_OutputData) {
+    m_OutputData->readSettings(settings, "outputData");
+  }
+
+  if (m_OutputSliceDataManager) {
+    m_OutputSliceDataManager->readSettings(settings, "outputSliceDataManager");
+  }
+
+  if (m_OutputSliceData) {
+    m_OutputSliceData->readSettings(settings, "outputSliceData");
+  }
+
+  if (m_Transform) {
+    m_Transform->readSettings(settings, "transform");
+  }
+
+  if (m_Transformer) {
+    m_Transformer->readSettings(settings, "transformer");
+  }
+
+  if (m_SliceTransform) {
+    m_SliceTransform->readSettings(settings, "sliceTransform");
+  }
+
+  if (m_SliceTransformer) {
+    m_SliceTransformer->readSettings(settings, "sliceTransformer");
+  }
+}
+
+void CctwqtApplication::writeSettings()
+{
+  QSettings settings;
+
+  writeSettings(&settings);
+}
+
+void CctwqtApplication::writeSettings(QString path)
+{
+  QSettings settings(path);
+
+  writeSettings(&settings);
+}
+
+void CctwqtApplication::writeSettings(QSettings *settings)
+{
+  QcepProperty::writeSettings(this, &staticMetaObject, "cctw", settings, true);
+
+  if (m_InputDataManager) {
+    m_InputDataManager->writeSettings(settings, "inputDataManager");
+  }
+
+  if (m_InputData) {
+    m_InputData->writeSettings(settings, "inputData");
+  }
+
+  if (m_OutputDataManager) {
+    m_OutputDataManager->writeSettings(settings, "outputDataManager");
+  }
+
+  if (m_OutputData) {
+    m_OutputData->writeSettings(settings, "outputData");
+  }
+
+  if (m_OutputSliceDataManager) {
+    m_OutputSliceDataManager->writeSettings(settings, "outputSliceDataManager");
+  }
+
+  if (m_OutputSliceData) {
+    m_OutputSliceData->writeSettings(settings, "outputSliceData");
+  }
+
+  if (m_Transform) {
+    m_Transform->writeSettings(settings, "transform");
+  }
+
+  if (m_Transformer) {
+    m_Transformer->writeSettings(settings, "transformer");
+  }
+
+  if (m_SliceTransform) {
+    m_SliceTransform->writeSettings(settings, "sliceTransform");
+  }
+
+  if (m_SliceTransformer) {
+    m_SliceTransformer->writeSettings(settings, "sliceTransformer");
   }
 }
