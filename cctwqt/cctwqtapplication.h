@@ -36,6 +36,9 @@ public slots:
   void writeSettings(QString path);
   void readSettings(QString path);
 
+private slots:
+  void onDebugChanged(int dbg);
+
 private:
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
@@ -60,6 +63,9 @@ private:
   QcepSettingsSaverPtr               m_Saver;
 
 public:
+  Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
+  QCEP_INTEGER_PROPERTY(Debug)
+
   Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
   QCEP_STRING_PROPERTY(InputDataDescriptor)
 

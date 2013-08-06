@@ -29,6 +29,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_SliceTransformer(NULL),
   m_ScriptEngine(NULL),
   m_Saver(new QcepSettingsSaver(this)),
+  m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_InputDataDescriptor(m_Saver, this, "inputData", "", "Input Data Descriptor"),
   m_OutputDataDescriptor(m_Saver, this, "outputData", "", "Output Data Descriptor"),
   m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceData", "", "Output Slice Data Descriptor")
@@ -36,6 +37,15 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QcepProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
+
+  connect(prop_Debug(), SIGNAL(valueChanged(int,int)), this, SLOT(onDebugChanged(int)));
+}
+
+void CctwqtApplication::onDebugChanged(int dbg)
+{
+  if (g_DebugLevel) {
+    g_DebugLevel->setDebugLevel(dbg);
+  }
 }
 
 void CctwqtApplication::initialize()
