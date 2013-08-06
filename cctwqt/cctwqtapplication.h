@@ -2,6 +2,7 @@
 #define CCTWQTAPPLICATION_H
 
 #include <QApplication>
+#include <QDateTime>
 #include "cctwqtmainwindow.h"
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
@@ -10,6 +11,9 @@
 #include "cctwqtdataframemanagerthread.h"
 #include "cctwqttransformer.h"
 #include "cctwqtcrystalcoordinatetransform.h"
+#include "qcepsettingssaver-ptr.h"
+#include "qcepsettingssaver.h"
+#include "qcepobjectnamer.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -24,7 +28,7 @@ public:
 signals:
 
 public slots:
-  void printMessage(QString msg);
+  void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void evaluateCommand(QString cmd);
 
   void writeSettings();
@@ -37,6 +41,7 @@ private:
   void writeSettings(QSettings *settings);
 
 private:
+  QcepObjectNamer                    m_ObjectNamer;
   CctwqtMainWindow                  *m_Window;
   CctwqtDataFrameManager            *m_InputDataManager;
   CctwqtDataFrameManagerThread      *m_InputDataManagerThread;
@@ -52,6 +57,19 @@ private:
   CctwqtCrystalCoordinateTransform  *m_SliceTransform;
   CctwqtTransformer                 *m_SliceTransformer;
   CctwqtScriptEngine                *m_ScriptEngine;
+  QcepSettingsSaverPtr               m_Saver;
+
+public:
+  Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
+  QCEP_STRING_PROPERTY(InputDataDescriptor)
+
+  Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
+  QCEP_STRING_PROPERTY(OutputDataDescriptor)
+
+  Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
+  QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
 };
+
+extern QcepSettingsSaverPtr g_Saver;
 
 #endif // CCTWQTAPPLICATION_H

@@ -1,16 +1,17 @@
 #include "cctwqtobject.h"
 #include "qcepproperty.h"
+#include "cctwqtapplication.h"
 
 CctwqtObject::CctwqtObject(QObject *parent) :
   QObject(parent),
-  m_Name(QcepSettingsSaverWPtr(), this, "name", "", "Object Name")
+  m_Name(g_Saver, this, "name", "", "Object Name")
 {
 }
 
-void CctwqtObject::printMessage(QString msg)
+void CctwqtObject::printMessage(QString msg, QDateTime dt)
 {
   if (parent()) {
-    QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg));
+    QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
   }
 }
 

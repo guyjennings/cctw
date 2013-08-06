@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPointer>
+#include <QDateTime>
 #include "cctwqtapplication.h"
 #include "cctwqtsetupinputdialog.h"
 #include "cctwqtsetupoutputdialog.h"
@@ -25,7 +26,7 @@ public:
   ~CctwqtMainWindow();
   
 public slots:
-  void printMessage(QString msg);
+  void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void doEvaluateCommand();
   void doSetupInput();
   void doSetupOutput();

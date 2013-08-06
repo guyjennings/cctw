@@ -8,9 +8,15 @@
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
 #include "qcepproperty.h"
+#include "qcepdocumentationdictionary.h"
+#include "cctwqtdebug.h"
+#include "qcepsettingssaver.h"
+
+QcepSettingsSaverPtr g_Saver;
 
 CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QApplication(argc, argv),
+  m_ObjectNamer(this, "cctw"),
   m_Window(NULL),
   m_InputDataManager(NULL),
   m_InputData(NULL),
@@ -22,8 +28,18 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_Transformer(NULL),
   m_SliceTransform(NULL),
   m_SliceTransformer(NULL),
-  m_ScriptEngine(NULL)
+  m_ScriptEngine(NULL),
+  m_Saver(new QcepSettingsSaver(this)),
+  m_InputDataDescriptor(m_Saver, this, "inputData", "", "Input Data Descriptor"),
+  m_OutputDataDescriptor(m_Saver, this, "outputData", "", "Output Data Descriptor"),
+  m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceData", "", "Output Slice Data Descriptor")
 {
+  QcepProperty::registerMetaTypes();
+
+  g_DebugLevel            = QSharedPointer<CctwqtDebugDictionary>(new CctwqtDebugDictionary());
+  gDocumentationDirectory = new QcepDocumentationDictionary();
+
+  g_Saver = m_Saver;
 }
 
 void CctwqtApplication::initialize()
@@ -52,9 +68,13 @@ void CctwqtApplication::initialize()
   m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
 
   m_Transform        = new CctwqtCrystalCoordinateTransform(this);
-  m_Transformer      = new CctwqtTransformer(m_InputData, m_OutputData, m_Transform, 1, 1, 1, this);
+  m_Transformer      = new CctwqtTransformer(m_InputData,
+                                             m_OutputData,
+                                             m_Transform, 1, 1, 1, this);
   m_SliceTransform   = new CctwqtCrystalCoordinateTransform(this);
-  m_SliceTransformer = new CctwqtTransformer(m_InputData, m_OutputSliceData, m_SliceTransform, 1, 1, 1, this);
+  m_SliceTransformer = new CctwqtTransformer(m_InputData,
+                                             m_OutputSliceData,
+                                             m_SliceTransform, 1, 1, 1, this);
   m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
 
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
@@ -68,13 +88,17 @@ void CctwqtApplication::initialize()
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
   m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
 
+  readSettings();
+
+  m_Saver->start();
+
   m_Window->show();
 }
 
-void CctwqtApplication::printMessage(QString msg)
+void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 {
   if (m_Window) {
-    m_Window->printMessage(msg);
+    m_Window->printMessage(msg, dt);
   }
 }
 
@@ -151,6 +175,8 @@ void CctwqtApplication::readSettings(QSettings *settings)
 void CctwqtApplication::writeSettings()
 {
   QSettings settings("xray.aps.anl.gov", "cctw");
+
+  printMessage(tr("Writing default settings"));
 
   writeSettings(&settings);
 }

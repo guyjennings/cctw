@@ -25,6 +25,10 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   connect(ui->m_TransformOneButton, SIGNAL(clicked()), this, SLOT(doTransformOne()));
   connect(ui->m_TransformSliceButton, SIGNAL(clicked()), this, SLOT(doTransformSlice()));
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
+
+  app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
+  app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
+  app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
@@ -32,10 +36,10 @@ CctwqtMainWindow::~CctwqtMainWindow()
   delete ui;
 }
 
-void CctwqtMainWindow::printMessage(QString msg)
+void CctwqtMainWindow::printMessage(QString msg, QDateTime dt)
 {
   if (QThread::currentThread() != thread()) {
-    QMetaObject::invokeMethod(this, "printMessage", Q_ARG(QString, msg));
+    QMetaObject::invokeMethod(this, "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
   } else {
     ui->m_OutputMessages->append(msg);
   }
