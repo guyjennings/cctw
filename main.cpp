@@ -8,12 +8,17 @@
 #include "cctwoutputchunkindex.h"
 
 #ifdef USE_QT
+#include "cctwqtdebug.h"
+#include "qcepdocumentationdictionary.h"
 #include "cctwqtapplication.h"
 #endif
 
 int main(int argc, char *argv[])
 {
 #ifdef USE_QT
+  g_DebugLevel            = QSharedPointer<CctwqtDebugDictionary>(new CctwqtDebugDictionary());
+  gDocumentationDirectory = new QcepDocumentationDictionary();
+
   CctwqtApplication *app = new CctwqtApplication(argc, argv);
 
 //  int appArgc = qApp->argc();

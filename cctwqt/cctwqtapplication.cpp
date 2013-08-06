@@ -8,7 +8,6 @@
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
 #include "qcepproperty.h"
-#include "qcepdocumentationdictionary.h"
 #include "cctwqtdebug.h"
 #include "qcepsettingssaver.h"
 
@@ -35,9 +34,6 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceData", "", "Output Slice Data Descriptor")
 {
   QcepProperty::registerMetaTypes();
-
-  g_DebugLevel            = QSharedPointer<CctwqtDebugDictionary>(new CctwqtDebugDictionary());
-  gDocumentationDirectory = new QcepDocumentationDictionary();
 
   g_Saver = m_Saver;
 }
