@@ -74,6 +74,9 @@ public:
 
   Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
   QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
+
+  Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
+  QCEP_BOOLEAN_PROPERTY(InverseAvailable)
 };
 
 extern QcepSettingsSaverPtr g_Saver;
