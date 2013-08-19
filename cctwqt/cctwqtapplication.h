@@ -74,6 +74,9 @@ public:
 
   Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
   QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
+
+  Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting)
+  QCEP_BOOLEAN_PROPERTY(Halting)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

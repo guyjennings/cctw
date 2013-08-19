@@ -26,6 +26,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   connect(ui->m_TransformSliceButton, SIGNAL(clicked()), this, SLOT(doTransformSlice()));
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
 
+  app->prop_Halting()->linkTo(ui->m_Halting);
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
   app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
   app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
@@ -41,7 +42,7 @@ void CctwqtMainWindow::printMessage(QString msg, QDateTime dt)
   if (QThread::currentThread() != thread()) {
     QMetaObject::invokeMethod(this, "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
   } else {
-    ui->m_OutputMessages->append(msg);
+    ui->m_OutputMessages->append(dt.toString("yyyy MMM dd hh:mm:ss.zzz: ")+msg);
   }
 }
 
@@ -118,6 +119,6 @@ void CctwqtMainWindow::doTransformSlice()
 
 void CctwqtMainWindow::doHalt()
 {
-
+  m_Application->set_Halting(true);
 }
 
