@@ -175,8 +175,96 @@
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="m_ActionLoadSettings"/>
+    <addaction name="m_ActionSaveSettings"/>
+    <addaction name="separator"/>
+    <addaction name="m_ActionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuTransform">
+    <property name="title">
+     <string>Transform</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuDependencies">
+    <property name="title">
+     <string>Dependencies</string>
+    </property>
+    <addaction name="m_ActionDependencies"/>
+    <addaction name="m_ActionLoadDependencies"/>
+    <addaction name="m_ActionSaveDependencies"/>
+    <addaction name="m_ActionReportDependencies"/>
+   </widget>
+   <widget class="QMenu" name="menuOther">
+    <property name="title">
+     <string>Other</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTransform"/>
+   <addaction name="menuDependencies"/>
+   <addaction name="menuOther"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="m_ActionSaveSettings">
+   <property name="text">
+    <string>Save Settings...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Settings in file</string>
+   </property>
+  </action>
+  <action name="m_ActionLoadSettings">
+   <property name="text">
+    <string>Load Settings...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Settings from file</string>
+   </property>
+  </action>
+  <action name="m_ActionQuit">
+   <property name="text">
+    <string>Quit...</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit from program</string>
+   </property>
+  </action>
+  <action name="m_ActionDependencies">
+   <property name="text">
+    <string>Calculate Dependencies</string>
+   </property>
+   <property name="toolTip">
+    <string>Calculate Dependencies</string>
+   </property>
+  </action>
+  <action name="m_ActionLoadDependencies">
+   <property name="text">
+    <string>Load Dependencies...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Dependencies from file</string>
+   </property>
+  </action>
+  <action name="m_ActionSaveDependencies">
+   <property name="text">
+    <string>Save Dependencies...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Dependencies to file...</string>
+   </property>
+  </action>
+  <action name="m_ActionReportDependencies">
+   <property name="text">
+    <string>Report Dependencies</string>
+   </property>
+   <property name="toolTip">
+    <string>Report on Dependencies</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

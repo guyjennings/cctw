@@ -25,6 +25,18 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   connect(ui->m_TransformOneButton, SIGNAL(clicked()), this, SLOT(doTransformOne()));
   connect(ui->m_TransformSliceButton, SIGNAL(clicked()), this, SLOT(doTransformSlice()));
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
+  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
+  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
+  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
+
+  connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
+  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
+  connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
+  connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), m_Application, SLOT(reportDependencies()));
+
+  connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
+  connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
+  connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(wantToQuit()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
@@ -123,3 +135,10 @@ void CctwqtMainWindow::doHalt()
   m_Application->set_Halting(true);
 }
 
+void CctwqtMainWindow::doSaveDependencies()
+{
+}
+
+void CctwqtMainWindow::doLoadDependencies()
+{
+}

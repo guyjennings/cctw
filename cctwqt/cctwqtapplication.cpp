@@ -10,6 +10,7 @@
 #include "qcepproperty.h"
 #include "cctwqtdebug.h"
 #include "qcepsettingssaver.h"
+#include <QtConcurrentRun>
 
 QcepSettingsSaverPtr g_Saver;
 
@@ -240,5 +241,164 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
   if (m_SliceTransformer) {
     m_SliceTransformer->writeSettings(settings, "sliceTransformer");
+  }
+}
+
+void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
+{
+  printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+
+  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  CctwIntVector3D chSize  = m_InputData->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  for (int z=0; z<chSize.z(); z++) {
+    for (int y=0; y<chSize.y(); y++) {
+      for (int x=0; x<chSize.x(); x++) {
+        CctwDoubleVector3D index = dblStart+CctwDoubleVector3D(x,y,z);
+
+        CctwDoubleVector3D coords = m_InputData->origin()+index*m_InputData->scale();
+
+        CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
+
+        CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
+
+        if (m_OutputData->contains(pixels)) {
+          CctwIntVector3D    opchunk  = m_OutputData->findChunkIndexContaining(xfmcoord);
+
+          m_InputData->addDependency(idx, opchunk);
+          m_OutputData->addDependency(opchunk, idx);
+        }
+      }
+    }
+  }
+
+  printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+}
+
+void CctwqtApplication::calculateDependencies()
+{
+  m_InputData->clearDependencies();
+  m_OutputData->clearDependencies();
+
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+//          QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx);
+          calculateChunkDependencies(idx);
+        }
+      }
+    }
+  }
+}
+
+void CctwqtApplication::saveDependencies(QString path)
+{
+}
+
+void CctwqtApplication::loadDependencies(QString path)
+{
+}
+
+void CctwqtApplication::reportDependencies()
+{
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+
+  printMessage(tr("Check mapping"));
+
+  for (int n=0; n<chunks.volume(); n++) {
+    if (get_Halting()) {
+      break;
+    } else {
+      CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
+      int nn = m_InputData->chunkNumberFromIndex(idx);
+
+      if (nn != n) {
+        printMessage(tr("Problem: %1 => [%2,%3,%4] => %5").arg(n).arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(nn));
+      }
+    }
+  }
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+          int n = m_InputData->chunkNumberFromIndex(idx);
+          CctwIntVector3D idx2 = m_InputData->chunkIndexFromNumber(n);
+
+          if (idx != idx2) {
+            printMessage(tr("Problem: [%1,%2,%3] => %4 => [%5,%6,%7]")
+                         .arg(idx.x()).arg(idx.y()).arg(idx.z())
+                         .arg(n)
+                         .arg(idx2.x()).arg(idx2.y()).arg(idx2.z()));
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("Example transformations"));
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+          CctwIntVector3D start = m_InputData->chunkStart(idx);
+          CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
+
+          CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
+
+          CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
+
+          CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
+          CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
+
+          int inchnk = m_InputData->chunkNumberFromIndex(ipchunk);
+          int opchnk = m_OutputData->chunkNumberFromIndex(opchunk);
+
+          printMessage(tr("Chunk:[%1](%2,%3,%4) => [%5](%6,%7,%8)")
+                       .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
+                       .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
+                       );
+       }
+      }
+    }
+  }
+
+  printMessage(tr("Input Data Dependencies"));
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          CctwqtDataChunk *chunk = m_InputData -> chunk(idx);
+
+          if (chunk) {
+            chunk->reportDependencies();
+          }
+        }
+      }
+    }
   }
 }

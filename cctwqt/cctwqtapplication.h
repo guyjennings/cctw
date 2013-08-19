@@ -36,6 +36,14 @@ public slots:
   void writeSettings(QString path);
   void readSettings(QString path);
 
+  void calculateDependencies();
+  void calculateChunkDependencies(CctwIntVector3D idx);
+
+  void saveDependencies(QString path);
+  void loadDependencies(QString path);
+
+  void reportDependencies();
+
 private slots:
   void onDebugChanged(int dbg);
 

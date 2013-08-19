@@ -36,6 +36,8 @@ public slots:
   void doTransformOne();
   void doTransformSlice();
   void doHalt();
+  void doSaveDependencies();
+  void doLoadDependencies();
 
 private:
   Ui::CctwqtMainWindow       *ui;

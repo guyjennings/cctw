@@ -12,16 +12,22 @@ class CctwqtDataChunk : public CctwqtObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataChunk(CctwChunkedDataInterface *data, CctwqtDataFrameManager *manager, QObject *parent);
+  explicit CctwqtDataChunk(CctwIntVector3D idx, CctwChunkedDataInterface *data, CctwqtDataFrameManager *manager, QObject *parent);
   
+  void clearDependencies();
+  void addDependency(CctwIntVector3D dep);
+  void reportDependencies();
+
 signals:
   
 public slots:
   
 private:
+  CctwIntVector3D                              m_ChunkIndex;
   CctwChunkedDataInterface                    *m_Data;
   CctwqtDataFrameManager                      *m_Manager;
   QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;
+  QVector< CctwIntVector3D >                   m_Dependencies;
 };
 
 #endif // CCTWQTDATACHUNK_H
