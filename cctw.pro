@@ -104,12 +104,12 @@ OTHER_FILES += Doxyfile
 
 QMAKE_EXTRA_TARGETS += dox
 
-dox.commands = "("
-dox.commands += cat $${PWD}/Doxyfile ;
-dox.commands += echo "PROJECT_NUMBER=$${VERSION}" ;
-dox.commands += echo "INPUT=\"$${PWD}\"" ;
-dox.commands += echo "INPUT+=\"$${PWD}\"/cctwqt/" ;
-dox.commands += echo "ALIASES=\"projectnumber=$${VERSION}\""
-dox.commands += ")" > Doxyfile.out ;
+dox.commands =  ( cat $${PWD}/Doxyfile ; \
+                  echo "PROJECT_NUMBER=$${VERSION}" ; \
+                  echo "INPUT=\"$${PWD}\"" ; \
+                  echo "INPUT+=\"$${PWD}\"/cctwqt/" ; \
+                  echo "ALIASES=\"projectnumber=$${VERSION}\"" \
+                ) > Doxyfile.out ;
 dox.commands += doxygen < Doxyfile.out -
+
 dox.depends = FORCE $${PWD}/Doxyfile
