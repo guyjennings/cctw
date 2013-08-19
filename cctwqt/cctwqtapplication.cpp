@@ -33,7 +33,8 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_InputDataDescriptor(m_Saver, this, "inputData", "", "Input Data Descriptor"),
   m_OutputDataDescriptor(m_Saver, this, "outputData", "", "Output Data Descriptor"),
   m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceData", "", "Output Slice Data Descriptor"),
-  m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress")
+  m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
+  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?")
 {
   QcepProperty::registerMetaTypes();
 

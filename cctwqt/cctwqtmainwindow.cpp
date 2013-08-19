@@ -30,6 +30,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
   app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
   app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
+  app->prop_InverseAvailable()->linkTo(ui->m_InverseAvailable);
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()

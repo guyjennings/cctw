@@ -77,6 +77,9 @@ public:
 
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting)
   QCEP_BOOLEAN_PROPERTY(Halting)
+
+  Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
+  QCEP_BOOLEAN_PROPERTY(InverseAvailable)
 };
 
 extern QcepSettingsSaverPtr g_Saver;
