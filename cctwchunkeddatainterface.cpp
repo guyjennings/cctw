@@ -30,6 +30,16 @@ CctwIntVector3D     CctwChunkedDataInterface::toPixel(CctwDoubleVector3D vec)
   return CctwIntVector3D(floor(pix.x()), floor(pix.y()), floor(pix.z()));
 }
 
+bool                CctwChunkedDataInterface::contains(CctwIntVector3D pixelCoord)
+{
+  return pixelCoord.x() >= 0 &&
+      pixelCoord.y() >= 0 &&
+      pixelCoord.z() >= 0 &&
+      pixelCoord.x() < m_Dimensions.x() &&
+      pixelCoord.y() < m_Dimensions.y() &&
+      pixelCoord.z() < m_Dimensions.z();
+}
+
 CctwIntVector3D     CctwChunkedDataInterface::chunkStart(CctwIntVector3D chunkIdx)
 {
   // Return pixel coords of start of chunk chunkIdx
@@ -54,4 +64,39 @@ CctwIntVector3D     CctwChunkedDataInterface::chunkIndex(CctwDoubleVector3D frac
 CctwIntVector3D     CctwChunkedDataInterface::chunkCount() const
 {
   return m_ChunkCount;
+}
+
+CctwIntVector3D     CctwChunkedDataInterface::findChunkIndexContaining(CctwDoubleVector3D coords)
+{
+  CctwIntVector3D pxlCoords = toPixel(coords);
+
+  return chunkIndex(pxlCoords);
+}
+
+int CctwChunkedDataInterface::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
+{
+  int xstride = 1;
+  int ystride = m_ChunkCount.x();
+  int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+
+  return chunkIdx.x()*xstride + chunkIdx.y()*ystride + chunkIdx.z()*zstride;
+}
+
+CctwIntVector3D CctwChunkedDataInterface::chunkIndexFromNumber(int n)
+{
+  int xstride = 1;
+  int ystride = m_ChunkCount.x();
+  int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+
+  int z = n / zstride;
+
+  n %= zstride;
+
+  int y = n / ystride;
+
+  n %= ystride;
+
+  int x = n / xstride;
+
+  return CctwIntVector3D(x,y,z);
 }
