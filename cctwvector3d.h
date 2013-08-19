@@ -26,6 +26,9 @@ public:
   CctwVector3D<T> operator*(const T val) const;
   CctwVector3D<T> operator/(const T val) const;
 
+  bool operator==(const CctwVector3D<T> &vec) const;
+  bool operator!=(const CctwVector3D<T> &vec) const;
+
   T length() const;
   T lengthSquared() const;
   T volume() const;

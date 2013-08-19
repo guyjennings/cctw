@@ -68,6 +68,18 @@ CctwVector3D<T> CctwVector3D<T>::operator/(const T val) const
 }
 
 template <typename T>
+bool CctwVector3D<T>::operator ==(const CctwVector3D<T> &vec) const
+{
+  return x()==vec.x() && y()==vec.y() && z()==vec.z();
+}
+
+template <typename T>
+bool CctwVector3D<T>::operator !=(const CctwVector3D<T> &vec) const
+{
+  return x()!=vec.x() || y()!=vec.y() || z()!=vec.z();
+}
+
+template <typename T>
 CctwVector3D<T> CctwVector3D<T>::min(const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>((x()<vec.x()?x():vec.x()),
