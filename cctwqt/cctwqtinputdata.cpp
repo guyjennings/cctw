@@ -2,7 +2,7 @@
 
 CctwqtInputData::CctwqtInputData(CctwqtDataFrameManager *manager, QObject *parent) :
   CctwqtChunkedData(this, manager, parent),
-  CctwInputDataInterface(CctwIntVector3D(100,100,100), CctwIntVector3D(10, 10, 10), CctwDoubleVector3D(-5,-5,-5), CctwDoubleVector3D(0.1,0.1,0.1))
+  CctwInputDataInterface(CctwIntVector3D(2048,2048,2048), CctwIntVector3D(128, 128, 128), CctwDoubleVector3D(-5,-5,-5), CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0))
 {
 }
 
