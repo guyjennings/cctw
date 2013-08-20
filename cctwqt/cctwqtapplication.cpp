@@ -63,18 +63,21 @@ void CctwqtApplication::initialize()
 
   m_InputDataManager        = m_InputDataManagerThread->manager();
   m_InputData               = new CctwqtInputData(m_InputDataManager, this);
+  m_InputData               -> allocateChunks();
 
   m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
   m_OutputDataManagerThread -> start();
 
   m_OutputDataManager       = m_OutputDataManagerThread->manager();
   m_OutputData              = new CctwqtOutputData(m_OutputDataManager, this);
+  m_OutputData              -> allocateChunks();
 
   m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
   m_OutputSliceDataManagerThread  -> start();
 
   m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
   m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
+  m_OutputSliceData               ->initialize();
 
   m_Transform        = new CctwqtCrystalCoordinateTransform(this);
   m_Transformer      = new CctwqtTransformer(m_InputData,
@@ -263,7 +266,7 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 
         CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
 
-        if (m_OutputData->contains(pixels)) {
+        if (m_OutputData->containsPixel(pixels)) {
           CctwIntVector3D    opchunk  = m_OutputData->findChunkIndexContaining(xfmcoord);
 
           m_InputData->addDependency(idx, opchunk);
@@ -364,8 +367,12 @@ void CctwqtApplication::reportDependencies()
           CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
 
           CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
-
           CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
+
+          CctwIntVector3D crdpixel = m_InputData->toPixel(coords);
+          CctwIntVector3D xfmpixel = m_OutputData->toPixel(xfmcoord);
+
+          bool ok = m_OutputData->containsPixel(xfmpixel);
 
           CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
           CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
@@ -377,7 +384,12 @@ void CctwqtApplication::reportDependencies()
                        .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
                        .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
                        );
-       }
+
+          printMessage(tr("Pixel:[%1,%2,%3] => [%4,%5,%6], ok:%7")
+                       .arg(crdpixel.x()).arg(crdpixel.y()).arg(crdpixel.z())
+                       .arg(xfmpixel.x()).arg(xfmpixel.y()).arg(xfmpixel.z()).arg(ok)
+                       );
+        }
       }
     }
   }

@@ -30,7 +30,7 @@ CctwIntVector3D     CctwChunkedDataInterface::toPixel(CctwDoubleVector3D vec)
   return CctwIntVector3D(floor(pix.x()), floor(pix.y()), floor(pix.z()));
 }
 
-bool                CctwChunkedDataInterface::contains(CctwIntVector3D pixelCoord)
+bool                CctwChunkedDataInterface::containsPixel(CctwIntVector3D pixelCoord)
 {
   return pixelCoord.x() >= 0 &&
       pixelCoord.y() >= 0 &&
@@ -73,30 +73,45 @@ CctwIntVector3D     CctwChunkedDataInterface::findChunkIndexContaining(CctwDoubl
   return chunkIndex(pxlCoords);
 }
 
+bool CctwChunkedDataInterface::containsChunk(CctwIntVector3D chunkIdx)
+{
+  return chunkIdx.x()>=0 && chunkIdx.x()<m_ChunkCount.x() &&
+         chunkIdx.y()>=0 && chunkIdx.y()<m_ChunkCount.y() &&
+         chunkIdx.z()>=0 && chunkIdx.z()<m_ChunkCount.z();
+}
+
 int CctwChunkedDataInterface::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
 {
-  int xstride = 1;
-  int ystride = m_ChunkCount.x();
-  int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+  if (containsChunk(chunkIdx)) {
+    int xstride = 1;
+    int ystride = m_ChunkCount.x();
+    int zstride = m_ChunkCount.x()*m_ChunkCount.y();
 
-  return chunkIdx.x()*xstride + chunkIdx.y()*ystride + chunkIdx.z()*zstride;
+    return chunkIdx.x()*xstride + chunkIdx.y()*ystride + chunkIdx.z()*zstride;
+  } else {
+    return -1;
+  }
 }
 
 CctwIntVector3D CctwChunkedDataInterface::chunkIndexFromNumber(int n)
 {
-  int xstride = 1;
-  int ystride = m_ChunkCount.x();
-  int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+  if (n>=0 && n<m_ChunkCount.volume()) {
+    int xstride = 1;
+    int ystride = m_ChunkCount.x();
+    int zstride = m_ChunkCount.x()*m_ChunkCount.y();
 
-  int z = n / zstride;
+    int z = n / zstride;
 
-  n %= zstride;
+    n %= zstride;
 
-  int y = n / ystride;
+    int y = n / ystride;
 
-  n %= ystride;
+    n %= ystride;
 
-  int x = n / xstride;
+    int x = n / xstride;
 
-  return CctwIntVector3D(x,y,z);
+    return CctwIntVector3D(x,y,z);
+  } else {
+    return CctwIntVector3D(-1,-1,-1);
+  }
 }

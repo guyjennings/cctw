@@ -12,7 +12,8 @@ class CctwqtChunkedData : public CctwqtObject
   Q_OBJECT
 public:
   explicit CctwqtChunkedData(CctwChunkedDataInterface *interface, CctwqtDataFrameManager *manager, QObject *parent = 0);
-  
+  void allocateChunks();
+
 signals:
   
 public slots:
