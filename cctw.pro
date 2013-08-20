@@ -115,3 +115,7 @@ dox.commands =  ( cat $${PWD}/Doxyfile ; \
 dox.commands += doxygen < Doxyfile.out -
 
 dox.depends = FORCE $${PWD}/Doxyfile
+
+QMAKE_EXTRA_TARGETS += upload-dox
+
+upload-dox.commands = rsync -e ssh -av --del html/ guyjennings,$${TARGET}@web.sourceforge.net:htdocs/
