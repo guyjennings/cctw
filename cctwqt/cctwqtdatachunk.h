@@ -7,6 +7,7 @@
 #include "cctwqtdataframe.h"
 #include "cctwchunkeddatainterface.h"
 #include "cctwqtdataframemanager.h"
+#include <QMutex>
 
 class CctwqtDataChunk : public CctwqtObject
 {
@@ -28,6 +29,7 @@ private:
   CctwqtDataFrameManager                      *m_Manager;
   QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;
   QVector< CctwIntVector3D >                   m_Dependencies;
+  QMutex                                       m_DependenciesLock;
 };
 
 #endif // CCTWQTDATACHUNK_H

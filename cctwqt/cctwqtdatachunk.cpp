@@ -13,11 +13,15 @@ CctwqtDataChunk::CctwqtDataChunk(CctwIntVector3D idx, CctwChunkedDataInterface *
 
 void CctwqtDataChunk::clearDependencies()
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   m_Dependencies.resize(0);
 }
 
 void CctwqtDataChunk::addDependency(CctwIntVector3D dep)
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   if (!m_Dependencies.contains(dep)) {
     printMessage(tr("Added dependency from chunk [%1,%2,%3] to chunk [%4,%5,%6]")
                  .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
@@ -29,6 +33,8 @@ void CctwqtDataChunk::addDependency(CctwIntVector3D dep)
 
 void CctwqtDataChunk::reportDependencies()
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   if (m_Dependencies.count()) {
     foreach (CctwIntVector3D dep, m_Dependencies) {
       printMessage(tr("[%1,%2,%3] -> [%4,%5,%6]")
