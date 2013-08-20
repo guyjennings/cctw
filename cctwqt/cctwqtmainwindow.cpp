@@ -43,6 +43,9 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
   app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
   app->prop_InverseAvailable()->linkTo(ui->m_InverseAvailable);
+
+  connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
+  connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
@@ -141,4 +144,13 @@ void CctwqtMainWindow::doSaveDependencies()
 
 void CctwqtMainWindow::doLoadDependencies()
 {
+}
+
+void CctwqtMainWindow::onProgressUpdate()
+{
+  int prog = m_Application->get_Progress();
+  int lim  = m_Application->get_ProgressLimit();
+
+  ui->m_ProgressBar->setMaximum(lim);
+  ui->m_ProgressBar->setValue(prog);
 }

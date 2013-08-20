@@ -35,7 +35,9 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_OutputDataDescriptor(m_Saver, this, "outputData", "", "Output Data Descriptor"),
   m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceData", "", "Output Slice Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
-  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?")
+  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
+  m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
+  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 0, "Progress limit")
 {
   QcepProperty::registerMetaTypes();
 
@@ -277,6 +279,8 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
   }
 
   printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+
+  prop_Progress()->incValue(1);
 }
 
 void CctwqtApplication::calculateDependencies()
@@ -287,6 +291,7 @@ void CctwqtApplication::calculateDependencies()
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
   set_Halting(false);
+  set_ProgressLimit(chunks.volume());
 
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
@@ -296,8 +301,8 @@ void CctwqtApplication::calculateDependencies()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-//          QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx);
-          calculateChunkDependencies(idx);
+          QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx);
+//          calculateChunkDependencies(idx);
         }
       }
     }

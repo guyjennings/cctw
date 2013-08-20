@@ -83,11 +83,17 @@ public:
   Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
   QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
 
-  Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting)
+  Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)
 
   Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
   QCEP_BOOLEAN_PROPERTY(InverseAvailable)
+
+  Q_PROPERTY(int progress READ get_Progress WRITE set_Progress STORED false)
+  QCEP_INTEGER_PROPERTY(Progress)
+
+  Q_PROPERTY(int progressLimit READ get_ProgressLimit WRITE set_ProgressLimit STORED false)
+  QCEP_INTEGER_PROPERTY(ProgressLimit)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

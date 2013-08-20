@@ -38,6 +38,7 @@ public slots:
   void doHalt();
   void doSaveDependencies();
   void doLoadDependencies();
+  void onProgressUpdate();
 
 private:
   Ui::CctwqtMainWindow       *ui;
