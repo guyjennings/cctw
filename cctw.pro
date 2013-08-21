@@ -131,60 +131,9 @@ tarball.depends = FORCE
 tarball.commands += \
       rm -rf $${TARGET}-$${VERSION} ; \
       $(MKDIR) $${TARGET}-$${VERSION} && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/macx && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/win32 && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiff-3.8.2 && \
-      $(MKDIR) $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiff-3.8.2/libtiff && \
-      $(MKDIR) $${TARGET}-$${VERSION}/maint && \
-      $(MKDIR) $${TARGET}-$${VERSION}/swift && \
-      $(MKDIR) $${TARGET}-$${VERSION}/swift/tests && \
-
 
 tarball.commands += \
-      $(COPY_FILE) $${PWD}/{Doxyfile,*.{cpp,h,pro,in,txt,sh,ods,ac}} -t $${TARGET}-$${VERSION}/ &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/* \
-                      -t $${TARGET}-$${VERSION}/cctwqt &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/tiffconfig/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/tiffconfig/macx/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/macx &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/tiffconfig/win32/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/win32 &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/tiffconfig/tiff-3.8.2/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/tiff-3.8.2 &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/cctwqt/qceplib-code/tiffconfig/tiff-3.8.2/libtiff/*.{cpp,h} \
-                      -t $${TARGET}-$${VERSION}/cctwqt/qceplib-code/tiffconfig/tiff-3.8.2/libtiff &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/maint/* \
-                      -t $${TARGET}-$${VERSION}/maint/ &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/swift/* \
-                      -t $${TARGET}-$${VERSION}/swift/ &&
-
-tarball.commands += \
-      $(COPY_FILE)  $${PWD}/swift/tests/* \
-                      -t $${TARGET}-$${VERSION}/swift/tests/ &&
+      $(COPY_FILE) -R $${PWD}/* -t $${TARGET}-$${VERSION}/ &&
 
 tarball.commands += \
   tar -czf $${TARGET}-$${VERSION}.tar.gz $${TARGET}-$${VERSION} ; rm -rf $${TARGET}-$${VERSION}
