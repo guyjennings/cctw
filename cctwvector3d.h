@@ -16,18 +16,22 @@ public:
   T& operator () (int i) { return m_Vector[i]; }
   const T& operator() (int i) const { return m_Vector[i]; }
 
-  CctwVector3D<T> operator+(const CctwVector3D<T> &vec) const;
-  CctwVector3D<T> operator-(const CctwVector3D<T> &vec) const;
-  CctwVector3D<T> operator*(const CctwVector3D<T> &vec) const;
-  CctwVector3D<T> operator/(const CctwVector3D<T> &vec) const;
+  CctwVector3D<T> operator + (const CctwVector3D<T> &vec) const;
+  CctwVector3D<T> operator - (const CctwVector3D<T> &vec) const;
+  CctwVector3D<T> operator * (const CctwVector3D<T> &vec) const;
+  CctwVector3D<T> operator / (const CctwVector3D<T> &vec) const;
 
-  CctwVector3D<T> operator+(const T val) const;
-  CctwVector3D<T> operator-(const T val) const;
-  CctwVector3D<T> operator*(const T val) const;
-  CctwVector3D<T> operator/(const T val) const;
+  CctwVector3D<T> operator + (const T val) const;
+  CctwVector3D<T> operator - (const T val) const;
+  CctwVector3D<T> operator * (const T val) const;
+  CctwVector3D<T> operator / (const T val) const;
 
-  bool operator==(const CctwVector3D<T> &vec) const;
-  bool operator!=(const CctwVector3D<T> &vec) const;
+  bool operator == (const CctwVector3D<T> &vec) const;
+  bool operator != (const CctwVector3D<T> &vec) const;
+  bool operator >  (const CctwVector3D<T>  &vec) const;
+  bool operator <  (const CctwVector3D<T>  &vec) const;
+  bool operator >= (const CctwVector3D<T>  &vec) const;
+  bool operator <= (const CctwVector3D<T>  &vec) const;
 
   T length() const;
   T lengthSquared() const;

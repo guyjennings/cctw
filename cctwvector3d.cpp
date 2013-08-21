@@ -18,25 +18,25 @@ CctwVector3D<T>::CctwVector3D()
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator+(const CctwVector3D<T> &vec) const
+CctwVector3D<T> CctwVector3D<T>::operator + (const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>(x()+vec.x(), y()+vec.y(), z()+vec.z());
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator-(const CctwVector3D<T> &vec) const
+CctwVector3D<T> CctwVector3D<T>::operator - (const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>(x()-vec.x(), y()-vec.y(), z()-vec.z());
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator*(const CctwVector3D<T> &vec) const
+CctwVector3D<T> CctwVector3D<T>::operator * (const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>(x()*vec.x(), y()*vec.y(), z()*vec.z());
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator/(const CctwVector3D<T> &vec) const
+CctwVector3D<T> CctwVector3D<T>::operator / (const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>(floor((double)x()/(double)vec.x()),
                          floor((double)y()/(double)vec.y()),
@@ -44,39 +44,119 @@ CctwVector3D<T> CctwVector3D<T>::operator/(const CctwVector3D<T> &vec) const
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator+(const T val) const
+CctwVector3D<T> CctwVector3D<T>::operator + (const T val) const
 {
   return CctwVector3D<T>(x()+val, y()+val, z()+val);
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator-(const T val) const
+CctwVector3D<T> CctwVector3D<T>::operator - (const T val) const
 {
   return CctwVector3D<T>(x()-val, y()-val, z()-val);
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator*(const T val) const
+CctwVector3D<T> CctwVector3D<T>::operator * (const T val) const
 {
   return CctwVector3D<T>(x()*val, y()*val, z()*val);
 }
 
 template <typename T>
-CctwVector3D<T> CctwVector3D<T>::operator/(const T val) const
+CctwVector3D<T> CctwVector3D<T>::operator / (const T val) const
 {
   return CctwVector3D<T>(x()/val, y()/val, z()/val);
 }
 
 template <typename T>
-bool CctwVector3D<T>::operator ==(const CctwVector3D<T> &vec) const
+bool CctwVector3D<T>::operator == (const CctwVector3D<T> &vec) const
 {
   return x()==vec.x() && y()==vec.y() && z()==vec.z();
 }
 
 template <typename T>
-bool CctwVector3D<T>::operator !=(const CctwVector3D<T> &vec) const
+bool CctwVector3D<T>::operator != (const CctwVector3D<T> &vec) const
 {
   return x()!=vec.x() || y()!=vec.y() || z()!=vec.z();
+}
+
+template <typename T>
+bool CctwVector3D<T>::operator > (const CctwVector3D<T> &vec) const
+{
+  if (z() > vec.z()) {
+    return true;
+  } else if (z() < vec.z()) {
+    return false;
+  } else if (y() > vec.y()) {
+    return true;
+  } else if (y() < vec.y()) {
+    return false;
+  } else if (x() > vec.x()) {
+    return true;
+  } else if (x() < vec.x()) {
+    return false;
+  } else {
+    return false;
+  }
+}
+
+template <typename T>
+bool CctwVector3D<T>::operator >= (const CctwVector3D<T> &vec) const
+{
+  if (z() > vec.z()) {
+    return true;
+  } else if (z() < vec.z()) {
+    return false;
+  } else if (y() > vec.y()) {
+    return true;
+  } else if (y() < vec.y()) {
+    return false;
+  } else if (x() > vec.x()) {
+    return true;
+  } else if (x() < vec.x()) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+template <typename T>
+bool CctwVector3D<T>::operator < (const CctwVector3D<T> &vec) const
+{
+  if (z() < vec.z()) {
+    return true;
+  } else if (z() > vec.z()) {
+    return false;
+  } else if (y() < vec.y()) {
+    return true;
+  } else if (y() > vec.y()) {
+    return false;
+  } else if (x() < vec.x()) {
+    return true;
+  } else if (x() > vec.x()) {
+    return false;
+  } else {
+    return false;
+  }
+}
+
+template <typename T>
+bool CctwVector3D<T>::operator <= (const CctwVector3D<T> &vec) const
+{
+  if (z() < vec.z()) {
+    return true;
+  } else if (z() > vec.z()) {
+    return false;
+  } else if (y() < vec.y()) {
+    return true;
+  } else if (y() > vec.y()) {
+    return false;
+  } else if (x() < vec.x()) {
+    return true;
+  } else if (x() > vec.x()) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 template <typename T>
