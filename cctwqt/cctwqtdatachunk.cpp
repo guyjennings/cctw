@@ -36,6 +36,8 @@ void CctwqtDataChunk::reportDependencies()
   QMutexLocker lock(&m_DependenciesLock);
 
   if (m_Dependencies.count()) {
+    qSort(m_Dependencies.begin(), m_Dependencies.end());
+
     foreach (CctwIntVector3D dep, m_Dependencies) {
       printMessage(tr("[%1,%2,%3] -> [%4,%5,%6]")
                    .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
