@@ -133,7 +133,7 @@ tarball.commands += \
       $(MKDIR) $${TARGET}-$${VERSION} && \
 
 tarball.commands += \
-      $(COPY_FILE) -R $${PWD}/* -t $${TARGET}-$${VERSION}/ &&
+      $(COPY_FILE) -R $${PWD}/* $${TARGET}-$${VERSION}/ &&
 
 tarball.commands += \
   tar -czf $${TARGET}-$${VERSION}.tar.gz $${TARGET}-$${VERSION} ; rm -rf $${TARGET}-$${VERSION}
