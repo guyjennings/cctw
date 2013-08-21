@@ -2,6 +2,7 @@
 #include "ui_cctwqtmainwindow.h"
 #include <QLineEdit>
 #include <QThread>
+#include <QFileDialog>
 
 CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -140,10 +141,22 @@ void CctwqtMainWindow::doHalt()
 
 void CctwqtMainWindow::doSaveDependencies()
 {
+  QString path = QFileDialog::getSaveFileName(this, "Save Dependencies in...",
+                                              m_Application->get_DependenciesPath());
+
+  if (path.length()) {
+    m_Application->saveDependencies(path);
+  }
 }
 
 void CctwqtMainWindow::doLoadDependencies()
 {
+  QString path = QFileDialog::getOpenFileName(this, "Load Dependencies from...",
+                                              m_Application->get_DependenciesPath());
+
+  if (path.length()) {
+    m_Application->loadDependencies(path);
+  }
 }
 
 void CctwqtMainWindow::onProgressUpdate()

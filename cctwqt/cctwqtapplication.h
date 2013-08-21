@@ -94,6 +94,9 @@ public:
 
   Q_PROPERTY(int progressLimit READ get_ProgressLimit WRITE set_ProgressLimit STORED false)
   QCEP_INTEGER_PROPERTY(ProgressLimit)
+
+  Q_PROPERTY(QString dependenciesPath READ get_DependenciesPath WRITE set_DependenciesPath)
+  QCEP_STRING_PROPERTY(DependenciesPath)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

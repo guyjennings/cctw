@@ -11,6 +11,7 @@
 #include "cctwqtdebug.h"
 #include "qcepsettingssaver.h"
 #include <QtConcurrentRun>
+#include <QFile>
 
 QcepSettingsSaverPtr g_Saver;
 
@@ -37,7 +38,8 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
-  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 0, "Progress limit")
+  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 0, "Progress limit"),
+  m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in")
 {
   QcepProperty::registerMetaTypes();
 
@@ -291,6 +293,7 @@ void CctwqtApplication::calculateDependencies()
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
   set_Halting(false);
+  set_Progress(0);
   set_ProgressLimit(chunks.volume());
 
   for (int z=0; z<chunks.z(); z++) {
@@ -311,10 +314,52 @@ void CctwqtApplication::calculateDependencies()
 
 void CctwqtApplication::saveDependencies(QString path)
 {
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  QFile aFile;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          prop_Progress()->incValue(1);
+        }
+      }
+    }
+  }
 }
 
 void CctwqtApplication::loadDependencies(QString path)
 {
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  QFile aFile;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          prop_Progress()->incValue(1);
+        }
+      }
+    }
+  }
 }
 
 void CctwqtApplication::reportDependencies()
