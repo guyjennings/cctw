@@ -102,11 +102,13 @@ FORMS += \
     cctwqt/cctwqttransformonedialog.ui \
     cctwqt/cctwqtsetupslicedialog.ui
 
-OTHER_FILES += Doxyfile
+OTHER_FILES += Doxyfile \
+    cctw.dox
 
 QMAKE_EXTRA_TARGETS += dox
 
 dox.commands =  ( cat $${PWD}/Doxyfile ; \
+                  echo "PROJECT_NAME=\"$${TARGET}\"" ; \
                   echo "PROJECT_NUMBER=$${VERSION}" ; \
                   echo "INPUT=\"$${PWD}\"" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwqt/" ; \
@@ -118,4 +120,4 @@ dox.depends = FORCE $${PWD}/Doxyfile
 
 QMAKE_EXTRA_TARGETS += upload-dox
 
-upload-dox.commands = rsync -e ssh -av --del html/ guyjennings,$${TARGET}@web.sourceforge.net:htdocs/
+upload-dox.commands = rsync -e ssh -av --del dox/html/ guyjennings,$${TARGET}@web.sourceforge.net:htdocs/

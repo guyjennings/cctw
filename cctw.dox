@@ -1,0 +1,17 @@
+/*!
+\mainpage CCTW - Crystal Coordinate Transformation Workflow
+
+Version \projectnumber
+
+\author Guy Jennings
+\author Structural Science Group
+\author Advanced Photon Source
+\author Argonne National Laboratory
+\author jennings at anl.gov
+
+CCTW is a program to transform stacks of rotational X-ray diffraction images into q-space
+
+Downloads and more information are available from the CCTW developer page
+<a href="https://sourceforge.net/projects/cctw">https://sourceforge.net/projects/cctw</a>
+
+*/
