@@ -107,7 +107,12 @@ FORMS += \
     cctwqt/cctwqtsetupslicedialog.ui
 
 OTHER_FILES += Doxyfile \
-    cctw.dox
+    cctw.dox \
+    doc/Doxyfile \
+    doc/findphi.nb \
+    doc/pznpt4_march2007.txt \
+    doc/transformtest.f \
+    doc/transformtools.f
 
 QMAKE_EXTRA_TARGETS += dox
 
