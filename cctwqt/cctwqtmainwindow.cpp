@@ -3,6 +3,8 @@
 #include <QLineEdit>
 #include <QThread>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -37,7 +39,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
 
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
-  connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(wantToQuit()));
+  connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
@@ -52,6 +54,29 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
 CctwqtMainWindow::~CctwqtMainWindow()
 {
   delete ui;
+}
+
+void CctwqtMainWindow::closeEvent ( QCloseEvent * event )
+{
+  if (wantToClose()) {
+    event -> accept();
+  } else {
+    event -> ignore();
+  }
+}
+
+void CctwqtMainWindow::possiblyClose()
+{
+  close();
+}
+
+bool CctwqtMainWindow::wantToClose()
+{
+  THREAD_CHECK;
+
+  return QMessageBox::question(this, tr("Really Close?"),
+                               tr("Do you really want to close the window?"),
+                               QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
 }
 
 void CctwqtMainWindow::printMessage(QString msg, QDateTime dt)
@@ -137,6 +162,26 @@ void CctwqtMainWindow::doTransformSlice()
 void CctwqtMainWindow::doHalt()
 {
   m_Application->set_Halting(true);
+}
+
+void CctwqtMainWindow::doSaveSettings()
+{
+  QString path = QFileDialog::getSaveFileName(this, "Save Settings in...",
+                                              m_Application->get_SettingsPath());
+
+  if (path.length()) {
+    m_Application->writeSettings(path);
+  }
+}
+
+void CctwqtMainWindow::doLoadSettings()
+{
+  QString path = QFileDialog::getOpenFileName(this, "Load Settings from...",
+                                              m_Application->get_SettingsPath());
+
+  if (path.length()) {
+    m_Application->readSettings(path);
+  }
 }
 
 void CctwqtMainWindow::doSaveDependencies()

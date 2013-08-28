@@ -45,6 +45,8 @@ public slots:
 
   void reportDependencies();
 
+  void doAboutToQuit();
+
 private slots:
   void onDebugChanged(int dbg);
 
@@ -99,6 +101,9 @@ public:
 
   Q_PROPERTY(QString dependenciesPath READ get_DependenciesPath WRITE set_DependenciesPath)
   QCEP_STRING_PROPERTY(DependenciesPath)
+
+  Q_PROPERTY(QString settingsPath READ get_SettingsPath WRITE set_SettingsPath)
+  QCEP_STRING_PROPERTY(SettingsPath)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

@@ -40,13 +40,16 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 0, "Progress limit"),
-  m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in")
+  m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
+  m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in")
 {
   QcepProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
 
   connect(prop_Debug(), SIGNAL(valueChanged(int,int)), this, SLOT(onDebugChanged(int)));
+
+  connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
 }
 
 void CctwqtApplication::onDebugChanged(int dbg)
@@ -118,6 +121,11 @@ void CctwqtApplication::initialize()
   m_Window->show();
 }
 
+void CctwqtApplication::doAboutToQuit()
+{
+  writeSettings();
+}
+
 void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 {
   if (m_Window) {
@@ -148,6 +156,8 @@ void CctwqtApplication::readSettings(QString path)
   printMessage(tr("Reading settings from %1").arg(path));
 
   readSettings(&settings);
+
+  set_SettingsPath(path);
 }
 
 void CctwqtApplication::readSettings(QSettings *settings)
@@ -213,6 +223,8 @@ void CctwqtApplication::writeSettings(QString path)
   QSettings settings(path, QSettings::IniFormat);
 
   printMessage(tr("Writing settings to %1").arg(path));
+
+  set_SettingsPath(path);
 
   writeSettings(&settings);
 }

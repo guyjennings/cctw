@@ -36,9 +36,17 @@ public slots:
   void doTransformOne();
   void doTransformSlice();
   void doHalt();
+  void doLoadSettings();
+  void doSaveSettings();
   void doSaveDependencies();
   void doLoadDependencies();
   void onProgressUpdate();
+
+  void possiblyClose();
+
+private:
+  bool wantToClose();
+  void closeEvent (QCloseEvent * event);
 
 private:
   Ui::CctwqtMainWindow       *ui;
