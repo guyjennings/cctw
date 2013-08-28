@@ -112,7 +112,8 @@ OTHER_FILES += Doxyfile \
     doc/findphi.nb \
     doc/pznpt4_march2007.txt \
     doc/transformtest.f \
-    doc/transformtools.f
+    doc/transformtools.f \
+    doc/standards.doc
 
 QMAKE_EXTRA_TARGETS += dox
 
