@@ -17,10 +17,10 @@ void CctwqtObject::printMessage(QString msg, QDateTime dt)
 
 void CctwqtObject::writeSettings(QSettings *set, QString section)
 {
-  QcepProperty::writeSettings(this, &staticMetaObject, section, set);
+  QcepProperty::writeSettings(this, metaObject(), section, set);
 }
 
 void CctwqtObject::readSettings(QSettings *set, QString section)
 {
-  QcepProperty::readSettings(this, &staticMetaObject, section, set);
+  QcepProperty::readSettings(this, metaObject(), section, set);
 }
