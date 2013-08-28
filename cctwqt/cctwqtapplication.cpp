@@ -30,6 +30,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_SliceTransform(NULL),
   m_SliceTransformer(NULL),
   m_ScriptEngine(NULL),
+  m_TransformTest(NULL),
   m_Saver(new QcepSettingsSaver(this)),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_InputDataDescriptor(m_Saver, this, "inputData", "", "Input Data Descriptor"),
@@ -91,6 +92,9 @@ void CctwqtApplication::initialize()
   m_SliceTransformer = new CctwqtTransformer(m_InputData,
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, this);
+
+  m_TransformTest    = new CctwTransformTest(this, NULL);
+
   m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
 
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
@@ -103,6 +107,9 @@ void CctwqtApplication::initialize()
   m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
   m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
+  m_ScriptEngine->globalObject().setProperty("test", m_ScriptEngine->newQObject(m_TransformTest));
+  m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
+  m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
 
   readSettings();
 
@@ -186,6 +193,10 @@ void CctwqtApplication::readSettings(QSettings *settings)
   if (m_SliceTransformer) {
     m_SliceTransformer->readSettings(settings, "sliceTransformer");
   }
+
+  if (m_TransformTest) {
+    m_TransformTest->readSettings(settings, "test");
+  }
 }
 
 void CctwqtApplication::writeSettings()
@@ -248,6 +259,10 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
   if (m_SliceTransformer) {
     m_SliceTransformer->writeSettings(settings, "sliceTransformer");
+  }
+
+  if (m_TransformTest) {
+    m_TransformTest->writeSettings(settings, "test");
   }
 }
 

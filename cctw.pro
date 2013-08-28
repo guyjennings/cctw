@@ -56,7 +56,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtcrystalcoordinatetransform.cpp \
     cctwqt/cctwqtobject.cpp \
     cctwqt/cctwqtdebug.cpp \
-    cctwqt/cctwqtchunkeddata.cpp
+    cctwqt/cctwqtchunkeddata.cpp \
+    cctwqt/cctwtransformtest.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -94,7 +95,8 @@ HEADERS += \
     cctwqt/cctwqtcrystalcoordinatetransform.h \
     cctwqt/cctwqtobject.h \
     cctwqt/cctwqtdebug.h \
-    cctwqt/cctwqtchunkeddata.h
+    cctwqt/cctwqtchunkeddata.h \
+    cctwqt/cctwtransformtest.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \

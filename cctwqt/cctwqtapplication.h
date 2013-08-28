@@ -14,6 +14,7 @@
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
+#include "cctwtransformtest.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -68,6 +69,7 @@ private:
   CctwqtCrystalCoordinateTransform  *m_SliceTransform;
   CctwqtTransformer                 *m_SliceTransformer;
   CctwqtScriptEngine                *m_ScriptEngine;
+  CctwTransformTest                 *m_TransformTest;
   QcepSettingsSaverPtr               m_Saver;
 
 public:
