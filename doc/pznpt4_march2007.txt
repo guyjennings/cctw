@@ -1,0 +1,87 @@
+frame number (assuming only one run)
+5
+
+column number
+427
+
+pixelsize (mm)
+163
+
+framesize
+2048
+
+pixelsize (mm)
+0.080567
+
+wavelength (Angstroms)
+0.153870
+
+dist (sample to detector when instrument is perfecly aligned and zeroed, mm)
+365.970000
+
+unitcell
+4.040000 4.040000 4.040000 1.570796 1.570796 1.570796 
+
+ubmat
+-0.001955 0.177126 -0.172890 
+-0.247516 -0.000885 0.001892 
+0.000736 0.172899 0.177127 
+
+det0 (X and Y of direct beam when instrument is perfectly aligned and zeroed, pixels)
+1041.266200 989.624800
+
+xtrans (mm, in frame of goniometer head)
+0.005277 -0.006373 0.034958 
+
+orienterrors {detpitch,detroll,detyaw,gonpitch} (radians)
+-0.014305 -0.008063 -0.000361 0.000000 
+
+twothetacorrection (radians, zero, not refined)
+0.000000
+
+twothetanom (radians)
+0.000000
+
+twothetaangle (radians) = twothetanom + twothetacorrection
+0.000000
+
+omegacorrection (radians)
+0.003777
+
+omegastep (radians)
+0.008727
+
+omeganom (radians) = (frame-0.5)*omegstep (assumes a nice frame sequence)
+0.039270
+
+omegaangle (radians) = omeganom + omegacorrection
+0.043047
+
+chicorrection (radians, zero, not refined)
+-0.005531
+
+chinom (radians)
+0.000000
+
+chiangle (radians) = chinom + chicorrection
+-0.005531
+
+phicorrection (radians, zero, not refined)
+0.000000
+
+phinom (radians)
+0.000000
+
+phiangle (radians) = phinom + phicorrection
+0.000000
+
+gridorigin (reciprocal lattice units)
+1.500000 -0.500000 0.000000 
+
+gridbasis (each column is a grid vector)
+1.000000 0.000000 0.000000 
+0.000000 0.500000 0.500000 
+0.000000 0.500000 -0.500000 
+
+griddim (each column is a grid vector)
+101 71 71 
