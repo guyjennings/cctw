@@ -44,12 +44,19 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in")
 {
   QcepProperty::registerMetaTypes();
+  QcepMatrix3x3Property::registerMetaTypes();
+  QcepVector3DProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
 
   connect(prop_Debug(), SIGNAL(valueChanged(int,int)), this, SLOT(onDebugChanged(int)));
 
   connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
+}
+
+QcepSettingsSaverWPtr CctwqtApplication::saver() const
+{
+  return m_Saver;
 }
 
 void CctwqtApplication::onDebugChanged(int dbg)

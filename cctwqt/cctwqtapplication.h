@@ -47,6 +47,9 @@ public slots:
 
   void doAboutToQuit();
 
+public:
+  QcepSettingsSaverWPtr saver() const;
+
 private slots:
   void onDebugChanged(int dbg);
 
