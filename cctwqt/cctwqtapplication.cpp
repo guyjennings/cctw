@@ -44,8 +44,8 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in")
 {
   QcepProperty::registerMetaTypes();
-  QcepMatrix3x3Property::registerMetaTypes();
-  QcepVector3DProperty::registerMetaTypes();
+  CctwqtDoubleMatrix3x3Property::registerMetaTypes();
+  CctwqtDoubleVector3DProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
 

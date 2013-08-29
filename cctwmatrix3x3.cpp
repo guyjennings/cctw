@@ -56,6 +56,17 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator+ (const CctwMatrix3x3<T>& mat) const
 }
 
 template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::operator+= (const CctwMatrix3x3<T>& mat)
+{
+  for (int row = 0; row < 3; ++row) {
+      for (int col = 0; col < 3; ++col) {
+          m_Matrix[col][row] += mat.m_Matrix[col][row];
+      }
+  }
+  return *this;
+}
+
+template <typename T>
 CctwMatrix3x3<T> CctwMatrix3x3<T>::operator- (const CctwMatrix3x3<T>& mat) const
 {
   CctwMatrix3x3<T> result;
@@ -69,7 +80,19 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator- (const CctwMatrix3x3<T>& mat) const
 }
 
 template <typename T>
-CctwMatrix3x3<T> CctwMatrix3x3<T>::operator* (const CctwMatrix3x3<T>& mat) const
+CctwMatrix3x3<T> CctwMatrix3x3<T>::operator-= (const CctwMatrix3x3<T>& mat)
+{
+  for (int row = 0; row < 3; ++row) {
+      for (int col = 0; col < 3; ++col) {
+          m_Matrix[col][row] -= mat.m_Matrix[col][row];
+      }
+  }
+
+  return *this;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::operator * (const CctwMatrix3x3<T>& mat) const
 {
   CctwMatrix3x3<T> result;
   for (int row = 0; row < 3; ++row) {
@@ -85,7 +108,7 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator* (const CctwMatrix3x3<T>& mat) const
 }
 
 template <typename T>
-CctwVector3D<T>  CctwMatrix3x3<T>::operator *(const CctwVector3D<T>& vec) const
+CctwVector3D<T>  CctwMatrix3x3<T>::operator * (const CctwVector3D<T>& vec) const
 {
   CctwVector3D<T> result;
   for (int col = 0; col < 3; ++col) {
@@ -96,6 +119,34 @@ CctwVector3D<T>  CctwMatrix3x3<T>::operator *(const CctwVector3D<T>& vec) const
     result(col) = sum;
   }
   return result;
+}
+
+template <typename T>
+bool CctwMatrix3x3<T>::operator == (const CctwMatrix3x3<T>& mat) const
+{
+  for (int row = 0; row < 3; ++row) {
+    for (int col = 0; col < 3; ++col) {
+      if (m_Matrix[col][row] != mat.m_Matrix[col][row]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+template <typename T>
+bool CctwMatrix3x3<T>::operator != (const CctwMatrix3x3<T>& mat) const
+{
+  for (int row = 0; row < 3; ++row) {
+    for (int col = 0; col < 3; ++col) {
+      if (m_Matrix[col][row] != mat.m_Matrix[col][row]) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 template <typename T>

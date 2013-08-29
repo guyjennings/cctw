@@ -21,6 +21,9 @@ public:
   CctwVector3D<T> operator * (const CctwVector3D<T> &vec) const;
   CctwVector3D<T> operator / (const CctwVector3D<T> &vec) const;
 
+  CctwVector3D<T> operator += (const CctwVector3D<T> &vec);
+  CctwVector3D<T> operator -= (const CctwVector3D<T> &vec);
+
   CctwVector3D<T> operator + (const T val) const;
   CctwVector3D<T> operator - (const T val) const;
   CctwVector3D<T> operator * (const T val) const;

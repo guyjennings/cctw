@@ -16,11 +16,16 @@ public:
         T& operator() (int row, int col);
   const T& operator() (int row, int col) const;
 
-  CctwMatrix3x3 operator+ (const CctwMatrix3x3& mat) const; // Matrix addition
-  CctwMatrix3x3 operator- (const CctwMatrix3x3& mat) const; // Matrix subtraction
-  CctwMatrix3x3 operator* (const CctwMatrix3x3& mat) const; // Matrix multiplication
+  CctwMatrix3x3 operator+  (const CctwMatrix3x3& mat) const; // Matrix addition
+  CctwMatrix3x3 operator+= (const CctwMatrix3x3& mat);       // Matrix addition
+  CctwMatrix3x3 operator-  (const CctwMatrix3x3& mat) const; // Matrix subtraction
+  CctwMatrix3x3 operator-= (const CctwMatrix3x3& mat);       // Matrix subtraction
+  CctwMatrix3x3 operator*  (const CctwMatrix3x3& mat) const; // Matrix multiplication
 
   CctwVector3D<T>  operator* (const CctwVector3D<T>& vec) const;  // Matrix*Vector multiplication
+
+  bool operator== (const CctwMatrix3x3& mat) const;
+  bool operator!= (const CctwMatrix3x3& mat) const;
 
   double         determinant() const;
   CctwMatrix3x3  inverted(bool *invertible = NULL) const;

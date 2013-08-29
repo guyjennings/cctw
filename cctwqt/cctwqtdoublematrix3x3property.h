@@ -37,14 +37,14 @@ private:
   CctwDoubleMatrix3x3 m_Value;
 };
 
-#define QCEP_CCTWDOUBLEMATRIX3X3_PROPERTY(propname) \
+#define CCTWQT_DOUBLEMATRIX3X3_PROPERTY(propname) \
 public: \
 CctwDoubleMatrix3x3 get_##propname() const \
 { \
   return m_##propname.value(); \
 } \
 \
-void set_##propname(QMatrix3x3 val) \
+void set_##propname(CctwDoubleMatrix3x3 val) \
 { \
   m_##propname.setValue(val); \
 } \
@@ -70,5 +70,31 @@ CctwqtDoubleMatrix3x3Property *prop_##propname() { \
 \
 private: \
 CctwqtDoubleMatrix3x3Property m_##propname;
+
+#ifndef QT_NO_DATASTREAM
+
+template <typename T>
+QDataStream &operator<<(QDataStream &stream, const CctwMatrix3x3<T> &matrix)
+{
+    for (int row = 0; row < 3; ++row)
+        for (int col = 0; col < 3; ++col)
+            stream << double(matrix(row, col));
+    return stream;
+}
+
+template <typename T>
+QDataStream &operator>>(QDataStream &stream, CctwMatrix3x3<T> &matrix)
+{
+    double x;
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 3; ++col) {
+            stream >> x;
+            matrix(row, col) = T(x);
+        }
+    }
+    return stream;
+}
+
+#endif
 
 #endif // CCTWQTDOUBLEMATRIX3X3PROPERTY_H

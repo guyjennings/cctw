@@ -58,8 +58,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtdebug.cpp \
     cctwqt/cctwqtchunkeddata.cpp \
     cctwqt/cctwtransformtest.cpp \
-    cctwqt/cctwqtvector3dproperty.cpp \
-    cctwqt/cctwqtmatrix3x3property.cpp
+    cctwqt/cctwqtdoublevector3dproperty.cpp \
+    cctwqt/cctwqtdoublematrix3x3property.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -99,8 +99,8 @@ HEADERS += \
     cctwqt/cctwqtdebug.h \
     cctwqt/cctwqtchunkeddata.h \
     cctwqt/cctwtransformtest.h \
-    cctwqt/cctwqtvector3dproperty.h \
-    cctwqt/cctwqtmatrix3x3property.h
+    cctwqt/cctwqtdoublevector3dproperty.h \
+    cctwqt/cctwqtdoublematrix3x3property.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \

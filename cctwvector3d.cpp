@@ -44,6 +44,26 @@ CctwVector3D<T> CctwVector3D<T>::operator / (const CctwVector3D<T> &vec) const
 }
 
 template <typename T>
+CctwVector3D<T> CctwVector3D<T>::operator += (const CctwVector3D<T> &vec)
+{
+  for (int i=0; i<3; i++) {
+    m_Vector[i] += vec.m_Vector[i];
+  }
+
+  return *this;
+}
+
+template <typename T>
+CctwVector3D<T> CctwVector3D<T>::operator -= (const CctwVector3D<T> &vec)
+{
+  for (int i=0; i<3; i++) {
+    m_Vector[i] -= vec.m_Vector[i];
+  }
+
+  return *this;
+}
+
+template <typename T>
 CctwVector3D<T> CctwVector3D<T>::operator + (const T val) const
 {
   return CctwVector3D<T>(x()+val, y()+val, z()+val);
