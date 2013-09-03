@@ -46,6 +46,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QcepProperty::registerMetaTypes();
   CctwqtDoubleMatrix3x3Property::registerMetaTypes();
   CctwqtDoubleVector3DProperty::registerMetaTypes();
+  CctwqtUnitCellProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
 

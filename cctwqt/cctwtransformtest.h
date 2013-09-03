@@ -4,6 +4,7 @@
 #include "cctwqtobject.h"
 #include "cctwqtdoublematrix3x3property.h"
 #include "cctwqtdoublevector3dproperty.h"
+#include "cctwqtunitcellproperty.h"
 
 class CctwqtApplication;
 
@@ -29,8 +30,8 @@ private:
   Q_PROPERTY(double distance READ get_Distance WRITE set_Distance)
   QCEP_DOUBLE_PROPERTY(Distance)
 
-//  Q_PROPERTY(CctwUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
-//  CCTWQT_UNITCELL_PROPERTY(UnitCell)
+  Q_PROPERTY(CctwqtUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
+  CCTWQT_UNITCELL_PROPERTY(UnitCell)
 
   Q_PROPERTY(CctwDoubleVector3D  gridOrigin READ get_GridOrigin WRITE set_GridOrigin)
   CCTWQT_DOUBLEVECTOR3D_PROPERTY(GridOrigin)
