@@ -30,7 +30,7 @@ private:
   QCEP_DOUBLE_PROPERTY(Distance)
 
 //  Q_PROPERTY(CctwUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
-//  QCEP_UNITCELL_PROPERTY(UnitCell)
+//  CCTWQT_UNITCELL_PROPERTY(UnitCell)
 
   Q_PROPERTY(CctwDoubleVector3D  gridOrigin READ get_GridOrigin WRITE set_GridOrigin)
   CCTWQT_DOUBLEVECTOR3D_PROPERTY(GridOrigin)
