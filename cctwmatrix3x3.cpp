@@ -223,6 +223,20 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::inverted(bool *invertible) const
 }
 
 template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::transposed() const
+{
+  CctwMatrix3x3<T> tr;
+
+  for (int i=0; i<3; i++) {
+    for (int j=0; j<3; j++) {
+      tr(j,i) = operator() (i,j);
+    }
+  }
+
+  return tr;
+}
+
+template <typename T>
 CctwMatrix3x3<T> CctwMatrix3x3<T>::rotationMatrix(double r1, double r2, double r3)
 {
   CctwMatrix3x3<T> rx = CctwMatrix3x3<T>::rotX(r1);
@@ -296,6 +310,18 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::rotZ(double r)
   res.m_Matrix[2][2] = 1;
 
   return res;
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::zero()
+{
+  return CctwMatrix3x3<T>(0,0,0,0,0,0,0,0,0);
+}
+
+template <typename T>
+CctwMatrix3x3<T> CctwMatrix3x3<T>::identity()
+{
+  return CctwMatrix3x3<T>(1,0,0, 0,1,0, 0,0,1);
 }
 
 template class CctwMatrix3x3<int>;

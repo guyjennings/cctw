@@ -29,6 +29,7 @@ public:
 
   double         determinant() const;
   CctwMatrix3x3  inverted(bool *invertible = NULL) const;
+  CctwMatrix3x3  transposed() const;
 
   void setToIdentity();
 
@@ -38,6 +39,8 @@ public:
   template <typename T1>
   friend class CctwVector3D;
 
+  static CctwMatrix3x3 zero();
+  static CctwMatrix3x3 identity();
   static CctwMatrix3x3 rotationMatrix(double r1, double r2, double r3);
   static CctwMatrix3x3 rotX(double r);
   static CctwMatrix3x3 rotY(double r);
