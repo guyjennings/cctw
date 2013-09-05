@@ -263,5 +263,37 @@ CctwVector3D<T> CctwVector3D<T>::normal(const CctwVector3D<T> &v1, const CctwVec
   return crossProduct(v1, v2).normalized();
 }
 
+#ifdef USE_QT
+
+template <typename T>
+void CctwVector3D<T>::setSettingsValue(QSettings *settings, QString name)
+{
+  settings->beginGroup(name);
+
+  settings->setValue("x", x());
+  settings->setValue("y", y());
+  settings->setValue("z", z());
+
+  settings->endGroup();
+}
+
+template <>
+void CctwVector3D<int>::customSaver(const QVariant &val, QSettings *settings, QString name)
+{
+  CctwIntVector3D vec = val.value<CctwIntVector3D>();
+
+  vec.setSettingsValue(settings, name);
+}
+
+template <>
+void CctwVector3D<double>::customSaver(const QVariant &val, QSettings *settings, QString name)
+{
+  CctwDoubleVector3D vec = val.value<CctwDoubleVector3D>();
+
+  vec.setSettingsValue(settings, name);
+}
+
+#endif
+
 template class CctwVector3D<int>;
 template class CctwVector3D<double>;

@@ -22,6 +22,8 @@ void CctwqtDoubleVector3DProperty::registerMetaTypes()
   qRegisterMetaType< CctwDoubleVector3D >("CctwDoubleVector3D");
 
   qRegisterMetaTypeStreamOperators< CctwDoubleVector3D >("CctwDoubleVector3D");
+
+  registerCustomSaver("CctwDoubleVector3D", CctwDoubleVector3D::customSaver);
 }
 
 CctwDoubleVector3D CctwqtDoubleVector3DProperty::value() const

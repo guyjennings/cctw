@@ -36,6 +36,8 @@ void CctwqtDoubleMatrix3x3Property::registerMetaTypes()
   qRegisterMetaType< CctwDoubleMatrix3x3 >("CctwDoubleMatrix3x3");
 
   qRegisterMetaTypeStreamOperators< CctwDoubleMatrix3x3 >("CctwDoubleMatrix3x3");
+
+  registerCustomSaver("CctwDoubleMatrix3x3", CctwMatrix3x3<double>::customSaver);
 }
 
 CctwDoubleMatrix3x3 CctwqtDoubleMatrix3x3Property::value() const

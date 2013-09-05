@@ -4,6 +4,11 @@
 #include "cctwvector3d.h"
 #include <stdlib.h>
 
+#ifdef USE_QT
+#include <QSettings>
+#include <QString>
+#endif
+
 template <typename T>
 class CctwMatrix3x3
 {
@@ -46,11 +51,21 @@ public:
   static CctwMatrix3x3 rotY(double r);
   static CctwMatrix3x3 rotZ(double r);
 
+#ifdef USE_QT
+  void setSettingsValue(QSettings *settings, QString name);
+  static void customSaver(const QVariant &val, QSettings *settings, QString name);
+#endif
+
 private:
   T m_Matrix[3][3];
 };
 
 typedef CctwMatrix3x3<int>    CctwIntMatrix3x3;
 typedef CctwMatrix3x3<double> CctwDoubleMatrix3x3;
+
+#ifdef USE_QT
+Q_DECLARE_METATYPE(CctwIntMatrix3x3)
+Q_DECLARE_METATYPE(CctwDoubleMatrix3x3)
+#endif
 
 #endif // CCTWMATRIX3X3_H

@@ -324,5 +324,39 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::identity()
   return CctwMatrix3x3<T>(1,0,0, 0,1,0, 0,0,1);
 }
 
+#ifdef USE_QT
+
+template <typename T>
+void CctwMatrix3x3<T>::setSettingsValue(QSettings *settings, QString name)
+{
+  settings->beginGroup(name);
+
+  for (int r=0; r<3; r++) {
+    for (int c=0; c<3; c++) {
+      settings->setValue(QString("r%1c%2").arg(r).arg(c), operator()(r,c));
+    }
+  }
+
+  settings->endGroup();
+}
+
+template <>
+void CctwMatrix3x3<double>::customSaver(const QVariant &val, QSettings *settings, QString name)
+{
+  CctwDoubleMatrix3x3 mat = val.value<CctwDoubleMatrix3x3 >();
+
+  mat.setSettingsValue(settings, name);
+}
+
+template <>
+void CctwMatrix3x3<int>::customSaver(const QVariant &val, QSettings *settings, QString name)
+{
+  CctwIntMatrix3x3 mat = val.value<CctwIntMatrix3x3 >();
+
+  mat.setSettingsValue(settings, name);
+}
+
+#endif
+
 template class CctwMatrix3x3<int>;
 template class CctwMatrix3x3<double>;
