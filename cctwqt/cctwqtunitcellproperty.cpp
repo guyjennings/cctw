@@ -6,7 +6,7 @@
 CctwqtUnitCellProperty::CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
     QObject *parent,
     const char *name,
-    CctwqtUnitCell value,
+    CctwUnitCell value,
     QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
   m_Default(value),
@@ -22,33 +22,35 @@ CctwqtUnitCellProperty::CctwqtUnitCellProperty(
     double alpha, double beta, double gamma,
     QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
-  m_Default(CctwqtUnitCell(a,b,c,alpha,beta,gamma)),
-  m_Value(CctwqtUnitCell(a,b,c,alpha,beta,gamma))
+  m_Default(CctwUnitCell(a,b,c,alpha,beta,gamma)),
+  m_Value(CctwUnitCell(a,b,c,alpha,beta,gamma))
 {
 }
 
 void CctwqtUnitCellProperty::registerMetaTypes()
 {
-  qRegisterMetaType< CctwqtUnitCell >("CctwqtUnitCell");
+  qRegisterMetaType< CctwUnitCell >("CctwUnitCell");
 
-  qRegisterMetaTypeStreamOperators< CctwqtUnitCell >("CctwqtUnitCell");
+  qRegisterMetaTypeStreamOperators< CctwUnitCell >("CctwUnitCell");
+
+  registerCustomSaver("CctwUnitCell", CctwUnitCell::customSaver);
 }
 
-CctwqtUnitCell CctwqtUnitCellProperty::value() const
+CctwUnitCell CctwqtUnitCellProperty::value() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Value;
 }
 
-CctwqtUnitCell CctwqtUnitCellProperty::defaultValue() const
+CctwUnitCell CctwqtUnitCellProperty::defaultValue() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Default;
 }
 
-void CctwqtUnitCellProperty::setValue(CctwqtUnitCell val, int index)
+void CctwqtUnitCellProperty::setValue(CctwUnitCell val, int index)
 {
   if (debug()) {
     printMessage(tr("%1 CctwqtUnitCellProperty::setValue(CctwUnitCell %2, int %3) [%4]")
@@ -70,7 +72,7 @@ QString CctwqtUnitCellProperty::toString(const CctwUnitCell &val)
   return res;
 }
 
-void CctwqtUnitCellProperty::setValue(CctwqtUnitCell val)
+void CctwqtUnitCellProperty::setValue(CctwUnitCell val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -97,7 +99,7 @@ void CctwqtUnitCellProperty::setValue(CctwqtUnitCell val)
   }
 }
 
-void CctwqtUnitCellProperty::setDefaultValue(CctwqtUnitCell val)
+void CctwqtUnitCellProperty::setDefaultValue(CctwUnitCell val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -115,7 +117,7 @@ void CctwqtUnitCellProperty::resetValue()
 
 #ifndef QT_NO_DATASTREAM
 
-QDataStream &operator<<(QDataStream &stream, const CctwqtUnitCell &cell)
+QDataStream &operator<<(QDataStream &stream, const CctwUnitCell &cell)
 {
   stream << cell.a();
   stream << cell.b();
@@ -127,7 +129,7 @@ QDataStream &operator<<(QDataStream &stream, const CctwqtUnitCell &cell)
   return stream;
 }
 
-QDataStream &operator>>(QDataStream &stream, CctwqtUnitCell &cell)
+QDataStream &operator>>(QDataStream &stream, CctwUnitCell &cell)
 {
   stream >> cell.a();
   stream >> cell.b();

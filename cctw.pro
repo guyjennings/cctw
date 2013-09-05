@@ -61,8 +61,7 @@ SOURCES += main.cpp \
     cctwqt/cctwqtdoublevector3dproperty.cpp \
     cctwqt/cctwqtdoublematrix3x3property.cpp \
     cctwunitcell.cpp \
-    cctwqt/cctwqtunitcellproperty.cpp \
-    cctwqt/cctwqtunitcell.cpp
+    cctwqt/cctwqtunitcellproperty.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -105,8 +104,7 @@ HEADERS += \
     cctwqt/cctwqtdoublevector3dproperty.h \
     cctwqt/cctwqtdoublematrix3x3property.h \
     cctwunitcell.h \
-    cctwqt/cctwqtunitcellproperty.h \
-    cctwqt/cctwqtunitcell.h
+    cctwqt/cctwqtunitcellproperty.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \

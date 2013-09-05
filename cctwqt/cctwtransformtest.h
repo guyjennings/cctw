@@ -36,7 +36,7 @@ private:
   Q_PROPERTY(double distance READ get_Distance WRITE set_Distance)
   QCEP_DOUBLE_PROPERTY(Distance)
 
-  Q_PROPERTY(CctwqtUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
+  Q_PROPERTY(CctwUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
   CCTWQT_UNITCELL_PROPERTY(UnitCell)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 ubMat READ get_UBMat WRITE set_UBMat)

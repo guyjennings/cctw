@@ -3,6 +3,11 @@
 
 #include "cctwvector3d.h"
 
+#ifdef USE_QT
+#include <QSettings>
+#include <QString>
+#endif
+
 class CctwUnitCell
 {
 public:
@@ -37,6 +42,11 @@ public:
   bool operator == (const CctwUnitCell &cell) const;
   bool operator != (const CctwUnitCell &cell) const;
 
+#ifdef USE_QT
+  void setSettingsValue(QSettings *settings, QString name);
+  static void customSaver(const QVariant &val, QSettings *settings, QString name);
+#endif
+
 private:
   double m_A;
   double m_B;
@@ -45,5 +55,9 @@ private:
   double m_Beta;
   double m_Gamma;
 };
+
+#ifdef USE_QT
+Q_DECLARE_METATYPE(CctwUnitCell)
+#endif
 
 #endif // CCTWUNITCELL_H

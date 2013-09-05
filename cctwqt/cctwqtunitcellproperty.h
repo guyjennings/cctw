@@ -2,7 +2,7 @@
 #define CCTWQTUNITCELLPROPERTY_H
 
 #include "qcepproperty.h"
-#include "cctwqtunitcell.h"
+#include "cctwunitcell.h"
 
 class CctwqtUnitCellProperty : public QcepProperty
 {
@@ -11,7 +11,7 @@ public:
   explicit CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
                                   QObject *parent,
                                   const char *name,
-                                  CctwqtUnitCell value,
+                                  CctwUnitCell value,
                                   QString toolTip);
 
   explicit CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
@@ -21,44 +21,44 @@ public:
                                   double alpha, double beta, double gamma,
                                   QString toolTip);
 
-  CctwqtUnitCell value() const;
-  CctwqtUnitCell defaultValue() const;
+  CctwUnitCell value() const;
+  CctwUnitCell defaultValue() const;
   QString toString(const CctwUnitCell& mat);
 
   static void registerMetaTypes();
 
 public slots:
-  void setValue(CctwqtUnitCell val, int index);
-  void setValue(CctwqtUnitCell val);
-  void setDefaultValue(CctwqtUnitCell val);
+  void setValue(CctwUnitCell val, int index);
+  void setValue(CctwUnitCell val);
+  void setDefaultValue(CctwUnitCell val);
   void resetValue();
 
 signals:
-  void valueChanged(CctwqtUnitCell val, int index);
+  void valueChanged(CctwUnitCell val, int index);
 
 private:
-  CctwqtUnitCell m_Default;
-  CctwqtUnitCell m_Value;
+  CctwUnitCell m_Default;
+  CctwUnitCell m_Value;
 };
 
 #define CCTWQT_UNITCELL_PROPERTY(propname) \
 public: \
-CctwqtUnitCell get_##propname() const \
+CctwUnitCell get_##propname() const \
 { \
   return m_##propname.value(); \
 } \
 \
-void set_##propname(CctwqtUnitCell val) \
+void set_##propname(CctwUnitCell val) \
 { \
   m_##propname.setValue(val); \
 } \
 \
-CctwqtUnitCell def_##propname() const \
+CctwUnitCell def_##propname() const \
 { \
   return m_##propname.defaultValue(); \
 } \
 \
-void setdef_##propname(CctwqtUnitCell val) \
+void setdef_##propname(CctwUnitCell val) \
 { \
   m_##propname.setDefaultValue(val); \
 } \
@@ -77,8 +77,8 @@ CctwqtUnitCellProperty m_##propname;
 
 #ifndef QT_NO_DATASTREAM
 
-extern QDataStream &operator<<(QDataStream &stream, const CctwqtUnitCell &cell);
-extern QDataStream &operator>>(QDataStream &stream, CctwqtUnitCell &cell);
+extern QDataStream &operator<<(QDataStream &stream, const CctwUnitCell &cell);
+extern QDataStream &operator>>(QDataStream &stream, CctwUnitCell &cell);
 
 #endif
 
