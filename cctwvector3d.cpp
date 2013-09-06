@@ -219,12 +219,11 @@ CctwVector3D<T> CctwVector3D<T>::normalized() const
   T len = length();
 
   if (::fabs((double)len) < 1e-10) {
-    return CctwVector3D<T>();
+    return CctwVector3D<T>(0,0,0);
   } else {
-    T sqrtLen = ::sqrt((double)len);
-    return CctwVector3D(x() / sqrtLen,
-                        y() / sqrtLen,
-                        z() / sqrtLen);
+    return CctwVector3D(x() / len,
+                        y() / len,
+                        z() / len);
   }
 }
 
@@ -236,10 +235,9 @@ void CctwVector3D<T>::normalize()
   if (::fabs((double)len) < 1e-10) {
     return;
   } else {
-    T sqrtLen = ::sqrt((double)len);
-    m_Vector[0] /= sqrtLen;
-    m_Vector[1] /= sqrtLen;
-    m_Vector[2] /= sqrtLen;
+    m_Vector[0] /= len;
+    m_Vector[1] /= len;
+    m_Vector[2] /= len;
   }
 }
 
