@@ -122,7 +122,7 @@ void CctwqtApplication::initialize()
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
 
-  readSettings();
+//  readSettings();
 
   m_Saver->start();
 
