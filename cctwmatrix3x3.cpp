@@ -11,9 +11,9 @@ template <typename T>
 CctwMatrix3x3<T>::CctwMatrix3x3(CctwVector3D<T> c1, CctwVector3D<T> c2, CctwVector3D<T> c3)
 {
   for (int row=0; row<3; ++row) {
-    m_Matrix[0][row]=c1(row);
-    m_Matrix[1][row]=c2(row);
-    m_Matrix[2][row]=c3(row);
+    m_Matrix[row][0]=c1(row);
+    m_Matrix[row][1]=c2(row);
+    m_Matrix[row][2]=c3(row);
   }
 }
 
@@ -34,13 +34,13 @@ CctwMatrix3x3<T>::CctwMatrix3x3(T a11, T a12, T a13, T a21, T a22, T a23, T a31,
 template <typename T>
 T& CctwMatrix3x3<T>::operator ()(int row, int col)
 {
-  return m_Matrix[col][row];
+  return m_Matrix[row][col];
 }
 
 template <typename T>
 const T& CctwMatrix3x3<T>::operator ()(int row, int col) const
 {
-  return m_Matrix[col][row];
+  return m_Matrix[row][col];
 }
 
 template <typename T>
@@ -49,7 +49,7 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator+ (const CctwMatrix3x3<T>& mat) const
   CctwMatrix3x3<T> result;
   for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 3; ++col) {
-          result.m_Matrix[col][row] = m_Matrix[col][row] + mat.m_Matrix[col][row];
+          result.m_Matrix[row][col] = m_Matrix[row][col] + mat.m_Matrix[row][col];
       }
   }
   return result;
@@ -60,7 +60,7 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator+= (const CctwMatrix3x3<T>& mat)
 {
   for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 3; ++col) {
-          m_Matrix[col][row] += mat.m_Matrix[col][row];
+          m_Matrix[row][col] += mat.m_Matrix[row][col];
       }
   }
   return *this;
@@ -72,7 +72,7 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator- (const CctwMatrix3x3<T>& mat) const
   CctwMatrix3x3<T> result;
   for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 3; ++col) {
-          result.m_Matrix[col][row] = m_Matrix[col][row] - mat.m_Matrix[col][row];
+          result.m_Matrix[row][col] = m_Matrix[row][col] - mat.m_Matrix[row][col];
       }
   }
 
@@ -84,7 +84,7 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator-= (const CctwMatrix3x3<T>& mat)
 {
   for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 3; ++col) {
-          m_Matrix[col][row] -= mat.m_Matrix[col][row];
+          m_Matrix[row][col] -= mat.m_Matrix[row][col];
       }
   }
 
@@ -99,9 +99,9 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::operator * (const CctwMatrix3x3<T>& mat) cons
       for (int col = 0; col < 3; ++col) {
           T sum(0.0f);
           for (int j = 0; j < 3; ++j) {
-              sum += m_Matrix[j][row] * mat.m_Matrix[col][j];
+              sum += m_Matrix[row][j] * mat.m_Matrix[j][col];
           }
-          result.m_Matrix[col][row] = sum;
+          result.m_Matrix[row][col] = sum;
       }
   }
   return result;
@@ -111,12 +111,12 @@ template <typename T>
 CctwVector3D<T>  CctwMatrix3x3<T>::operator * (const CctwVector3D<T>& vec) const
 {
   CctwVector3D<T> result;
-  for (int col = 0; col < 3; ++col) {
+  for (int row = 0; row < 3; ++row) {
     T sum(0.0f);
     for (int j = 0; j < 3; ++j) {
-      sum += m_Matrix[col][j] * vec(j);
+      sum += m_Matrix[row][j] * vec(j);
     }
-    result(col) = sum;
+    result(row) = sum;
   }
   return result;
 }
@@ -126,7 +126,7 @@ bool CctwMatrix3x3<T>::operator == (const CctwMatrix3x3<T>& mat) const
 {
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      if (m_Matrix[col][row] != mat.m_Matrix[col][row]) {
+      if (m_Matrix[row][col] != mat.m_Matrix[row][col]) {
         return false;
       }
     }
@@ -140,7 +140,7 @@ bool CctwMatrix3x3<T>::operator != (const CctwMatrix3x3<T>& mat) const
 {
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      if (m_Matrix[col][row] != mat.m_Matrix[col][row]) {
+      if (m_Matrix[row][col] != mat.m_Matrix[row][col]) {
         return true;
       }
     }
@@ -155,9 +155,9 @@ void CctwMatrix3x3<T>::setToIdentity()
   for (int col = 0; col < 3; ++col) {
       for (int row = 0; row < 3; ++row) {
           if (row == col) {
-              m_Matrix[col][row] = 1.0f;
+              m_Matrix[row][col] = 1.0f;
           } else {
-              m_Matrix[col][row] = 0.0f;
+              m_Matrix[row][col] = 0.0f;
           }
       }
   }
@@ -168,13 +168,13 @@ double CctwMatrix3x3<T>::determinant() const
 {
   double
       a = m_Matrix[0][0],
-      b = m_Matrix[1][0],
-      c = m_Matrix[2][0],
-      d = m_Matrix[0][1],
+      b = m_Matrix[0][1],
+      c = m_Matrix[0][2],
+      d = m_Matrix[1][0],
       e = m_Matrix[1][1],
-      f = m_Matrix[2][1],
-      g = m_Matrix[0][2],
-      h = m_Matrix[1][2],
+      f = m_Matrix[1][2],
+      g = m_Matrix[2][0],
+      h = m_Matrix[2][1],
       k = m_Matrix[2][2];
 
   return a*(e*k - f*h) + b*(f*g - d*k) + c*(d*h - e*g);
