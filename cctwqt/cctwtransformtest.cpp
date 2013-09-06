@@ -74,7 +74,8 @@ CctwTransformTest::CctwTransformTest(CctwqtApplication *app, QObject *parent) :
   m_GMat(m_Application->saver(), this, "gMat", CctwDoubleMatrix3x3(), "g Matrix"),
   m_GMatInv(m_Application->saver(), this, "gMatInv", CctwDoubleMatrix3x3(), "g Matrix Inverse"),
   m_CD(m_Application->saver(), this, "cD", CctwDoubleVector3D(), "cD - crystal position from detector in lab frame"),
-  m_ND(m_Application->saver(), this, "nD", CctwDoubleVector3D(), "nD - detector plane normal direction")
+  m_ND(m_Application->saver(), this, "nD", CctwDoubleVector3D(), "nD - detector plane normal direction"),
+  m_GridDim(m_Application->saver(), this, "gridDim", CctwDoubleVector3D(101,71,71), "Grid Dimensions")
 {
   CctwDoubleMatrix3x3 dimat = CctwDoubleMatrix3x3::identity();
 
@@ -144,4 +145,139 @@ CctwDoubleMatrix3x3 CctwTransformTest::createBMatrix(const CctwUnitCell &cell) c
   CctwDoubleMatrix3x3 tmat = zzz.inverted();
 
   return tmat.transposed();
+}
+
+CctwDoubleVector3D CctwTransformTest::getDetPos(CctwDoubleVector3D xyz)
+{
+  return getDetPos(xyz.x(), xyz.y());
+}
+
+CctwDoubleVector3D CctwTransformTest::getDetPos(double x, double y)
+{
+  double pixelSize = get_PixelSize();
+
+  return CctwDoubleVector3D((x+0.5 - get_Det0x())*pixelSize,
+                            (y+0.5 - get_Det0y())*pixelSize, 0.0);
+}
+
+CctwDoubleVector3D CctwTransformTest::pixel2qlab(double x, double y, double z)
+{
+  return pixel2qlab(CctwDoubleVector3D(x,y,z));
+}
+
+CctwDoubleVector3D CctwTransformTest::pixel2qlab(CctwDoubleVector3D pixel)
+{
+  CctwDoubleVector3D xyz = pixel;
+  double scale = 1.0/get_Wavelength();
+
+  xyz = get_OMatInv()*xyz;
+  xyz = get_DMatInv()*xyz;
+  xyz = xyz - get_CD();
+  xyz = xyz.normalized();
+  xyz = xyz*scale;
+
+  xyz.x() -= scale;
+
+  return xyz;
+}
+
+CctwDoubleVector3D CctwTransformTest::qlab2hkl(double qx, double qy, double qz)
+{
+  return qlab2hkl(CctwDoubleVector3D(qx,qy,qz));
+}
+
+CctwDoubleVector3D CctwTransformTest::qlab2hkl(CctwDoubleVector3D qlab)
+{
+  return get_UBMatInv()*qlab;
+}
+
+CctwDoubleVector3D CctwTransformTest::hkl2grid(double h, double k, double l)
+{
+  return hkl2grid(CctwDoubleVector3D(h,k,l));
+}
+
+CctwDoubleVector3D CctwTransformTest::hkl2grid(CctwDoubleVector3D hkl)
+{
+  CctwDoubleVector3D xyz = hkl;
+
+  xyz = xyz - get_GridOrigin();
+  xyz = get_GridBasisInv()*xyz;
+
+  for (int i=0; i<3; i++) {
+    xyz(i) *= qMax(get_GridDim()(i)-1,1.0);
+  }
+
+  return xyz;
+}
+
+CctwDoubleVector3D CctwTransformTest::grid2hkl(double gx, double gy, double gz)
+{
+  return grid2hkl(CctwDoubleVector3D(gx,gy,gz));
+}
+
+CctwDoubleVector3D CctwTransformTest::grid2hkl(CctwDoubleVector3D grid)
+{
+  CctwDoubleVector3D xyz = grid;
+
+  for (int i=0; i<3; i++) {
+    xyz(i) /= qMax(get_GridDim()(i)-1,1.0);
+  }
+
+  xyz = get_GridBasis()*xyz;
+  xyz = xyz + get_GridOrigin();
+
+  return xyz;
+}
+
+CctwDoubleVector3D CctwTransformTest::hkl2qlab(double h, double k, double l)
+{
+  return hkl2qlab(CctwDoubleVector3D(h,k,l));
+}
+
+CctwDoubleVector3D CctwTransformTest::hkl2qlab(CctwDoubleVector3D hkl)
+{
+  return get_UBMat()*hkl;
+}
+
+CctwDoubleVector3D CctwTransformTest::qlab2pixel(double qx, double qy, double qz)
+{
+  return qlab2pixel(CctwDoubleVector3D(qx,qy,qz));
+}
+
+CctwDoubleVector3D CctwTransformTest::qlab2pixel(CctwDoubleVector3D qlab)
+{
+  CctwDoubleVector3D xyz = qlab;
+
+  xyz = get_GMat()*xyz;
+  xyz(0) += 1.0/get_Wavelength();
+  xyz = xyz.normalized();
+
+  double dmin   = CctwDoubleVector3D::dotProduct(get_CD(),get_ND());
+  double cosang = CctwDoubleVector3D::dotProduct(xyz, get_ND());
+
+  double pdist = -dmin/cosang;
+
+  xyz = xyz*pdist;
+
+  xyz = xyz + get_CD();
+
+  xyz = get_DMat()*xyz;
+  xyz = get_OMat()*xyz;
+
+  return xyz;
+}
+
+CctwDoubleVector3D CctwTransformTest::getDetPix(double x, double y, double z)
+{
+  return getDetPix(CctwDoubleVector3D(x,y,z));
+}
+
+CctwDoubleVector3D CctwTransformTest::getDetPix(CctwDoubleVector3D xyz)
+{
+  CctwDoubleVector3D detpix;
+
+  detpix.x() = (int)(xyz.x()/get_PixelSize() + get_Det0x() - 0.5);
+  detpix.y() = (int)(xyz.y()/get_PixelSize() + get_Det0y() - 0.5);
+
+  return detpix;
 }

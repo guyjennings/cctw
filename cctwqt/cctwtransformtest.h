@@ -17,7 +17,23 @@ public:
 signals:
   
 public slots:
-  
+  CctwDoubleVector3D getDetPos(double x, double y);
+  CctwDoubleVector3D getDetPos(CctwDoubleVector3D xyz);
+  CctwDoubleVector3D pixel2qlab(double x, double y, double z);
+  CctwDoubleVector3D pixel2qlab(CctwDoubleVector3D pixel);
+  CctwDoubleVector3D qlab2hkl(double qx, double qy, double qz);
+  CctwDoubleVector3D qlab2hkl(CctwDoubleVector3D qlab);
+  CctwDoubleVector3D hkl2grid(double h, double k, double l);
+  CctwDoubleVector3D hkl2grid(CctwDoubleVector3D hkl);
+  CctwDoubleVector3D grid2hkl(double gx, double gy, double gz);
+  CctwDoubleVector3D grid2hkl(CctwDoubleVector3D grid);
+  CctwDoubleVector3D hkl2qlab(double h, double k, double l);
+  CctwDoubleVector3D hkl2qlab(CctwDoubleVector3D hkl);
+  CctwDoubleVector3D qlab2pixel(double qx, double qy, double qz);
+  CctwDoubleVector3D qlab2pixel(CctwDoubleVector3D qlab);
+  CctwDoubleVector3D getDetPix(double x, double y, double z);
+  CctwDoubleVector3D getDetPix(CctwDoubleVector3D xyz);
+
 public:
   CctwDoubleMatrix3x3 createBMatrix(const CctwUnitCell &cell) const;
 
@@ -149,6 +165,9 @@ private:
 
   Q_PROPERTY(CctwDoubleVector3D nD READ get_ND WRITE set_ND)
   CCTWQT_DOUBLEVECTOR3D_PROPERTY(ND)
+
+  Q_PROPERTY(CctwDoubleVector3D gridDim READ get_GridDim WRITE set_GridDim)
+  CCTWQT_DOUBLEVECTOR3D_PROPERTY(GridDim)
 };
 
 #endif // CCTWTRANSFORMTEST_H
