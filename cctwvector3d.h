@@ -4,6 +4,7 @@
 #ifdef USE_QT
 #include <QSettings>
 #include <QString>
+#include <QScriptable>
 #endif
 
 template <typename T>
@@ -17,6 +18,9 @@ public:
   T x() const { return m_Vector[0]; }
   T y() const { return m_Vector[1]; }
   T z() const { return m_Vector[2]; }
+  T& x() { return m_Vector[0]; }
+  T& y() { return m_Vector[1]; }
+  T& z() { return m_Vector[2]; }
 
   T& operator () (int i) { return m_Vector[i]; }
   const T& operator() (int i) const { return m_Vector[i]; }

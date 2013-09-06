@@ -2,6 +2,7 @@
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
+#include <QScriptEngine>
 
 CctwqtDoubleVector3DProperty::CctwqtDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
@@ -124,4 +125,20 @@ void CctwqtDoubleVector3DProperty::resetValue()
   setValue(defaultValue());
 }
 
+QScriptValue CctwqtDoubleVector3DProperty::toScriptValue(QScriptEngine *engine, const CctwDoubleVector3D &vec)
+{
+  QScriptValue obj = engine->newArray(3);
 
+  obj.setProperty(0, vec.x());
+  obj.setProperty(1, vec.y());
+  obj.setProperty(2, vec.z());
+
+  return obj;
+}
+
+void CctwqtDoubleVector3DProperty::fromScriptValue(const QScriptValue &obj, CctwDoubleVector3D &vec)
+{
+  vec.x() = obj.property(0).toNumber();
+  vec.y() = obj.property(1).toNumber();
+  vec.z() = obj.property(2).toNumber();
+}

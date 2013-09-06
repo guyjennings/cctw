@@ -2,6 +2,7 @@
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
+#include <QScriptEngine>
 
 CctwqtUnitCellProperty::CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
     QObject *parent,
@@ -143,3 +144,26 @@ QDataStream &operator>>(QDataStream &stream, CctwUnitCell &cell)
 
 #endif
 
+QScriptValue CctwqtUnitCellProperty::toScriptValue(QScriptEngine *engine, const CctwUnitCell &cell)
+{
+  QScriptValue obj = engine->newArray(6);
+
+  obj.setProperty(0, cell.a());
+  obj.setProperty(1, cell.b());
+  obj.setProperty(2, cell.c());
+  obj.setProperty(3, cell.alpha());
+  obj.setProperty(4, cell.beta());
+  obj.setProperty(5, cell.gamma());
+
+  return obj;
+}
+
+void CctwqtUnitCellProperty::fromScriptValue(const QScriptValue &obj, CctwUnitCell &cell)
+{
+  cell.a() = obj.property(0).toNumber();
+  cell.b() = obj.property(1).toNumber();
+  cell.c() = obj.property(2).toNumber();
+  cell.alpha() = obj.property(3).toNumber();
+  cell.beta() = obj.property(4).toNumber();
+  cell.gamma() = obj.property(5).toNumber();
+}

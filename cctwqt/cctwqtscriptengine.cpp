@@ -7,6 +7,10 @@ CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) 
 {
   globalObject().setProperty("cctw",  newQObject(m_Application, QScriptEngine::QtOwnership));
   globalObject().setProperty("print", newFunction(printFunc));
+
+  qScriptRegisterMetaType(this, CctwqtDoubleVector3DProperty::toScriptValue, CctwqtDoubleVector3DProperty::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwqtDoubleMatrix3x3Property::toScriptValue, CctwqtDoubleMatrix3x3Property::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwqtUnitCellProperty::toScriptValue, CctwqtUnitCellProperty::fromScriptValue);
 }
 
 CctwqtApplication* CctwqtScriptEngine::application() const

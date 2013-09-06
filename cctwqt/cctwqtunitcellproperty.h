@@ -26,6 +26,8 @@ public:
   QString toString(const CctwUnitCell& mat);
 
   static void registerMetaTypes();
+  static QScriptValue toScriptValue(QScriptEngine *engine, const CctwUnitCell &cell);
+  static void fromScriptValue(const QScriptValue &obj, CctwUnitCell &cell);
 
 public slots:
   void setValue(CctwUnitCell val, int index);

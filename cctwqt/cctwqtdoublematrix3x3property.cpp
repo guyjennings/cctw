@@ -2,6 +2,7 @@
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
+#include <QScriptEngine>
 
 CctwqtDoubleMatrix3x3Property::CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
                                                              QObject *parent, const char *name,
@@ -148,4 +149,36 @@ void CctwqtDoubleMatrix3x3Property::resetValue()
   setValue(defaultValue());
 }
 
+QScriptValue CctwqtDoubleMatrix3x3Property::toScriptValue(QScriptEngine *engine, const CctwDoubleMatrix3x3 &mat)
+{
+  QScriptValue obj = engine->newArray(3);
+
+  for (int i=0; i<3; i++) {
+    obj.setProperty(i, engine->newArray(3));
+  }
+
+  for (int r=0; r<3; r++) {
+    for (int c=0; c<3; c++) {
+      obj.property(r).setProperty(c, mat(r,c));
+    }
+  }
+
+//  for (int r=0; r<3; r++) {
+//    for (int c=0; c<3; c++) {
+//      obj.setProperty(tr("r%1c%2").arg(r).arg(c), mat(r,c));
+//    }
+//  }
+
+  return obj;
+}
+
+void CctwqtDoubleMatrix3x3Property::fromScriptValue(const QScriptValue &obj, CctwDoubleMatrix3x3 &mat)
+{
+  for (int r=0; r<3; r++) {
+    for (int c=0; c<3; c++) {
+      mat(r,c)=obj.property(r).property(c).toNumber();
+//      mat(r,c) = obj.property(tr("r%1c%2").arg(r).arg(c)).toNumber();
+    }
+  }
+}
 

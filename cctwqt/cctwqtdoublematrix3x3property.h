@@ -21,6 +21,8 @@ public:
   QString toString(const CctwDoubleMatrix3x3& mat);
 
   static void registerMetaTypes();
+  static QScriptValue toScriptValue(QScriptEngine *engine, const CctwDoubleMatrix3x3 &mat);
+  static void fromScriptValue(const QScriptValue &obj, CctwDoubleMatrix3x3 &mat);
 
 public slots:
   void setValue(CctwDoubleMatrix3x3 val, int index);

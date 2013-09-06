@@ -16,6 +16,8 @@ public:
   QString toString(const CctwDoubleVector3D& mat);
 
   static void registerMetaTypes();
+  static QScriptValue toScriptValue(QScriptEngine *engine, const CctwDoubleVector3D &vec);
+  static void fromScriptValue(const QScriptValue &obj, CctwDoubleVector3D &vec);
 
 public slots:
   void setValue(CctwDoubleVector3D val, int index);
