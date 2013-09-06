@@ -195,6 +195,11 @@ c ******************************
 		print *, (detpixfinal(j),j=1,2)
 		print *, ""
 
+        print *,"ubmat"
+        do i=1,3
+                print *,(ubmat(i,j), j=1,3)
+        end do
+
         print *,"ubimat"
         do i=1,3
                 print *,(ubimat(i,j), j=1,3)
@@ -220,6 +225,39 @@ c ******************************
                 print *,(bimat(i,j), j=1,3)
         end do
 
-	stop
+        print *,"gmat"
+        do i=1,3
+                print *,(gmat(i,j), j=1,3)
+        end do
+
+        print *,"gimat"
+        do i=1,3
+                print *,(gimat(i,j), j=1,3)
+        end do
+
+        print *,"dmat"
+        do i=1,3
+                print *,(dmat(i,j), j=1,3)
+        end do
+
+        print *,"dimat"
+        do i=1,3
+                print *,(dimat(i,j), j=1,3)
+        end do
+
+        print *,"omat"
+        do i=1,3
+                print *,(omat(i,j), j=1,3)
+        end do
+
+        print *,"oimat"
+        do i=1,3
+                print *,(oimat(i,j), j=1,3)
+        end do
+
+        print *,"cD : ", (cD(i), i=1,3)
+        print *,"nD : ", (nD(i), i=1,3)
+
+        stop
 	end
 
