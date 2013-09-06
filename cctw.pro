@@ -119,6 +119,7 @@ OTHER_FILES += Doxyfile \
     doc/Doxyfile \
     doc/findphi.nb \
     doc/pznpt4_march2007.txt \
+    doc/pznpt4_march2007.out \
     doc/transformtest.f \
     doc/transformtools.f \
     doc/standards.doc
