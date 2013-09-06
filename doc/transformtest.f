@@ -194,7 +194,32 @@ c ******************************
 		print *, "Detector pixel (column, row): "
 		print *, (detpixfinal(j),j=1,2)
 		print *, ""
-	
+
+        print *,"ubimat"
+        do i=1,3
+                print *,(ubimat(i,j), j=1,3)
+        end do
+
+        print *,"umat"
+        do i=1,3
+                print *,(umat(i,j), j=1,3)
+        end do
+
+        print *,"uimat"
+        do i=1,3
+                print *,(uimat(i,j), j=1,3)
+        end do
+
+        print *,"bmat"
+        do i=1,3
+                print *,(bmat(i,j), j=1,3)
+        end do
+
+        print *,"bimat"
+        do i=1,3
+                print *,(bimat(i,j), j=1,3)
+        end do
+
 	stop
 	end
 
