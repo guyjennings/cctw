@@ -1,0 +1,30 @@
+ Enter config filename > 
+ Frame number:  5
+ 
+ Detector pixel (column, row): 
+  427.  163.
+ 
+ Detector position (detX,detY,0) relative to zeroed beam spot: 
+ -49.4493014 -66.5583968  0.
+ 
+ (qx,qy,qz) in coords of goniometer head: 
+ -0.123417166  0.857564611 -1.15245255
+ 
+ reciprocal-lattice vector (h,k,l): 
+ -3.47433819 -3.62138762 -2.95698078
+ 
+ grid indices (ig,jg,kg): 
+ -497.433819 -425.485788 -11.5084791
+ 
+ reciprocal-lattice vector (h,k,l): 
+ -3.47433819 -3.62138762 -2.95698078
+ 
+ (qx,qy,qz) in coords of goniometer head: 
+ -0.123417166  0.857564611 -1.15245255
+ 
+ Detector position (detX,detY,0) relative to zeroed beam spot: 
+ -49.4493014 -66.5583968  1.29418698E-12
+ 
+ Detector pixel (column, row): 
+  427.  163.
+ 
