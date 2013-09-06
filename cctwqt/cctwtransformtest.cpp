@@ -61,9 +61,9 @@ CctwTransformTest::CctwTransformTest(CctwqtApplication *app, QObject *parent) :
               0.0, 0.5, -0.5, "Grid Basis (recip latt units)"),
   m_GridBasisInv(m_Application->saver(), this, "gridBasisInv", get_GridBasis().inverted(), "Grid Basis Inverse"),
   m_OMat(m_Application->saver(), this, "oMat",
-         0.0, 0.0, -1.0,
-         -1.0, 0.0, 0.0,
-         0.0, 1.0, 0.0, "o Matrix - rotate detector axes into lab"),
+         0.0, -1.0, 0.0,
+         0.0, 0.0, 1.0,
+         -1.0, 0.0, 0.0, "o Matrix - rotate detector axes into lab"),
   m_OMatInv(m_Application->saver(), this, "oMatInv", get_OMat().inverted(), "o Matrix Inverse"),
   m_DMat(m_Application->saver(), this, "dMat", CctwDoubleMatrix3x3(), "d Matrix - lab -> detector coords"),
   m_DMatInv(m_Application->saver(), this, "dMatInv", CctwDoubleMatrix3x3(), "d Matrix Inverse"),
@@ -140,7 +140,7 @@ CctwDoubleMatrix3x3 CctwTransformTest::createBMatrix(const CctwUnitCell &cell) c
 
   zzz(0,2) = clat*cos(beta);
   zzz(1,2) = clat*(cos(alpha) - cos(beta)*cos(gamma))/sin(gamma);
-  zzz(1,3) = sqrt(clat*clat - zzz(0,2)*zzz(0,2) - zzz(1,2)*zzz(1,2));
+  zzz(2,2) = sqrt(clat*clat - zzz(0,2)*zzz(0,2) - zzz(1,2)*zzz(1,2));
 
   CctwDoubleMatrix3x3 tmat = zzz.inverted();
 
@@ -177,6 +177,8 @@ CctwDoubleVector3D CctwTransformTest::pixel2qlab(CctwDoubleVector3D pixel)
   xyz = xyz*scale;
 
   xyz.x() -= scale;
+
+  xyz = get_GMatInv()*xyz;
 
   return xyz;
 }
