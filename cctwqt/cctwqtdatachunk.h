@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QSharedPointer>
 #include "cctwqtdataframe.h"
-#include "cctwchunkeddatainterface.h"
+#include "../cctwchunkeddatainterface.h"
 #include "cctwqtdataframemanager.h"
 #include <QMutex>
 

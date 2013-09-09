@@ -2,7 +2,7 @@
 #define CCTWQTDOUBLEMATRIX3X3PROPERTY_H
 
 #include "qcepproperty.h"
-#include "cctwmatrix3x3.h"
+#include "../cctwmatrix3x3.h"
 
 class CctwqtDoubleMatrix3x3Property : public QcepProperty
 {

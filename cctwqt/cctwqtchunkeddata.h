@@ -5,7 +5,7 @@
 #include <QVector>
 #include "cctwqtdatachunk.h"
 #include "cctwqtdataframemanager.h"
-#include "cctwchunkeddatainterface.h"
+#include "../cctwchunkeddatainterface.h"
 
 class CctwqtChunkedData : public CctwqtObject
 {

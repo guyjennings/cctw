@@ -2,7 +2,7 @@
 #define CCTWQTCRYSTALCOORDINATETRANSFORM_H
 
 #include "cctwqtobject.h"
-#include "cctwcrystalcoordinatetransform.h"
+#include "../cctwcrystalcoordinatetransform.h"
 
 class CctwqtCrystalCoordinateTransform : public CctwqtObject, public CctwCrystalCoordinateTransform
 {

@@ -2,7 +2,7 @@
 #define CCTWQTTRANSFORMER_H
 
 #include "cctwqtobject.h"
-#include "cctwtransformer.h"
+#include "../cctwtransformer.h"
 
 class CctwqtTransformer : public CctwqtObject, public CctwTransformer
 {

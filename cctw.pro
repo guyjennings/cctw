@@ -9,7 +9,7 @@ QT          += core gui network script
 
 TARGET       = cctw
 #CONFIG      += console qt
-INCLUDEPATH += cctwqt
+INCLUDEPATH += . cctwqt
 
 DEFINES     += USE_QT
 DEFINES     += CCTW_VERSION=\"$$VERSION\"
