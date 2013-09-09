@@ -70,27 +70,8 @@ CctwqtDoubleVector3DProperty m_##propname;
 
 #ifndef QT_NO_DATASTREAM
 
-template <typename T>
-QDataStream &operator<<(QDataStream &stream, const CctwVector3D<T> &vec)
-{
-  for (int i = 0; i < 3; ++i) {
-    stream << double(vec(i));
-  }
-
-  return stream;
-}
-
-template <typename T>
-QDataStream &operator>>(QDataStream &stream, CctwVector3D<T> &vec)
-{
-  double x;
-  for (int i = 0; i < 3; ++i) {
-    stream >> x;
-    vec(i) = T(x);
-  }
-
-  return stream;
-}
+extern QDataStream &operator<<(QDataStream &stream, const CctwDoubleVector3D &vec);
+extern QDataStream &operator>>(QDataStream &stream, CctwDoubleVector3D &vec);
 
 #endif
 

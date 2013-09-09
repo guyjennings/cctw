@@ -7,16 +7,16 @@
 #include "cctwqtdataframemanager.h"
 #include "../cctwchunkeddatainterface.h"
 
-class CctwqtChunkedData : public CctwqtObject
+class CctwqtChunkedData/* : public CctwqtObject*/
 {
-  Q_OBJECT
+//  Q_OBJECT
 public:
   explicit CctwqtChunkedData(CctwChunkedDataInterface *interface, CctwqtDataFrameManager *manager, QObject *parent = 0);
   void allocateChunks();
 
 signals:
   
-public slots:
+public /*slots*/:
   void clearDependencies();
   void addDependency(CctwIntVector3D f, CctwIntVector3D t);
 

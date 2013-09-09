@@ -4,7 +4,7 @@
 #include "cctwqtchunkeddata.h"
 #include "../cctwinputdatainterface.h"
 
-class CctwqtInputData : public CctwqtChunkedData, public CctwInputDataInterface
+class CctwqtInputData : public CctwInputDataInterface, public CctwqtChunkedData
 {
   Q_OBJECT
 public:

@@ -142,3 +142,28 @@ void CctwqtDoubleVector3DProperty::fromScriptValue(const QScriptValue &obj, Cctw
   vec.y() = obj.property(1).toNumber();
   vec.z() = obj.property(2).toNumber();
 }
+
+
+#ifndef QT_NO_DATASTREAM
+
+QDataStream &operator<<(QDataStream &stream, const CctwDoubleVector3D &vec)
+{
+  for (int i = 0; i < 3; ++i) {
+    stream << vec(i);
+  }
+
+  return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, CctwDoubleVector3D &vec)
+{
+  double x;
+  for (int i = 0; i < 3; ++i) {
+    stream >> x;
+    vec(i) = x;
+  }
+
+  return stream;
+}
+
+#endif

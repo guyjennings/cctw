@@ -6,7 +6,7 @@
 #include "cctwqtdatachunk.h"
 #include "cctwqtdataframemanager.h"
 
-class CctwqtOutputSliceData : public CctwqtObject, public virtual CctwOutputDataInterface
+class CctwqtOutputSliceData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:

@@ -1,7 +1,7 @@
 #include "cctwqtchunkeddata.h"
 
 CctwqtChunkedData::CctwqtChunkedData(CctwChunkedDataInterface *interface, CctwqtDataFrameManager *manager, QObject *parent) :
-  CctwqtObject(parent),
+//  CctwqtObject(parent),
   m_Interface(interface),
   m_Manager(manager)
 {
@@ -14,7 +14,8 @@ void CctwqtChunkedData::allocateChunks()
   m_DataChunks.resize(n);
 
   for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwqtDataChunk(m_Interface -> chunkIndexFromNumber(i), m_Interface, m_Manager, this);
+    m_DataChunks[i] = new CctwqtDataChunk(m_Interface -> chunkIndexFromNumber(i),
+                                          m_Interface, m_Manager, NULL /*this*/);
   }
 }
 

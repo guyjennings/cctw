@@ -12,6 +12,7 @@
 #include "qcepsettingssaver.h"
 #include <QtConcurrentRun>
 #include <QFile>
+#include "cctwqtintvector3dproperty.h"
 
 QcepSettingsSaverPtr g_Saver;
 
@@ -47,6 +48,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   QcepProperty::registerMetaTypes();
   CctwqtDoubleMatrix3x3Property::registerMetaTypes();
   CctwqtDoubleVector3DProperty::registerMetaTypes();
+  CctwqtIntVector3DProperty::registerMetaTypes();
   CctwqtUnitCellProperty::registerMetaTypes();
 
   g_Saver = m_Saver;

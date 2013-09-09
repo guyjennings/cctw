@@ -20,7 +20,12 @@ class CctwCrystalCoordinateTransform : public CctwTransformInterface
 public:
   CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms);
 
+#ifdef USE_QT
+public slots:
+#else
 public:
+#endif
+
 //  static CctwCrystalCoordinateTransform* createNew(int argc, char *argv[]);
 //                                          // Allocate and return a new crystal coordinate transformation object
 //                                          // based on the command line parameters passed in argc and argv
@@ -32,11 +37,6 @@ public:
   virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q);
                                           // Back transform from output to input space coordinates
 
-#ifdef USE_QT
-public slots:
-#else
-public:
-#endif
   void updateFromParameters();
   void setCurrentFrame(double frame);
 

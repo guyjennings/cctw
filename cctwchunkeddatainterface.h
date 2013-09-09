@@ -1,10 +1,20 @@
 #ifndef CCTWCHUNKEDDATAINTERFACE_H
 #define CCTWCHUNKEDDATAINTERFACE_H
 
+#ifdef USE_QT
+#include "cctwqtobject.h"
+#endif
+
 #include "cctwvector3d.h"
 
+#ifdef USE_QT
+class CctwChunkedDataInterface : public CctwqtObject
+{
+  Q_OBJECT
+#else
 class CctwChunkedDataInterface
 {
+#endif
 public:
   CctwChunkedDataInterface(CctwIntVector3D dim,        // Data set dimension
                            CctwIntVector3D chunkSize,  // Chunk size
@@ -13,7 +23,11 @@ public:
 
   CctwChunkedDataInterface();
 
+#ifdef USE_QT
+public slots:
+#else
 public:
+#endif
 
   void                initialize(void *buffer); // Initialize from byte buffer
 

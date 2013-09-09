@@ -1,5 +1,6 @@
 #include "cctwqtscriptengine.h"
 #include "cctwqtapplication.h"
+#include "cctwqtintvector3dproperty.h"
 
 CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) :
   QScriptEngine(parent),
@@ -9,6 +10,7 @@ CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) 
   globalObject().setProperty("print", newFunction(printFunc));
 
   qScriptRegisterMetaType(this, CctwqtDoubleVector3DProperty::toScriptValue, CctwqtDoubleVector3DProperty::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwqtIntVector3DProperty::toScriptValue, CctwqtIntVector3DProperty::fromScriptValue);
   qScriptRegisterMetaType(this, CctwqtDoubleMatrix3x3Property::toScriptValue, CctwqtDoubleMatrix3x3Property::fromScriptValue);
   qScriptRegisterMetaType(this, CctwqtUnitCellProperty::toScriptValue, CctwqtUnitCellProperty::fromScriptValue);
 }
