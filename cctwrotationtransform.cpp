@@ -4,6 +4,11 @@ CctwRotationTransform::CctwRotationTransform()
 {
 }
 
+bool CctwRotationTransform::hasInverse() const
+{
+  return true;
+}
+
 CctwRotationTransform *CctwRotationTransform::createNew(int argc, char *argv[])
 {
   return new CctwRotationTransform();

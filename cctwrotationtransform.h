@@ -13,6 +13,8 @@ public:
                                           // Allocate and return a new rotation transformation object
                                           // based on the command line parameters passed in argc and argv
 
+  virtual bool hasInverse() const;
+
   virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);
                                           // Transform from input to output space coordinates
   virtual CctwDoubleVector3D inverse(CctwDoubleVector3D);

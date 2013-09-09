@@ -10,6 +10,7 @@
 #include "cctwqtdataframemanager.h"
 #include "cctwqtdataframemanagerthread.h"
 #include "cctwqttransformer.h"
+#include "cctwqtcrystalcoordinateparameters.h"
 #include "cctwqtcrystalcoordinatetransform.h"
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
@@ -69,6 +70,7 @@ private:
   CctwqtDataFrameManager            *m_OutputSliceDataManager;
   CctwqtDataFrameManagerThread      *m_OutputSliceDataManagerThread;
   CctwqtOutputSliceData             *m_OutputSliceData;
+  CctwqtCrystalCoordinateParameters *m_Parameters;
   CctwqtCrystalCoordinateTransform  *m_Transform;
   CctwqtTransformer                 *m_Transformer;
   CctwqtCrystalCoordinateTransform  *m_SliceTransform;

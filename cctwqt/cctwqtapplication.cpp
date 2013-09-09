@@ -25,6 +25,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_OutputData(NULL),
   m_OutputSliceDataManager(NULL),
   m_OutputSliceData(NULL),
+  m_Parameters(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
   m_SliceTransform(NULL),
@@ -95,11 +96,13 @@ void CctwqtApplication::initialize()
   m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
   m_OutputSliceData               ->initialize();
 
-  m_Transform        = new CctwqtCrystalCoordinateTransform(this);
+  m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
+
+  m_Transform        = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
   m_Transformer      = new CctwqtTransformer(m_InputData,
                                              m_OutputData,
                                              m_Transform, 1, 1, 1, this);
-  m_SliceTransform   = new CctwqtCrystalCoordinateTransform(this);
+  m_SliceTransform   = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
   m_SliceTransformer = new CctwqtTransformer(m_InputData,
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, this);
@@ -114,6 +117,7 @@ void CctwqtApplication::initialize()
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
   m_ScriptEngine->globalObject().setProperty("outputSliceDataManager", m_ScriptEngine->newQObject(m_OutputSliceDataManager));
   m_ScriptEngine->globalObject().setProperty("outputSliceData", m_ScriptEngine->newQObject(m_OutputSliceData));
+  m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
   m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
@@ -196,6 +200,10 @@ void CctwqtApplication::readSettings(QSettings *settings)
     m_OutputSliceData->readSettings(settings, "outputSliceData");
   }
 
+  if (m_Parameters) {
+    m_Parameters->readSettings(settings, "parameters");
+  }
+
   if (m_Transform) {
     m_Transform->readSettings(settings, "transform");
   }
@@ -265,6 +273,10 @@ void CctwqtApplication::writeSettings(QSettings *settings)
     m_OutputSliceData->writeSettings(settings, "outputSliceData");
   }
 
+  if (m_Parameters) {
+    m_Parameters->writeSettings(settings, "parameters");
+  }
+
   if (m_Transform) {
     m_Transform->writeSettings(settings, "transform");
   }
@@ -288,6 +300,8 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
+  CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
+
   printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
   CctwIntVector3D chStart = m_InputData->chunkStart(idx);
@@ -301,7 +315,7 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 
         CctwDoubleVector3D coords = m_InputData->origin()+index*m_InputData->scale();
 
-        CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
+        CctwDoubleVector3D xfmcoord = transform->forward(coords);
 
         CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
 

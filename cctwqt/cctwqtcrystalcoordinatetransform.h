@@ -4,16 +4,16 @@
 #include "cctwqtobject.h"
 #include "../cctwcrystalcoordinatetransform.h"
 
-class CctwqtCrystalCoordinateTransform : public CctwqtObject, public CctwCrystalCoordinateTransform
+class CctwqtCrystalCoordinateTransform : public CctwCrystalCoordinateTransform
 {
   Q_OBJECT
 public:
-  explicit CctwqtCrystalCoordinateTransform(QObject *parent);
+  explicit CctwqtCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
   
 signals:
   
 public slots:
-  
+  double changeCount() { return CctwCrystalCoordinateTransform::m_CurrentFrameChangeCount; }
 };
 
 #endif // CCTWQTCRYSTALCOORDINATETRANSFORM_H

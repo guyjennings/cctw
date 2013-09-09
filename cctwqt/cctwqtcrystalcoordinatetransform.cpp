@@ -1,7 +1,6 @@
 #include "cctwqtcrystalcoordinatetransform.h"
 
-CctwqtCrystalCoordinateTransform::CctwqtCrystalCoordinateTransform(QObject *parent) :
-  CctwqtObject(parent),
-  CctwCrystalCoordinateTransform()
+CctwqtCrystalCoordinateTransform::CctwqtCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent) :
+  CctwCrystalCoordinateTransform(parms)
 {
 }

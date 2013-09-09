@@ -61,7 +61,9 @@ SOURCES += main.cpp \
     cctwqt/cctwqtdoublevector3dproperty.cpp \
     cctwqt/cctwqtdoublematrix3x3property.cpp \
     cctwunitcell.cpp \
-    cctwqt/cctwqtunitcellproperty.cpp
+    cctwqt/cctwqtunitcellproperty.cpp \
+    cctwcrystalcoordinateparameters.cpp \
+    cctwqt/cctwqtcrystalcoordinateparameters.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -104,7 +106,9 @@ HEADERS += \
     cctwqt/cctwqtdoublevector3dproperty.h \
     cctwqt/cctwqtdoublematrix3x3property.h \
     cctwunitcell.h \
-    cctwqt/cctwqtunitcellproperty.h
+    cctwqt/cctwqtunitcellproperty.h \
+    cctwcrystalcoordinateparameters.h \
+    cctwqt/cctwqtcrystalcoordinateparameters.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \
