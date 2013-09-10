@@ -13,12 +13,14 @@
 class CctwCrystalCoordinateTransform : public CctwqtObject, public CctwTransformInterface
 {
   Q_OBJECT
+public:
+  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
 #else
 class CctwCrystalCoordinateTransform : public CctwTransformInterface
 {
-#endif
 public:
   CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms);
+#endif
 
 #ifdef USE_QT
 public slots:
