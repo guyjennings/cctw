@@ -302,7 +302,7 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
-  CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
+  CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, NULL);
 
   printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
