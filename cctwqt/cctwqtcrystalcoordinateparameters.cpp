@@ -82,6 +82,8 @@ CctwqtCrystalCoordinateParameters::CctwqtCrystalCoordinateParameters(CctwqtAppli
   connect(&m_GridOrigin, SIGNAL(valueChanged(CctwDoubleVector3D,int)), this,  SLOT(updateParameters()));
   connect(&m_GridBasis, SIGNAL(valueChanged(CctwDoubleMatrix3x3,int)), this,  SLOT(updateParameters()));
   connect(&m_GridDim, SIGNAL(valueChanged(CctwDoubleVector3D,int)), this,  SLOT(updateParameters()));
+
+  updateParameters();
 }
 
 void CctwqtCrystalCoordinateParameters::updateParameters()
