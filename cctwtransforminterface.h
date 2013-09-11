@@ -1,12 +1,30 @@
 #ifndef CCTWTRANSFORMINTERFACE_H
 #define CCTWTRANSFORMINTERFACE_H
 
+#ifdef USE_QT
+#include "cctwqtobject.h"
+#endif
+
 #include "cctwvector3d.h"
 
+#ifdef USE_QT
+class CctwTransformInterface : public CctwqtObject
+{
+  Q_OBJECT
+public:
+  CctwTransformInterface(QObject *parent);
+#else
 class CctwTransformInterface
 {
 public:
   CctwTransformInterface();
+#endif
+
+#ifdef USE_QT
+public slots:
+#else
+public:
+#endif
 
   virtual bool hasInverse() const = 0;
 

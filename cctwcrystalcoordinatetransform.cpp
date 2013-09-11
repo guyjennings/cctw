@@ -3,7 +3,7 @@
 
 #ifdef USE_QT
 CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent) :
-  CctwqtObject(parent),
+  CctwTransformInterface(parent),
   m_Parms(parms),
   m_CurrentFrame(-1),
   m_CurrentFrameChangeCount(0)
@@ -13,6 +13,7 @@ CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordi
 }
 #else
 CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms) :
+  CctwTransformInterface(),
   m_Parms(parms),
   m_CurrentFrame(-1),
   m_CurrentFrameChangeCount(0)

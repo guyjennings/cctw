@@ -5,8 +5,14 @@
 
 class CctwCompoundTransform : public CctwTransformInterface
 {
+#ifdef USE_QT
+  Q_OBJECT
+public:
+  CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QObject *parent);
+#else
 public:
   CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2);
+#endif
 
 public:
   virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);

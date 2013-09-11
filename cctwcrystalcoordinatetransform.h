@@ -9,15 +9,13 @@
 #include "cctwqtobject.h"
 #endif
 
-#ifdef USE_QT
-class CctwCrystalCoordinateTransform : public CctwqtObject, public CctwTransformInterface
+class CctwCrystalCoordinateTransform : public CctwTransformInterface
 {
+#ifdef USE_QT
   Q_OBJECT
 public:
   CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
 #else
-class CctwCrystalCoordinateTransform : public CctwTransformInterface
-{
 public:
   CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms);
 #endif
