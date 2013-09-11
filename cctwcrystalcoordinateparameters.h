@@ -1,15 +1,28 @@
 #ifndef CCTWCRYSTALCOORDINATEPARAMETERS_H
 #define CCTWCRYSTALCOORDINATEPARAMETERS_H
 
+#ifdef USE_QT
+#include "cctwqtobject.h"
+#endif
+
 #include "cctwvector3d.h"
 #include "cctwmatrix3x3.h"
 #include "cctwunitcell.h"
 
+#ifdef USE_QT
+class CctwCrystalCoordinateParameters : public CctwqtObject
+{
+  Q_OBJECT
+public:
+  CctwCrystalCoordinateParameters(QObject *parent);
+#else
 class CctwCrystalCoordinateParameters
 {
 public:
   CctwCrystalCoordinateParameters();
+#endif
 
+public:
   double m_PixelSize;
   double m_Wavelength;
   double m_Distance;

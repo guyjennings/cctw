@@ -2,8 +2,7 @@
 #include "cctwqtapplication.h"
 
 CctwqtCrystalCoordinateParameters::CctwqtCrystalCoordinateParameters(CctwqtApplication *app, QObject *parent) :
-  CctwqtObject(parent),
-  CctwCrystalCoordinateParameters(),
+  CctwCrystalCoordinateParameters(parent),
   m_Application(app),
   m_PixelSize(m_Application->saver(), this, "pixelSize", 0.080567, "Detector Pixel Size (mm)"),
   m_Wavelength(m_Application->saver(), this, "wavelength", 0.153870, "Wavelength (Angstrom)"),

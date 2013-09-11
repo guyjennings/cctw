@@ -9,7 +9,7 @@
 
 class CctwqtApplication;
 
-class CctwqtCrystalCoordinateParameters : public CctwqtObject, public CctwCrystalCoordinateParameters
+class CctwqtCrystalCoordinateParameters : public CctwCrystalCoordinateParameters
 {
   Q_OBJECT
 public:
