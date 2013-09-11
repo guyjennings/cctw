@@ -1,8 +1,24 @@
 #ifndef CCTWOUTPUTDATAINTERFACE_H
 #define CCTWOUTPUTDATAINTERFACE_H
 
+#ifdef USE_QT
+#include "cctwqtchunkeddata.h"
+#else
 #include "cctwchunkeddatainterface.h"
+#endif
 
+#ifdef USE_QT
+class CctwOutputDataInterface : public CctwqtChunkedData
+{
+  Q_OBJECT
+public:
+  CctwOutputDataInterface(CctwIntVector3D dim,        // Data set dimension
+                          CctwIntVector3D chunkSize,  // Chunk size
+                          CctwDoubleVector3D origin,
+                          CctwDoubleVector3D scale,
+                          CctwqtDataFrameManager *manager,
+                          QObject *parent);
+#else
 class CctwOutputDataInterface : public CctwChunkedDataInterface
 {
 public:
@@ -10,6 +26,7 @@ public:
                           CctwIntVector3D chunkSize,  // Chunk size
                           CctwDoubleVector3D origin,
                           CctwDoubleVector3D scale);
+#endif
 
 public:
   virtual int useChunk(int nx, int ny, int nz) = 0;

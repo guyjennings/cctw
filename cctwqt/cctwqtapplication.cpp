@@ -77,28 +77,39 @@ void CctwqtApplication::initialize()
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
 
+  m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
+
   m_InputDataManagerThread  = new CctwqtDataFrameManagerThread(this);
   m_InputDataManagerThread  -> start();
 
   m_InputDataManager        = m_InputDataManagerThread->manager();
-  m_InputData               = new CctwqtInputData(m_InputDataManager, this);
+  m_InputData               = new CctwqtInputData(CctwIntVector3D(2048,2048,2048),
+                                                  CctwIntVector3D(128, 128, 128),
+                                                  CctwDoubleVector3D(-5,-5,-5),
+                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
+                                                  m_InputDataManager, this);
   m_InputData               -> allocateChunks();
 
   m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
   m_OutputDataManagerThread -> start();
 
   m_OutputDataManager       = m_OutputDataManagerThread->manager();
-  m_OutputData              = new CctwqtOutputData(m_OutputDataManager, this);
+  m_OutputData              = new CctwqtOutputData(CctwIntVector3D(2048,2048,2048),
+                                                   CctwIntVector3D(128, 128, 128),
+                                                   CctwDoubleVector3D(-5,-5,-5),
+                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
+                                                   m_OutputDataManager, this);
   m_OutputData              -> allocateChunks();
 
   m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
   m_OutputSliceDataManagerThread  -> start();
 
   m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
-  m_OutputSliceData               = new CctwqtOutputSliceData(m_OutputSliceDataManager);
-  m_OutputSliceData               ->initialize();
-
-  m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
+  m_OutputSliceData               = new CctwqtOutputSliceData(CctwIntVector3D(2048,2048,1),
+                                                              CctwIntVector3D(128, 128, 1),
+                                                              CctwDoubleVector3D(-5,-5, 0),
+                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
+                                                              m_OutputSliceDataManager, this);
 
   m_Transform        = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
   m_Transformer      = new CctwqtTransformer(m_InputData,
@@ -178,6 +189,10 @@ void CctwqtApplication::readSettings(QSettings *settings)
 {
   QcepProperty::readSettings(this, &staticMetaObject, "cctw", settings, true);
 
+  if (m_Parameters) {
+    m_Parameters->readSettings(settings, "parameters");
+  }
+
   if (m_InputDataManager) {
     m_InputDataManager->readSettings(settings, "inputDataManager");
   }
@@ -200,10 +215,6 @@ void CctwqtApplication::readSettings(QSettings *settings)
 
   if (m_OutputSliceData) {
     m_OutputSliceData->readSettings(settings, "outputSliceData");
-  }
-
-  if (m_Parameters) {
-    m_Parameters->readSettings(settings, "parameters");
   }
 
   if (m_Transform) {
@@ -251,6 +262,10 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 {
   QcepProperty::writeSettings(this, &staticMetaObject, "cctw", settings, true);
 
+  if (m_Parameters) {
+    m_Parameters->writeSettings(settings, "parameters");
+  }
+
   if (m_InputDataManager) {
     m_InputDataManager->writeSettings(settings, "inputDataManager");
   }
@@ -273,10 +288,6 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
   if (m_OutputSliceData) {
     m_OutputSliceData->writeSettings(settings, "outputSliceData");
-  }
-
-  if (m_Parameters) {
-    m_Parameters->writeSettings(settings, "parameters");
   }
 
   if (m_Transform) {

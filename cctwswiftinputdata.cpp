@@ -1,18 +1,30 @@
 #include "cctwswiftinputdata.h"
 #include <stdlib.h>
 
-CctwSwiftInputData::CctwSwiftInputData()
-  : CctwInputDataInterface(CctwIntVector3D(2048,2048,3600),
-                           CctwIntVector3D(100,100,100),
-                           CctwDoubleVector3D(-102.4, -102.4, 0.0),
-                           CctwDoubleVector3D(0.1, 0.1, 0.1))
+#ifdef USE_QT
+CctwSwiftInputData::CctwSwiftInputData(CctwIntVector3D dim,        // Data set dimension
+                                       CctwIntVector3D chunkSize,  // Chunk size
+                                       CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
+                                       CctwDoubleVector3D scale,   // Real offset of pixel 1,1,1
+                                       CctwqtDataFrameManager *manager,
+                                       QObject *parent)
+  : CctwInputDataInterface(dim, chunkSize, origin, scale, manager, parent)
 {
 }
+#else
+CctwSwiftInputData::CctwSwiftInputData(CctwIntVector3D dim,        // Data set dimension
+                                       CctwIntVector3D chunkSize,  // Chunk size
+                                       CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
+                                       CctwDoubleVector3D scale)   // Real offset of pixel 1,1,1
+  : CctwInputDataInterface(dim, chunkSize, origin, scale)
+{
+}
+#endif
 
-CctwSwiftInputData *CctwSwiftInputData::createNew(int argc, char *argv[])
-{
-  return new CctwSwiftInputData();
-}
+//CctwSwiftInputData *CctwSwiftInputData::createNew(int argc, char *argv[])
+//{
+//  return new CctwSwiftInputData();
+//}
 
 int CctwSwiftInputData::useChunk(int nx, int ny, int nz)
 {

@@ -10,8 +10,12 @@ class CctwqtOutputSliceData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputSliceData(CctwqtDataFrameManager *manager);
-  void initialize();
+  explicit CctwqtOutputSliceData(CctwIntVector3D dim,        // Data set dimension
+                                 CctwIntVector3D chunkSize,  // Chunk size
+                                 CctwDoubleVector3D origin,
+                                 CctwDoubleVector3D scale,
+                                 CctwqtDataFrameManager *manager,
+                                 QObject *parent);
 
 signals:
 
@@ -32,9 +36,6 @@ public:
                                               // Indicate that we've finished with a chunk of output data - chunkId is an identifier returned
                                               // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
                                               // is invalid.
-private:
-  CctwqtDataFrameManager      *m_Manager;
-  QVector< CctwqtDataChunk* >  m_DataChunks;
 };
 
 #endif // CCTWQTOUTPUTSLICEDATA_H

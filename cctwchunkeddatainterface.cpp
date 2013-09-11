@@ -1,8 +1,35 @@
 #include "cctwchunkeddatainterface.h"
 #include <math.h>
 
-CctwChunkedDataInterface::CctwChunkedDataInterface(CctwIntVector3D dim, CctwIntVector3D chunkSize, CctwDoubleVector3D origin, CctwDoubleVector3D scale)
-  : m_Dimensions(dim),
+#ifdef USE_QT
+CctwChunkedDataInterface::CctwChunkedDataInterface
+  (CctwIntVector3D dim,
+   CctwIntVector3D chunkSize,
+   CctwDoubleVector3D origin,
+   CctwDoubleVector3D scale,
+   QObject *parent)
+  : CctwqtObject(parent),
+    m_Dimensions(dim),
+    m_ChunkSize(chunkSize),
+    m_Origin(origin),
+    m_Scale(scale),
+    m_ChunkCount((dim-CctwIntVector3D(1,1,1))/chunkSize+CctwIntVector3D(1,1,1))
+{
+}
+
+CctwChunkedDataInterface::CctwChunkedDataInterface(QObject *parent)
+{
+}
+
+#else
+
+CctwChunkedDataInterface::CctwChunkedDataInterface
+  (CctwIntVector3D dim,
+   CctwIntVector3D chunkSize,
+   CctwDoubleVector3D origin,
+   CctwDoubleVector3D scale)
+  : CctwqtObject(parent),
+    m_Dimensions(dim),
     m_ChunkSize(chunkSize),
     m_Origin(origin),
     m_Scale(scale),
@@ -13,6 +40,8 @@ CctwChunkedDataInterface::CctwChunkedDataInterface(CctwIntVector3D dim, CctwIntV
 CctwChunkedDataInterface::CctwChunkedDataInterface()
 {
 }
+
+#endif
 
 void                CctwChunkedDataInterface::initialize(void *buffer)
 {

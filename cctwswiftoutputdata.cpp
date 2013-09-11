@@ -1,18 +1,34 @@
 #include "cctwswiftoutputdata.h"
 #include <stdlib.h>
 
-CctwSwiftOutputData::CctwSwiftOutputData()
-  : CctwOutputDataInterface(CctwIntVector3D(2048,2048,2048),
-                            CctwIntVector3D(100,100,100),
-                            CctwDoubleVector3D(-102.4,-102.4,-102.4),
-                            CctwDoubleVector3D(0.1,0.1,0.1))
+#ifdef USE_QT
+
+CctwSwiftOutputData::CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
+                                         CctwIntVector3D chunkSize,  // Chunk size
+                                         CctwDoubleVector3D origin,
+                                         CctwDoubleVector3D scale,
+                                         CctwqtDataFrameManager *manager,
+                                         QObject *parent)
+  : CctwOutputDataInterface(dim, chunkSize, origin, scale, manager, parent)
 {
 }
 
-CctwSwiftOutputData *CctwSwiftOutputData::createNew(int argc, char *argv[])
+#else
+
+CctwSwiftOutputData::CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
+                                         CctwIntVector3D chunkSize,  // Chunk size
+                                         CctwDoubleVector3D origin,
+                                         CctwDoubleVector3D scale)
+  : CctwOutputDataInterface(dim, chunkSize, origin, scale)
 {
-  return new CctwSwiftOutputData();
 }
+
+#endif
+
+//CctwSwiftOutputData *CctwSwiftOutputData::createNew(int argc, char *argv[])
+//{
+//  return new CctwSwiftOutputData();
+//}
 
 int CctwSwiftOutputData::useChunk(int nx, int ny, int nz)
 {

@@ -61,6 +61,7 @@ private:
 private:
   QcepObjectNamer                    m_ObjectNamer;
   CctwqtMainWindow                  *m_Window;
+  CctwqtCrystalCoordinateParameters *m_Parameters;
   CctwqtDataFrameManager            *m_InputDataManager;
   CctwqtDataFrameManagerThread      *m_InputDataManagerThread;
   CctwqtInputData                   *m_InputData;
@@ -70,7 +71,6 @@ private:
   CctwqtDataFrameManager            *m_OutputSliceDataManager;
   CctwqtDataFrameManagerThread      *m_OutputSliceDataManagerThread;
   CctwqtOutputSliceData             *m_OutputSliceData;
-  CctwqtCrystalCoordinateParameters *m_Parameters;
   CctwqtCrystalCoordinateTransform  *m_Transform;
   CctwqtTransformer                 *m_Transformer;
   CctwqtCrystalCoordinateTransform  *m_SliceTransform;

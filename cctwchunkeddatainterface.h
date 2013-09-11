@@ -11,10 +11,17 @@
 class CctwChunkedDataInterface : public CctwqtObject
 {
   Q_OBJECT
+public:
+  CctwChunkedDataInterface(CctwIntVector3D dim,        // Data set dimension
+                           CctwIntVector3D chunkSize,  // Chunk size
+                           CctwDoubleVector3D origin,
+                           CctwDoubleVector3D scale,
+                           QObject *parent);
+
+  CctwChunkedDataInterface(QObject *parent);
 #else
 class CctwChunkedDataInterface
 {
-#endif
 public:
   CctwChunkedDataInterface(CctwIntVector3D dim,        // Data set dimension
                            CctwIntVector3D chunkSize,  // Chunk size
@@ -22,6 +29,7 @@ public:
                            CctwDoubleVector3D scale);
 
   CctwChunkedDataInterface();
+#endif
 
 #ifdef USE_QT
 public slots:

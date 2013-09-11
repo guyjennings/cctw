@@ -4,11 +4,16 @@
 #include "cctwqtchunkeddata.h"
 #include "../cctwoutputdatainterface.h"
 
-class CctwqtOutputData : public CctwOutputDataInterface, public CctwqtChunkedData
+class CctwqtOutputData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputData(CctwqtDataFrameManager *manager, QObject *parent=0);
+  explicit CctwqtOutputData(CctwIntVector3D dim,        // Data set dimension
+                            CctwIntVector3D chunkSize,  // Chunk size
+                            CctwDoubleVector3D origin,
+                            CctwDoubleVector3D scale,
+                            CctwqtDataFrameManager *manager,
+                            QObject *parent);
   
 signals:
   
