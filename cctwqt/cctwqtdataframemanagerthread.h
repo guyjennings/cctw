@@ -19,6 +19,10 @@ public slots:
 public:
   CctwqtDataFrameManager *manager() const;
 
+  static void sleep(unsigned long n) { QThread::sleep(n); }
+  static void msleep(unsigned long n) { QThread::msleep(n); }
+  static void usleep(unsigned long n) { QThread::usleep(n); }
+
 private:
   void run();
 

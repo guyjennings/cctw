@@ -88,6 +88,7 @@ void CctwqtApplication::initialize()
                                                   CctwDoubleVector3D(-5,-5,-5),
                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
                                                   m_InputDataManager, this);
+  m_InputDataManager        -> setData(m_InputData);
   m_InputData               -> allocateChunks();
 
   m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
@@ -99,6 +100,7 @@ void CctwqtApplication::initialize()
                                                    CctwDoubleVector3D(-5,-5,-5),
                                                    CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
                                                    m_OutputDataManager, this);
+  m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
   m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
@@ -313,36 +315,39 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
-  CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, NULL);
+  if (!get_Halting()) {
+    CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, NULL);
 
-  printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+    CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+    CctwIntVector3D chSize  = m_InputData->chunkSize();
+    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
-  for (int z=0; z<chSize.z(); z++) {
-    for (int y=0; y<chSize.y(); y++) {
-      for (int x=0; x<chSize.x(); x++) {
-        CctwDoubleVector3D index = dblStart+CctwDoubleVector3D(x,y,z);
+    for (int z=0; z<chSize.z(); z++) {
 
-        CctwDoubleVector3D coords = m_InputData->origin()+index*m_InputData->scale();
+      for (int y=0; y<chSize.y(); y++) {
+        for (int x=0; x<chSize.x(); x++) {
+          CctwDoubleVector3D index = dblStart+CctwDoubleVector3D(x,y,z);
 
-        CctwDoubleVector3D xfmcoord = transform->forward(coords);
+          CctwDoubleVector3D coords = m_InputData->origin()+index*m_InputData->scale();
 
-        CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
+          CctwDoubleVector3D xfmcoord = transform->forward(coords);
 
-        if (m_OutputData->containsPixel(pixels)) {
-          CctwIntVector3D    opchunk  = m_OutputData->findChunkIndexContaining(xfmcoord);
+          CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
 
-          m_InputData->addDependency(idx, opchunk);
-          m_OutputData->addDependency(opchunk, idx);
+          if (m_OutputData->containsPixel(pixels)) {
+            CctwIntVector3D    opchunk  = m_OutputData->findChunkIndexContaining(xfmcoord);
+
+            m_InputData->addDependency(idx, opchunk);
+            m_OutputData->addDependency(opchunk, idx);
+          }
         }
       }
     }
-  }
 
-  printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+    printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+  }
 
   prop_Progress()->incValue(1);
 }
@@ -524,5 +529,41 @@ void CctwqtApplication::reportDependencies()
         }
       }
     }
+  }
+}
+
+void CctwqtApplication::dummyInputRun()
+{
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          QtConcurrent::run(this, &CctwqtApplication::dummyInputRunChunk, idx);
+//          calculateChunkDependencies(idx);
+        }
+      }
+    }
+  }
+}
+
+void CctwqtApplication::dummyInputRunChunk(CctwIntVector3D idx)
+{
+  if (!get_Halting()) {
+    int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
+    printMessage(tr("Loaded chunk [%1,%2,%3] = %4").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(chunkId));
+
+    m_InputData->releaseChunk(chunkId);
+
+    prop_Progress()->incValue(1);
   }
 }

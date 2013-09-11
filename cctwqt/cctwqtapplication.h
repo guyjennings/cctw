@@ -48,6 +48,9 @@ public slots:
 
   void doAboutToQuit();
 
+  void dummyInputRun();
+  void dummyInputRunChunk(CctwIntVector3D idx);
+
 public:
   QcepSettingsSaverWPtr saver() const;
 

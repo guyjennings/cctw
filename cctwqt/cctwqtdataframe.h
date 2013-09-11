@@ -9,15 +9,17 @@ class CctwqtDataFrame : public CctwqtObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataFrame(int dimx, int dimy, QAtomicInt *refcounter, QObject *parent);
+  explicit CctwqtDataFrame(int dimx, int dimy, QObject *parent);
   virtual ~CctwqtDataFrame();
 
 signals:
   
 public slots:
-  
+  int reference();
+  int dereference();
+
 private:
-  QAtomicInt     *m_Counter;
+  QAtomicInt      m_Counter;
   int             m_DimX;
   int             m_DimY;
   QVector<double> m_Data;

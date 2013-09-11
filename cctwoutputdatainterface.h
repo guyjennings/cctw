@@ -28,7 +28,11 @@ public:
                           CctwDoubleVector3D scale);
 #endif
 
+#ifdef USE_QT
+public slots:
+#else
 public:
+#endif
   virtual int useChunk(int nx, int ny, int nz) = 0;
                                               // Indicate that we'll want to be using chunk number nx,ny,nz of the output data.
                                               // Return an identifier by which the chunk can be referenced, or a negative number on failure

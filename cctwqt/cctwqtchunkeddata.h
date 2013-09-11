@@ -27,7 +27,7 @@ public slots:
 
   CctwqtDataChunk *chunk(CctwIntVector3D idx);
 
-private:
+protected:
   CctwqtDataFrameManager      *m_Manager;
   QVector< CctwqtDataChunk* >  m_DataChunks;
 };
