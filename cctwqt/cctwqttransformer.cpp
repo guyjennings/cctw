@@ -6,7 +6,6 @@ CctwqtTransformer::CctwqtTransformer
    CctwTransformInterface *xform,
    int osx, int osy, int osz,
    QObject *parent) :
-  CctwqtObject(parent),
-  CctwTransformer(input, output, xform, osx, osy, osz, 0)
+  CctwTransformer(input, output, xform, osx, osy, osz, 0, parent)
 {
 }

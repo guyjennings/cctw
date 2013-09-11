@@ -1,10 +1,9 @@
 #ifndef CCTWQTTRANSFORMER_H
 #define CCTWQTTRANSFORMER_H
 
-#include "cctwqtobject.h"
 #include "../cctwtransformer.h"
 
-class CctwqtTransformer : public CctwqtObject, public CctwTransformer
+class CctwqtTransformer : public CctwTransformer
 {
   Q_OBJECT
 public:
