@@ -21,6 +21,21 @@ void CctwqtDataChunk::clearDependencies()
   m_Dependencies.resize(0);
 }
 
+void CctwqtDataChunk::sortDependencies()
+{
+  qSort(m_Dependencies.begin(), m_Dependencies.end());
+}
+
+int  CctwqtDataChunk::dependencyCount() const
+{
+  return m_Dependencies.count();
+}
+
+CctwIntVector3D CctwqtDataChunk::dependency(int n) const
+{
+  return m_Dependencies.value(n);
+}
+
 void CctwqtDataChunk::addDependency(CctwIntVector3D dep)
 {
   QMutexLocker lock(&m_DependenciesLock);
@@ -38,13 +53,13 @@ void CctwqtDataChunk::reportDependencies()
 {
   QMutexLocker lock(&m_DependenciesLock);
 
-  if (m_Dependencies.count()) {
-    qSort(m_Dependencies.begin(), m_Dependencies.end());
+  QString msg(tr("[%1,%2,%3] ->").arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z()));
 
-    foreach (CctwIntVector3D dep, m_Dependencies) {
-      printMessage(tr("[%1,%2,%3] -> [%4,%5,%6]")
-                   .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
-                   .arg(dep.x()).arg(dep.y()).arg(dep.z()));
-    }
+  sortDependencies();
+
+  foreach (CctwIntVector3D dep, m_Dependencies) {
+    msg += tr(" [%4,%5,%6]").arg(dep.x()).arg(dep.y()).arg(dep.z());
   }
+
+  printMessage(msg);
 }

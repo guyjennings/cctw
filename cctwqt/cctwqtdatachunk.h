@@ -20,8 +20,11 @@ public:
   
   void clearDependencies();
   void addDependency(CctwIntVector3D dep);
-  void reportDependencies();
+  void sortDependencies();
+  int  dependencyCount() const;
+  CctwIntVector3D dependency(int n) const;
 
+  void reportDependencies();
 signals:
   
 public slots:

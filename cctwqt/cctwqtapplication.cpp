@@ -321,14 +321,16 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
         for (int x=0; x<chSize.x(); x++) {
           CctwDoubleVector3D index = dblStart+CctwDoubleVector3D(x,y,z);
 
-          CctwDoubleVector3D coords = m_InputData->origin()+index*m_InputData->scale();
+          CctwDoubleVector3D coords = /*m_InputData->origin()+index*m_InputData->scale();*/
+              CctwDoubleVector3D(index.x(), index.y(), index.z());
 
           CctwDoubleVector3D xfmcoord = transform->forward(coords);
 
-          CctwIntVector3D    pixels   = m_OutputData->toPixel(xfmcoord);
+          CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
+              CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
           if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D    opchunk  = m_OutputData->findChunkIndexContaining(xfmcoord);
+            CctwIntVector3D    opchunk  = m_OutputData->chunkIndex(pixels);
 
             m_InputData->addDependency(idx, opchunk);
             m_OutputData->addDependency(opchunk, idx);
@@ -378,7 +380,9 @@ void CctwqtApplication::saveDependencies(QString path)
   set_Progress(0);
   set_ProgressLimit(chunks.volume());
 
-  QFile aFile;
+  QFile aFile(path);
+
+  aFile.open(QIODevice::Append);
 
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
@@ -387,6 +391,21 @@ void CctwqtApplication::saveDependencies(QString path)
           break;
         } else {
           CctwIntVector3D idx(x,y,z);
+
+          CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+
+          chunk->sortDependencies();
+
+          int nDeps = chunk->dependencyCount();
+
+          QString msg(tr("[%1,%2,%3] ->").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+
+          for (int i=0; i<nDeps; i++) {
+            CctwIntVector3D dep = chunk->dependency(i);
+            msg += tr(" [%1,%2,%3]").arg(dep.x()).arg(dep.y()).arg(dep.z());
+          }
+
+          aFile.write(qPrintable(msg+"\n"));
 
           prop_Progress()->incValue(1);
         }
@@ -556,5 +575,155 @@ void CctwqtApplication::dummyInputRunChunk(CctwIntVector3D idx)
     m_InputData->releaseChunk(chunkId);
 
     prop_Progress()->incValue(1);
+  }
+}
+
+void CctwqtApplication::reportOutputDependencies()
+{
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          reportInputDependencies(idx);
+        }
+      }
+    }
+  }
+}
+
+void CctwqtApplication::reportOutputDependencies(CctwIntVector3D idx)
+{
+  CctwqtDataChunk *chunk = m_OutputData->chunk(idx);
+
+  if (chunk) {
+    chunk->reportDependencies();
+  }
+}
+
+void CctwqtApplication::reportInputDependencies()
+{
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          reportInputDependencies(idx);
+        }
+      }
+    }
+  }
+}
+
+void CctwqtApplication::reportInputDependencies(CctwIntVector3D idx)
+{
+  CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+
+  if (chunk) {
+    chunk->reportDependencies();
+  }
+}
+
+void CctwqtApplication::reportInputChunkCounts()
+{
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      QString aLine;
+
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+
+          if (chunk) {
+            int nDeps = chunk->dependencyCount();
+
+            if (nDeps > 9) {
+              aLine += "*";
+            } else if (nDeps >= 1) {
+              aLine += tr("%1").arg(nDeps);
+            } else {
+              aLine += "0";
+            }
+          } else {
+            aLine += "0";
+          }
+        }
+      }
+
+      printMessage(aLine);
+    }
+
+    printMessage("");
+  }
+}
+
+void CctwqtApplication::reportOutputChunkCounts()
+{
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      QString aLine;
+
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          break;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          CctwqtDataChunk *chunk = m_OutputData->chunk(idx);
+
+          if (chunk) {
+            int nDeps = chunk->dependencyCount();
+
+            if (nDeps > 9) {
+              aLine += "*";
+            } else if (nDeps >= 1) {
+              aLine += tr("%1").arg(nDeps);
+            } else {
+              aLine += "0";
+            }
+          } else {
+            aLine += "0";
+          }
+        }
+      }
+
+      printMessage(aLine);
+    }
+
+    printMessage("");
   }
 }

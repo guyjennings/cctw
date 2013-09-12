@@ -51,6 +51,15 @@ public slots:
   void dummyInputRun();
   void dummyInputRunChunk(CctwIntVector3D idx);
 
+  void reportInputDependencies();
+  void reportInputDependencies(CctwIntVector3D idx);
+
+  void reportOutputDependencies();
+  void reportOutputDependencies(CctwIntVector3D idx);
+
+  void reportInputChunkCounts();
+  void reportOutputChunkCounts();
+
 public:
   QcepSettingsSaverWPtr saver() const;
 

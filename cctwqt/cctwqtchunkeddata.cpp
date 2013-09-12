@@ -21,7 +21,7 @@ void CctwqtChunkedData::allocateChunks()
   for (int i=0; i<n; i++) {
     m_DataChunks[i] = new CctwqtDataChunk(chunkIndexFromNumber(i),
                                           this,
-                                          m_Manager, NULL /*this*/);
+                                          m_Manager, parent());
   }
 }
 
