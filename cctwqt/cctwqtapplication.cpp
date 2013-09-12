@@ -79,10 +79,7 @@ void CctwqtApplication::initialize()
 
   m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
 
-  m_InputDataManagerThread  = new CctwqtDataFrameManagerThread(this);
-  m_InputDataManagerThread  -> start();
-
-  m_InputDataManager        = m_InputDataManagerThread->manager();
+  m_InputDataManager        = new CctwqtInputDataFrameManager(this);
   m_InputData               = new CctwqtInputData(CctwIntVector3D(2048,2048,2048),
                                                   CctwIntVector3D(128, 128, 128),
                                                   CctwDoubleVector3D(-5,-5,-5),
@@ -91,10 +88,7 @@ void CctwqtApplication::initialize()
   m_InputDataManager        -> setData(m_InputData);
   m_InputData               -> allocateChunks();
 
-  m_OutputDataManagerThread = new CctwqtDataFrameManagerThread(this);
-  m_OutputDataManagerThread -> start();
-
-  m_OutputDataManager       = m_OutputDataManagerThread->manager();
+  m_OutputDataManager       = new CctwqtOutputDataFrameManager(this);
   m_OutputData              = new CctwqtOutputData(CctwIntVector3D(2048,2048,2048),
                                                    CctwIntVector3D(128, 128, 128),
                                                    CctwDoubleVector3D(-5,-5,-5),
@@ -103,10 +97,7 @@ void CctwqtApplication::initialize()
   m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
-  m_OutputSliceDataManagerThread  = new CctwqtDataFrameManagerThread(this);
-  m_OutputSliceDataManagerThread  -> start();
-
-  m_OutputSliceDataManager        = m_OutputSliceDataManagerThread->manager();
+  m_OutputSliceDataManager        = new CctwqtOutputDataFrameManager(this);
   m_OutputSliceData               = new CctwqtOutputSliceData(CctwIntVector3D(2048,2048,1),
                                                               CctwIntVector3D(128, 128, 1),
                                                               CctwDoubleVector3D(-5,-5, 0),

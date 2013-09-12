@@ -50,8 +50,6 @@ SOURCES += main.cpp \
     cctwqt/cctwqtoutputslicedata.cpp \
     cctwqt/cctwqtdataframe.cpp \
     cctwqt/cctwqtdatachunk.cpp \
-    cctwqt/cctwqtdataframemanager.cpp \
-    cctwqt/cctwqtdataframemanagerthread.cpp \
     cctwqt/cctwqttransformer.cpp \
     cctwqt/cctwqtcrystalcoordinatetransform.cpp \
     cctwqt/cctwqtobject.cpp \
@@ -64,7 +62,10 @@ SOURCES += main.cpp \
     cctwqt/cctwqtunitcellproperty.cpp \
     cctwcrystalcoordinateparameters.cpp \
     cctwqt/cctwqtcrystalcoordinateparameters.cpp \
-    cctwqt/cctwqtintvector3dproperty.cpp
+    cctwqt/cctwqtintvector3dproperty.cpp \
+    cctwqt/cctwqtinputdataframemanager.cpp \
+    cctwqt/cctwqtoutputdataframemanager.cpp \
+    cctwqt/cctwqtdataframemanager.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -96,8 +97,6 @@ HEADERS += \
     cctwqt/cctwqtoutputslicedata.h \
     cctwqt/cctwqtdataframe.h \
     cctwqt/cctwqtdatachunk.h \
-    cctwqt/cctwqtdataframemanager.h \
-    cctwqt/cctwqtdataframemanagerthread.h \
     cctwqt/cctwqttransformer.h \
     cctwqt/cctwqtcrystalcoordinatetransform.h \
     cctwqt/cctwqtobject.h \
@@ -110,7 +109,10 @@ HEADERS += \
     cctwqt/cctwqtunitcellproperty.h \
     cctwcrystalcoordinateparameters.h \
     cctwqt/cctwqtcrystalcoordinateparameters.h \
-    cctwqt/cctwqtintvector3dproperty.h
+    cctwqt/cctwqtintvector3dproperty.h \
+    cctwqt/cctwqtinputdataframemanager.h \
+    cctwqt/cctwqtoutputdataframemanager.h \
+    cctwqt/cctwqtdataframemanager.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \

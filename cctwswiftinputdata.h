@@ -12,7 +12,7 @@ public:
                      CctwIntVector3D chunkSize,  // Chunk size
                      CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
                      CctwDoubleVector3D scale,   // Real offset of pixel 1,1,1
-                     CctwqtDataFrameManager *manager,
+                     CctwqtInputDataFrameManager *manager,
                      QObject *parent);
 #else
 class CctwSwiftInputData : public CctwInputDataInterface

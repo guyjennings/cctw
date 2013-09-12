@@ -7,8 +7,8 @@
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
 #include "cctwqtoutputslicedata.h"
-#include "cctwqtdataframemanager.h"
-#include "cctwqtdataframemanagerthread.h"
+#include "cctwqtinputdataframemanager.h"
+#include "cctwqtoutputdataframemanager.h"
 #include "cctwqttransformer.h"
 #include "cctwqtcrystalcoordinateparameters.h"
 #include "cctwqtcrystalcoordinatetransform.h"
@@ -62,25 +62,22 @@ private:
   void writeSettings(QSettings *settings);
 
 private:
-  QcepObjectNamer                    m_ObjectNamer;
-  CctwqtMainWindow                  *m_Window;
-  CctwqtCrystalCoordinateParameters *m_Parameters;
-  CctwqtDataFrameManager            *m_InputDataManager;
-  CctwqtDataFrameManagerThread      *m_InputDataManagerThread;
-  CctwqtInputData                   *m_InputData;
-  CctwqtDataFrameManager            *m_OutputDataManager;
-  CctwqtDataFrameManagerThread      *m_OutputDataManagerThread;
-  CctwqtOutputData                  *m_OutputData;
-  CctwqtDataFrameManager            *m_OutputSliceDataManager;
-  CctwqtDataFrameManagerThread      *m_OutputSliceDataManagerThread;
-  CctwqtOutputSliceData             *m_OutputSliceData;
-  CctwqtCrystalCoordinateTransform  *m_Transform;
-  CctwqtTransformer                 *m_Transformer;
-  CctwqtCrystalCoordinateTransform  *m_SliceTransform;
-  CctwqtTransformer                 *m_SliceTransformer;
-  CctwqtScriptEngine                *m_ScriptEngine;
-  CctwTransformTest                 *m_TransformTest;
-  QcepSettingsSaverPtr               m_Saver;
+  QcepObjectNamer                     m_ObjectNamer;
+  CctwqtMainWindow                   *m_Window;
+  CctwqtCrystalCoordinateParameters  *m_Parameters;
+  CctwqtInputDataFrameManager        *m_InputDataManager;
+  CctwqtInputData                    *m_InputData;
+  CctwqtOutputDataFrameManager       *m_OutputDataManager;
+  CctwqtOutputData                   *m_OutputData;
+  CctwqtOutputDataFrameManager       *m_OutputSliceDataManager;
+  CctwqtOutputSliceData              *m_OutputSliceData;
+  CctwqtCrystalCoordinateTransform   *m_Transform;
+  CctwqtTransformer                  *m_Transformer;
+  CctwqtCrystalCoordinateTransform   *m_SliceTransform;
+  CctwqtTransformer                  *m_SliceTransformer;
+  CctwqtScriptEngine                 *m_ScriptEngine;
+  CctwTransformTest                  *m_TransformTest;
+  QcepSettingsSaverPtr                m_Saver;
 
 public:
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)

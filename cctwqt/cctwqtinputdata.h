@@ -12,7 +12,7 @@ public:
                            CctwIntVector3D chunkSize,  // Chunk size
                            CctwDoubleVector3D origin,
                            CctwDoubleVector3D scale,
-                           CctwqtDataFrameManager *manager,
+                           CctwqtInputDataFrameManager *manager,
                            QObject *parent);
   
 signals:

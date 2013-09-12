@@ -6,7 +6,7 @@
 #include <QSharedPointer>
 #include "cctwqtdataframe.h"
 #include "cctwqtchunkeddata.h"
-#include "cctwqtdataframemanager.h"
+#include "cctwqtinputdataframemanager.h"
 #include <QMutex>
 
 class CctwqtDataChunk : public CctwqtObject

@@ -16,10 +16,14 @@ signals:
   
 public slots:
   int reference();
+  int referenceCount();
   int dereference();
+  QDateTime lastReferenced();
 
 private:
+  QMutex          m_Mutex;
   QAtomicInt      m_Counter;
+  QDateTime       m_LastReferenced;
   int             m_DimX;
   int             m_DimY;
   QVector<double> m_Data;

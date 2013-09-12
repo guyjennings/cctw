@@ -12,7 +12,7 @@ public:
                       CctwIntVector3D chunkSize,  // Chunk size
                       CctwDoubleVector3D origin,
                       CctwDoubleVector3D scale,
-                      CctwqtDataFrameManager *manager,
+                      CctwqtOutputDataFrameManager *manager,
                       QObject *parent);
 #else
 class CctwSwiftOutputData : public CctwOutputDataInterface

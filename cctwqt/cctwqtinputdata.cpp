@@ -1,7 +1,7 @@
 #include "cctwqtinputdata.h"
-#include "cctwqtdataframemanager.h"
+#include "cctwqtinputdataframemanager.h"
 
-CctwqtInputData::CctwqtInputData(CctwIntVector3D dim, CctwIntVector3D chunkSize, CctwDoubleVector3D origin, CctwDoubleVector3D scale, CctwqtDataFrameManager *manager, QObject *parent) :
+CctwqtInputData::CctwqtInputData(CctwIntVector3D dim, CctwIntVector3D chunkSize, CctwDoubleVector3D origin, CctwDoubleVector3D scale, CctwqtInputDataFrameManager *manager, QObject *parent) :
   CctwInputDataInterface(dim, chunkSize, origin, scale, manager, parent)
 {
 }
