@@ -16,7 +16,6 @@ public:
 signals:
   
 public slots:
-  void printMessage(QString msg);
   int  loadChunk(int nx, int ny, int nz);
   void releaseChunk(int chunkId);
   void setData(CctwqtChunkedData *data);

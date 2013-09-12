@@ -24,13 +24,6 @@ void CctwqtDataFrameManager::setData(CctwqtChunkedData *data)
   }
 }
 
-void CctwqtDataFrameManager::printMessage(QString msg)
-{
-  if (m_Parent) {
-    QMetaObject::invokeMethod(m_Parent, "printMessage", Q_ARG(QString, msg));
-  }
-}
-
 int CctwqtDataFrameManager::loadChunk(int nx, int ny, int nz)
 {
   if (QThread::currentThread() != thread()) {
