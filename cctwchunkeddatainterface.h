@@ -31,11 +31,7 @@ public:
   CctwChunkedDataInterface();
 #endif
 
-#ifdef USE_QT
-public slots:
-#else
 public:
-#endif
 
   void                initialize(void *buffer); // Initialize from byte buffer
 
@@ -48,6 +44,12 @@ public:
   void setChunkSize(CctwIntVector3D cksz);
   void setOrigin(CctwDoubleVector3D org);
   void setScale(CctwDoubleVector3D scal);
+
+#ifdef USE_QT
+public slots:
+#else
+public:
+#endif
 
   CctwDoubleVector3D  toReal(CctwIntVector3D vec);
   CctwIntVector3D     toPixel(CctwDoubleVector3D vec);
