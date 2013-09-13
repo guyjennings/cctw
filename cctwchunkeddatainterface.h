@@ -44,6 +44,11 @@ public:
   CctwDoubleVector3D  origin() const       { return m_Origin; }
   CctwDoubleVector3D  scale() const        { return m_Scale; }
 
+  void setDimensions(CctwIntVector3D dim);
+  void setChunkSize(CctwIntVector3D cksz);
+  void setOrigin(CctwDoubleVector3D org);
+  void setScale(CctwDoubleVector3D scal);
+
   CctwDoubleVector3D  toReal(CctwIntVector3D vec);
   CctwIntVector3D     toPixel(CctwDoubleVector3D vec);
 
@@ -66,6 +71,14 @@ private:
   CctwDoubleVector3D  m_Origin;
   CctwDoubleVector3D  m_Scale;
   CctwIntVector3D     m_ChunkCount;
+
+#ifdef USE_QT
+  Q_PROPERTY(CctwIntVector3D dimensions READ dimensions WRITE setDimensions)
+  Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
+  Q_PROPERTY(CctwDoubleVector3D origin READ origin WRITE setOrigin)
+  Q_PROPERTY(CctwDoubleVector3D scale READ scale WRITE setScale)
+  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount)
+#endif
 };
 
 #endif // CCTWCHUNKEDDATAINTERFACE_H

@@ -144,3 +144,27 @@ CctwIntVector3D CctwChunkedDataInterface::chunkIndexFromNumber(int n)
     return CctwIntVector3D(-1,-1,-1);
   }
 }
+
+void CctwChunkedDataInterface::setDimensions(CctwIntVector3D dim)
+{
+  m_Dimensions = dim;
+
+  m_ChunkCount = (m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1);
+}
+
+void CctwChunkedDataInterface::setChunkSize(CctwIntVector3D cksz)
+{
+  m_ChunkSize = cksz;
+
+  m_ChunkCount = (m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1);
+}
+
+void CctwChunkedDataInterface::setOrigin(CctwDoubleVector3D org)
+{
+  m_Origin = org;
+}
+
+void CctwChunkedDataInterface::setScale(CctwDoubleVector3D scal)
+{
+  m_Scale = scal;
+}
