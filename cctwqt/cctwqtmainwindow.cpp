@@ -120,7 +120,7 @@ void CctwqtMainWindow::doSetupOutput()
 void CctwqtMainWindow::doSetupTransform()
 {
   if (m_SetupTransformDialog == NULL) {
-    m_SetupTransformDialog = new CctwqtSetupTransformDialog(this);
+    m_SetupTransformDialog = new CctwqtSetupTransformDialog(m_Application, this);
     m_SetupTransformDialog -> show();
   }
 
