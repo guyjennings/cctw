@@ -17,7 +17,13 @@ void CctwqtObject::printMessage(QString msg, QDateTime dt)
 
 void CctwqtObject::writeSettings(QSettings *set, QString section)
 {
-  QcepProperty::writeSettings(this, metaObject(), section, set);
+  const QMetaObject *meta = metaObject();
+
+  while (meta) {
+    QcepProperty::writeSettings(this, meta, section, set);
+
+    meta = meta->superClass();
+  }
 }
 
 void CctwqtObject::readSettings(QSettings *set, QString section)
