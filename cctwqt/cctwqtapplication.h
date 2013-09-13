@@ -70,7 +70,7 @@ private:
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
 
-private:
+public:
   QcepObjectNamer                     m_ObjectNamer;
   CctwqtMainWindow                   *m_Window;
   CctwqtCrystalCoordinateParameters  *m_Parameters;
