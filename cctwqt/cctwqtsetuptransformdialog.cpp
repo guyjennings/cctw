@@ -49,11 +49,11 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_PixelDimensionX->setValue(input->dimensions().x());
   ui->m_PixelDimensionY->setValue(input->dimensions().y());
 
-  ui->m_PixelSize->setValue(parms->get_PixelSize());
-  ui->m_Wavelength->setValue(parms->get_Wavelength());
-  ui->m_Distance->setValue(parms->get_Distance());
+  ui->m_PixelSize->setValue(parms->pixelSize());
+  ui->m_Wavelength->setValue(parms->wavelength());
+  ui->m_Distance->setValue(parms->distance());
 
-  CctwUnitCell cell = parms->get_UnitCell();
+  CctwUnitCell cell = parms->unitCell();
 
   ui->m_UnitCellA->setValue(cell.a());
   ui->m_UnitCellB->setValue(cell.b());
@@ -62,7 +62,7 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_UnitCellBeta->setValue(rad2deg(cell.beta()));
   ui->m_UnitCellGamma->setValue(rad2deg(cell.gamma()));
 
-  CctwDoubleMatrix3x3 ubMat = parms->get_UBMat();
+  CctwDoubleMatrix3x3 ubMat = parms->ubMat();
 
   ui->m_UBMat00->setValue(ubMat(0,0));
   ui->m_UBMat01->setValue(ubMat(0,1));
@@ -74,39 +74,39 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_UBMat21->setValue(ubMat(2,1));
   ui->m_UBMat22->setValue(ubMat(2,2));
 
-  ui->m_Det0x->setValue(parms->get_Det0x());
-  ui->m_Det0y->setValue(parms->get_Det0y());
+  ui->m_Det0x->setValue(parms->det0x());
+  ui->m_Det0y->setValue(parms->det0y());
 
-  CctwDoubleVector3D xt = parms->get_XTrans();
+  CctwDoubleVector3D xt = parms->xTrans();
 
   ui->m_XTransX->setValue(xt.x());
   ui->m_XTransY->setValue(xt.y());
   ui->m_XTransZ->setValue(xt.z());
 
-  ui->m_OrientErrorDetPitch->setValue(rad2deg(parms->get_OrientErrorDetPitch()));
-  ui->m_OrientErrorDetRoll->setValue(rad2deg(parms->get_OrientErrorDetRoll()));
-  ui->m_OrientErrorDetYaw->setValue(rad2deg(parms->get_OrientErrorDetYaw()));
-  ui->m_OrientErrorGonPitch->setValue(rad2deg(parms->get_OrientErrorGonPitch()));
+  ui->m_OrientErrorDetPitch->setValue(rad2deg(parms->orientErrorDetPitch()));
+  ui->m_OrientErrorDetRoll->setValue(rad2deg(parms->orientErrorDetRoll()));
+  ui->m_OrientErrorDetYaw->setValue(rad2deg(parms->orientErrorDetYaw()));
+  ui->m_OrientErrorGonPitch->setValue(rad2deg(parms->orientErrorGonPitch()));
 
-  ui->m_TwoThetaCorrection->setValue(rad2deg(parms->get_TwoThetaCorrection()));
-  ui->m_TwoThetaNom->setValue(rad2deg(parms->get_TwoThetaNom()));
+  ui->m_TwoThetaCorrection->setValue(rad2deg(parms->twoThetaCorrection()));
+  ui->m_TwoThetaNom->setValue(rad2deg(parms->twoThetaNom()));
 
-  ui->m_OmegaCorrection->setValue(rad2deg(parms->get_OmegaCorrection()));
-  ui->m_OmegaStep->setValue(rad2deg(parms->get_OmegaStep()));
+  ui->m_OmegaCorrection->setValue(rad2deg(parms->omegaCorrection()));
+  ui->m_OmegaStep->setValue(rad2deg(parms->omegaStep()));
 
-  ui->m_ChiCorrection->setValue(rad2deg(parms->get_ChiCorrection()));
-  ui->m_ChiNom->setValue(rad2deg(parms->get_ChiNom()));
+  ui->m_ChiCorrection->setValue(rad2deg(parms->chiCorrection()));
+  ui->m_ChiNom->setValue(rad2deg(parms->chiNom()));
 
-  ui->m_PhiCorrection->setValue(rad2deg(parms->get_PhiCorrection()));
-  ui->m_PhiNom->setValue(rad2deg(parms->get_PhiNom()));
+  ui->m_PhiCorrection->setValue(rad2deg(parms->phiCorrection()));
+  ui->m_PhiNom->setValue(rad2deg(parms->phiNom()));
 
-  CctwDoubleVector3D gridOrigin = parms->get_GridOrigin();
+  CctwDoubleVector3D gridOrigin = parms->gridOrigin();
 
   ui->m_GridOriginX->setValue(gridOrigin.x());
   ui->m_GridOriginY->setValue(gridOrigin.y());
   ui->m_GridOriginZ->setValue(gridOrigin.z());
 
-  CctwDoubleMatrix3x3 gridBasis = parms->get_GridBasis();
+  CctwDoubleMatrix3x3 gridBasis = parms->gridBasis();
 
   ui->m_GridBasis00->setValue(gridBasis(0,0));
   ui->m_GridBasis01->setValue(gridBasis(0,1));
@@ -118,7 +118,7 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_GridBasis21->setValue(gridBasis(2,1));
   ui->m_GridBasis22->setValue(gridBasis(2,2));
 
-  CctwDoubleVector3D gridDim = parms->get_GridDim();
+  CctwDoubleVector3D gridDim = parms->gridDim();
 
   ui->m_GridDimX->setValue(gridDim.x());
   ui->m_GridDimY->setValue(gridDim.y());
@@ -149,9 +149,9 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
 {
   CctwqtCrystalCoordinateParameters *parms = m_Application->m_Parameters;
 
-  parms->set_PixelSize(ui->m_PixelSize->value());
-  parms->set_Wavelength(ui->m_Wavelength->value());
-  parms->set_Distance(ui->m_Distance->value());
+  parms->setPixelSize(ui->m_PixelSize->value());
+  parms->setWavelength(ui->m_Wavelength->value());
+  parms->setDistance(ui->m_Distance->value());
 
   CctwUnitCell cell;
 
@@ -162,7 +162,7 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   cell.beta() = deg2rad(ui->m_UnitCellBeta->value());
   cell.gamma() = deg2rad(ui->m_UnitCellGamma->value());
 
-  parms->set_UnitCell(cell);
+  parms->setUnitCell(cell);
 
   CctwDoubleMatrix3x3 ubMat;
 
@@ -176,10 +176,10 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   ubMat(2,1) = ui->m_UBMat21->value();
   ubMat(2,2) = ui->m_UBMat22->value();
 
-  parms->set_UBMat(ubMat);
+  parms->setUBMat(ubMat);
 
-  parms->set_Det0x(ui->m_Det0x->value());
-  parms->set_Det0y(ui->m_Det0y->value());
+  parms->setDet0x(ui->m_Det0x->value());
+  parms->setDet0y(ui->m_Det0y->value());
 
   CctwDoubleVector3D xt;
 
@@ -187,24 +187,24 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   xt.y() = ui->m_XTransY->value();
   xt.z() = ui->m_XTransZ->value();
 
-  parms->set_XTrans(xt);
+  parms->setXTrans(xt);
 
-  parms->set_OrientErrorDetPitch(deg2rad(ui->m_OrientErrorDetPitch->value()));
-  parms->set_OrientErrorDetRoll(deg2rad(ui->m_OrientErrorDetRoll->value()));
-  parms->set_OrientErrorDetYaw(deg2rad(ui->m_OrientErrorDetYaw->value()));
-  parms->set_OrientErrorGonPitch(deg2rad(ui->m_OrientErrorGonPitch->value()));
+  parms->setOrientErrorDetPitch(deg2rad(ui->m_OrientErrorDetPitch->value()));
+  parms->setOrientErrorDetRoll(deg2rad(ui->m_OrientErrorDetRoll->value()));
+  parms->setOrientErrorDetYaw(deg2rad(ui->m_OrientErrorDetYaw->value()));
+  parms->setOrientErrorGonPitch(deg2rad(ui->m_OrientErrorGonPitch->value()));
 
-  parms->set_TwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
-  parms->set_TwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));
+  parms->setTwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
+  parms->setTwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));
 
-  parms->set_OmegaCorrection(deg2rad(ui->m_OmegaCorrection->value()));
-  parms->set_OmegaStep(deg2rad(ui->m_OmegaStep->value()));
+  parms->setOmegaCorrection(deg2rad(ui->m_OmegaCorrection->value()));
+  parms->setOmegaStep(deg2rad(ui->m_OmegaStep->value()));
 
-  parms->set_ChiCorrection(deg2rad(ui->m_ChiCorrection->value()));
-  parms->set_ChiNom(deg2rad(ui->m_ChiNom->value()));
+  parms->setChiCorrection(deg2rad(ui->m_ChiCorrection->value()));
+  parms->setChiNom(deg2rad(ui->m_ChiNom->value()));
 
-  parms->set_PhiCorrection(deg2rad(ui->m_PhiCorrection->value()));
-  parms->set_PhiNom(deg2rad(ui->m_PhiNom->value()));
+  parms->setPhiCorrection(deg2rad(ui->m_PhiCorrection->value()));
+  parms->setPhiNom(deg2rad(ui->m_PhiNom->value()));
 
   CctwDoubleVector3D gridOrigin;
 
@@ -212,7 +212,7 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridOrigin.y() = ui->m_GridOriginY->value();
   gridOrigin.z() = ui->m_GridOriginZ->value();
 
-  parms->set_GridOrigin(gridOrigin);
+  parms->setGridOrigin(gridOrigin);
 
   CctwDoubleMatrix3x3 gridBasis;
 
@@ -226,7 +226,7 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridBasis(2,1) = ui->m_GridBasis21->value();
   gridBasis(2,2) = ui->m_GridBasis22->value();
 
-  parms->set_GridBasis(gridBasis);
+  parms->setGridBasis(gridBasis);
 
   CctwDoubleVector3D gridDim;
 
@@ -234,7 +234,7 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridDim.y() = ui->m_GridDimY->value();
   gridDim.z() = ui->m_GridDimZ->value();
 
-  parms->set_GridDim(gridDim);
+  parms->setGridDim(gridDim);
 }
 
 double CctwqtSetupTransformDialog::rad2deg(double rad)

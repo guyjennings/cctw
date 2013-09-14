@@ -25,23 +25,23 @@ CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordi
 
 void CctwCrystalCoordinateTransform::updateFromParameters()
 {
-  m_TwoThetaAngle = m_Parms->m_TwoThetaNom + m_Parms->m_TwoThetaCorrection;
-  m_PhiAngle      = m_Parms->m_PhiNom + m_Parms->m_PhiCorrection;
-  m_ChiAngle      = m_Parms->m_ChiNom + m_Parms->m_ChiCorrection;
+  m_TwoThetaAngle = m_Parms->twoThetaNom() + m_Parms->twoThetaCorrection();
+  m_PhiAngle      = m_Parms->phiNom() + m_Parms->phiCorrection();
+  m_ChiAngle      = m_Parms->chiNom() + m_Parms->chiCorrection();
 
-  m_GridBasisInv  = m_Parms->m_GridBasis.inverted();
+  m_GridBasisInv  = m_Parms->gridBasis().inverted();
   m_OMat          = CctwDoubleMatrix3x3(1.0, 0.0, 0.0,
                                         0.0, 0.0, 1.0,
                                         -1.0, 0.0, 0.0);
 
   m_OMatInv       = m_OMat.inverted();
 
-  m_UBMatInv      = m_Parms->m_UBMat.inverted();
+  m_UBMatInv      = m_Parms->ubMat().inverted();
 
-  m_BMat          = createBMatrix(m_Parms->m_UnitCell);
+  m_BMat          = createBMatrix(m_Parms->unitCell());
   m_BMatInv       = m_BMat.inverted();
 
-  m_UMat          = m_Parms->m_UBMat * m_BMatInv;
+  m_UMat          = m_Parms->ubMat() * m_BMatInv;
   m_UMatInv       = m_UMat.inverted();
 }
 
@@ -50,15 +50,15 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
   if (frame != m_CurrentFrame) {
     m_CurrentFrame = frame;
 
-    m_OmegaAngle = frame*m_Parms->m_OmegaStep + m_Parms->m_OmegaCorrection;
+    m_OmegaAngle = frame*m_Parms->omegaStep() + m_Parms->omegaCorrection();
 
     CctwDoubleMatrix3x3 dimat = CctwDoubleMatrix3x3::identity();
 
-    dimat = CctwDoubleMatrix3x3::rotZ(m_Parms->m_OrientErrorDetYaw)*dimat;
-    dimat = CctwDoubleMatrix3x3::rotY(m_Parms->m_OrientErrorDetPitch)*dimat;
-    dimat = CctwDoubleMatrix3x3::rotX(m_Parms->m_OrientErrorDetRoll)*dimat;
+    dimat = CctwDoubleMatrix3x3::rotZ(m_Parms->orientErrorDetYaw())*dimat;
+    dimat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorDetPitch())*dimat;
+    dimat = CctwDoubleMatrix3x3::rotX(m_Parms->orientErrorDetRoll())*dimat;
     dimat = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*dimat;
-    dimat = CctwDoubleMatrix3x3::rotY(m_Parms->m_OrientErrorGonPitch)*dimat;
+    dimat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*dimat;
 
     m_DMatInv = dimat;
     m_DMat    = dimat.inverted();
@@ -68,15 +68,15 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
     gmat = CctwDoubleMatrix3x3::rotZ(m_PhiAngle)*gmat;
     gmat = CctwDoubleMatrix3x3::rotX(m_ChiAngle)*gmat;
     gmat = CctwDoubleMatrix3x3::rotZ(m_OmegaAngle)*gmat;
-    gmat = CctwDoubleMatrix3x3::rotY(m_Parms->m_OrientErrorGonPitch)*gmat;
+    gmat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*gmat;
 
     m_GMat    = gmat;
     m_GMatInv = gmat.inverted();
 
-    CctwDoubleVector3D cD(m_Parms->m_Distance, 0, 0);
+    CctwDoubleVector3D cD(m_Parms->distance(), 0, 0);
     cD = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*cD;
-    cD = CctwDoubleMatrix3x3::rotY(m_Parms->m_OrientErrorGonPitch)*cD;
-    CctwDoubleVector3D tVec = m_GMat*m_Parms->m_XTrans;
+    cD = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*cD;
+    CctwDoubleVector3D tVec = m_GMat*m_Parms->xTrans();
 
     cD = tVec - cD;
 
@@ -146,10 +146,10 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPos(CctwDoubleVector3D 
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPos(double x, double y)
 {
-  double pixelSize = m_Parms->m_PixelSize;
+  double pixelSize = m_Parms->pixelSize();
 
-  return CctwDoubleVector3D((x+0.5 - m_Parms->m_Det0x)*pixelSize,
-                            (y+0.5 - m_Parms->m_Det0y)*pixelSize, 0.0);
+  return CctwDoubleVector3D((x+0.5 - m_Parms->det0x())*pixelSize,
+                            (y+0.5 - m_Parms->det0y())*pixelSize, 0.0);
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(double x, double y, double z)
@@ -160,7 +160,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(double x, double y
 CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(CctwDoubleVector3D pixel)
 {
   CctwDoubleVector3D xyz = pixel;
-  double scale = 1.0/m_Parms->m_Wavelength;
+  double scale = 1.0/m_Parms->wavelength();
 
   xyz = m_OMatInv*xyz;
   xyz = m_DMatInv*xyz;
@@ -194,11 +194,11 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::hkl2grid(CctwDoubleVector3D h
 {
   CctwDoubleVector3D xyz = hkl;
 
-  xyz = xyz - m_Parms->m_GridOrigin;
+  xyz = xyz - m_Parms->gridOrigin();
   xyz = m_GridBasisInv*xyz;
 
   for (int i=0; i<3; i++) {
-    xyz(i) *= qMax(m_Parms->m_GridDim(i)-1,1.0);
+    xyz(i) *= qMax(m_Parms->gridDim()(i)-1,1.0);
   }
 
   return xyz;
@@ -214,11 +214,11 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(CctwDoubleVector3D g
   CctwDoubleVector3D xyz = grid;
 
   for (int i=0; i<3; i++) {
-    xyz(i) /= qMax(m_Parms->m_GridDim(i)-1,1.0);
+    xyz(i) /= qMax(m_Parms->gridDim()(i)-1,1.0);
   }
 
-  xyz = m_Parms->m_GridBasis*xyz;
-  xyz = xyz + m_Parms->m_GridOrigin;
+  xyz = m_Parms->gridBasis()*xyz;
+  xyz = xyz + m_Parms->gridOrigin();
 
   return xyz;
 }
@@ -230,7 +230,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::hkl2qlab(double h, double k, 
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::hkl2qlab(CctwDoubleVector3D hkl)
 {
-  return m_Parms->m_UBMat*hkl;
+  return m_Parms->ubMat()*hkl;
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::qlab2pixel(double qx, double qy, double qz)
@@ -243,7 +243,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::qlab2pixel(CctwDoubleVector3D
   CctwDoubleVector3D xyz = qlab;
 
   xyz = m_GMat*xyz;
-  xyz(0) += 1.0/m_Parms->m_Wavelength;
+  xyz(0) += 1.0/m_Parms->wavelength();
   xyz = xyz.normalized();
 
   double dmin   = CctwDoubleVector3D::dotProduct(m_CD,m_ND);
@@ -270,8 +270,8 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPix(CctwDoubleVector3D 
 {
   CctwDoubleVector3D detpix;
 
-  detpix.x() = (int)(xyz.x()/m_Parms->m_PixelSize + m_Parms->m_Det0x - 0.5);
-  detpix.y() = (int)(xyz.y()/m_Parms->m_PixelSize + m_Parms->m_Det0y - 0.5);
+  detpix.x() = (int)(xyz.x()/m_Parms->pixelSize() + m_Parms->det0x() - 0.5);
+  detpix.y() = (int)(xyz.y()/m_Parms->pixelSize() + m_Parms->det0y() - 0.5);
 
   return detpix;
 }

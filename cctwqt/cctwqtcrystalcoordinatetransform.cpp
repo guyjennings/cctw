@@ -8,9 +8,9 @@ CctwqtCrystalCoordinateTransform::CctwqtCrystalCoordinateTransform(CctwqtCrystal
 
 void CctwqtCrystalCoordinateTransform::report()
 {
-  printMessage(tr("CctwqtCrystalCoordinateParameters - get_Wavelength() = %1")
-               .arg(m_QTParms->get_Wavelength()));
+//  printMessage(tr("CctwqtCrystalCoordinateParameters - wavelength() = %1")
+//               .arg(m_QTParms->wavelength()));
 
-  printMessage(tr("CctwCrystalCoordinateParameters::m_Wavelength = %1")
-               .arg(((CctwCrystalCoordinateParameters*) m_QTParms)->m_Wavelength));
+//  printMessage(tr("CctwCrystalCoordinateParameters::m_Wavelength = %1")
+//               .arg(((CctwCrystalCoordinateParameters*) m_QTParms)->m_Wavelength));
 }
