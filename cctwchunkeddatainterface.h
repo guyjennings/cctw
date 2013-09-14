@@ -79,7 +79,7 @@ private:
   Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
   Q_PROPERTY(CctwDoubleVector3D origin READ origin WRITE setOrigin)
   Q_PROPERTY(CctwDoubleVector3D scale READ scale WRITE setScale)
-  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount)
+  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount STORED false)
 #endif
 };
 
