@@ -1,8 +1,9 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "cctwqtsetuptransformdialog.h"
 #include "ui_cctwqtsetuptransformdialog.h"
 #include "cctwqtmainwindow.h"
 #include "cctwqtapplication.h"
-#include <cmath>
 
 CctwqtSetupTransformDialog::CctwqtSetupTransformDialog(CctwqtApplication *app, CctwqtMainWindow *parent) :
   QDialog(parent),
