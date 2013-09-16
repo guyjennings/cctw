@@ -65,7 +65,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtintvector3dproperty.cpp \
     cctwqt/cctwqtinputdataframemanager.cpp \
     cctwqt/cctwqtoutputdataframemanager.cpp \
-    cctwqt/cctwqtdataframemanager.cpp
+    cctwqt/cctwqtdataframemanager.cpp \
+    cctwqt/cctwqtthread.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -112,7 +113,8 @@ HEADERS += \
     cctwqt/cctwqtintvector3dproperty.h \
     cctwqt/cctwqtinputdataframemanager.h \
     cctwqt/cctwqtoutputdataframemanager.h \
-    cctwqt/cctwqtdataframemanager.h
+    cctwqt/cctwqtdataframemanager.h \
+    cctwqt/cctwqtthread.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \
