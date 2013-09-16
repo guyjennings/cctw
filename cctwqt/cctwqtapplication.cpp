@@ -317,6 +317,7 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
     CctwIntVector3D chStart = m_InputData->chunkStart(idx);
     CctwIntVector3D chSize  = m_InputData->chunkSize();
     CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+    CctwIntVector3D lastChunk(-1,-1,-1);
 
     for (int z=0; z<chSize.z(); z++) {
 
@@ -335,8 +336,11 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
           if (m_OutputData->containsPixel(pixels)) {
             CctwIntVector3D    opchunk  = m_OutputData->chunkIndex(pixels);
 
-            m_InputData->addDependency(idx, opchunk);
-            m_OutputData->addDependency(opchunk, idx);
+            if (opchunk != lastChunk) {
+              lastChunk = opchunk;
+              m_InputData->addDependency(idx, opchunk);
+              m_OutputData->addDependency(opchunk, idx);
+            }
           }
         }
       }
