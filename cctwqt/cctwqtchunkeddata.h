@@ -13,8 +13,8 @@ class CctwqtChunkedData : public CctwChunkedDataInterface
 public:
   explicit CctwqtChunkedData(CctwIntVector3D dim,        // Data set dimension
                              CctwIntVector3D chunkSize,  // Chunk size
-                             CctwDoubleVector3D origin,
-                             CctwDoubleVector3D scale,
+//                             CctwDoubleVector3D origin,
+//                             CctwDoubleVector3D scale,
                              CctwqtDataFrameManager *manager,
                              QObject *parent);
   void allocateChunks();

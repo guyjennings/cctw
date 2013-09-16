@@ -13,6 +13,7 @@
 #include <QtConcurrentRun>
 #include <QFile>
 #include "cctwqtintvector3dproperty.h"
+#include "cctwqtthread.h"
 
 QcepSettingsSaverPtr g_Saver;
 
@@ -82,8 +83,8 @@ void CctwqtApplication::initialize()
   m_InputDataManager        = new CctwqtInputDataFrameManager(this);
   m_InputData               = new CctwqtInputData(CctwIntVector3D(2048,2048,2048),
                                                   CctwIntVector3D(128, 128, 128),
-                                                  CctwDoubleVector3D(-5,-5,-5),
-                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
+//                                                  CctwDoubleVector3D(-5,-5,-5),
+//                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
                                                   m_InputDataManager, this);
   m_InputDataManager        -> setData(m_InputData);
   m_InputData               -> allocateChunks();
@@ -91,8 +92,8 @@ void CctwqtApplication::initialize()
   m_OutputDataManager       = new CctwqtOutputDataFrameManager(this);
   m_OutputData              = new CctwqtOutputData(CctwIntVector3D(2048,2048,2048),
                                                    CctwIntVector3D(128, 128, 128),
-                                                   CctwDoubleVector3D(-5,-5,-5),
-                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
+//                                                   CctwDoubleVector3D(-5,-5,-5),
+//                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
                                                    m_OutputDataManager, this);
   m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
@@ -100,8 +101,8 @@ void CctwqtApplication::initialize()
   m_OutputSliceDataManager        = new CctwqtOutputDataFrameManager(this);
   m_OutputSliceData               = new CctwqtOutputSliceData(CctwIntVector3D(2048,2048,1),
                                                               CctwIntVector3D(128, 128, 1),
-                                                              CctwDoubleVector3D(-5,-5, 0),
-                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
+//                                                              CctwDoubleVector3D(-5,-5, 0),
+//                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
                                                               m_OutputSliceDataManager, this);
 
   m_Transform        = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
@@ -304,12 +305,14 @@ void CctwqtApplication::writeSettings(QSettings *settings)
   }
 }
 
+QAtomicInt dependencyCounter;
+
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
     CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, NULL);
 
-    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+//    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
     CctwIntVector3D chStart = m_InputData->chunkStart(idx);
     CctwIntVector3D chSize  = m_InputData->chunkSize();
@@ -339,7 +342,9 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
       }
     }
 
-    printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+//    printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+
+    dependencyCounter.fetchAndAddOrdered(-1);
   }
 
   prop_Progress()->incValue(1);
@@ -356,6 +361,14 @@ void CctwqtApplication::calculateDependencies()
   set_Progress(0);
   set_ProgressLimit(chunks.volume());
 
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting calculate dependencies");
+
+  dependencyCounter.fetchAndStoreOrdered(chunks.volume());
+
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
       for (int x=0; x<chunks.x(); x++) {
@@ -370,6 +383,15 @@ void CctwqtApplication::calculateDependencies()
       }
     }
   }
+
+  while (dependencyCounter.fetchAndAddOrdered(0) > 0) {
+    CctwqtThread::msleep(10);
+    processEvents();
+  }
+
+  int msec = startAt.elapsed();
+
+  printMessage(tr("finished calculate dependencies after %1 msec").arg(msec));
 }
 
 void CctwqtApplication::saveDependencies(QString path)
@@ -481,45 +503,45 @@ void CctwqtApplication::reportDependencies()
     }
   }
 
-  printMessage(tr("Example transformations"));
+//  printMessage(tr("Example transformations"));
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-          CctwIntVector3D start = m_InputData->chunkStart(idx);
-          CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
+//  for (int z=0; z<chunks.z(); z++) {
+//    for (int y=0; y<chunks.y(); y++) {
+//      for (int x=0; x<chunks.x(); x++) {
+//        if (get_Halting()) {
+//          break;
+//        } else {
+//          CctwIntVector3D idx(x,y,z);
+//          CctwIntVector3D start = m_InputData->chunkStart(idx);
+//          CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
 
-          CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
-          CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
+//          CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
+//          CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
 
-          CctwIntVector3D crdpixel = m_InputData->toPixel(coords);
-          CctwIntVector3D xfmpixel = m_OutputData->toPixel(xfmcoord);
+//          CctwIntVector3D crdpixel = m_InputData->toPixel(coords);
+//          CctwIntVector3D xfmpixel = m_OutputData->toPixel(xfmcoord);
 
-          bool ok = m_OutputData->containsPixel(xfmpixel);
+//          bool ok = m_OutputData->containsPixel(xfmpixel);
 
-          CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
-          CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
+//          CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
+//          CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
 
-          int inchnk = m_InputData->chunkNumberFromIndex(ipchunk);
-          int opchnk = m_OutputData->chunkNumberFromIndex(opchunk);
+//          int inchnk = m_InputData->chunkNumberFromIndex(ipchunk);
+//          int opchnk = m_OutputData->chunkNumberFromIndex(opchunk);
 
-          printMessage(tr("Chunk:[%1](%2,%3,%4) => [%5](%6,%7,%8)")
-                       .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
-                       .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
-                       );
+//          printMessage(tr("Chunk:[%1](%2,%3,%4) => [%5](%6,%7,%8)")
+//                       .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
+//                       .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
+//                       );
 
-          printMessage(tr("Pixel:[%1,%2,%3] => [%4,%5,%6], ok:%7")
-                       .arg(crdpixel.x()).arg(crdpixel.y()).arg(crdpixel.z())
-                       .arg(xfmpixel.x()).arg(xfmpixel.y()).arg(xfmpixel.z()).arg(ok)
-                       );
-        }
-      }
-    }
-  }
+//          printMessage(tr("Pixel:[%1,%2,%3] => [%4,%5,%6], ok:%7")
+//                       .arg(crdpixel.x()).arg(crdpixel.y()).arg(crdpixel.z())
+//                       .arg(xfmpixel.x()).arg(xfmpixel.y()).arg(xfmpixel.z()).arg(ok)
+//                       );
+//        }
+//      }
+//    }
+//  }
 
   printMessage(tr("Input Data Dependencies"));
 

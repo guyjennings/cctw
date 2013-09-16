@@ -10,8 +10,8 @@ class CctwSwiftOutputData : public CctwOutputDataInterface
 public:
   CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
                       CctwIntVector3D chunkSize,  // Chunk size
-                      CctwDoubleVector3D origin,
-                      CctwDoubleVector3D scale,
+//                      CctwDoubleVector3D origin,
+//                      CctwDoubleVector3D scale,
                       CctwqtOutputDataFrameManager *manager,
                       QObject *parent);
 #else
@@ -19,9 +19,9 @@ class CctwSwiftOutputData : public CctwOutputDataInterface
 {
 public:
   CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
-                      CctwIntVector3D chunkSize,  // Chunk size
+                      CctwIntVector3D chunkSize/*,  // Chunk size
                       CctwDoubleVector3D origin,
-                      CctwDoubleVector3D scale);
+                      CctwDoubleVector3D scale*/);
 #endif
 
 public:

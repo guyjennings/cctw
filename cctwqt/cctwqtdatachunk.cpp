@@ -41,9 +41,9 @@ void CctwqtDataChunk::addDependency(CctwIntVector3D dep)
   QMutexLocker lock(&m_DependenciesLock);
 
   if (!m_Dependencies.contains(dep)) {
-    printMessage(tr("Added dependency from chunk [%1,%2,%3] to chunk [%4,%5,%6]")
-                 .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
-                 .arg(dep.x()).arg(dep.y()).arg(dep.z()));
+//    printMessage(tr("Added dependency from chunk [%1,%2,%3] to chunk [%4,%5,%6]")
+//                 .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
+//                 .arg(dep.x()).arg(dep.y()).arg(dep.z()));
 
     m_Dependencies.append(dep);
   }

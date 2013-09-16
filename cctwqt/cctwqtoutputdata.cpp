@@ -2,11 +2,11 @@
 
 CctwqtOutputData::CctwqtOutputData(CctwIntVector3D dim,        // Data set dimension
                                    CctwIntVector3D chunkSize,  // Chunk size
-                                   CctwDoubleVector3D origin,
-                                   CctwDoubleVector3D scale,
+//                                   CctwDoubleVector3D origin,
+//                                   CctwDoubleVector3D scale,
                                    CctwqtOutputDataFrameManager *manager,
                                    QObject *parent) :
-  CctwOutputDataInterface(dim, chunkSize, origin, scale, manager, parent)
+  CctwOutputDataInterface(dim, chunkSize, /*origin, scale,*/ manager, parent)
 {
 }
 
