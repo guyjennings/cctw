@@ -66,7 +66,8 @@ SOURCES += main.cpp \
     cctwqt/cctwqtinputdataframemanager.cpp \
     cctwqt/cctwqtoutputdataframemanager.cpp \
     cctwqt/cctwqtdataframemanager.cpp \
-    cctwqt/cctwqtthread.cpp
+    cctwqt/cctwqtthread.cpp \
+    cctwdatachunk.cpp
 
 HEADERS += \
     cctwinputdatainterface.h \
@@ -114,7 +115,8 @@ HEADERS += \
     cctwqt/cctwqtinputdataframemanager.h \
     cctwqt/cctwqtoutputdataframemanager.h \
     cctwqt/cctwqtdataframemanager.h \
-    cctwqt/cctwqtthread.h
+    cctwqt/cctwqtthread.h \
+    cctwdatachunk.h
 
 FORMS += \
     cctwqt/cctwqtmainwindow.ui \

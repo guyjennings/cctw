@@ -14,6 +14,7 @@
 #include <QFile>
 #include "cctwqtintvector3dproperty.h"
 #include "cctwqtthread.h"
+#include "cctwdatachunk.h"
 
 QcepSettingsSaverPtr g_Saver;
 
@@ -752,4 +753,17 @@ void CctwqtApplication::reportOutputChunkCounts()
 
     printMessage("");
   }
+}
+
+int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
+{
+  CctwChunkIndex idx(index.x(), index.y(), index.z());
+
+  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, this);
+
+  int offset = chunk->pixelOffset(localcoords);
+
+  delete chunk;
+
+  return offset;
 }

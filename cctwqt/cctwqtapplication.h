@@ -60,6 +60,8 @@ public slots:
   void reportInputChunkCounts();
   void reportOutputChunkCounts();
 
+  int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
+
 public:
   QcepSettingsSaverWPtr saver() const;
 
