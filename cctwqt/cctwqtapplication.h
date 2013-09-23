@@ -90,6 +90,9 @@ public:
   CctwTransformTest                  *m_TransformTest;
   QcepSettingsSaverPtr                m_Saver;
 
+private:
+  QAtomicInt                          m_DependencyCounter;
+
 public:
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)

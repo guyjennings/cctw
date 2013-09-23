@@ -16,7 +16,11 @@ public:
 signals:
   
 public slots:
-  
+  void transformChunk(int nx, int ny, int nz);
+  void transform();
+
+private:
+  void transformChunkNumber(int n);
 };
 
 #endif // CCTWQTTRANSFORMER_H

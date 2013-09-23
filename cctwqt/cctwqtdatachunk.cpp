@@ -1,10 +1,9 @@
 #include "cctwqtdatachunk.h"
 
-CctwqtDataChunk::CctwqtDataChunk(CctwIntVector3D idx,
-                                 CctwqtChunkedData *data,
+CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
                                  CctwqtDataFrameManager *manager,
                                  QObject *parent) :
-  CctwqtObject(parent),
+  CctwDataChunk(data, idx, parent),
   m_ChunkIndex(idx),
   m_Data(data),
   m_Manager(manager)

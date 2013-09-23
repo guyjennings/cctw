@@ -2,7 +2,7 @@
 #define CCTWDATACHUNK_H
 
 #include "cctwvector3d.h"
-#include "cctwchunkindex.h"
+//#include "cctwchunkindex.h"
 class CctwChunkedDataInterface;
 
 #ifdef USE_QT
@@ -10,16 +10,16 @@ class CctwChunkedDataInterface;
 #endif
 
 #ifdef USE_QT
-class CctwDataChunk : CctwqtObject
+class CctwDataChunk : public CctwqtObject
 {
   Q_OBJECT
 public:
-  CctwDataChunk(CctwChunkedDataInterface *data, CctwChunkIndex index, QObject *parent);
+  CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index, QObject *parent);
 #else
 class CctwDataChunk
 {
 public:
-  CctwDataChunk(CctwChunkedDataInterface *data, CctwChunkIndex index);
+  CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index);
 #endif
 
   virtual ~CctwDataChunk();
@@ -30,6 +30,8 @@ public slots:
 public:
 #endif
 
+  int readData();
+  int readWeights();
   int allocateData();
   int allocateWeights();
   int deallocateData();
@@ -43,7 +45,7 @@ public:
 
 private:
   CctwChunkedDataInterface *m_Data;
-  CctwChunkIndex            m_ChunkIndex;
+  CctwIntVector3D           m_ChunkIndex;
   double                   *m_ChunkData;
   double                   *m_ChunkWeights;
 };

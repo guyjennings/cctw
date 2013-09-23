@@ -306,12 +306,12 @@ void CctwqtApplication::writeSettings(QSettings *settings)
   }
 }
 
-QAtomicInt dependencyCounter;
+//QAtomicInt dependencyCounter;
 
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
-    CctwqtCrystalCoordinateTransform *transform = new CctwqtCrystalCoordinateTransform(m_Parameters, NULL);
+    CctwqtCrystalCoordinateTransform transform(m_Parameters, NULL);
 
 //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
@@ -324,12 +324,12 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 
       for (int y=0; y<chSize.y(); y++) {
         for (int x=0; x<chSize.x(); x++) {
-          CctwDoubleVector3D index = dblStart+CctwDoubleVector3D(x,y,z);
+          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
 
-          CctwDoubleVector3D coords = /*m_InputData->origin()+index*m_InputData->scale();*/
-              CctwDoubleVector3D(index.x(), index.y(), index.z());
+//          CctwDoubleVector3D coords = /*m_InputData->origin()+index*m_InputData->scale();*/
+//              CctwDoubleVector3D(index.x(), index.y(), index.z());
 
-          CctwDoubleVector3D xfmcoord = transform->forward(coords);
+          CctwDoubleVector3D xfmcoord = transform.forward(coords);
 
           CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
               CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
@@ -349,7 +349,9 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 
 //    printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
-    dependencyCounter.fetchAndAddOrdered(-1);
+    m_DependencyCounter.fetchAndAddOrdered(-1);
+  } else {
+    m_DependencyCounter.fetchAndStoreOrdered(0);
   }
 
   prop_Progress()->incValue(1);
@@ -357,6 +359,8 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 
 void CctwqtApplication::calculateDependencies()
 {
+//  QVector < QFuture < void > > futures;
+
   m_InputData->clearDependencies();
   m_OutputData->clearDependencies();
 
@@ -372,27 +376,41 @@ void CctwqtApplication::calculateDependencies()
 
   printMessage("Starting calculate dependencies");
 
-  dependencyCounter.fetchAndStoreOrdered(chunks.volume());
+  m_DependencyCounter.fetchAndStoreOrdered(0);
 
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
       for (int x=0; x<chunks.x(); x++) {
+//        while ((!get_Halting()) && (m_DependencyCounter.fetchAndAddOrdered(0) > 32)) {
+////          CctwqtThread::msleep(10);
+//          processEvents();
+//        }
+
         if (get_Halting()) {
-          break;
+          m_DependencyCounter.fetchAndStoreOrdered(0);
+          goto abort;
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx);
+          m_DependencyCounter.fetchAndAddOrdered(1);
+
+//          futures.append(
+                QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx)/*)*/;
 //          calculateChunkDependencies(idx);
         }
       }
     }
   }
 
-  while (dependencyCounter.fetchAndAddOrdered(0) > 0) {
+abort:
+  while (m_DependencyCounter.fetchAndAddOrdered(0) > 0) {
     CctwqtThread::msleep(10);
     processEvents();
   }
+
+//  foreach (QFuture<void> f, futures) {
+//    f.waitForFinished();
+//  }
 
   int msec = startAt.elapsed();
 
@@ -757,9 +775,9 @@ void CctwqtApplication::reportOutputChunkCounts()
 
 int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
 {
-  CctwChunkIndex idx(index.x(), index.y(), index.z());
+  CctwIntVector3D idx(index.x(), index.y(), index.z());
 
-  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, this);
+  CctwDataChunk *chunk = new CctwqtDataChunk(m_InputData, idx, NULL, this);
 
   int offset = chunk->pixelOffset(localcoords);
 

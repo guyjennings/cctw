@@ -19,8 +19,8 @@ void CctwqtChunkedData::allocateChunks()
   m_DataChunks.resize(n);
 
   for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwqtDataChunk(chunkIndexFromNumber(i),
-                                          this,
+    m_DataChunks[i] = new CctwqtDataChunk(this,
+                                          chunkIndexFromNumber(i),
                                           m_Manager, parent());
   }
 }

@@ -51,19 +51,18 @@ public:
 //                                                // command line passed in argc and argv and using the given
 //                                                // input data, output data and transform
 
-  void transformChunk(int nx, int ny, int nz);
-                                                // Transform chunk number nx,ny,nz of the output space
-                                                // If parameters are invalid just do nothing
-
   static int XYZtoID(int max_x, int max_y, int max_z,
                      int x, int y, int z);
 
   void performTests();
 
+  virtual void transformChunk(int nx, int ny, int nz) = 0;
+  virtual void transform() = 0;
+
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
 
-private:
+protected:
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;
   CctwTransformInterface  *m_Transform;

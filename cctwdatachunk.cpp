@@ -3,7 +3,7 @@
 
 #ifdef USE_QT
 
-CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwChunkIndex index, QObject *parent) :
+CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index, QObject *parent) :
   CctwqtObject(parent),
   m_Data(data),
   m_ChunkIndex(index),
@@ -14,7 +14,7 @@ CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwChunkIndex inde
 
 #else
 
-CctwDataChunk::CctwDataChunk() :
+CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index) :
   m_Data(data),
   m_ChunkIndex(index),
   m_ChunkData(NULL),
@@ -28,6 +28,16 @@ CctwDataChunk::~CctwDataChunk()
 {
   delete [] m_ChunkData;
   delete [] m_ChunkWeights;
+}
+
+int CctwDataChunk::readData()
+{
+  allocateData();
+}
+
+int CctwDataChunk::readWeights()
+{
+  allocateWeights();
 }
 
 int CctwDataChunk::allocateData()

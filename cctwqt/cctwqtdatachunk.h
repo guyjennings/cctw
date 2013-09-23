@@ -1,7 +1,7 @@
 #ifndef CCTWQTDATACHUNK_H
 #define CCTWQTDATACHUNK_H
 
-#include "cctwqtobject.h"
+#include "cctwdatachunk.h"
 #include <QVector>
 #include <QSharedPointer>
 #include "cctwqtdataframe.h"
@@ -9,12 +9,12 @@
 #include "cctwqtinputdataframemanager.h"
 #include <QMutex>
 
-class CctwqtDataChunk : public CctwqtObject
+class CctwqtDataChunk : public CctwDataChunk
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataChunk(CctwIntVector3D idx,
-                           CctwqtChunkedData *data,
+  explicit CctwqtDataChunk(CctwqtChunkedData *data,
+                           CctwIntVector3D idx,
                            CctwqtDataFrameManager *manager,
                            QObject *parent);
   
