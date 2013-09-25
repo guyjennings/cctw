@@ -25,6 +25,13 @@ public:
   CctwIntVector3D dependency(int n) const;
 
   void reportDependencies();
+
+  CctwIntVector3D index() const;
+  void mergeChunk(CctwqtDataChunk *c);
+  void clearMergeCounters();
+  void incMergeCounters();
+  int mergeCount();
+
 signals:
   
 public slots:
@@ -36,6 +43,8 @@ private:
   QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;
   QVector< CctwIntVector3D >                   m_Dependencies;
   QMutex                                       m_DependenciesLock;
+  QMutex                                       m_MergeLock;
+  int                                          m_MergeCounter;
 };
 
 #endif // CCTWQTDATACHUNK_H

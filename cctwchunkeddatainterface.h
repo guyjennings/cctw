@@ -65,6 +65,8 @@ public:
   CctwIntVector3D     chunkIndexFromNumber(int n);
   int                 chunkNumberFromIndex(CctwIntVector3D chunkIdx);
 
+  virtual void        clearMergeCounters() = 0;
+
 //  CctwIntVector3D     findChunkIndexContaining(CctwDoubleVector3D coords);
 
 private:

@@ -107,11 +107,13 @@ void CctwqtApplication::initialize()
                                                               m_OutputSliceDataManager, this);
 
   m_Transform        = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
-  m_Transformer      = new CctwqtTransformer(m_InputData,
+  m_Transformer      = new CctwqtTransformer(this,
+                                             m_InputData,
                                              m_OutputData,
                                              m_Transform, 1, 1, 1, this);
   m_SliceTransform   = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
-  m_SliceTransformer = new CctwqtTransformer(m_InputData,
+  m_SliceTransformer = new CctwqtTransformer(this,
+                                             m_InputData,
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, this);
 
@@ -443,11 +445,11 @@ void CctwqtApplication::saveDependencies(QString path)
 
           int nDeps = chunk->dependencyCount();
 
-          QString msg(tr("[%1,%2,%3] ->").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+          QString msg(tr("%1  %2  %3  ->  %4  ").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(nDeps));
 
           for (int i=0; i<nDeps; i++) {
             CctwIntVector3D dep = chunk->dependency(i);
-            msg += tr(" [%1,%2,%3]").arg(dep.x()).arg(dep.y()).arg(dep.z());
+            msg += tr(" %1  %2  %3").arg(dep.x()).arg(dep.y()).arg(dep.z());
           }
 
           aFile.write(qPrintable(msg+"\n"));
@@ -784,4 +786,9 @@ int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D l
   delete chunk;
 
   return offset;
+}
+
+CctwqtCrystalCoordinateParameters *CctwqtApplication::parameters() const
+{
+  return m_Parameters;
 }

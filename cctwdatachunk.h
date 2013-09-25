@@ -32,16 +32,26 @@ public:
 
   int readData();
   int readWeights();
+  int writeData();
+  int writeWeights();
   int allocateData();
   int allocateWeights();
   int deallocateData();
   int deallocateWeights();
+
+  bool dataAllocated() const;
+  bool weightsAllocated() const;
 
   double data(CctwIntVector3D localcoords);
   double weight(CctwIntVector3D localcoords);
   void setData(CctwIntVector3D localcoords, double val);
   void setWeight(CctwIntVector3D localcoords, double val);
   int pixelOffset(CctwIntVector3D localcoords);
+
+  double *dataPointer();
+  double *weightsPointer();
+
+  CctwIntVector3D chunkSize();
 
 private:
   CctwChunkedDataInterface *m_Data;

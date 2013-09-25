@@ -27,6 +27,9 @@ public slots:
 
   CctwqtDataChunk *chunk(CctwIntVector3D idx);
 
+  void mergeChunk(CctwqtDataChunk *chunk);
+  void clearMergeCounters();
+
 protected:
   CctwqtDataFrameManager      *m_Manager;
   QVector< CctwqtDataChunk* >  m_DataChunks;

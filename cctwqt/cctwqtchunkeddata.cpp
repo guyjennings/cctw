@@ -53,3 +53,25 @@ CctwqtDataChunk *CctwqtChunkedData::chunk(CctwIntVector3D idx)
     return NULL;
   }
 }
+
+void CctwqtChunkedData::mergeChunk(CctwqtDataChunk *chunk)
+{
+  if (chunk) {
+    CctwIntVector3D idx = chunk->index();
+
+    CctwqtDataChunk *outchunk = this->chunk(idx);
+
+    if (outchunk) {
+      outchunk -> mergeChunk(chunk);
+    }
+  }
+}
+
+void CctwqtChunkedData::clearMergeCounters()
+{
+  foreach (CctwqtDataChunk *dc, m_DataChunks) {
+    if (dc) {
+      dc -> clearMergeCounters();
+    }
+  }
+}

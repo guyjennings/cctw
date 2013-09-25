@@ -62,6 +62,8 @@ public slots:
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
+  CctwqtCrystalCoordinateParameters *parameters() const;
+
 public:
   QcepSettingsSaverWPtr saver() const;
 

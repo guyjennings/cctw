@@ -30,14 +30,49 @@ CctwDataChunk::~CctwDataChunk()
   delete [] m_ChunkWeights;
 }
 
+double *CctwDataChunk::dataPointer()
+{
+  return m_ChunkData;
+}
+
+double *CctwDataChunk::weightsPointer()
+{
+  return m_ChunkWeights;
+}
+
+bool CctwDataChunk::dataAllocated() const
+{
+  return m_ChunkData;
+}
+
+bool CctwDataChunk::weightsAllocated() const
+{
+  return m_ChunkWeights;
+}
+
+CctwIntVector3D CctwDataChunk::chunkSize()
+{
+  return m_Data->chunkSize();
+}
+
 int CctwDataChunk::readData()
 {
-  allocateData();
+  return allocateData();
 }
 
 int CctwDataChunk::readWeights()
 {
-  allocateWeights();
+  return allocateWeights();
+}
+
+int CctwDataChunk::writeData()
+{
+  return chunkSize().volume()*sizeof(double);
+}
+
+int CctwDataChunk::writeWeights()
+{
+  return chunkSize().volume()*sizeof(double);
 }
 
 int CctwDataChunk::allocateData()
