@@ -53,7 +53,7 @@ public:
 
   CctwIntVector3D chunkSize();
 
-private:
+protected:
   CctwChunkedDataInterface *m_Data;
   CctwIntVector3D           m_ChunkIndex;
   double                   *m_ChunkData;

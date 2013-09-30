@@ -32,6 +32,9 @@ public:
   void incMergeCounters();
   int mergeCount();
 
+  bool popMergeData(double **data, double **weights);
+  void pushMergeData(double *data, double *weights);
+
 signals:
   
 public slots:
@@ -45,6 +48,8 @@ private:
   QMutex                                       m_DependenciesLock;
   QMutex                                       m_MergeLock;
   int                                          m_MergeCounter;
+  QList< double* >                             m_MergeData;
+  QList< double* >                             m_MergeWeights;
 };
 
 #endif // CCTWQTDATACHUNK_H

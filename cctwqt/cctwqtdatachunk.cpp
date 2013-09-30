@@ -71,57 +71,58 @@ void CctwqtDataChunk::reportDependencies()
 
 void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
 {
-  QMutexLocker lock(&m_MergeLock);
-
   if (c) {
-    CctwIntVector3D cks = chunkSize();
-    CctwIntVector3D icks = c->chunkSize();
+    double *d, *w, *id, *iw;
 
-    if (!dataAllocated()) {
-      allocateData();
-    }
+    while (popMergeData(&d, &w))  {
+      c -> popMergeData(&id, &iw);
 
-    if (!weightsAllocated()) {
-      allocateWeights();
-    }
+      CctwIntVector3D cks = chunkSize();
+      CctwIntVector3D icks = c->chunkSize();
 
-    if (cks == icks) {
-      int n = cks.volume();
+      if (cks == icks) {
+        int n = cks.volume();
 
-      double *d = dataPointer();
-      double *id = c->dataPointer();
+        if (d && id) {
+          for (int i=0; i<n; i++) {
+            d[i] += id[i];
+          }
+        } else if (id) {
+          d = id;
+          id = NULL;
+        }
 
-      if (d && id) {
-        for (int i=0; i<n; i++) {
-          d[i] += id[i];
+        if (w && iw) {
+          for (int i=0; i<n; i++) {
+            w[i] += iw[i];
+          }
+        } else if (iw) {
+          w = iw;
+          iw = NULL;
         }
       }
 
-      double *w = weightsPointer();
-      double *iw = c->weightsPointer();
+      pushMergeData(d, w);
 
-      if (w && iw) {
-        for (int i=0; i<n; i++) {
-          w[i] += iw[i];
-        }
+      delete[] id;
+      delete[] iw;
+
+      incMergeCounters();
+
+      if (mergeCount() == dependencyCount()) {
+        printMessage(tr("Output chunk [%1,%2,%3] completed")
+                     .arg(index().x()).arg(index().y()).arg(index().z()));
+        writeData();
+        writeWeights();
+        deallocateData();
+        deallocateWeights();
+      } else if (mergeCount() > dependencyCount()) {
+        printMessage(tr("Exceeded expected number of merges for chunk [%1,%2,%3] %4 > %5")
+                     .arg(index().x()).arg(index().y()).arg(index().z())
+                     .arg(mergeCount()).arg(dependencyCount()));
+        deallocateData();
+        deallocateWeights();
       }
-    }
-
-    incMergeCounters();
-
-    if (mergeCount() == dependencyCount()) {
-      printMessage(tr("Output chunk [%1,%2,%3] completed")
-                   .arg(index().x()).arg(index().y()).arg(index().z()));
-      writeData();
-      writeWeights();
-      deallocateData();
-      deallocateWeights();
-    } else if (mergeCount() > dependencyCount()) {
-      printMessage(tr("Exceeded expected number of merges for chunk [%1,%2,%3] %4 > %5")
-                   .arg(index().x()).arg(index().y()).arg(index().z())
-                   .arg(mergeCount()).arg(dependencyCount()));
-      deallocateData();
-      deallocateWeights();
     }
   }
 }
@@ -139,4 +140,48 @@ void CctwqtDataChunk::incMergeCounters()
 int CctwqtDataChunk::mergeCount()
 {
   return m_MergeCounter;
+}
+
+bool CctwqtDataChunk::popMergeData(double **data, double **weights)
+{
+  QMutexLocker lock(&m_MergeLock);
+
+  if (data && weights) {
+    *data = m_ChunkData;
+
+    if (m_MergeData.isEmpty()) {
+      m_ChunkData = NULL;
+    } else {
+      m_ChunkData = m_MergeData.takeLast();
+    }
+
+    *weights = m_ChunkWeights;
+
+    if (m_MergeWeights.isEmpty()) {
+      m_ChunkWeights = NULL;
+    } else {
+      m_ChunkWeights = m_MergeWeights.takeLast();
+    }
+
+    return *data || *weights;
+  } else {
+    return false;
+  }
+}
+
+void CctwqtDataChunk::pushMergeData(double *data, double *weights)
+{
+  QMutexLocker lock(&m_MergeLock);
+
+  if (m_ChunkData == NULL) {
+    m_ChunkData = data;
+  } else {
+    m_MergeData.push_back(data);
+  }
+
+  if (m_ChunkWeights == NULL) {
+    m_ChunkWeights = weights;
+  } else {
+    m_MergeWeights.push_back(weights);
+  }
 }
