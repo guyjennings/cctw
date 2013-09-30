@@ -71,11 +71,15 @@ void CctwqtDataChunk::reportDependencies()
 
 void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
 {
+//  printMessage(tr("Merging chunk [%1,%2,%3]")
+//               .arg(index().x()).arg(index().y()).arg(index().z()));
+
   if (c) {
     double *d, *w, *id, *iw;
+    c -> popMergeData(&id, &iw);
 
     while (popMergeData(&d, &w))  {
-      c -> popMergeData(&id, &iw);
+//      printMessage(tr("Pop Merge"));
 
       CctwIntVector3D cks = chunkSize();
       CctwIntVector3D icks = c->chunkSize();
@@ -85,44 +89,44 @@ void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
 
         if (d && id) {
           for (int i=0; i<n; i++) {
-            d[i] += id[i];
+            id[i] += d[i];
           }
-        } else if (id) {
-          d = id;
-          id = NULL;
+        } else if (d) {
+          id = d;
+          d = NULL;
         }
 
         if (w && iw) {
           for (int i=0; i<n; i++) {
-            w[i] += iw[i];
+            iw[i] += w[i];
           }
-        } else if (iw) {
-          w = iw;
-          iw = NULL;
+        } else if (w) {
+          iw = w;
+          w = NULL;
         }
       }
 
-      pushMergeData(d, w);
+      delete[] d;
+      delete[] w;
+    }
 
-      delete[] id;
-      delete[] iw;
+    pushMergeData(id, iw);
 
-      incMergeCounters();
+    incMergeCounters();
 
-      if (mergeCount() == dependencyCount()) {
-        printMessage(tr("Output chunk [%1,%2,%3] completed")
-                     .arg(index().x()).arg(index().y()).arg(index().z()));
-        writeData();
-        writeWeights();
-        deallocateData();
-        deallocateWeights();
-      } else if (mergeCount() > dependencyCount()) {
-        printMessage(tr("Exceeded expected number of merges for chunk [%1,%2,%3] %4 > %5")
-                     .arg(index().x()).arg(index().y()).arg(index().z())
-                     .arg(mergeCount()).arg(dependencyCount()));
-        deallocateData();
-        deallocateWeights();
-      }
+    if (mergeCount() == dependencyCount()) {
+      printMessage(tr("Output chunk [%1,%2,%3] completed")
+                   .arg(index().x()).arg(index().y()).arg(index().z()));
+      writeData();
+      writeWeights();
+      deallocateData();
+      deallocateWeights();
+    } else if (mergeCount() > dependencyCount()) {
+      printMessage(tr("Exceeded expected number of merges for chunk [%1,%2,%3] %4 > %5")
+                   .arg(index().x()).arg(index().y()).arg(index().z())
+                   .arg(mergeCount()).arg(dependencyCount()));
+      deallocateData();
+      deallocateWeights();
     }
   }
 }

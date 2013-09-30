@@ -89,9 +89,9 @@ void CctwqtTransformer::transformChunkNumber(int n)
       inputChunk->deallocateData();
       inputChunk->deallocateWeights();
 
-      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
-                   .arg(outputChunks.count())
-                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
+//      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
+//                   .arg(outputChunks.count())
+//                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
       if (inputChunk->dependencyCount() != outputChunks.count()) {
         printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
