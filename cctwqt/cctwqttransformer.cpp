@@ -12,7 +12,10 @@ CctwqtTransformer::CctwqtTransformer
    int osx, int osy, int osz,
    QObject *parent) :
   CctwTransformer(input, output, xform, osx, osy, osz, 0, parent),
-  m_Application(application)
+  m_Application(application),
+//  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
+//  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
+  m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit")
 {
 }
 
@@ -35,6 +38,8 @@ void CctwqtTransformer::transformChunkNumber(int n)
     CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
     if (inputChunk) {
+      inputChunk->waitForData();
+
       QMap<CctwIntVector3D, CctwqtDataChunk*> outputChunks;
 
       inputChunk->readData();
@@ -103,6 +108,8 @@ void CctwqtTransformer::transformChunkNumber(int n)
 
         delete outputChunk;
       }
+
+      inputChunk->finishedWithData();
     }
 
     m_MergeCounter.fetchAndAddOrdered(-1);
@@ -132,6 +139,8 @@ void CctwqtTransformer::transform()
 
   m_InputData->clearMergeCounters();
   m_OutputData->clearMergeCounters();
+
+  CctwqtDataChunk::resetAllocationLimits(get_BlocksLimit());
 
   CctwIntVector3D chunks = m_OutputData->chunkCount();
 

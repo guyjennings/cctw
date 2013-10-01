@@ -26,6 +26,10 @@ CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D ind
 
 CctwDataChunk::~CctwDataChunk()
 {
+  if (m_ChunkData || m_ChunkWeights) {
+    printf("Anomaly\n");
+  }
+
   delete [] m_ChunkData;
   delete [] m_ChunkWeights;
 }
@@ -77,16 +81,11 @@ int CctwDataChunk::writeWeights()
 
 int CctwDataChunk::allocateData()
 {
-  double *newData = NULL;
   int cksz = m_Data->chunkSize().volume();
 
-  newData = new double[cksz];
+  double *newData = allocateBuffer();
 
-  for (int i=0; i<cksz; i++) {
-    newData[i] = 0;
-  }
-
-  delete [] m_ChunkData;
+  releaseBuffer(m_ChunkData);
 
   m_ChunkData = newData;
 
@@ -95,16 +94,11 @@ int CctwDataChunk::allocateData()
 
 int CctwDataChunk::allocateWeights()
 {
-  double *newWeights = NULL;
   int cksz = m_Data->chunkSize().volume();
 
-  newWeights = new double[cksz];
+  double *newWeights = allocateBuffer();
 
-  for (int i=0; i<cksz; i++) {
-    newWeights[i] = 0;
-  }
-
-  delete [] m_ChunkWeights;
+  releaseBuffer(m_ChunkWeights);
 
   m_ChunkWeights = newWeights;
 
@@ -115,7 +109,7 @@ int CctwDataChunk::deallocateData()
 {
   int res = m_ChunkData ? m_Data->chunkSize().volume()*sizeof(double) : 0;
 
-  delete [] m_ChunkData;
+  releaseBuffer(m_ChunkData);
 
   m_ChunkData = NULL;
 
@@ -126,7 +120,7 @@ int CctwDataChunk::deallocateWeights()
 {
   int res = m_ChunkWeights ? m_Data->chunkSize().volume()*sizeof(double) : 0;
 
-  delete [] m_ChunkWeights;
+  releaseBuffer(m_ChunkWeights);
 
   m_ChunkWeights = NULL;
 

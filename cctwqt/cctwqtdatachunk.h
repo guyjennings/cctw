@@ -17,7 +17,8 @@ public:
                            CctwIntVector3D idx,
                            CctwqtDataFrameManager *manager,
                            QObject *parent);
-  
+  ~CctwqtDataChunk();
+
   void clearDependencies();
   void addDependency(CctwIntVector3D dep);
   void sortDependencies();
@@ -34,6 +35,15 @@ public:
 
   bool popMergeData(double **data, double **weights);
   void pushMergeData(double *data, double *weights);
+
+  void waitForData();
+  void finishedWithData();
+
+  static void resetAllocationLimits(int nmax);
+
+protected:
+  double *allocateBuffer();
+  void releaseBuffer(double *buffer);
 
 signals:
   

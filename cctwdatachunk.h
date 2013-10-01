@@ -54,6 +54,10 @@ public:
   CctwIntVector3D chunkSize();
 
 protected:
+  virtual double *allocateBuffer() = 0;
+  virtual void releaseBuffer(double *) = 0;
+
+protected:
   CctwChunkedDataInterface *m_Data;
   CctwIntVector3D           m_ChunkIndex;
   double                   *m_ChunkData;

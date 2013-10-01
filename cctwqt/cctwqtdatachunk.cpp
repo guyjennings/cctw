@@ -1,4 +1,6 @@
 #include "cctwqtdatachunk.h"
+#include <QSemaphore>
+#include "cctwqtthread.h"
 
 CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
                                  CctwqtDataFrameManager *manager,
@@ -12,6 +14,94 @@ CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
   int n = m_Data->chunkCount().z();
 
   m_DataFrames.resize(n);
+}
+
+static QAtomicInt g_MaxAllocated(0);
+static QAtomicInt g_Allocated(0);
+static QAtomicInt g_AllocationLimit(1000);
+static QSemaphore g_Available(1000);
+
+CctwqtDataChunk::~CctwqtDataChunk()
+{
+  releaseBuffer(m_ChunkData);
+  releaseBuffer(m_ChunkWeights);
+
+  m_ChunkData = NULL;
+  m_ChunkWeights = NULL;
+}
+
+void CctwqtDataChunk::resetAllocationLimits(int nmax)
+{
+  g_Allocated.fetchAndStoreOrdered(0);
+  g_MaxAllocated.fetchAndStoreOrdered(0);
+  g_AllocationLimit.fetchAndStoreOrdered(nmax);
+  g_Available.acquire(g_Available.available());
+  g_Available.release(nmax);
+}
+
+double *CctwqtDataChunk::allocateBuffer()
+{
+  int cksz = m_Data->chunkSize().volume();
+
+  int nalloc = g_Allocated.fetchAndAddOrdered(1);
+
+  if (nalloc > g_MaxAllocated.fetchAndAddOrdered(0)) {
+    g_MaxAllocated.fetchAndStoreOrdered(nalloc);
+  }
+
+  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
+               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
+
+  double *res = new double[cksz];
+
+  for (int i=0; i<cksz; i++) {
+    res[i] = 0;
+  }
+
+  return res;
+}
+
+void CctwqtDataChunk::releaseBuffer(double *buffer)
+{
+  if (buffer) {
+    int nalloc = g_Allocated.fetchAndAddOrdered(-1);
+
+    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
+  }
+
+  delete [] buffer;
+}
+
+void CctwqtDataChunk::waitForData()
+{
+  int nbuff = dependencyCount();
+
+  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
+    printMessage(tr("Trying to allocate too many blocks - will sleep 5 secs then proceed anyway"));
+
+    CctwqtThread::sleep(5);
+  } else {
+    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+
+    if (!g_Available.tryAcquire(nbuff)) {
+      printMessage(tr("Failed to acquire %1 blocks").arg(nbuff));
+
+      g_Available.acquire(nbuff);
+    }
+  }
+}
+
+void CctwqtDataChunk::finishedWithData()
+{
+  int nbuff = dependencyCount();
+
+  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
+    printMessage(tr("Skipped release"));
+  } else {
+    g_Available.release(nbuff);
+
+    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+  }
 }
 
 CctwIntVector3D CctwqtDataChunk::index() const
@@ -106,8 +196,8 @@ void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
         }
       }
 
-      delete[] d;
-      delete[] w;
+      releaseBuffer(d);
+      releaseBuffer(w);
     }
 
     pushMergeData(id, iw);
