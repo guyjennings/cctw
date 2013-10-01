@@ -1,5 +1,6 @@
 #include "cctwdatachunk.h"
 #include "cctwchunkeddatainterface.h"
+#include <stdio.h>
 
 #ifdef USE_QT
 
