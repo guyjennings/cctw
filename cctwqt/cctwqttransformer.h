@@ -34,6 +34,9 @@ private:
   QAtomicInt         m_MergeCounter;
 
 public:
+  Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)
+  QCEP_DOUBLE_PROPERTY(WallTime)
+
 //  Q_PROPERTY(int blocksAvailable READ get_BlocksAvailable WRITE set_BlocksAvailable STORED false)
 //  QCEP_INTEGER_PROPERTY(BlocksAvailable)
 
@@ -42,6 +45,9 @@ public:
 
   Q_PROPERTY(int blocksLimit READ get_BlocksLimit WRITE set_BlocksLimit)
   QCEP_INTEGER_PROPERTY(BlocksLimit)
+
+  Q_PROPERTY(int blocksMax READ get_BlocksMax WRITE set_BlocksMax STORED false)
+  QCEP_INTEGER_PROPERTY(BlocksMax)
 };
 
 #endif // CCTWQTTRANSFORMER_H

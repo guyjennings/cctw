@@ -40,6 +40,7 @@ public:
   void finishedWithData();
 
   static void resetAllocationLimits(int nmax);
+  static int maxAllocated();
 
 protected:
   double *allocateBuffer();

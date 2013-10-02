@@ -13,9 +13,11 @@ CctwqtTransformer::CctwqtTransformer
    QObject *parent) :
   CctwTransformer(input, output, xform, osx, osy, osz, 0, parent),
   m_Application(application),
+  m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
 //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
 //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
-  m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit")
+  m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
+  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used")
 {
 }
 
@@ -191,7 +193,10 @@ void CctwqtTransformer::transform()
     m_Application->processEvents();
   }
 
-  printMessage(tr("Transform complete after %1 msec").arg(startAt.elapsed()));
+  set_WallTime(startAt.elapsed()/1000.0);
+  set_BlocksMax(CctwqtDataChunk::maxAllocated());
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
 }
 
 void CctwqtTransformer::checkTransform()
