@@ -25,13 +25,16 @@ class CctwqtApplication : public QApplication
   Q_OBJECT
 public:
   explicit CctwqtApplication(int &argc, char *argv[]);
-  void initialize();
+  void initialize(int &argc, char *argv[]);
 
 signals:
 
 public slots:
+
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
+  void wait(QString msg);
   void evaluateCommand(QString cmd);
+  void executeScriptFile(QString path);
 
   void writeSettings();
   void readSettings();
@@ -74,6 +77,10 @@ private:
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
 
+  void decodeCommandLineArgs(int &argc, char *argv[]);
+  void decodeCommandLineArgsForUnix(int &argc, char *argv[]);
+  void decodeCommandLineArgsForWindows(int &argc, char *argv[]);
+
 public:
   QcepObjectNamer                     m_ObjectNamer;
   CctwqtMainWindow                   *m_Window;
@@ -96,6 +103,12 @@ private:
   QAtomicInt                          m_DependencyCounter;
 
 public:
+  Q_PROPERTY(bool guiWanted READ get_GuiWanted WRITE set_GuiWanted STORED false)
+  QCEP_BOOLEAN_PROPERTY(GuiWanted)
+
+  Q_PROPERTY(QcepStringList startupCommands READ get_StartupCommands WRITE set_StartupCommands STORED false)
+  QCEP_STRING_LIST_PROPERTY(StartupCommands)
+
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
 

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
 //  printf("appArgc = %d\n", appArgc);
 
-  app->initialize();
+  app->initialize(argc, argv);
 
   return app->exec();
 #else

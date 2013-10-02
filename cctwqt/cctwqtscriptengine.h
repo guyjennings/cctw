@@ -19,6 +19,9 @@ public:
 
 private:
   static QScriptValue printFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue waitFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine);
 
 private:
   CctwqtApplication *m_Application;

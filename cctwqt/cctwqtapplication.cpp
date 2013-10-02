@@ -16,6 +16,10 @@
 #include "cctwqtthread.h"
 #include "cctwdatachunk.h"
 
+#ifdef Q_OS_UNIX
+#include "getopt.h"
+#endif
+
 QcepSettingsSaverPtr g_Saver;
 
 CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
@@ -36,6 +40,8 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_ScriptEngine(NULL),
   m_TransformTest(NULL),
   m_Saver(new QcepSettingsSaver(this)),
+  m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
+  m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_InputDataDescriptor(m_Saver, this, "inputData", "", "Input Data Descriptor"),
   m_OutputDataDescriptor(m_Saver, this, "outputData", "", "Output Data Descriptor"),
@@ -72,9 +78,96 @@ void CctwqtApplication::onDebugChanged(int dbg)
   }
 }
 
-void CctwqtApplication::initialize()
+void CctwqtApplication::decodeCommandLineArgs(int &argc, char *argv[])
 {
-  m_Window                  = new CctwqtMainWindow(this);
+#ifdef Q_OS_UNIX
+  decodeCommandLineArgsForUnix(argc, argv);
+#endif
+
+#ifdef Q_OS_WIN
+  decodeCommandLineArgsForWindows(argc, argv);
+#endif
+}
+
+void CctwqtApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
+{
+#ifdef Q_OS_UNIX
+  int c;
+
+  while (1) {
+    static struct option long_options[] = {
+      {"debug", required_argument, 0, 'd'},
+      {"preferences", required_argument, 0, 'p'},
+      {"gui", no_argument, 0, 'g'},
+      {"nogui", no_argument, 0, 'n'},
+      {"command", required_argument, 0, 'c'},
+      {"wait", required_argument, 0, 'w'},
+      {"script", required_argument, 0, 's'},
+      {0,0,0,0}
+    };
+
+    int option_index = 0;
+
+    c = getopt_long(argc, argv, "d:p:gnc:w:s:", long_options, &option_index);
+
+    if (c == -1) {
+      break;
+    }
+
+    switch (c) {
+    case 'g': /* want gui */
+      set_GuiWanted(true);
+      break;
+
+    case 'n': /* no gui */
+      set_GuiWanted(false);
+      break;
+
+    case 'c': /* command line command */
+      prop_StartupCommands()->appendValue(tr("%1;").arg(optarg));
+      break;
+
+    case 'w': /* wait */
+      prop_StartupCommands()->appendValue(tr("wait(\"%1\");").arg(optarg));
+      break;
+
+    case 's': /* script file */
+      prop_StartupCommands()->appendValue(tr("executeScriptFile(\"%1\");").arg(optarg));
+      break;
+
+    case 'p': /* preferences file */
+      prop_StartupCommands()->appendValue(tr("loadPreferences(\"%1\");").arg(optarg));
+      break;
+
+    case 'd': /* change debug level */
+      {
+        char *a = optarg;
+        int lvl = atoi(a);
+        set_Debug(lvl);
+      }
+      break;
+
+    case '?': /* unknown option, or missing optional argument */
+      break;
+
+    default:
+      break;
+    }
+  }
+#endif
+}
+
+void CctwqtApplication::decodeCommandLineArgsForWindows(int &argc, char *argv[])
+{
+}
+
+void CctwqtApplication::initialize(int &argc, char *argv[])
+{
+  decodeCommandLineArgs(argc, argv);
+
+  if (get_GuiWanted()) {
+    m_Window                  = new CctwqtMainWindow(this);
+  }
 
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
@@ -135,12 +228,21 @@ void CctwqtApplication::initialize()
   m_ScriptEngine->globalObject().setProperty("test", m_ScriptEngine->newQObject(m_TransformTest));
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
-
 //  readSettings();
 
   m_Saver->start();
 
-  m_Window->show();
+  if (m_Window) {
+    m_Window->show();
+  }
+
+  foreach(QString cmd, get_StartupCommands()) {
+    QMetaObject::invokeMethod(this, "evaluateCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
+  }
+
+  if (!get_GuiWanted()) {
+    QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
+  }
 }
 
 void CctwqtApplication::doAboutToQuit()
@@ -152,7 +254,14 @@ void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 {
   if (m_Window) {
     m_Window->printMessage(msg, dt);
+  } else {
+    printf("%s\n", qPrintable(msg));
   }
+}
+
+void CctwqtApplication::wait(QString msg)
+{
+  printMessage(tr("Wait: %1").arg(msg));
 }
 
 void CctwqtApplication::evaluateCommand(QString cmd)
@@ -161,6 +270,21 @@ void CctwqtApplication::evaluateCommand(QString cmd)
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
 
     printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+  }
+}
+
+void CctwqtApplication::executeScriptFile(QString path)
+{
+  if (m_ScriptEngine) {
+    QFile f(path);
+
+    if (f.open(QIODevice::ReadOnly)) {
+      QString script = f.readAll();
+
+      QScriptValue val = m_ScriptEngine->evaluate(script, path, 1);
+
+      printMessage(tr("Result -> %1").arg(val.toString()));
+    }
   }
 }
 
