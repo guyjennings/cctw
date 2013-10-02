@@ -67,11 +67,17 @@ public slots:
 
   CctwqtCrystalCoordinateParameters *parameters() const;
 
+  void addWorkOutstanding(int amt);
+  void workCompleted(int amt);
+  void waitCompleted();
+  int  workOutstanding();
+
 public:
   QcepSettingsSaverWPtr saver() const;
 
 private slots:
   void onDebugChanged(int dbg);
+  void onProgress(int prg);
 
 private:
   void readSettings(QSettings *settings);
@@ -101,6 +107,8 @@ public:
 
 private:
   QAtomicInt                          m_DependencyCounter;
+  QAtomicInt                          m_WorkOutstanding;
+  QAtomicInt                          m_LastProgress;
 
 public:
   Q_PROPERTY(bool guiWanted READ get_GuiWanted WRITE set_GuiWanted STORED false)

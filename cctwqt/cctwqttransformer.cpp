@@ -119,12 +119,14 @@ void CctwqtTransformer::transformChunkNumber(int n)
 
   if (m_Application) {
     m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
   }
 }
 
 void CctwqtTransformer::transform()
 {
   if (m_Application) {
+    m_Application->waitCompleted();
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
   }
@@ -176,6 +178,10 @@ void CctwqtTransformer::transform()
 
   foreach(int ckidx, inputChunks) {
     m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
 
     QtConcurrent::run(this, &CctwqtTransformer::transformChunkNumber, ckidx);
   }

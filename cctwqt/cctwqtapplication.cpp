@@ -49,7 +49,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
-  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 0, "Progress limit"),
+  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in")
 {
@@ -62,6 +62,7 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
   g_Saver = m_Saver;
 
   connect(prop_Debug(), SIGNAL(valueChanged(int,int)), this, SLOT(onDebugChanged(int)));
+  connect(prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgress(int)));
 
   connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
 }
@@ -75,6 +76,17 @@ void CctwqtApplication::onDebugChanged(int dbg)
 {
   if (g_DebugLevel) {
     g_DebugLevel->setDebugLevel(dbg);
+  }
+}
+
+void CctwqtApplication::onProgress(int prg)
+{
+  int prog = (prg*100)/get_ProgressLimit();
+
+  if (m_LastProgress.fetchAndStoreOrdered(prog) != prog) {
+    if (m_Window == NULL && (prog % 5 == 0)) {
+      printMessage(tr("%1% completed").arg(prog));
+    }
   }
 }
 
@@ -261,7 +273,9 @@ void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 
 void CctwqtApplication::wait(QString msg)
 {
-  printMessage(tr("Wait: %1").arg(msg));
+  waitCompleted();
+
+//  printMessage(tr("Wait: %1").arg(msg));
 }
 
 void CctwqtApplication::evaluateCommand(QString cmd)
@@ -481,11 +495,14 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
   }
 
   prop_Progress()->incValue(1);
+
+  workCompleted(1);
 }
 
 void CctwqtApplication::calculateDependencies()
 {
 //  QVector < QFuture < void > > futures;
+  waitCompleted();
 
   m_InputData->clearDependencies();
   m_OutputData->clearDependencies();
@@ -520,6 +537,7 @@ void CctwqtApplication::calculateDependencies()
 
           m_DependencyCounter.fetchAndAddOrdered(1);
 
+          addWorkOutstanding(1);
 //          futures.append(
                 QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx)/*)*/;
 //          calculateChunkDependencies(idx);
@@ -915,4 +933,27 @@ int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D l
 CctwqtCrystalCoordinateParameters *CctwqtApplication::parameters() const
 {
   return m_Parameters;
+}
+
+void CctwqtApplication::addWorkOutstanding(int amt)
+{
+  m_WorkOutstanding.fetchAndAddOrdered(amt);
+}
+
+void CctwqtApplication::workCompleted(int amt)
+{
+  m_WorkOutstanding.fetchAndAddOrdered(-amt);
+}
+
+void CctwqtApplication::waitCompleted()
+{
+  while (m_WorkOutstanding.fetchAndAddOrdered(0) > 0) {
+    CctwqtThread::msleep(100);
+    processEvents(QEventLoop::ExcludeUserInputEvents);
+  }
+}
+
+int  CctwqtApplication::workOutstanding()
+{
+  return m_WorkOutstanding.fetchAndAddOrdered(0);
 }
