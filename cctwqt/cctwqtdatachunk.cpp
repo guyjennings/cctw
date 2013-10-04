@@ -39,6 +39,11 @@ void CctwqtDataChunk::resetAllocationLimits(int nmax)
   g_Available.release(nmax);
 }
 
+int CctwqtDataChunk::maxAllocated()
+{
+  return g_MaxAllocated.fetchAndAddOrdered(0);
+}
+
 double *CctwqtDataChunk::allocateBuffer()
 {
   int cksz = m_Data->chunkSize().volume();
@@ -49,8 +54,8 @@ double *CctwqtDataChunk::allocateBuffer()
     g_MaxAllocated.fetchAndStoreOrdered(nalloc);
   }
 
-  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
-               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
+//  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
+//               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
 
   double *res = new double[cksz];
 
@@ -66,7 +71,7 @@ void CctwqtDataChunk::releaseBuffer(double *buffer)
   if (buffer) {
     int nalloc = g_Allocated.fetchAndAddOrdered(-1);
 
-    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
+//    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
   }
 
   delete [] buffer;
@@ -81,7 +86,7 @@ void CctwqtDataChunk::waitForData()
 
     CctwqtThread::sleep(5);
   } else {
-    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+//    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
 
     if (!g_Available.tryAcquire(nbuff)) {
       printMessage(tr("Failed to acquire %1 blocks").arg(nbuff));
@@ -100,7 +105,7 @@ void CctwqtDataChunk::finishedWithData()
   } else {
     g_Available.release(nbuff);
 
-    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+//    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
   }
 }
 

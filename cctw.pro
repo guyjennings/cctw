@@ -134,7 +134,8 @@ OTHER_FILES += Doxyfile \
     doc/transformtest.f \
     doc/transformtools.f \
     doc/standards.doc \
-    doc/pznpt4_march2007.out.txt
+    doc/pznpt4_march2007.out.txt \
+    tests/testTransformScaling.js
 
 QMAKE_EXTRA_TARGETS += dox
 
