@@ -565,67 +565,85 @@ void CctwqtApplication::saveDependencies(QString path)
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
+  QSettings settings(path, QSettings::IniFormat);
 
-  QFile aFile(path);
-
-  aFile.open(QIODevice::Append);
+  settings.beginWriteArray("dependencies");
+  int n=0;
 
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
       for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+        CctwIntVector3D idx(x,y,z);
 
-          CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+        CctwqtDataChunk *chunk = m_InputData->chunk(idx);
 
-          chunk->sortDependencies();
+        chunk->sortDependencies();
 
-          int nDeps = chunk->dependencyCount();
+        int nDeps = chunk->dependencyCount();
 
-          QString msg(tr("%1  %2  %3  ->  %4  ").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(nDeps));
+        if (nDeps > 0) {
+          settings.setArrayIndex(n++);
+          settings.setValue("x", x);
+          settings.setValue("y", y);
+          settings.setValue("z", z);
+
+          settings.beginWriteArray("deps");
 
           for (int i=0; i<nDeps; i++) {
+            settings.setArrayIndex(i);
             CctwIntVector3D dep = chunk->dependency(i);
-            msg += tr(" %1  %2  %3").arg(dep.x()).arg(dep.y()).arg(dep.z());
+
+            settings.setValue("x", dep.x());
+            settings.setValue("y", dep.y());
+            settings.setValue("z", dep.z());
           }
 
-          aFile.write(qPrintable(msg+"\n"));
-
-          prop_Progress()->incValue(1);
+          settings.endArray();
         }
       }
     }
   }
+
+  settings.endArray();
 }
 
 void CctwqtApplication::loadDependencies(QString path)
 {
-  CctwIntVector3D chunks = m_InputData->chunkCount();
+  m_InputData -> clearDependencies();
+  m_OutputData -> clearDependencies();
 
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
+  QSettings settings(path, QSettings::IniFormat);
 
-  QFile aFile;
+  int n = settings.beginReadArray("dependencies");
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+  for (int i=0; i<n; i++) {
+    settings.setArrayIndex(i);
 
-          prop_Progress()->incValue(1);
-        }
-      }
+    int ix = settings.value("x").toInt();
+    int iy = settings.value("y").toInt();
+    int iz = settings.value("z").toInt();
+
+    CctwIntVector3D ichnk(ix, iy, iz);
+
+    int nd = settings.beginReadArray("deps");
+
+    for (int j=0; j<nd; j++) {
+      settings.setArrayIndex(j);
+
+      int idx = settings.value("x").toInt();
+      int idy = settings.value("y").toInt();
+      int idz = settings.value("z").toInt();
+
+      CctwIntVector3D ochnk(idx, idy, idz);
+
+      m_InputData->addDependency(ichnk, ochnk);
+      m_OutputData->addDependency(ochnk, ichnk);
     }
+
+    settings.endArray();
   }
+
+  settings.endArray();
 }
 
 void CctwqtApplication::reportDependencies()
