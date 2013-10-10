@@ -3,8 +3,8 @@
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
 #include "cctwqtoutputslicedata.h"
-#include "../cctwcrystalcoordinatetransform.h"
-#include "../cctwtransformer.h"
+#include "cctwcrystalcoordinatetransform.h"
+#include "cctwtransformer.h"
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
 #include "qcepproperty.h"

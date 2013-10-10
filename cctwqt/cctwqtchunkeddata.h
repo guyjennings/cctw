@@ -2,7 +2,7 @@
 #define CCTWQTCHUNKEDDATA_H
 
 #include <QVector>
-#include "../cctwchunkeddatainterface.h"
+#include "cctwchunkeddatainterface.h"
 
 class CctwqtDataFrameManager;
 class CctwqtDataChunk;

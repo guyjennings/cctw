@@ -1,7 +1,7 @@
 #ifndef CCTWQTTRANSFORMER_H
 #define CCTWQTTRANSFORMER_H
 
-#include "../cctwtransformer.h"
+#include "cctwtransformer.h"
 
 #include <QObject>
 #include "qcepproperty.h"

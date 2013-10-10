@@ -3,7 +3,7 @@
 
 
 #include "qcepproperty.h"
-#include "../cctwvector3d.h"
+#include "cctwvector3d.h"
 
 class CctwqtIntVector3DProperty : public QcepProperty
 {

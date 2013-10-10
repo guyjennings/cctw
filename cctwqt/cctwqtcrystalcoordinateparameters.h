@@ -2,7 +2,7 @@
 #define CCTWQTCRYSTALCOORDINATEPARAMETERS_H
 
 #include "cctwqtobject.h"
-#include "../cctwcrystalcoordinateparameters.h"
+#include "cctwcrystalcoordinateparameters.h"
 #include "cctwqtunitcellproperty.h"
 #include "cctwqtdoublematrix3x3property.h"
 #include "cctwqtdoublevector3dproperty.h"

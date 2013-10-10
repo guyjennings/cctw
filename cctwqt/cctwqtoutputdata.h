@@ -2,7 +2,7 @@
 #define CCTWQTOUTPUTDATA_H
 
 #include "cctwqtchunkeddata.h"
-#include "../cctwoutputdatainterface.h"
+#include "cctwoutputdatainterface.h"
 
 class CctwqtOutputData : public CctwOutputDataInterface
 {

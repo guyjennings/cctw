@@ -2,7 +2,7 @@
 #define CCTWQTDOUBLEVECTOR3DPROPERTY_H
 
 #include "qcepproperty.h"
-#include "../cctwvector3d.h"
+#include "cctwvector3d.h"
 
 class CctwqtDoubleVector3DProperty : public QcepProperty
 {

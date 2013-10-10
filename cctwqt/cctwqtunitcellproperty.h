@@ -2,7 +2,7 @@
 #define CCTWQTUNITCELLPROPERTY_H
 
 #include "qcepproperty.h"
-#include "../cctwunitcell.h"
+#include "cctwunitcell.h"
 
 class CctwqtUnitCellProperty : public QcepProperty
 {

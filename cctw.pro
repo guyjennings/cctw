@@ -4,127 +4,10 @@
 #
 #-------------------------------------------------
 
-VERSION      = 0.1.0
-QT          += core gui network script
+include(cctw.pri)
 
-TARGET       = cctw
-#CONFIG      += console qt
-INCLUDEPATH += . cctwqt
-
-DEFINES     += USE_QT
-DEFINES     += CCTW_VERSION=\"$$VERSION\"
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets concurrent
-
-TEMPLATE = app
-
-include(cctwqt/qceplib-code/qceplib.pri)
-
-SOURCES += main.cpp \
-    cctwinputdatainterface.cpp \
-    cctwoutputdatainterface.cpp \
-    cctwswiftinputdata.cpp \
-    cctwswiftoutputdata.cpp \
-    cctwtransforminterface.cpp \
-    cctwtransformer.cpp \
-    cctwvector3d.cpp \
-    cctwmatrix3x3.cpp \
-    cctwcrystalcoordinatetransform.cpp \
-    cctwrotationtransform.cpp \
-    cctwcompoundtransform.cpp \
-    cctwoutputchunkindex.cpp \
-    cctwcommandline.cpp \
-    cctwchunkeddatainterface.cpp \
-    cctwinputchunkindex.cpp \
-    cctwchunkindex.cpp \
-    cctwqt/cctwqtapplication.cpp \
-    cctwqt/cctwqtoutputdata.cpp \
-    cctwqt/cctwqtmainwindow.cpp \
-    cctwqt/cctwqtinputdata.cpp \
-    cctwqt/cctwqtscriptengine.cpp \
-    cctwqt/cctwqtsetupinputdialog.cpp \
-    cctwqt/cctwqtsetupoutputdialog.cpp \
-    cctwqt/cctwqtsetuptransformdialog.cpp \
-    cctwqt/cctwqttransformonedialog.cpp \
-    cctwqt/cctwqtsetupslicedialog.cpp \
-    cctwqt/cctwqtoutputslicedata.cpp \
-    cctwqt/cctwqtdataframe.cpp \
-    cctwqt/cctwqtdatachunk.cpp \
-    cctwqt/cctwqttransformer.cpp \
-    cctwqt/cctwqtcrystalcoordinatetransform.cpp \
-    cctwqt/cctwqtobject.cpp \
-    cctwqt/cctwqtdebug.cpp \
-    cctwqt/cctwqtchunkeddata.cpp \
-    cctwqt/cctwtransformtest.cpp \
-    cctwqt/cctwqtdoublevector3dproperty.cpp \
-    cctwqt/cctwqtdoublematrix3x3property.cpp \
-    cctwunitcell.cpp \
-    cctwqt/cctwqtunitcellproperty.cpp \
-    cctwcrystalcoordinateparameters.cpp \
-    cctwqt/cctwqtcrystalcoordinateparameters.cpp \
-    cctwqt/cctwqtintvector3dproperty.cpp \
-    cctwqt/cctwqtinputdataframemanager.cpp \
-    cctwqt/cctwqtoutputdataframemanager.cpp \
-    cctwqt/cctwqtdataframemanager.cpp \
-    cctwqt/cctwqtthread.cpp \
-    cctwdatachunk.cpp
-
-HEADERS += \
-    cctwinputdatainterface.h \
-    cctwoutputdatainterface.h \
-    cctwswiftinputdata.h \
-    cctwswiftoutputdata.h \
-    cctwtransforminterface.h \
-    cctwtransformer.h \
-    cctwvector3d.h \
-    cctwmatrix3x3.h \
-    cctwcrystalcoordinatetransform.h \
-    cctwrotationtransform.h \
-    cctwcompoundtransform.h \
-    cctwoutputchunkindex.h \
-    cctwcommandline.h \
-    cctwchunkeddatainterface.h \
-    cctwinputchunkindex.h \
-    cctwchunkindex.h \
-    cctwqt/cctwqtapplication.h \
-    cctwqt/cctwqtoutputdata.h \
-    cctwqt/cctwqtmainwindow.h \
-    cctwqt/cctwqtinputdata.h \
-    cctwqt/cctwqtscriptengine.h \
-    cctwqt/cctwqtsetupinputdialog.h \
-    cctwqt/cctwqtsetupoutputdialog.h \
-    cctwqt/cctwqtsetuptransformdialog.h \
-    cctwqt/cctwqttransformonedialog.h \
-    cctwqt/cctwqtsetupslicedialog.h \
-    cctwqt/cctwqtoutputslicedata.h \
-    cctwqt/cctwqtdataframe.h \
-    cctwqt/cctwqtdatachunk.h \
-    cctwqt/cctwqttransformer.h \
-    cctwqt/cctwqtcrystalcoordinatetransform.h \
-    cctwqt/cctwqtobject.h \
-    cctwqt/cctwqtdebug.h \
-    cctwqt/cctwqtchunkeddata.h \
-    cctwqt/cctwtransformtest.h \
-    cctwqt/cctwqtdoublevector3dproperty.h \
-    cctwqt/cctwqtdoublematrix3x3property.h \
-    cctwunitcell.h \
-    cctwqt/cctwqtunitcellproperty.h \
-    cctwcrystalcoordinateparameters.h \
-    cctwqt/cctwqtcrystalcoordinateparameters.h \
-    cctwqt/cctwqtintvector3dproperty.h \
-    cctwqt/cctwqtinputdataframemanager.h \
-    cctwqt/cctwqtoutputdataframemanager.h \
-    cctwqt/cctwqtdataframemanager.h \
-    cctwqt/cctwqtthread.h \
-    cctwdatachunk.h
-
-FORMS += \
-    cctwqt/cctwqtmainwindow.ui \
-    cctwqt/cctwqtsetupinputdialog.ui \
-    cctwqt/cctwqtsetupoutputdialog.ui \
-    cctwqt/cctwqtsetuptransformdialog.ui \
-    cctwqt/cctwqttransformonedialog.ui \
-    cctwqt/cctwqtsetupslicedialog.ui
+TEMPLATE = subdirs
+SUBDIRS  = cctwqt
 
 OTHER_FILES += Doxyfile \
     cctw.dox \
@@ -142,7 +25,7 @@ QMAKE_EXTRA_TARGETS += dox
 dox.commands =  ( cat $${PWD}/Doxyfile ; \
                   echo "PROJECT_NAME=\"$${TARGET}\"" ; \
                   echo "PROJECT_NUMBER=$${VERSION}" ; \
-                  echo "INPUT=\"$${PWD}\"" ; \
+                  echo "INPUT=\"$${PWD}\"/cctw/" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwqt/" ; \
                   echo "ALIASES=\"projectnumber=$${VERSION}\"" \
                 ) > Doxyfile.out ;
