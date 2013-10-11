@@ -11,7 +11,6 @@ include(../cctw.pri)
 QT          += core gui network script
 
 TARGET       = cctwqt
-DESTDIR      = ../
 
 INCLUDEPATH += . ../cctwlib/
 
