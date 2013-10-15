@@ -32,6 +32,9 @@ public:
                                           // Transform from input to output space coordinates
   virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q) = 0;
                                           // Back transform from output to input space coordinates
+
+  virtual CctwDoubleVector3D forward(double x, double y, double z);
+  virtual CctwDoubleVector3D inverse(double x, double y, double z);
 };
 
 #endif // CCTWTRANSFORMINTERFACE_H
