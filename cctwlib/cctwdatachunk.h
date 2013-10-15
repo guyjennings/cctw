@@ -30,8 +30,8 @@ public slots:
 public:
 #endif
 
-  int readData();
-  int readWeights();
+  virtual int readData();
+  virtual int readWeights();
   int writeData();
   int writeWeights();
   int allocateData();

@@ -19,6 +19,9 @@ public:
                            QObject *parent);
   ~CctwqtDataChunk();
 
+  int  readData();
+  int  readWeights();
+
   void clearDependencies();
   void addDependency(CctwIntVector3D dep);
   void sortDependencies();

@@ -77,6 +77,48 @@ void CctwqtDataChunk::releaseBuffer(double *buffer)
   delete [] buffer;
 }
 
+int CctwqtDataChunk::readData()
+{
+  int res = CctwDataChunk::readData();
+
+  CctwIntVector3D size = m_Data->chunkSize();
+
+  for (int k=0; k<size.z(); k++) {
+    for (int j=0; j<size.y(); j++) {
+      for (int i=0; i<size.x(); i++) {
+        CctwIntVector3D coords(i,j,k);
+
+        int val = (i/16 & 1) ^ (j/16 & 1) ^ (k/16 & 1);
+
+        setData(coords, val);
+      }
+    }
+  }
+
+  return res;
+}
+
+int CctwqtDataChunk::readWeights()
+{
+  int res = CctwDataChunk::readWeights();
+
+  CctwIntVector3D size = m_Data->chunkSize();
+
+  for (int k=0; k<size.z(); k++) {
+    for (int j=0; j<size.y(); j++) {
+      for (int i=0; i<size.x(); i++) {
+        CctwIntVector3D coords(i,j,k);
+
+        int val = 1;
+
+        setWeight(coords, val);
+      }
+    }
+  }
+
+  return res;
+}
+
 void CctwqtDataChunk::waitForData()
 {
   int nbuff = dependencyCount();
