@@ -22,6 +22,9 @@ public:
   int  readData();
   int  readWeights();
 
+  int  writeData();
+  int  writeWeights();
+
   void clearDependencies();
   void addDependency(CctwIntVector3D dep);
   void sortDependencies();

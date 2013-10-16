@@ -25,7 +25,8 @@ OBJECTS_DIR = obj
 RCC_DIR = rcc
 
 include(qceplib-code/qceplib.pri)
-
+include(qceplib-code/qt-hdf5.pri)
+include(qceplib-code/qt-nexus.pri)
 include(../cctwlib/cctwlib.pri)
 
 SOURCES += main.cpp \

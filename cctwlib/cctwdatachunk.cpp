@@ -9,7 +9,10 @@ CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D ind
   m_Data(data),
   m_ChunkIndex(index),
   m_ChunkData(NULL),
-  m_ChunkWeights(NULL)
+  m_ChunkWeights(NULL),
+  m_Normalized(0),
+  m_DataWritten(0),
+  m_WeightsWritten(0)
 {
 }
 
@@ -68,6 +71,23 @@ int CctwDataChunk::readData()
 int CctwDataChunk::readWeights()
 {
   return allocateWeights();
+}
+
+int CctwDataChunk::normalize()
+{
+  if (m_Normalized) {
+    printf("Already normalized\n");
+  } else if (m_ChunkData && m_ChunkWeights) {
+    int cksz = m_Data->chunkSize().volume();
+
+    for (int i=0; i<cksz; i++) {
+      m_ChunkData[i] /= m_ChunkWeights[i];
+    }
+  }
+
+  m_Normalized = true;
+
+  return 0;
 }
 
 int CctwDataChunk::writeData()

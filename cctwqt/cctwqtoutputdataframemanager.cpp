@@ -2,8 +2,12 @@
 #include "cctwqtdataframe.h"
 #include "cctwchunkindex.h"
 
-CctwqtOutputDataFrameManager::CctwqtOutputDataFrameManager(QObject *parent) :
-  CctwqtDataFrameManager(parent)
+CctwqtOutputDataFrameManager::CctwqtOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :
+  CctwqtDataFrameManager(parent),
+  m_ObjectNamer(this, "outputDataManager"),
+  m_Saver(saver),
+  m_FilePath(m_Saver, this, "filePath", "", "Output file path"),
+  m_OutputFormat(m_Saver, this, "outputFormat", 0, "Output file format")
 {
 }
 
@@ -33,4 +37,9 @@ void CctwqtOutputDataFrameManager::releaseChunk(int chunkId)
   if (m_Frames[nz]) {
     m_Frames[nz] -> dereference();
   }
+}
+
+void CctwqtOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
+{
+  printMessage("Want to write chunk");
 }

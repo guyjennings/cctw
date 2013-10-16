@@ -32,8 +32,10 @@ public:
 
   virtual int readData();
   virtual int readWeights();
-  int writeData();
-  int writeWeights();
+  virtual int normalize();
+  virtual int writeData();
+  virtual int writeWeights();
+
   int allocateData();
   int allocateWeights();
   int deallocateData();
@@ -62,6 +64,9 @@ protected:
   CctwIntVector3D           m_ChunkIndex;
   double                   *m_ChunkData;
   double                   *m_ChunkWeights;
+  int                       m_Normalized;
+  int                       m_DataWritten;
+  int                       m_WeightsWritten;
 };
 
 #endif // CCTWDATACHUNK_H

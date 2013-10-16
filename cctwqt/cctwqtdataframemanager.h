@@ -19,6 +19,7 @@ public slots:
   void setData(CctwqtChunkedData *data);
   virtual int  loadChunk(int nx, int ny, int nz) = 0;
   virtual void releaseChunk(int chunkId) = 0;
+  virtual void writeChunk(CctwqtDataChunk *chunk) = 0;
 
 protected:
   QMutex                                 m_Mutex;

@@ -16,6 +16,7 @@ signals:
 public slots:
   int  loadChunk(int ckx, int cky, int ckz);
   void releaseChunk(int chunkId);
+  void writeChunk(CctwqtDataChunk *chunk);
 
 private:
   void garbageCollectFrames();

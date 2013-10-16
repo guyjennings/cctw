@@ -195,7 +195,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_InputDataManager        -> setData(m_InputData);
   m_InputData               -> allocateChunks();
 
-  m_OutputDataManager       = new CctwqtOutputDataFrameManager(this);
+  m_OutputDataManager       = new CctwqtOutputDataFrameManager(m_Saver, this);
   m_OutputData              = new CctwqtOutputData(CctwIntVector3D(2048,2048,2048),
                                                    CctwIntVector3D(128, 128, 128),
 //                                                   CctwDoubleVector3D(-5,-5,-5),
@@ -204,7 +204,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
-  m_OutputSliceDataManager        = new CctwqtOutputDataFrameManager(this);
+  m_OutputSliceDataManager        = new CctwqtOutputDataFrameManager(m_Saver, this);
   m_OutputSliceData               = new CctwqtOutputSliceData(CctwIntVector3D(2048,2048,1),
                                                               CctwIntVector3D(128, 128, 1),
 //                                                              CctwDoubleVector3D(-5,-5, 0),

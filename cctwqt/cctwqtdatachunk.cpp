@@ -326,3 +326,19 @@ void CctwqtDataChunk::pushMergeData(double *data, double *weights)
     m_MergeWeights.push_back(weights);
   }
 }
+
+int CctwqtDataChunk::writeData()
+{
+  normalize();
+
+  if (m_Manager) {
+    m_Manager->writeChunk(this);
+  }
+
+  return CctwDataChunk::writeData();
+}
+
+int CctwqtDataChunk::writeWeights()
+{
+  return CctwDataChunk::writeWeights();
+}
