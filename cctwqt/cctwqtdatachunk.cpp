@@ -79,6 +79,9 @@ void CctwqtDataChunk::releaseBuffer(double *buffer)
 
 int CctwqtDataChunk::readData()
 {
+  printMessage(tr("Chunk[%1,%2,%3] read data")
+               .arg(index().x()).arg(index().y()).arg(index().z()));
+
   int res = CctwDataChunk::readData();
 
   CctwIntVector3D size = m_Data->chunkSize();
@@ -90,7 +93,7 @@ int CctwqtDataChunk::readData()
 
         int val = (i/16 & 1) ^ (j/16 & 1) ^ (k/16 & 1);
 
-        setData(coords, val);
+        setData(coords, val+0.75);
       }
     }
   }
@@ -100,6 +103,9 @@ int CctwqtDataChunk::readData()
 
 int CctwqtDataChunk::readWeights()
 {
+  printMessage(tr("Chunk[%1,%2,%3] read weights")
+               .arg(index().x()).arg(index().y()).arg(index().z()));
+
   int res = CctwDataChunk::readWeights();
 
   CctwIntVector3D size = m_Data->chunkSize();

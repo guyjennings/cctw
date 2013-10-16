@@ -3,6 +3,8 @@
 
 #include "cctwqtdataframemanager.h"
 #include "qcepobjectnamer.h"
+#include "hdf5.h"
+#include "napi.h"
 
 class CctwqtDataFrame;
 
@@ -18,10 +20,16 @@ public slots:
   int  loadChunk(int nx, int ny, int nz);
   void releaseChunk(int chunkId);
   void writeChunk(CctwqtDataChunk *chunk);
+  void openOutputFile();
 
 private:
   QcepObjectNamer      m_ObjectNamer;
   QcepSettingsSaverPtr m_Saver;
+  QMutex               m_WriteLock;
+  hid_t                m_FileId;
+  hid_t                m_DatasetId;
+  hid_t                m_DataspaceId;
+  hid_t                m_MemspaceId;
 
 public:
   Q_PROPERTY(QString filePath READ get_FilePath WRITE set_FilePath)
