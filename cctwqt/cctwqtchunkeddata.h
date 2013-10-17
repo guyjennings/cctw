@@ -25,6 +25,9 @@ public slots:
   void clearDependencies();
   void addDependency(CctwIntVector3D f, CctwIntVector3D t);
 
+  void setDimensions(CctwIntVector3D dim);
+  void setChunkSize(CctwIntVector3D cksz);
+
   CctwqtDataChunk *chunk(CctwIntVector3D idx);
 
   void mergeChunk(CctwqtDataChunk *chunk);

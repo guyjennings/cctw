@@ -99,11 +99,16 @@ void CctwqtOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
 
     memspace_id = H5Screate_simple(3, count, NULL);
 
-    H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-    H5Dwrite(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunk->dataPointer());
+    herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+    herr_t wrterr = H5Dwrite(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunk->dataPointer());
+
+    if (selerr || wrterr) {
+      printMessage(tr("Error writing chunk [%1,%2,%3] -> selerr = %4, wrterr = %5")
+                   .arg(chunk->index().x()).arg(chunk->index().y()).arg(chunk->index().z())
+                   .arg(selerr).arg(wrterr));
+    }
   } else {
     printMessage("Not written");
   }
-
-  printMessage("Want to write chunk");
 }

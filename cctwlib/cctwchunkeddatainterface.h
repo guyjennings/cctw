@@ -40,8 +40,8 @@ public:
 //  CctwDoubleVector3D  origin() const       { return m_Origin; }
 //  CctwDoubleVector3D  scale() const        { return m_Scale; }
 
-  void setDimensions(CctwIntVector3D dim);
-  void setChunkSize(CctwIntVector3D cksz);
+  virtual void setDimensions(CctwIntVector3D dim);
+  virtual void setChunkSize(CctwIntVector3D cksz);
 //  void setOrigin(CctwDoubleVector3D org);
 //  void setScale(CctwDoubleVector3D scal);
 

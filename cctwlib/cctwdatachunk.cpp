@@ -81,7 +81,9 @@ int CctwDataChunk::normalize()
     int cksz = m_Data->chunkSize().volume();
 
     for (int i=0; i<cksz; i++) {
-      m_ChunkData[i] /= m_ChunkWeights[i];
+      if (m_ChunkWeights[i] != 0) {
+        m_ChunkData[i] /= m_ChunkWeights[i];
+      }
     }
   }
 

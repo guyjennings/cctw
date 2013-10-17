@@ -79,8 +79,8 @@ void CctwqtDataChunk::releaseBuffer(double *buffer)
 
 int CctwqtDataChunk::readData()
 {
-  printMessage(tr("Chunk[%1,%2,%3] read data")
-               .arg(index().x()).arg(index().y()).arg(index().z()));
+//  printMessage(tr("Chunk[%1,%2,%3] read data")
+//               .arg(index().x()).arg(index().y()).arg(index().z()));
 
   int res = CctwDataChunk::readData();
 
@@ -103,8 +103,8 @@ int CctwqtDataChunk::readData()
 
 int CctwqtDataChunk::readWeights()
 {
-  printMessage(tr("Chunk[%1,%2,%3] read weights")
-               .arg(index().x()).arg(index().y()).arg(index().z()));
+//  printMessage(tr("Chunk[%1,%2,%3] read weights")
+//               .arg(index().x()).arg(index().y()).arg(index().z()));
 
   int res = CctwDataChunk::readWeights();
 
@@ -218,6 +218,12 @@ void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
 //               .arg(index().x()).arg(index().y()).arg(index().z()));
 
   if (c) {
+    if (c->index() != index()) {
+      printMessage(tr("Merging anomaly [%1,%2,%3] != [%4,%5,%6]")
+                   .arg(index().x()).arg(index().y()).arg(index().z())
+                   .arg(c->index().x()).arg(c->index().y()).arg(c->index().z()));
+    }
+
     double *d, *w, *id, *iw;
     c -> popMergeData(&id, &iw);
 

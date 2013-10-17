@@ -14,7 +14,14 @@ CctwqtChunkedData::CctwqtChunkedData(CctwIntVector3D dim,
 
 void CctwqtChunkedData::allocateChunks()
 {
+//  printMessage("Allocate chunks");
+
   int n = chunkCount().volume();
+
+  for(int i=0; i<m_DataChunks.count(); i++) {
+    delete m_DataChunks[i];
+    m_DataChunks[i] = NULL;
+  }
 
   m_DataChunks.resize(n);
 
@@ -23,6 +30,20 @@ void CctwqtChunkedData::allocateChunks()
                                           chunkIndexFromNumber(i),
                                           m_Manager, parent());
   }
+}
+
+void CctwqtChunkedData::setDimensions(CctwIntVector3D dim)
+{
+  CctwChunkedDataInterface::setDimensions(dim);
+
+  allocateChunks();
+}
+
+void CctwqtChunkedData::setChunkSize(CctwIntVector3D cksz)
+{
+  CctwChunkedDataInterface::setChunkSize(cksz);
+
+  allocateChunks();
 }
 
 void CctwqtChunkedData::clearDependencies()
@@ -48,7 +69,12 @@ CctwqtDataChunk *CctwqtChunkedData::chunk(CctwIntVector3D idx)
   int n = chunkNumberFromIndex(idx);
 
   if (n >= 0 && n < m_DataChunks.count()) {
-    return m_DataChunks[n];
+    CctwqtDataChunk *chunk = m_DataChunks[n];
+
+    if (chunk && chunk->index() != idx) {
+      printMessage(tr("Chunk anomaly"));
+    }
+    return chunk;
   } else {
     return NULL;
   }

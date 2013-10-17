@@ -25,94 +25,10 @@ void CctwqtTransformer::transformChunk(int nx, int ny, int nz)
 {
 }
 
-void CctwqtTransformer::transformChunkNumber(int n)
+void CctwqtTransformer::runTransformChunkNumber(int n)
 {
   if (m_Application && !m_Application->get_Halting()) {
-    CctwqtCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
-
-    CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
-    CctwIntVector3D lastChunkIndex(-1, -1, -1);
-    CctwqtDataChunk *inputChunk = m_InputData->chunk(idx);
-    CctwqtDataChunk *lastChunk = NULL;
-
-    CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-    CctwIntVector3D chSize  = m_InputData->chunkSize();
-    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-
-    if (inputChunk) {
-      inputChunk->waitForData();
-
-      QMap<CctwIntVector3D, CctwqtDataChunk*> outputChunks;
-
-      inputChunk->readData();
-      inputChunk->readWeights();
-
-      for (int z=0; z<chSize.z(); z++) {
-        for (int y=0; y<chSize.y(); y++) {
-          for (int x=0; x<chSize.x(); x++) {
-            CctwIntVector3D iprelat(x,y,z);
-            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-            CctwDoubleVector3D xfmcoord = transform.forward(coords);
-            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-            if (m_OutputData->containsPixel(pixels)) {
-              CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
-              CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
-
-              if (opchunk != lastChunkIndex) {
-                lastChunkIndex = opchunk;
-
-                if (!outputChunks.contains(lastChunkIndex)) {
-                  CctwqtDataChunk *chunk =
-                      new CctwqtDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
-
-                  if (chunk) {
-                    chunk->allocateData();
-                    chunk->allocateWeights();
-                  }
-
-                  outputChunks[lastChunkIndex] = chunk;
-                }
-
-                lastChunk = outputChunks[lastChunkIndex];
-              }
-
-              if (lastChunk) {
-                double oval = lastChunk->data(oprelat);
-                double owgt = lastChunk->weight(oprelat);
-                double ival = inputChunk->data(iprelat);
-                double iwgt = inputChunk->data(iprelat);
-
-                if (iwgt > 0) {
-                  lastChunk->setData(oprelat, oval+ival*iwgt);
-                  lastChunk->setWeight(oprelat, owgt+iwgt);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      inputChunk->deallocateData();
-      inputChunk->deallocateWeights();
-
-//      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
-//                   .arg(outputChunks.count())
-//                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
-
-      if (inputChunk->dependencyCount() != outputChunks.count()) {
-        printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
-                     .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
-      }
-
-      foreach(CctwqtDataChunk *outputChunk, outputChunks) {
-        m_OutputData->mergeChunk(outputChunk);
-
-        delete outputChunk;
-      }
-
-      inputChunk->finishedWithData();
-    }
+    transformChunkNumber(n);
 
     m_MergeCounter.fetchAndAddOrdered(-1);
   } else {
@@ -122,6 +38,100 @@ void CctwqtTransformer::transformChunkNumber(int n)
   if (m_Application) {
     m_Application->prop_Progress()->incValue(1);
     m_Application->workCompleted(1);
+  }
+}
+
+void CctwqtTransformer::transformChunkNumber(int n)
+{
+  CctwqtCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+
+  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
+  CctwIntVector3D lastChunkIndex(-1, -1, -1);
+  CctwqtDataChunk *inputChunk = m_InputData->chunk(idx);
+  CctwqtDataChunk *lastChunk = NULL;
+
+  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  CctwIntVector3D chSize  = m_InputData->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  if (inputChunk) {
+    inputChunk->waitForData();
+
+    QMap<CctwIntVector3D, CctwqtDataChunk*> outputChunks;
+
+    inputChunk->readData();
+    inputChunk->readWeights();
+
+    for (int z=0; z<chSize.z(); z++) {
+      for (int y=0; y<chSize.y(); y++) {
+        for (int x=0; x<chSize.x(); x++) {
+          CctwIntVector3D iprelat(x,y,z);
+          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+          CctwDoubleVector3D xfmcoord = transform.forward(coords);
+          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+
+          if (m_OutputData->containsPixel(pixels)) {
+            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+            CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
+
+            if (opchunk != lastChunkIndex) {
+
+              lastChunkIndex = opchunk;
+
+              if (!outputChunks.contains(lastChunkIndex)) {
+//                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
+//                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
+//                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
+
+                CctwqtDataChunk *chunk =
+                    new CctwqtDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
+
+                if (chunk) {
+                  chunk->allocateData();
+                  chunk->allocateWeights();
+                }
+
+                outputChunks[lastChunkIndex] = chunk;
+              }
+
+              lastChunk = outputChunks[lastChunkIndex];
+            }
+
+            if (lastChunk) {
+              double oval = lastChunk->data(oprelat);
+              double owgt = lastChunk->weight(oprelat);
+              double ival = inputChunk->data(iprelat);
+              double iwgt = inputChunk->data(iprelat);
+
+              if (iwgt > 0) {
+                lastChunk->setData(oprelat, oval+ival*iwgt);
+                lastChunk->setWeight(oprelat, owgt+iwgt);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    inputChunk->deallocateData();
+    inputChunk->deallocateWeights();
+
+    //      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
+    //                   .arg(outputChunks.count())
+    //                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
+
+    if (inputChunk->dependencyCount() != outputChunks.count()) {
+      printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
+                   .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
+    }
+
+    foreach(CctwqtDataChunk *outputChunk, outputChunks) {
+      m_OutputData->mergeChunk(outputChunk);
+
+      delete outputChunk;
+    }
+
+    inputChunk->finishedWithData();
   }
 }
 
@@ -185,7 +195,7 @@ void CctwqtTransformer::transform()
       m_Application->addWorkOutstanding(1);
     }
 
-    QtConcurrent::run(this, &CctwqtTransformer::transformChunkNumber, ckidx);
+    QtConcurrent::run(this, &CctwqtTransformer::runTransformChunkNumber, ckidx);
   }
 
   while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {

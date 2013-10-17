@@ -28,6 +28,7 @@ public slots:
 
 private:
   void transformChunkNumber(int n);
+  void runTransformChunkNumber(int n);
 
 private:
   CctwqtApplication *m_Application;
