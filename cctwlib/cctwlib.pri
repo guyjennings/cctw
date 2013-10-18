@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+INCLUDEPATH += $${PWD}
+
 SOURCES += \
     $${PWD}/cctwinputdatainterface.cpp \
     $${PWD}/cctwoutputdatainterface.cpp \

@@ -28,72 +28,10 @@ include(qceplib-code/qceplib.pri)
 include(qceplib-code/qt-hdf5.pri)
 include(qceplib-code/qt-nexus.pri)
 include(../cctwlib/cctwlib.pri)
+include(cctwqt.pri)
 
-SOURCES += main.cpp \
-    cctwqtapplication.cpp \
-    cctwqtoutputdata.cpp \
-    cctwqtmainwindow.cpp \
-    cctwqtinputdata.cpp \
-    cctwqtscriptengine.cpp \
-    cctwqtsetupinputdialog.cpp \
-    cctwqtsetupoutputdialog.cpp \
-    cctwqtsetuptransformdialog.cpp \
-    cctwqttransformonedialog.cpp \
-    cctwqtsetupslicedialog.cpp \
-    cctwqtoutputslicedata.cpp \
-    cctwqtdataframe.cpp \
-    cctwqtdatachunk.cpp \
-    cctwqttransformer.cpp \
-    cctwqtcrystalcoordinatetransform.cpp \
-    cctwqtobject.cpp \
-    cctwqtdebug.cpp \
-    cctwqtchunkeddata.cpp \
-    cctwtransformtest.cpp \
-    cctwqtdoublevector3dproperty.cpp \
-    cctwqtdoublematrix3x3property.cpp \
-    cctwqtunitcellproperty.cpp \
-    cctwqtcrystalcoordinateparameters.cpp \
-    cctwqtintvector3dproperty.cpp \
-    cctwqtinputdataframemanager.cpp \
-    cctwqtoutputdataframemanager.cpp \
-    cctwqtdataframemanager.cpp \
-    cctwqtthread.cpp
+SOURCES += main.cpp
 
-HEADERS += \
-    cctwqtapplication.h \
-    cctwqtoutputdata.h \
-    cctwqtmainwindow.h \
-    cctwqtinputdata.h \
-    cctwqtscriptengine.h \
-    cctwqtsetupinputdialog.h \
-    cctwqtsetupoutputdialog.h \
-    cctwqtsetuptransformdialog.h \
-    cctwqttransformonedialog.h \
-    cctwqtsetupslicedialog.h \
-    cctwqtoutputslicedata.h \
-    cctwqtdataframe.h \
-    cctwqtdatachunk.h \
-    cctwqttransformer.h \
-    cctwqtcrystalcoordinatetransform.h \
-    cctwqtobject.h \
-    cctwqtdebug.h \
-    cctwqtchunkeddata.h \
-    cctwtransformtest.h \
-    cctwqtdoublevector3dproperty.h \
-    cctwqtdoublematrix3x3property.h \
-    cctwqtunitcellproperty.h \
-    cctwqtcrystalcoordinateparameters.h \
-    cctwqtintvector3dproperty.h \
-    cctwqtinputdataframemanager.h \
-    cctwqtoutputdataframemanager.h \
-    cctwqtdataframemanager.h \
-    cctwqtthread.h
-
-FORMS += \
-    cctwqtmainwindow.ui \
-    cctwqtsetupinputdialog.ui \
-    cctwqtsetupoutputdialog.ui \
-    cctwqtsetuptransformdialog.ui \
-    cctwqttransformonedialog.ui \
-    cctwqtsetupslicedialog.ui
+OTHER_FILES += \
+    cctwqt.pri
 
