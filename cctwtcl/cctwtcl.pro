@@ -23,6 +23,7 @@ DEFINES += CCTW_VERSION=\"$$VERSION\"
 
 include("../cctwqt/qceplib-code/qceplib.pri")
 include("../cctwqt/qceplib-code/qt-hdf5.pri")
+#include("../cctwqt/qceplib-code/qt-nexus.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")
 

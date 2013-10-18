@@ -4,7 +4,7 @@
 #include "cctwqtdataframemanager.h"
 #include "qcepobjectnamer.h"
 #include "hdf5.h"
-#include "napi.h"
+//#include "napi.h"
 
 class CctwqtDataFrame;
 
