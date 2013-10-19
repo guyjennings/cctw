@@ -89,3 +89,11 @@ void CctwqtInputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
 {
   printMessage("Shouldn't write data on input dataset");
 }
+
+void CctwqtInputDataFrameManager::beginTransform()
+{
+}
+
+void CctwqtInputDataFrameManager::endTransform()
+{
+}

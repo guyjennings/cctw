@@ -48,6 +48,10 @@ public:
                                               // Indicate that we've finished with a chunk of output data - chunkId is an identifier returned
                                               // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
                                               // is invalid.
+
+  virtual void beginTransform() = 0;
+
+  virtual void endTransform() = 0;
 };
 
 #endif // CCTWOUTPUTDATAINTERFACE_H

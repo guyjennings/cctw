@@ -18,6 +18,9 @@ public slots:
   void releaseChunk(int chunkId);
   void writeChunk(CctwqtDataChunk *chunk);
 
+  void beginTransform();
+  void endTransform();
+
 private:
   void garbageCollectFrames();
 

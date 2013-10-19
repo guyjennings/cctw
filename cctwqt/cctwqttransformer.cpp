@@ -149,6 +149,8 @@ void CctwqtTransformer::transform()
 
   printMessage("Starting Transform");
 
+  m_OutputData->beginTransform();
+
   m_MergeCounter.fetchAndStoreOrdered(0);
 
   m_InputData->clearMergeCounters();
@@ -205,6 +207,8 @@ void CctwqtTransformer::transform()
 
   set_WallTime(startAt.elapsed()/1000.0);
   set_BlocksMax(CctwqtDataChunk::maxAllocated());
+
+  m_OutputData -> endTransform();
 
   printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
 }

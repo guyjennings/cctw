@@ -45,10 +45,9 @@ void CctwqtOutputDataFrameManager::releaseChunk(int chunkId)
 
 void CctwqtOutputDataFrameManager::openOutputFile()
 {
-  if (m_FileId >= 0) {
-    H5Fclose(m_FileId);
-    m_FileId = -1;
-  }
+  closeOutputFile();
+
+  printMessage("Opening output file");
 
   m_FileId = H5Fcreate(qPrintable(get_FilePath()), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -64,6 +63,27 @@ void CctwqtOutputDataFrameManager::openOutputFile()
     m_DataspaceId = H5Screate_simple(3, dims, NULL);
 
     m_DatasetId   = H5Dcreate(m_FileId, "data", H5T_NATIVE_FLOAT, m_DataspaceId, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  }
+}
+
+void CctwqtOutputDataFrameManager::closeOutputFile()
+{
+  if (m_FileId >= 0) {
+    if (m_DataspaceId >= 0) {
+      H5Sclose(m_DataspaceId);
+      m_DataspaceId = -1;
+    }
+
+    if (m_DatasetId >= 0) {
+      H5Dclose(m_DatasetId);
+      m_DatasetId = -1;
+    }
+
+    H5Fclose(m_FileId);
+
+    printMessage("Closed output file");
+
+    m_FileId = -1;
   }
 }
 
@@ -108,7 +128,27 @@ void CctwqtOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
                    .arg(chunk->index().x()).arg(chunk->index().y()).arg(chunk->index().z())
                    .arg(selerr).arg(wrterr));
     }
+
+    H5Sclose(memspace_id);
   } else {
     printMessage("Not written");
+  }
+}
+
+void CctwqtOutputDataFrameManager::beginTransform()
+{
+  QMutexLocker lock(&m_WriteLock);
+
+  if (m_FileId < 0) {
+    openOutputFile();
+  }
+}
+
+void CctwqtOutputDataFrameManager::endTransform()
+{
+  QMutexLocker lock(&m_WriteLock);
+
+  if (m_FileId >= 0) {
+    closeOutputFile();
   }
 }

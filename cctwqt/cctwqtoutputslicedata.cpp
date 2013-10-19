@@ -22,3 +22,11 @@ void CctwqtOutputSliceData::writeData(int chunkId, int dx, int dy, int dz, doubl
 void CctwqtOutputSliceData::releaseChunk(int chunkId)
 {
 }
+
+void CctwqtOutputSliceData::beginTransform()
+{
+}
+
+void CctwqtOutputSliceData::endTransform()
+{
+}

@@ -22,3 +22,13 @@ void CctwqtOutputData::writeData(int chunkId, int dx, int dy, int dz, double val
 void CctwqtOutputData::releaseChunk(int chunkId)
 {
 }
+
+void CctwqtOutputData::beginTransform()
+{
+  m_Manager -> beginTransform();
+}
+
+void CctwqtOutputData::endTransform()
+{
+  m_Manager -> endTransform();
+}

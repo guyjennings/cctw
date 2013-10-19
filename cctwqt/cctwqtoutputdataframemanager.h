@@ -20,7 +20,13 @@ public slots:
   int  loadChunk(int nx, int ny, int nz);
   void releaseChunk(int chunkId);
   void writeChunk(CctwqtDataChunk *chunk);
+
+  void beginTransform();
+  void endTransform();
+
+private:
   void openOutputFile();
+  void closeOutputFile();
 
 private:
   QcepObjectNamer      m_ObjectNamer;

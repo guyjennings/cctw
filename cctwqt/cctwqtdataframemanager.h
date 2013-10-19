@@ -21,6 +21,9 @@ public slots:
   virtual void releaseChunk(int chunkId) = 0;
   virtual void writeChunk(CctwqtDataChunk *chunk) = 0;
 
+  virtual void beginTransform() = 0;
+  virtual void endTransform() = 0;
+
 protected:
   QMutex                                 m_Mutex;
   CctwqtChunkedData                     *m_Data;
