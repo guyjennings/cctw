@@ -101,10 +101,10 @@ void CctwqtTransformer::transformChunkNumber(int n)
               double oval = lastChunk->data(oprelat);
               double owgt = lastChunk->weight(oprelat);
               double ival = inputChunk->data(iprelat);
-              double iwgt = inputChunk->data(iprelat);
+              double iwgt = inputChunk->weight(iprelat);
 
-              if (iwgt > 0) {
-                lastChunk->setData(oprelat, oval+ival*iwgt);
+              if (iwgt != 0) {
+                lastChunk->setData(oprelat, oval+ival);
                 lastChunk->setWeight(oprelat, owgt+iwgt);
               }
             }

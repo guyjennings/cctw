@@ -238,7 +238,9 @@ void CctwqtDataChunk::mergeChunk(CctwqtDataChunk *c)
 
         if (d && id) {
           for (int i=0; i<n; i++) {
-            id[i] += d[i];
+            if ((w && w[i] != 0) || !w) {
+              id[i] += d[i];
+            }
           }
         } else if (d) {
           id = d;
