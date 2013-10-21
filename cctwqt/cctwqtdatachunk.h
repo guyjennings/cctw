@@ -57,7 +57,7 @@ signals:
 public slots:
   
 private:
-  CctwIntVector3D                              m_ChunkIndex;
+//  CctwIntVector3D                              m_ChunkIndex;
   CctwqtChunkedData                           *m_Data;
   CctwqtDataFrameManager                      *m_Manager;
   QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;

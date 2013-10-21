@@ -6,7 +6,7 @@ CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
                                  CctwqtDataFrameManager *manager,
                                  QObject *parent) :
   CctwDataChunk(data, idx, parent),
-  m_ChunkIndex(idx),
+//  m_ChunkIndex(idx),
   m_Data(data),
   m_Manager(manager),
   m_MergeCounter(0)
@@ -85,13 +85,14 @@ int CctwqtDataChunk::readData()
   int res = CctwDataChunk::readData();
 
   CctwIntVector3D size = m_Data->chunkSize();
+  CctwIntVector3D start = m_ChunkIndex * size;
 
   for (int k=0; k<size.z(); k++) {
     for (int j=0; j<size.y(); j++) {
       for (int i=0; i<size.x(); i++) {
         CctwIntVector3D coords(i,j,k);
 
-        int val = (i/16 & 1) ^ (j/16 & 1) ^ (k/16 & 1);
+        int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
 
         setData(coords, val+0.75);
       }
