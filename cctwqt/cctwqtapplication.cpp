@@ -287,6 +287,15 @@ void CctwqtApplication::evaluateCommand(QString cmd)
   }
 }
 
+QScriptValue CctwqtApplication::evaluate(QString cmd)
+{
+  if (m_ScriptEngine) {
+    return m_ScriptEngine->evaluate(cmd);
+  } else {
+    return QScriptValue();
+  }
+}
+
 void CctwqtApplication::executeScriptFile(QString path)
 {
   if (m_ScriptEngine) {

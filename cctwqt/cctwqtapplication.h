@@ -75,6 +75,8 @@ public slots:
 public:
   QcepSettingsSaverWPtr saver() const;
 
+  QScriptValue evaluate(QString cmd);
+
 private slots:
   void onDebugChanged(int dbg);
   void onProgress(int prg);
