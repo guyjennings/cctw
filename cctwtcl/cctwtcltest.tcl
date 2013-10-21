@@ -1,3 +1,5 @@
+package ifneeded cctw 0.1 "load ./libCctwTcl.so cctw"
+
 package require cctw
 
 cctw {

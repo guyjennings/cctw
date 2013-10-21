@@ -42,3 +42,6 @@ SOURCES += \
     cctwtcl.cpp \
     cctwtcl_commands.cpp
 
+OTHER_FILES += \
+    cctwtcltest.tcl
+
