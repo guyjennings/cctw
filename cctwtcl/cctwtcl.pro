@@ -20,6 +20,7 @@ RCC_DIR = rcc
 
 DEFINES += USE_QT
 DEFINES += CCTW_VERSION=\"$$VERSION\"
+DEFINES += NO_GUI
 
 include("../cctwqt/qceplib-code/qceplib.pri")
 include("../cctwqt/qceplib-code/qt-hdf5.pri")

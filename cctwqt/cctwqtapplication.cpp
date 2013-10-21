@@ -22,8 +22,12 @@
 
 QcepSettingsSaverPtr g_Saver;
 
-CctwqtApplication::CctwqtApplication(int &argc, char *argv[]) :
-  QApplication(argc, argv),
+CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
+#ifdef NO_GUI
+  : QCoreApplication(argc, argv),
+#else
+  : QApplication(argc, argv),
+#endif
   m_ObjectNamer(this, "cctw"),
   m_Window(NULL),
   m_InputDataManager(NULL),

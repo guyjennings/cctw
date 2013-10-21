@@ -20,7 +20,12 @@
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
 
-class CctwqtApplication : public QApplication
+class CctwqtApplication
+#ifdef NO_GUI
+    : public QCoreApplication
+#else
+    : public QApplication
+#endif
 {
   Q_OBJECT
 public:

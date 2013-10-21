@@ -11,13 +11,14 @@ static CctwCrystalCoordinateParameters *g_Parameters = NULL;
 
 int Cctwtcl_Initialize()
 {
-  int nargs = 0;
+  int nargs = 2;
+  char* args[] = {"cctw", "-n", 0};
 
   g_DebugLevel            = QSharedPointer<CctwqtDebugDictionary>(new CctwqtDebugDictionary());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
-  g_Application = new CctwqtApplication(nargs, NULL);
-  g_Application -> initialize(nargs, NULL);
+  g_Application = new CctwqtApplication(nargs, args);
+  g_Application -> initialize(nargs, args);
 
   g_Parameters  = new CctwCrystalCoordinateParameters(g_Application);
 
