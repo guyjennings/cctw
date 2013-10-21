@@ -22,6 +22,11 @@ DEFINES += USE_QT
 DEFINES += CCTW_VERSION=\"$$VERSION\"
 DEFINES += NO_GUI
 
+release {
+  QMAKE_CFLAGS_RELEASE += -O2
+  QMAKE_CXXFLAGS       += -O2
+}
+
 include("../cctwqt/qceplib-code/qceplib.pri")
 include("../cctwqt/qceplib-code/qt-hdf5.pri")
 #include("../cctwqt/qceplib-code/qt-nexus.pri")
