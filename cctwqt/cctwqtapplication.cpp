@@ -29,7 +29,9 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
   : QApplication(argc, argv),
 #endif
   m_ObjectNamer(this, "cctw"),
+#ifndef NO_GUI
   m_Window(NULL),
+#endif
   m_InputDataManager(NULL),
   m_InputData(NULL),
   m_OutputDataManager(NULL),
@@ -88,9 +90,15 @@ void CctwqtApplication::onProgress(int prg)
   int prog = (prg*100)/get_ProgressLimit();
 
   if (m_LastProgress.fetchAndStoreOrdered(prog) != prog) {
+#ifdef NO_GUI
+    if ((prog % 5 == 0)) {
+      printMessage(tr("%1% completed").arg(prog));
+    }
+#else
     if (m_Window == NULL && (prog % 5 == 0)) {
       printMessage(tr("%1% completed").arg(prog));
     }
+#endif
   }
 }
 
@@ -181,9 +189,13 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
 {
   decodeCommandLineArgs(argc, argv);
 
+#ifdef NO_GUI
+  set_GuiWanted(false);
+#else
   if (get_GuiWanted()) {
     m_Window                  = new CctwqtMainWindow(this);
   }
+#endif
 
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
@@ -248,9 +260,11 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
 
   m_Saver->start();
 
+#ifndef NO_GUI
   if (m_Window) {
     m_Window->show();
   }
+#endif
 
   foreach(QString cmd, get_StartupCommands()) {
     QMetaObject::invokeMethod(this, "evaluateCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
@@ -268,11 +282,15 @@ void CctwqtApplication::doAboutToQuit()
 
 void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 {
+#ifdef NO_GUI
+  printf("%s\n", qPrintable(msg));
+#else
   if (m_Window) {
     m_Window->printMessage(msg, dt);
   } else {
     printf("%s\n", qPrintable(msg));
   }
+#endif
 }
 
 void CctwqtApplication::wait(QString msg)

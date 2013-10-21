@@ -3,7 +3,9 @@
 
 #include <QApplication>
 #include <QDateTime>
+#ifndef NO_GUI
 #include "cctwqtmainwindow.h"
+#endif
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
 #include "cctwqtoutputslicedata.h"
@@ -96,7 +98,9 @@ private:
 
 public:
   QcepObjectNamer                     m_ObjectNamer;
+#ifndef NO_GUI
   CctwqtMainWindow                   *m_Window;
+#endif
   CctwqtCrystalCoordinateParameters  *m_Parameters;
   CctwqtInputDataFrameManager        *m_InputDataManager;
   CctwqtInputData                    *m_InputData;
