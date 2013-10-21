@@ -27,7 +27,12 @@ include("../cctwqt/qceplib-code/qt-hdf5.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")
 
-HEADERS +=
+LIBS += -ltcl
 
-SOURCES +=
+HEADERS += \
+    cctwtcl_commands.h
+
+SOURCES += \
+    cctwtcl.cpp \
+    cctwtcl_commands.cpp
 
