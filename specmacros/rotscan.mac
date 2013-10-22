@@ -1,0 +1,80 @@
+def rotscan '{
+  if ($# != 5) {
+    eprint "Usage: rotscan motor start finish intervals time"
+    exit
+  }
+  _check0 "$1"
+  _m[0] = $1; _s[0] = $2; _f[0] = $3
+  _n1 = int($4); _ctime = $5
+  _nm = 1
+  HEADING="rotscan $*"
+  _rotscan
+  TIME=time()
+  _scan_on
+}'
+
+def _rotscan '{
+  if (_n1 <= 0) {
+    eprint "Intervals <= 0"
+    exit
+  }
+  _bad_lim = 0
+  _chk_lim _m[i] _s[i]
+  _chk_lim _m[i] _f[i]
+  if (_bad_lim) exit;
+  X_L=motor_name(_m[0])
+  Y_L=cnt_name(DET)
+  _stype=1|(_nm<<8)
+  FPRNT=sprintf("%s  ",motor_name(_m[0]))
+  PPRNT=sprintf("%8.8s ", motor_name(_m[0]))
+  VPRNT=sprintf("%9.9s ", motor_name(_m[0]))
+  FPRNT=sprintf("%s%s  ",FPRNT,"Time")
+  PPRNT=sprintf("%s%8.8s ", PPRNT, "Time")
+  VPRNT=sprintf("%s%9.9s ", VPRNT, "Time")
+  FPRNT=sprintf("%s%s  ",FPRNT,"DelTime")
+  PPRNT=sprintf("%s%8.8s ", PPRNT, "DelTime")
+  VPRNT=sprintf("%s%9.9s ", VPRNT, "DelTime")
+  FPRNT=sprintf("%s%s  %s  %s  ",FPRNT,"H","K","L")
+  PPRNT=sprintf("%s%s %s %s ",PPRNT,"H","K","L")
+  VPRNT=sprintf("%s%s %s %s ",VPRNT,"H","K","L")
+  _cols=6
+  scan_head
+  PFMT=sprintf("%%s%%8.%df ", UP)
+  VFMT=sprintf("%%s%%9.%df ", UP)
+  def _scan_on \'{
+    for(; NPTS < _n1; NPTS++) {
+      get_angles; calcHKL
+      _time = date("%s.%.6")
+      _dettime = rotscan_dettime()
+      FPRNT=sprintf("%s%.8g ","",A[_m[0]])
+      PPRNT=sprintf(PFMT,"",A[_m[0]])
+      VPRNT=sprintf(VFMT,"",A[_m[0]])
+      FPRNT=sprintf("%s%0.6f ", FPRNT, _time)
+      FPRNT=sprintf("%s%0.6f ", FPRNT, _dettime - _time)
+      FPRNT=sprintf("%s%10.5g %10.5g %10.5g ", FPRNT, H, K, L)
+      VPRNT=sprintf("%s%0.6f %0.6f %10.5g %10.5g %10.5g ", VPRNT, _time, _dettime-_time, H, K, L)
+      scan_loop
+      scan_data(NPTS, A[_m[0]])
+      scan_plot
+    }
+    scan_tail
+  }\'
+  _scan_on
+}'
+
+def rotscan_setup '{
+}'
+
+def rotscan_remove '{
+  if (yesno("Remove rotscan and related macros",0)) {
+    undef rotscan rotscan_setup rotscan_remove _rotscan
+  }
+}'
+
+def rotscan_dettime() '{
+  return date("%s.%.6")
+}'
+
+def rotscan_dettime() '{
+  return remote_eval("jenningsx:qxrd","timeStamp()")
+}'
