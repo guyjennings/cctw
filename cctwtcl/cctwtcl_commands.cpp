@@ -46,10 +46,10 @@ int Cctwtcl_Cmd             (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-int Cctwtcl_Parameters_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
-{
-  return TCL_OK;
-}
+//int Cctwtcl_Parameters_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+//{
+//  return TCL_OK;
+//}
 
 int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
