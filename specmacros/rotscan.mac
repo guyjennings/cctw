@@ -1,16 +1,17 @@
 def rotscan '{
-  if ($# != 5) {
-    eprint "Usage: rotscan motor start finish intervals time"
+  global _fn
+  if ($# != 7) {
+    eprint "Usage: rotscan filename motor start finish intervals time initial"
     exit
   }
-  _check0 "$1"
-  _m[0] = $1; _s[0] = $2; _f[0] = $3
-  _n1 = int($4); _ctime = $5
+  _fn = "$1"
+  _check0 "$2"
+  _m[0] = $2; _s[0] = $3; _f[0] = $4
+  _n1 = int($5); _ctime = $6
+  _n2 = int($7)
   _nm = 1
   HEADING="rotscan $*"
   _rotscan
-  TIME=time()
-  _scan_on
 }'
 
 def _rotscan '{
@@ -25,6 +26,8 @@ def _rotscan '{
   X_L=motor_name(_m[0])
   Y_L=cnt_name(DET)
   _stype=1|(_nm<<8)
+  _rotscan_prepare
+  cdef("cleanup_once", "{ _rotscan_cleanup }", "_rotscan")
   FPRNT=sprintf("%s  ",motor_name(_m[0]))
   PPRNT=sprintf("%8.8s ", motor_name(_m[0]))
   VPRNT=sprintf("%9.9s ", motor_name(_m[0]))
@@ -34,32 +37,76 @@ def _rotscan '{
   FPRNT=sprintf("%s%s  ",FPRNT,"DelTime")
   PPRNT=sprintf("%s%8.8s ", PPRNT, "DelTime")
   VPRNT=sprintf("%s%9.9s ", VPRNT, "DelTime")
+  FPRNT=sprintf("%s%s  ",FPRNT,"Index")
+  PPRNT=sprintf("%s%8.8s ", PPRNT, "Index")
+  VPRNT=sprintf("%s%9.9s ", VPRNT, "Index")
+  FPRNT=sprintf("%s%s  ",FPRNT,"Dropped")
+  PPRNT=sprintf("%s%8.8s ", PPRNT, "Dropped")
+  VPRNT=sprintf("%s%9.9s ", VPRNT, "Dropped")
   FPRNT=sprintf("%s%s  %s  %s  ",FPRNT,"H","K","L")
   PPRNT=sprintf("%s%s %s %s ",PPRNT,"H","K","L")
   VPRNT=sprintf("%s%s %s %s ",VPRNT,"H","K","L")
-  _cols=6
+  _cols=8
   scan_head
+  _rotscan_move_start
+  _rotscan_start_detector()
   PFMT=sprintf("%%s%%8.%df ", UP)
   VFMT=sprintf("%%s%%9.%df ", UP)
   def _scan_on \'{
-    for(; NPTS < _n1; NPTS++) {
+    for(; ; NPTS++) {
+      local dt
+      if (NPTS==_n2) _rotscan_scan_motor
       get_angles; calcHKL
       _time = date("%s.%.6")
-      _dettime = rotscan_dettime()
+      dt = _rotscan_check_detector()
       FPRNT=sprintf("%s%.8g ","",A[_m[0]])
       PPRNT=sprintf(PFMT,"",A[_m[0]])
       VPRNT=sprintf(VFMT,"",A[_m[0]])
       FPRNT=sprintf("%s%0.6f ", FPRNT, _time)
-      FPRNT=sprintf("%s%0.6f ", FPRNT, _dettime - _time)
+      FPRNT=sprintf("%s%0.6f ", FPRNT, dt[0] - _time)
+      FPRNT=sprintf("%s%d ", FPRNT, dt[1])
+      FPRNT=sprintf("%s%d ", FPRNT, dt[3])
       FPRNT=sprintf("%s%10.5g %10.5g %10.5g ", FPRNT, H, K, L)
-      VPRNT=sprintf("%s%0.6f %0.6f %10.5g %10.5g %10.5g ", VPRNT, _time, _dettime-_time, H, K, L)
+      VPRNT=sprintf("%s%0.6f %0.6f %d %d %6.5g %6.5g %6.5g ", VPRNT, _time, dt[0]-_time, dt[1], dt[3], H, K, L)
       scan_loop
       scan_data(NPTS, A[_m[0]])
       scan_plot
+      if (dt[2]) break
     }
     scan_tail
   }\'
   _scan_on
+  cdef("cleanup_once", "", "_rotscan", "delete")
+  _rotscan_cleanup
+}'
+
+def _rotscan_cleanup '{
+  stop()
+  _rotscan_stop_detector()
+  motor_par(_m[0], "velocity", _v0)
+  A[_m[0]] = _s[0]
+  _move
+  waitmove
+}'
+
+def _rotscan_prepare '{
+  _v0 = motor_par(_m[0], "velocity")
+  _v  = motor_par(_m[0], "step_size")*(_f[0] - _s[0])/((_n1 - _n0)*_ctime)
+  printf ("Motor %s standard vel: %g steps/sec, rotscan vel: %g steps/sec\n", motor_mne(_m[0]), _v0, _v)
+}'
+
+def _rotscan_move_start '{
+  printf("Move %s to %g at full speed\n", motor_mne(_m[0]), _s[0])
+  A[_m[0]] = _s[0]
+  _move
+  waitmove
+  motor_par(_m[0], "velocity", _v)
+}'
+
+def _rotscan_scan_motor '{
+  printf("Scan %s to %g at scanning speed\n", motor_mne(_m[0]), _f[0])
+  A[_m[0]] = _f[0]
+  _move
 }'
 
 def rotscan_setup '{
@@ -71,10 +118,3 @@ def rotscan_remove '{
   }
 }'
 
-def rotscan_dettime() '{
-  return date("%s.%.6")
-}'
-
-def rotscan_dettime() '{
-  return remote_eval("jenningsx:qxrd","timeStamp()")
-}'
