@@ -1,5 +1,5 @@
 def rotscan '{
-  global _fn
+  global _fn _m _s _f _ctime _n1 _n2
   if ($# != 7) {
     eprint "Usage: rotscan filename motor start finish intervals time initial"
     exit
@@ -15,6 +15,7 @@ def rotscan '{
 }'
 
 def _rotscan '{
+  global _n1 _m _s _f
   if (_n1 <= 0) {
     eprint "Intervals <= 0"
     exit
@@ -81,21 +82,28 @@ def _rotscan '{
 }'
 
 def _rotscan_cleanup '{
+  global _v0 _m _s
   stop()
   _rotscan_stop_detector()
   motor_par(_m[0], "velocity", _v0)
+  printf("Returning %s to %g\n", motor_mne(_m[0]), _s[0])
   A[_m[0]] = _s[0]
   _move
-  waitmove
 }'
 
 def _rotscan_prepare '{
+  global _v0 _v
   _v0 = motor_par(_m[0], "velocity")
-  _v  = motor_par(_m[0], "step_size")*(_f[0] - _s[0])/((_n1 - _n0)*_ctime)
+  _v  = motor_par(_m[0], "step_size")*fabs(_f[0] - _s[0])/((_n1 - _n0)*_ctime)
   printf ("Motor %s standard vel: %g steps/sec, rotscan vel: %g steps/sec\n", motor_mne(_m[0]), _v0, _v)
+  if (_v > _v0) {
+    eprint "Requested motor velocity for scan would be too fast"
+    exit
+  }
 }'
 
 def _rotscan_move_start '{
+  global _v _m _s
   printf("Move %s to %g at full speed\n", motor_mne(_m[0]), _s[0])
   A[_m[0]] = _s[0]
   _move
@@ -104,6 +112,7 @@ def _rotscan_move_start '{
 }'
 
 def _rotscan_scan_motor '{
+  global _m _f
   printf("Scan %s to %g at scanning speed\n", motor_mne(_m[0]), _f[0])
   A[_m[0]] = _f[0]
   _move
