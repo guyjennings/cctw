@@ -1,0 +1,30 @@
+def dummyscan '{
+  _npts = $1
+  _ctime = $2
+  if (DATAFILE != "") {
+    fprintf (DATAFILE, "#S %d  dummyscan %s\n", ++SCAN_N, "$*")
+    fprintf (DATAFILE, "#D %s\n", date())
+    fprintf (DATAFILE, "#N 3\n")
+    fprintf (DATAFILE, "#L N  Time  Delta\n")
+    for (_NPTS==0; _NPTS<_npts; _NPTS++) {
+      local thost tdet
+      thost = date("%s.%.6")
+      tdet  = _rotscan_check_detector()
+      fprintf (DATAFILE, "%d %16.8f %16.8f\n", _NPTS, thost, tdet[0]-thost)
+      printf ("%d %16.8f %16.8f\n", _NPTS, thost, tdet[0]-thost)
+      _count _ctime
+    }
+  }
+}'
+
+def datetest '{
+  _t0 = date(time(), "%s.%.6")
+  for (;;) {
+    _t1 = date(time(), "%s.%.6")
+    if (_t1 < _t0) {
+      printf("Anomaly %16.8f %16.8f\n", _t1, _t0)
+    }
+    _t0 = _t1
+  }
+}'
+

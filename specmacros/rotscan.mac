@@ -58,7 +58,7 @@ def _rotscan '{
       local dt
       if (NPTS==_n2) _rotscan_scan_motor
       get_angles; calcHKL
-      _time = date("%s.%.6")
+      _time = time()
       dt = _rotscan_check_detector()
       FPRNT=sprintf("%s%.8g ","",A[_m[0]])
       PPRNT=sprintf(PFMT,"",A[_m[0]])
