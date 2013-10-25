@@ -7,7 +7,11 @@
 include(cctw.pri)
 
 TEMPLATE = subdirs
-SUBDIRS  = cctwqt cctwtcl
+SUBDIRS  = cctwqt
+
+unix {
+SUBDIRS += cctwtcl
+}
 
 OTHER_FILES += Doxyfile \
     cctw.dox \
