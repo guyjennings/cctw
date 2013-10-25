@@ -234,3 +234,63 @@ void CctwqtTransformer::checkTransform()
     }
   }
 }
+
+QcepIntList CctwqtTransformer::dependencies(int chunkIdx)
+{
+  CctwqtCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+
+  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
+  CctwIntVector3D lastChunkIndex(-1, -1, -1);
+
+  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  CctwIntVector3D chSize  = m_InputData->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  QList<CctwIntVector3D> outputChunks;
+  QcepIntList            result;
+
+  if (m_InputData->containsChunk(idx)) {
+    for (int z=0; z<chSize.z(); z++) {
+      for (int y=0; y<chSize.y(); y++) {
+        for (int x=0; x<chSize.x(); x++) {
+          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+          CctwDoubleVector3D xfmcoord = transform.forward(coords);
+          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+
+          if (m_OutputData->containsPixel(pixels)) {
+            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+
+            if (opchunk != lastChunkIndex) {
+              lastChunkIndex = opchunk;
+
+              if (!outputChunks.contains(lastChunkIndex)) {
+                outputChunks.append(opchunk);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  foreach(CctwIntVector3D chk, outputChunks) {
+    result.append(m_OutputData->chunkNumberFromIndex(chk));
+  }
+
+  qSort(result);
+
+  return result;
+}
+
+QList<CctwIntVector3D> CctwqtTransformer::dependencies(int cx, int cy, int cz)
+{
+  QcepIntList deps = dependencies(m_InputData->chunkNumberFromIndex(CctwIntVector3D(cx,cy,cz)));
+
+  QList<CctwIntVector3D> res;
+
+  foreach(int dep, deps) {
+    res.append(m_OutputData->chunkIndexFromNumber(dep));
+  }
+
+  return res;
+}

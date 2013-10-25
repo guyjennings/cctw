@@ -1006,3 +1006,40 @@ int  CctwqtApplication::workOutstanding()
 {
   return m_WorkOutstanding.fetchAndAddOrdered(0);
 }
+
+QcepIntList CctwqtApplication::dependencies(int chunkIdx)
+{
+  return m_Transformer->dependencies(chunkIdx);
+}
+
+QList<CctwIntVector3D> CctwqtApplication::dependencies(int cx, int cy, int cz)
+{
+  return m_Transformer->dependencies(cx, cy, cz);
+}
+
+void CctwqtApplication::transform
+              (int        chunkId,
+               double*    dataIn,
+               int        dataSize,
+               double*    weightIn,
+               int        weightSize,
+               QList<int>     outputChunkIds,
+               QList<double*> outputChunks,
+               QList<int>     outputChunkSizes,
+               QList<double*> outputWeights,
+               QList<int>     outputWeightSizes)
+{
+}
+
+void CctwqtApplication::merge
+              (int       chunkId,
+               double*   dataIn,
+               int       dataInSize,
+               double*   weightIn,
+               int       weightInSize,
+               double*   dataOut,
+               int       dataOutSize,
+               double*   weightOut,
+               int       weightOutSize)
+{
+}

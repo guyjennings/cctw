@@ -26,6 +26,9 @@ public slots:
   void transform();
   void checkTransform();
 
+  QcepIntList dependencies(int chunkIdx);
+  QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
+
 private:
   void transformChunkNumber(int n);
   void runTransformChunkNumber(int n);

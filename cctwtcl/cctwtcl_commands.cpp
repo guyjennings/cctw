@@ -53,7 +53,51 @@ int Cctwtcl_Cmd             (ClientData clientData, Tcl_Interp *interp, int objc
 
 int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  return TCL_OK;
+  if (objc == 2) {
+    int chunkId;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) == TCL_OK) {
+      QcepIntList deps = g_Application->dependencies(chunkId);
+
+      Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+      foreach(int dep, deps) {
+        Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(dep));
+      }
+
+      Tcl_SetObjResult(interp, result);
+
+      return TCL_OK;
+    }
+  } else if (objc == 4) {
+    int cx, cy, cz;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &cx) == TCL_OK &&
+        Tcl_GetIntFromObj(interp, objv[2], &cy) == TCL_OK &&
+        Tcl_GetIntFromObj(interp, objv[3], &cz) == TCL_OK) {
+      QList<CctwIntVector3D> deps = g_Application->dependencies(cx, cy, cz);
+
+      Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+      foreach(CctwIntVector3D dep, deps) {
+        Tcl_Obj *item = Tcl_NewListObj(0, NULL);
+
+        Tcl_ListObjAppendElement(interp, item, Tcl_NewIntObj(dep.x()));
+        Tcl_ListObjAppendElement(interp, item, Tcl_NewIntObj(dep.y()));
+        Tcl_ListObjAppendElement(interp, item, Tcl_NewIntObj(dep.z()));
+
+        Tcl_ListObjAppendElement(interp, result, item);
+      }
+
+      Tcl_SetObjResult(interp, result);
+
+      return TCL_OK;
+    }
+  } else {
+    Tcl_SetResult(interp, "Wrong number of arguments", TCL_STATIC);
+  }
+
+  return TCL_ERROR;
 }
 
 int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
@@ -64,5 +108,42 @@ int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc
 int Cctwtcl_Merge_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
   return TCL_OK;
+}
+
+int Cctwtcl_Chunk_Create_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  if (objc >= 2) {
+    int size;
+    if (Tcl_GetIntFromObj(interp, objv[1], &size) == TCL_OK) {
+      double *buff = new double[size];
+
+      Tcl_SetObjResult(interp, Tcl_NewLongObj((long) buff));
+
+      return TCL_OK;
+    }
+  }
+
+  return TCL_ERROR;
+}
+
+
+int Cctwtcl_Chunk_Delete_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  printf("objc = %d\n", objc);
+
+  if (objc >= 2) {
+    long buff;
+    if (Tcl_GetLongFromObj(interp, objv[1], &buff) == TCL_OK) {
+      double *pbuff = (double*) buff;
+
+      printf("Deleting %p\n", pbuff);
+
+      delete [] pbuff;
+
+      return TCL_OK;
+    }
+  }
+
+  return TCL_ERROR;
 }
 

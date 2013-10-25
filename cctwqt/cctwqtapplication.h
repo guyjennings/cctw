@@ -79,6 +79,30 @@ public slots:
   void waitCompleted();
   int  workOutstanding();
 
+  QcepIntList dependencies(int chunkId);
+  QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
+
+  void transform(int        chunkId,
+                 double*    dataIn,
+                 int        dataSize,
+                 double*    weightIn,
+                 int        weightSize,
+                 QList<int>     outputChunkIds,
+                 QList<double*> outputChunks,
+                 QList<int>     outputChunkSizes,
+                 QList<double*> outputWeights,
+                 QList<int>     outputWeightSizes);
+
+  void merge    (int       chunkId,
+                 double*   dataIn,
+                 int       dataInSize,
+                 double*   weightIn,
+                 int       weightInSize,
+                 double*   dataOut,
+                 int       dataOutSize,
+                 double*   weightOut,
+                 int       weightOutSize);
+
 public:
   QcepSettingsSaverWPtr saver() const;
 
