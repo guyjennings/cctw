@@ -1,4 +1,11 @@
 
+(string result) cctw(string code) "cctw" "0.1"
+[ "set <<result>> [ cctw <<code>> ]" ];
+
+/*
+
+ Probably obsolete-  
+
 (int r) CctwXYZToID(int max_x, int max_y, int max_z,
                     int x, int y, int z)
 "cctw" "0.0"
@@ -17,4 +24,4 @@
 "cctw" "0.0"
 [ "set <<o>> [ cctw::transform <<osx>> <<osy>> <<osz>> <<i>> <<count>> ]" ];
 
-
+*/

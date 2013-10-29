@@ -6,7 +6,7 @@
 #include "cctwtcl_commands.h"
 
 extern "C"
-int Cctw_Init(Tcl_Interp *interp)
+int Cctwtcl_Init(Tcl_Interp *interp)
 {
   if (Tcl_InitStubs(interp, "8.1", 0) == NULL) {
       return TCL_ERROR;
