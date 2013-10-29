@@ -1,4 +1,5 @@
 
+@dispatch=WORKER
 (string result) cctw(string code) "cctw" "0.1"
 [ "set <<result>> [ cctw <<code>> ]" ];
 
