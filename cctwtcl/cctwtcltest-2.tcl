@@ -1,7 +1,8 @@
 
 package require cctw
 
-cctw {} 
+set chunk [ cctw_chunk_create 128 ] 
+cctw_chunk_read "pznpt4_0070.tif"
 
 # cctw {
 #   outputData.dimensions = [128*3, 128*6, 128*4]
