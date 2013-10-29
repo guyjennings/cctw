@@ -4,7 +4,7 @@ CONFIG += uitools debug
 
 include("../cctw.pri")
 
-QT += core gui network script
+QT += concurrent core gui network script widgets
 
 target.path=$$prefix/lib
 INSTALLS += target

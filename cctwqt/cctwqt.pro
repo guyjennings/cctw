@@ -8,7 +8,7 @@ TEMPLATE = app
 
 include(../cctw.pri)
 
-QT          += core gui network script
+QT          += concurrent core gui network script
 
 TARGET       = cctwqt
 
