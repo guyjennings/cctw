@@ -9,3 +9,8 @@ module.mk
 .project
 .gitignore
 adlb.clog2
+ui_*.h
+moc
+cctw
+cctwtcl/libCctwTcl.so*
+cctwtcl/pkgIndex.tcl
