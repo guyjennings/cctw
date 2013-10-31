@@ -1,22 +1,23 @@
 
 /**
- * TEST 1
- * Test call to CctwRequisites
- * */
-
-import io;
+   Similar to cctwtcltest-1.tcl but does 2 concurrent transforms
+   Use turbine -n 4 to get 2 workers
+*/
 
 import cctw;
 
-global const int MAX_X = 3;
-global const int MAX_Y = 3;
-global const int MAX_Z = 3;
-
 main
 {
-  int r[] = CctwRequisites(MAX_X, MAX_Y, MAX_Z, 2, 2, 2);
-  foreach v,i in r
+  code =
+"""
+  outputData.dimensions = [128*3, 128*6, 128*4]
+  outputDataManager.filePath = "./h5test.h5"
+  cctw.calculateDependencies()
+  transformer.transform()
+""";
+    
+  foreach i in [0,1]
   {
-    printf("v[%i]: %i", i, v);
+    cctw(code);
   }
 }
