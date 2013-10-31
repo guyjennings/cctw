@@ -82,6 +82,9 @@ public slots:
   QcepIntList dependencies(int chunkId);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  CctwqtDataChunk * newInputChunk(int chunkId, double* data, int dataSize, double *weight, int weightSize);
+  CctwqtDataChunk * newOutputChunk(int chunkId, double* data, int dataSize, double *weight, int weightSize);
+
   void transform(int        chunkId,
                  double*    dataIn,
                  int        dataSize,

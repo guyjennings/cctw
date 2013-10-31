@@ -1017,6 +1017,16 @@ QList<CctwIntVector3D> CctwqtApplication::dependencies(int cx, int cy, int cz)
   return m_Transformer->dependencies(cx, cy, cz);
 }
 
+CctwqtDataChunk * CctwqtApplication::newInputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
+{
+  return NULL;
+}
+
+CctwqtDataChunk * CctwqtApplication::newOutputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
+{
+  return NULL;
+}
+
 void CctwqtApplication::transform
               (int        chunkId,
                double*    dataIn,
