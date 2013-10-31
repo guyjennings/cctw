@@ -35,6 +35,9 @@ int Cctw_Init(Tcl_Interp *interp)
   Tcl_CreateObjCommand(interp, "cctw_merge", (Tcl_ObjCmdProc*) Cctwtcl_Merge_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
+  Tcl_CreateObjCommand(interp, "cctw_normalize", (Tcl_ObjCmdProc*) Cctwtcl_Normalize_Cmd,
+                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
   Tcl_CreateObjCommand(interp, "cctw_chunk_create", (Tcl_ObjCmdProc*) Cctwtcl_Chunk_Create_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 

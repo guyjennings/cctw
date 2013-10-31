@@ -10,6 +10,7 @@ int Cctwtcl_Cmd               (ClientData clientData, Tcl_Interp *interp, int ob
 int Cctwtcl_Dependencies_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Transform_Cmd     (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Merge_Cmd         (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+int Cctwtcl_Normalize_Cmd     (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Chunk_Create_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Chunk_Delete_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 

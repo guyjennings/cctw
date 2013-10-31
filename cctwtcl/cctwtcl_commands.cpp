@@ -100,12 +100,81 @@ int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_ERROR;
 }
 
+static CctwqtDataChunk* Cctwtcl_Input_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, Tcl_Obj *obj)
+{
+  int       objc;
+  Tcl_Obj** objv;
+
+  if (Tcl_ListObjGetElements(interp, obj, &objc, &objv) == TCL_OK) {
+    int     chunkNumber = 0;
+    double *data = NULL;
+    double *weight = NULL;
+    int     dataSize = 0;
+    int     weightSize = 0;
+
+    switch (objc) {
+    case 5: // {chunkid datachunk size weightchunk wtsize}
+    {
+      long w;
+
+      if (Tcl_GetLongFromObj(interp, objv[3], &w) == TCL_OK &&
+          Tcl_GetIntFromObj(interp, objv[4], &weightSize) == TCL_OK) {
+        weight = (double*) w;
+      } else {
+        Tcl_SetResult(interp, "Bad input weight", TCL_STATIC);
+        return NULL;
+      }
+    }     // drop through to handle first 3 args
+
+    case 3: // {chunkid datachunk size}
+    {
+      long d;
+
+      if (Tcl_GetLongFromObj(interp, objv[1], &d) == TCL_OK &&
+          Tcl_GetIntFromObj(interp, objv[2], &dataSize) == TCL_OK) {
+        data = (double*) d;
+      } else {
+        Tcl_SetResult(interp, "Bad inpyut data", TCL_STATIC);
+        return NULL;
+      }
+
+      if (Tcl_GetIntFromObj(interp, objv[0], &chunkNumber)) {
+        return g_Application->newInputChunk(chunkNumber, data, dataSize, weight, weightSize);
+      } else {
+        Tcl_SetResult(interp, "Bad input chunk number", TCL_STATIC);
+      }
+    }
+      break;
+
+    default:
+      Tcl_SetResult(interp, "Bad input data chunk", TCL_STATIC);
+      return NULL;
+    }
+  } else {
+    Tcl_SetResult(interp, "Bad input data chunk argument", TCL_STATIC);
+    return NULL;
+  }
+}
+
+static CctwqtDataChunk* Cctwtcl_Intermediate_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, const Tcl_Obj *obj)
+{
+}
+
+static CctwqtDataChunk* Cctwtcl_Output_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, const Tcl_Obj *obj)
+{
+}
+
 int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
   return TCL_OK;
 }
 
 int Cctwtcl_Merge_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  return TCL_OK;
+}
+
+int Cctwtcl_Normalize_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
   return TCL_OK;
 }
