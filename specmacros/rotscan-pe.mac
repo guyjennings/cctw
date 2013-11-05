@@ -1,9 +1,9 @@
 # rotscan macros for perkin-elmer detector
 
 def _rotscan_start_detector() '{
-  global PEHOST
-#  printf("remote eval acquire(\"%s\", %g, 1, %d, 0)\n", _fn, _ctime, _n1)
-  remote_eval(PEHOST, sprintf("acquisition.droppedFrames=0; acquire(\"%s\", %g, 1, %d, 0)", _fn, _ctime, _n1))
+  global PEHOST _fn _ctime _n1 _n2 _n3
+#  printf("remote eval acquire(\"%s\", %g, %d, %d, 0)\n", _fn, _ctime, _n3, _n1+_n2)
+  remote_eval(PEHOST, sprintf("acquisition.droppedFrames=0; acquire(\"%s\", %g, %d, %d, 0)", _fn, _ctime, _n3, _n1+_n2))
 }'
 
 def _rotscan_check_detector() '{
@@ -14,3 +14,13 @@ def _rotscan_check_detector() '{
 def _rotscan_stop_detector() '{
   remote_eval(PEHOST, "acquireCancel()")
 }'
+
+def rotscan_set_file_index '{
+  remote_eval(PEHOST, sprintf("acquisition.fileIndex=%d", $1))
+}'
+
+def rotscan_acquire_dark '{
+  remote_eval(PEHOST, sprintf("acquireDark(\"%s\", %g, %g)", "$1", $2, $3))
+  while(remote_eval(PEHOST, "acquireStatus(1.0)") == 0) {}
+}'
+

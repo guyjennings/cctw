@@ -1,0 +1,65 @@
+def cryoget() '{
+  ubyte array xxx[32];
+  ser_par(0,"flush",3);
+  ser_par(0,"timeout",4);
+  ser_get(0, xxx)
+  return (xxx[4]*256+xxx[5])/100.0;
+}'
+
+def cryostatus() '{
+  ubyte array xxx[32];
+  ser_par(0,"flush",3);
+  ser_par(0,"timeout",5);
+  ser_get(0, xxx)
+  print "Run Mode   ", xxx[8]
+  print "Phase ID   ", xxx[9]
+  print "Temperature", (xxx[4]*256+xxx[5])/100.0
+  print "Alarm Code ", xxx[25]
+}'
+
+def cryoplat(timeminutes) '{
+  ubyte array yyy[4];
+  yyy[0]=4; yyy[1]=12;
+  yyy[2]=hibyte(timeminutes);
+  yyy[3]=lobyte(timeminutes);
+  ser_par(0,"flush",3);
+  ser_par(0,"timeout",5);
+  ser_put(0, yyy);
+}'
+
+def cryoramp(rate,finaltemp) '{
+  ubyte array yyy[6];
+  yyy[0]=6; yyy[1]=11;
+  yyy[2]=hibyte(rate);
+  yyy[3]=lobyte(rate);
+  yyy[4]=hibyte(finaltemp*100);
+  yyy[5]=lobyte(finaltemp*100);
+  ser_par(0,"flush",3);
+  ser_par(0,"timeout",5);
+  ser_put(0, yyy);
+}'
+
+def cryoset(finaltemp) '{
+local inittemp currenttemp
+  inittemp = cryoget()
+p inittemp
+  cryoramp(360,finaltemp)
+  while (1) {
+	sleep(5)
+   currenttemp = cryoget()
+   p currenttemp
+   cryoramp(360,finaltemp)
+   if (fabs(currenttemp - finaltemp)<0.5) {
+			break
+	}
+   }
+}'
+
+
+def hibyte(n) '{
+  return (n>>8);
+}'
+
+def lobyte(n) '{
+  return (n & 255);
+}'

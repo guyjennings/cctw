@@ -1,0 +1,7 @@
+mar_shutter close
+rotscan_set_file_index
+rotscan_acquire_dark junk3/dark 0.1 100
+mar_shutter open
+rotscan_set_file_index
+rotscan junk3/aligntest auxth 0 30 900 0.1 0 1
+mar_shutter close
