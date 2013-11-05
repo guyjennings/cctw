@@ -1,0 +1,56 @@
+mar_shutter close
+cryoset(375)
+print cryoget()
+rotscan_set_file_index
+rotscan_acquire_dark lsmo34_375k/darkbeg 0.1 100
+atten 28
+mar_shutter open
+rotscan_set_file_index
+rotscan lsmo34_375k/ubfscan auxth 0 180 1800 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_375k/ubbscan auxth 180 0 1800 0.1 0 1
+atten 0
+rotscan_set_file_index
+rotscan lsmo34_375k/ff1scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_375k/fb1scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_375k/ff2scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_375k/fb2scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_375k/sfscan auxth 0 360 3600 0.1 0 2
+rotscan_set_file_index
+rotscan lsmo34_375k/sbscan auxth 360 0 3600 0.1 0 2
+mar_shutter close
+rotscan_set_file_index
+rotscan_acquire_dark lsmo34_375k/darkend 0.1 100
+
+mar_shutter close
+cryoset(400)
+print cryoget()
+rotscan_set_file_index
+rotscan_acquire_dark lsmo34_400k/darkbeg 0.1 100
+atten 28
+mar_shutter open
+rotscan_set_file_index
+rotscan lsmo34_400k/ubfscan auxth 0 180 1800 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_400k/ubbscan auxth 180 0 1800 0.1 0 1
+atten 0
+rotscan_set_file_index
+rotscan lsmo34_400k/ff1scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_400k/fb1scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_400k/ff2scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_400k/fb2scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo34_400k/sfscan auxth 0 360 3600 0.1 0 2
+rotscan_set_file_index
+rotscan lsmo34_400k/sbscan auxth 360 0 3600 0.1 0 2
+mar_shutter close
+rotscan_set_file_index
+rotscan_acquire_dark lsmo34_400k/darkend 0.1 100
+

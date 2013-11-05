@@ -1,0 +1,29 @@
+
+
+mar_shutter close
+cryoset(115)
+print cryoget()
+rotscan_set_file_index
+rotscan_acquire_dark lsmo39_115k/dark 0.1 100
+atten 20
+mar_shutter open
+rotscan_set_file_index
+rotscan lsmo39_115k/ubfscan auxth 0 180 1800 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo39_115k/ubbscan auxth 180 0 1800 0.1 0 1
+atten 0
+rotscan_set_file_index
+rotscan lsmo39_115k/ff1scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo39_115k/fb1scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo39_115k/ff2scan auxth 0 360 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo39_115k/fb2scan auxth 360 0 3600 0.1 0 1
+rotscan_set_file_index
+rotscan lsmo39_115k/sfscan auxth 0 360 3600 0.1 0 2
+rotscan_set_file_index
+rotscan lsmo39_115k/sbscan auxth 360 0 3600 0.1 0 2
+
+mar_shutter close
+

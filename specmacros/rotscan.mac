@@ -1,7 +1,7 @@
 def rotscan '{
-  global _fn _m _s _f _ctime _n1 _n2
-  if ($# != 7) {
-    eprint "Usage: rotscan filename motor start finish intervals time initial"
+  global _fn _m _s _f _ctime _n1 _n2 _n3
+  if ($# != 8) {
+    eprint "Usage: rotscan filename motor start finish intervals time initial sum"
     exit
   }
   _fn = "$1"
@@ -9,6 +9,7 @@ def rotscan '{
   _m[0] = $2; _s[0] = $3; _f[0] = $4
   _n1 = int($5); _ctime = $6
   _n2 = int($7)
+  _n3 = int($8)
   _nm = 1
   HEADING="rotscan $*"
   _rotscan
@@ -56,7 +57,7 @@ def _rotscan '{
   def _scan_on \'{
     for(; ; NPTS++) {
       local dt
-      if (NPTS==_n2) _rotscan_scan_motor
+      if (NPTS==_n2*_n3) _rotscan_scan_motor
       get_angles; calcHKL
       _time = time()
       dt = _rotscan_check_detector()
@@ -84,17 +85,19 @@ def _rotscan '{
 def _rotscan_cleanup '{
   global _v0 _m _s
   stop()
+  waitmove
   _rotscan_stop_detector()
   motor_par(_m[0], "velocity", _v0)
-  printf("Returning %s to %g\n", motor_mne(_m[0]), _s[0])
-  A[_m[0]] = _s[0]
-  _move
+#  printf("Returning %s to %g\n", motor_mne(_m[0]), _s[0])
+#  get_angles
+#  A[_m[0]] = _s[0]
+#  _move
 }'
 
 def _rotscan_prepare '{
-  global _v0 _v
+  global _v0 _v _n0 _n1 _n3 
   _v0 = motor_par(_m[0], "velocity")
-  _v  = motor_par(_m[0], "step_size")*fabs(_f[0] - _s[0])/((_n1 - _n0)*_ctime)
+  _v  = motor_par(_m[0], "step_size")*fabs(_f[0] - _s[0])/(_n1*_ctime*_n3)
   printf ("Motor %s standard vel: %g steps/sec, rotscan vel: %g steps/sec\n", motor_mne(_m[0]), _v0, _v)
   if (_v > _v0) {
     eprint "Requested motor velocity for scan would be too fast"
@@ -105,6 +108,7 @@ def _rotscan_prepare '{
 def _rotscan_move_start '{
   global _v _m _s
   printf("Move %s to %g at full speed\n", motor_mne(_m[0]), _s[0])
+  get_angles
   A[_m[0]] = _s[0]
   _move
   waitmove
@@ -114,8 +118,9 @@ def _rotscan_move_start '{
 def _rotscan_scan_motor '{
   global _m _f
   printf("Scan %s to %g at scanning speed\n", motor_mne(_m[0]), _f[0])
+  get_angles
   A[_m[0]] = _f[0]
-  _move
+  move_em
 }'
 
 def rotscan_setup '{
@@ -126,4 +131,33 @@ def rotscan_remove '{
     undef rotscan rotscan_setup rotscan_remove _rotscan
   }
 }'
+
+def oldcount '{
+def count \'{
+	waitmove
+	if (\$1) for (;;) {
+		count_em \$1
+		waitcount
+		get_counts
+		chk_beam
+	}
+	if (S[sec] && MON >= 0)
+		MON_RATE=S[MON]/S[sec]
+}\'
+}'
+
+def rotscan_count '{
+def count \'{
+	if (\$1) for (;;) {
+		count_em \$1
+		waitcount
+		get_counts
+		chk_beam
+	}
+	if (S[sec] && MON >= 0)
+		MON_RATE=S[MON]/S[sec]
+}\'
+}'
+
+
 
