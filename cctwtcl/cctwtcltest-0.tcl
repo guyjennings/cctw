@@ -1,10 +1,10 @@
+# package ifneeded cctw 0.1 "load ./libCctwTcl.so cctw"
 
 package require cctw
 
-set chunk [ cctw_chunk_create 128 ]
-cctw_chunk_read "pznpt4_0070.tif" pointer length
+set result [ cctw { 42 } ] 
 
-puts "pointer: $pointer length: $length"
+exit [ expr ! ( $result == 42 ) ]
 
 # cctw {
 #   outputData.dimensions = [128*3, 128*6, 128*4]

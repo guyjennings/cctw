@@ -4,9 +4,10 @@
 #include <string.h>
 
 #include "cctwtcl_commands.h"
+#include "cctwtcltiff.h"
 
 extern "C"
-int Cctw_Init(Tcl_Interp *interp)
+int Cctwtcl_Init(Tcl_Interp *interp)
 {
   if (Tcl_InitStubs(interp, "8.1", 0) == NULL) {
       return TCL_ERROR;
@@ -40,6 +41,9 @@ int Cctw_Init(Tcl_Interp *interp)
 
   Tcl_CreateObjCommand(interp, "cctw_chunk_delete", (Tcl_ObjCmdProc*) Cctwtcl_Chunk_Delete_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_chunk_read", (Tcl_ObjCmdProc*) Cctwtcltiff_Read_Cmd,
+                      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
   Cctwtcl_Initialize();
 
