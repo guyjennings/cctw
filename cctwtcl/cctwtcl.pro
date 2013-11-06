@@ -33,9 +33,13 @@ include("../cctwqt/qceplib-code/qt-hdf5.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")
 
-INCLUDEPATH += $(HOME)/sfw/tcl-8.6.0/include
+exists($(HOME)/sfw/tcl-8.6.0/include) {
+    INCLUDEPATH += $(HOME)/sfw/tcl-8.6.0/include
 
-LIBS += -L$(HOME)/sfw/tcl-8.6.0/lib -ltcl8.6
+    LIBS += -L$(HOME)/sfw/tcl-8.6.0/lib -ltcl8.6
+} else {
+    LIBS += -ltcl
+}
 
 HEADERS += \
     cctwtcl_commands.h \
