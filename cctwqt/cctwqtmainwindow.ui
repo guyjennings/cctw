@@ -164,6 +164,13 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="m_PEMetaDataButton">
+      <property name="text">
+       <string>PE MetaData...</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -172,7 +179,7 @@
      <x>0</x>
      <y>0</y>
      <width>855</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -188,6 +195,7 @@
     <property name="title">
      <string>Transform</string>
     </property>
+    <addaction name="m_ActionAnalyzePEMetaData"/>
    </widget>
    <widget class="QMenu" name="menuDependencies">
     <property name="title">
@@ -263,6 +271,14 @@
    </property>
    <property name="toolTip">
     <string>Report on Dependencies</string>
+   </property>
+  </action>
+  <action name="m_ActionAnalyzePEMetaData">
+   <property name="text">
+    <string>Analyze PE MetaData...</string>
+   </property>
+   <property name="toolTip">
+    <string>Analyze PE MetaData</string>
    </property>
   </action>
  </widget>

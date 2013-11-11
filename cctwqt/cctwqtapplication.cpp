@@ -57,7 +57,8 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
-  m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in")
+  m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
+  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file")
 {
   QcepProperty::registerMetaTypes();
   CctwqtDoubleMatrix3x3Property::registerMetaTypes();
@@ -238,9 +239,9 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, this);
 
-  m_TransformTest    = new CctwTransformTest(this, NULL);
-
-  m_ScriptEngine     = new CctwqtScriptEngine(this, NULL);
+  m_TransformTest    = new CctwTransformTest(this, this);
+  m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
+  m_ScriptEngine     = new CctwqtScriptEngine(this, this);
 
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
@@ -254,6 +255,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
   m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
   m_ScriptEngine->globalObject().setProperty("test", m_ScriptEngine->newQObject(m_TransformTest));
+  m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
 //  readSettings();
@@ -402,6 +404,10 @@ void CctwqtApplication::readSettings(QSettings *settings)
   if (m_TransformTest) {
     m_TransformTest->readSettings(settings, "test");
   }
+
+  if (m_PEIngressCommand) {
+    m_PEIngressCommand->readSettings(settings, "peingress");
+  }
 }
 
 void CctwqtApplication::writeSettings()
@@ -474,6 +480,10 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
   if (m_TransformTest) {
     m_TransformTest->writeSettings(settings, "test");
+  }
+
+  if (m_PEIngressCommand) {
+    m_PEIngressCommand->writeSettings(settings, "peingress");
   }
 }
 
@@ -1052,4 +1062,11 @@ void CctwqtApplication::merge
                double*   weightOut,
                int       weightOutSize)
 {
+}
+
+void CctwqtApplication::analyzePEMetaData(QString path)
+{
+  set_SpecDataFilePath(path);
+
+  m_PEIngressCommand->analyzePEMetaData(path);
 }

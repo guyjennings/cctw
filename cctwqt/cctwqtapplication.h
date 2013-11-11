@@ -18,6 +18,7 @@
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwtransformtest.h"
+#include "cctwqtpeingresscommand.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -69,6 +70,8 @@ public slots:
 
   void reportInputChunkCounts();
   void reportOutputChunkCounts();
+
+  void analyzePEMetaData(QString path);
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
@@ -141,6 +144,7 @@ public:
   CctwqtTransformer                  *m_SliceTransformer;
   CctwqtScriptEngine                 *m_ScriptEngine;
   CctwTransformTest                  *m_TransformTest;
+  CctwqtPEIngressCommand             *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
 private:
@@ -184,6 +188,9 @@ public:
 
   Q_PROPERTY(QString settingsPath READ get_SettingsPath WRITE set_SettingsPath)
   QCEP_STRING_PROPERTY(SettingsPath)
+
+  Q_PROPERTY(QString specDataFilePath READ get_SpecDataFilePath WRITE set_SpecDataFilePath)
+  QCEP_STRING_PROPERTY(SpecDataFilePath)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

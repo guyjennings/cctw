@@ -41,7 +41,7 @@ public slots:
   void doSaveDependencies();
   void doLoadDependencies();
   void onProgressUpdate();
-
+  void doAnalyzePEMetaData();
   void possiblyClose();
 
 private:

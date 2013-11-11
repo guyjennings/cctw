@@ -31,12 +31,13 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
   connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
   connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
+  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
 
   connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
   connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
   connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
   connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), m_Application, SLOT(reportDependencies()));
-
+  connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
   connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
@@ -201,6 +202,16 @@ void CctwqtMainWindow::doLoadDependencies()
 
   if (path.length()) {
     m_Application->loadDependencies(path);
+  }
+}
+
+void CctwqtMainWindow::doAnalyzePEMetaData()
+{
+  QString path = QFileDialog::getOpenFileName(this, "Spec Data File for PE rotscan runs...",
+                                              m_Application->get_SpecDataFilePath());
+
+  if (path.length()) {
+    m_Application->analyzePEMetaData(path);
   }
 }
 
