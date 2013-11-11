@@ -8,6 +8,13 @@ CctwqtObject::CctwqtObject(QObject *parent) :
 {
 }
 
+void CctwqtObject::printLine(QString line)
+{
+  if (parent()) {
+    QMetaObject::invokeMethod( parent(), "printLine", Q_ARG(QString, line));
+  }
+}
+
 void CctwqtObject::printMessage(QString msg, QDateTime dt)
 {
   if (parent()) {

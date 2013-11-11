@@ -26,6 +26,7 @@ public:
   ~CctwqtMainWindow();
   
 public slots:
+  void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void doEvaluateCommand();
   void doSetupInput();

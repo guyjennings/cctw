@@ -7,8 +7,9 @@ class CctwqtApplication;
 
 class CctwqtPEIngressCommand : public CctwqtObject
 {
+  Q_OBJECT
 public:
-  CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent = NULL);
+  explicit CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent);
 
 public slots:
   void testSlot();

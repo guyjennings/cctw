@@ -38,7 +38,7 @@ public:
 signals:
 
 public slots:
-
+  void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void wait(QString msg);
   void evaluateCommand(QString cmd);

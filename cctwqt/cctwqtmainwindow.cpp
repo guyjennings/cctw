@@ -80,6 +80,15 @@ bool CctwqtMainWindow::wantToClose()
                                QMessageBox::Ok | QMessageBox::Cancel) == QMessageBox::Ok;
 }
 
+void CctwqtMainWindow::printLine(QString line)
+{
+  if (QThread::currentThread() != thread()) {
+    QMetaObject::invokeMethod(this, "printLine", Q_ARG(QString, line));
+  } else {
+    ui->m_OutputMessages->append(line);
+  }
+}
+
 void CctwqtMainWindow::printMessage(QString msg, QDateTime dt)
 {
   if (QThread::currentThread() != thread()) {

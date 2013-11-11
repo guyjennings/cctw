@@ -282,6 +282,19 @@ void CctwqtApplication::doAboutToQuit()
   writeSettings();
 }
 
+void CctwqtApplication::printLine(QString msg)
+{
+#ifdef NO_GUI
+  printf("%s\n", qPrintable(msg));
+#else
+  if (m_Window) {
+    m_Window->printLine(msg);
+  } else {
+    printf("%s\n", qPrintable(msg));
+  }
+#endif
+}
+
 void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 {
 #ifdef NO_GUI
@@ -1068,5 +1081,5 @@ void CctwqtApplication::analyzePEMetaData(QString path)
 {
   set_SpecDataFilePath(path);
 
-  m_PEIngressCommand->analyzePEMetaData(path);
+  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
 }

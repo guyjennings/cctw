@@ -14,6 +14,7 @@ public:
 signals:
 
 public slots:
+  virtual void printLine(QString line);
   virtual void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
 
 public:

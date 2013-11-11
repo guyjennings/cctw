@@ -65,7 +65,7 @@ int Cctwtcltiff_Read_Cmd(UNUSED ClientData clientData,
   if (!rc)
     return TCL_ERROR;
 
-  Tcl_ObjSetVar2(interp, pointer, NULL, Tcl_NewWideIntObj((Tcl_WideInt)output), 0);
+  Tcl_ObjSetVar2(interp, pointer, NULL, Tcl_NewLongObj((long)output), 0);
   Tcl_ObjSetVar2(interp, length,  NULL, Tcl_NewIntObj((int)bytes),      0);
 
   return TCL_OK;
