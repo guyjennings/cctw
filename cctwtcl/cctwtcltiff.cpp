@@ -22,7 +22,7 @@ using namespace std;
 #define UNUSED __attribute__((unused))
 
 static bool tiff_read(char *filename,
-                      void **output, uint *output_length)
+                      void **output, uint32 *output_length)
 {
   TIFF *tif = TIFFOpen(filename, "r");
   if (tif == NULL)
@@ -60,7 +60,7 @@ int Cctwtcltiff_Read_Cmd(UNUSED ClientData clientData,
   Tcl_Obj *length  = objv[3];
 
   void *output;
-  uint bytes;
+  uint32 bytes;
   bool rc = tiff_read(filename, &output, &bytes);
   if (!rc)
     return TCL_ERROR;
