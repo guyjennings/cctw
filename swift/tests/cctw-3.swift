@@ -18,6 +18,7 @@ main
   blob tiff_fragments[];
   foreach f in file_list {
     // For file pznpt4_0070.tif, creates entries (say) 007000-007099
+    // (100 fragments, at 10x10 partitioning of the TIFF)
     blob tmp[] = cctw_chunk_read_fragments();
     foreach b, i in tmp {
       tiff_fragments[i] = b;
