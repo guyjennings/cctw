@@ -22,9 +22,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="m_InputData"/>
-    </item>
     <item row="0" column="6" colspan="2">
      <widget class="QPushButton" name="m_SetupInputButton">
       <property name="text">
@@ -39,9 +36,6 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="m_OutputData"/>
-    </item>
     <item row="1" column="6" colspan="2">
      <widget class="QPushButton" name="m_SetupOutputButton">
       <property name="text">
@@ -55,9 +49,6 @@
        <string>Output Data:</string>
       </property>
      </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="m_OutputSliceData"/>
     </item>
     <item row="2" column="6" colspan="2">
      <widget class="QCheckBox" name="m_InverseAvailable">
@@ -207,6 +198,15 @@
        <number>0</number>
       </property>
      </widget>
+    </item>
+    <item row="0" column="1" colspan="5">
+     <widget class="QLineEdit" name="m_InputData"/>
+    </item>
+    <item row="1" column="1" colspan="5">
+     <widget class="QLineEdit" name="m_OutputData"/>
+    </item>
+    <item row="2" column="1" colspan="5">
+     <widget class="QLineEdit" name="m_OutputSliceData"/>
     </item>
    </layout>
   </widget>
