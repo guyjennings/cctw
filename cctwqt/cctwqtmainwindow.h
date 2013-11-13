@@ -43,6 +43,7 @@ public slots:
   void doLoadDependencies();
   void onProgressUpdate();
   void doAnalyzePEMetaData();
+  void doAnalyzeSpecDataFile();
   void possiblyClose();
 
 private:

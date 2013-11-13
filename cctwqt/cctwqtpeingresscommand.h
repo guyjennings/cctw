@@ -4,6 +4,7 @@
 #include "cctwqtobject.h"
 
 class CctwqtApplication;
+class QwtPlot;
 
 class CctwqtPEIngressCommand : public CctwqtObject
 {
@@ -14,6 +15,7 @@ public:
 public slots:
   void testSlot();
   void analyzePEMetaData(QString path);
+  void analyzeSpecDataFile(QString path, QwtPlot *graph);
 
 private:
   CctwqtApplication *m_Application;

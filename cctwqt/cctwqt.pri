@@ -29,6 +29,7 @@ SOURCES += \
     $${PWD}/cctwqtoutputdataframemanager.cpp \
     $${PWD}/cctwqtdataframemanager.cpp \
     $${PWD}/cctwqtpeingresscommand.cpp  \
+    $${PWD}/cctwqtlinearfitter.cpp \
     $${PWD}/cctwqtthread.cpp
 
 HEADERS += \
@@ -60,6 +61,7 @@ HEADERS += \
     $${PWD}/cctwqtoutputdataframemanager.h \
     $${PWD}/cctwqtdataframemanager.h \
     $${PWD}/cctwqtpeingresscommand.h \
+    $${PWD}/cctwqtlinearfitter.h \
     $${PWD}/cctwqtthread.h
 
 FORMS += \

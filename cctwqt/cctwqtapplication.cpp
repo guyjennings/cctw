@@ -1083,3 +1083,10 @@ void CctwqtApplication::analyzePEMetaData(QString path)
 
   QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
 }
+
+void CctwqtApplication::analyzeSpecDataFile(QString path, QwtPlot *graph)
+{
+  set_SpecDataFilePath(path);
+
+  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path, graph);
+}

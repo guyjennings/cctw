@@ -145,6 +145,13 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="4">
+       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
+        <property name="text">
+         <string>Analyze Spec Data...</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -217,30 +224,7 @@
      </layout>
     </item>
    </layout>
-   <zorder>m_InputData</zorder>
    <zorder>m_CommandInput</zorder>
-   <zorder>m_ProgressLabel</zorder>
-   <zorder>m_OutputData</zorder>
-   <zorder>label_2</zorder>
-   <zorder>m_SetupOutputButton</zorder>
-   <zorder>m_SetupInputButton</zorder>
-   <zorder>label_3</zorder>
-   <zorder>m_ProgressBar</zorder>
-   <zorder>label</zorder>
-   <zorder>m_OutputSliceData</zorder>
-   <zorder>m_InverseAvailable</zorder>
-   <zorder>m_SetupTransformButton</zorder>
-   <zorder>m_TransformOneButton</zorder>
-   <zorder>m_TransformAllButton</zorder>
-   <zorder>m_SetupSliceButton</zorder>
-   <zorder>m_TransformSliceButton</zorder>
-   <zorder>m_HaltButton</zorder>
-   <zorder>m_Halting</zorder>
-   <zorder>m_DependenciesButton</zorder>
-   <zorder>m_SaveDepsButton</zorder>
-   <zorder>m_LoadDepsButton</zorder>
-   <zorder>m_PEMetaDataButton</zorder>
-   <zorder>horizontalSpacer</zorder>
    <zorder>tabWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -249,7 +233,7 @@
      <x>0</x>
      <y>0</y>
      <width>855</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -281,9 +265,16 @@
      <string>Other</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuAnalysis">
+    <property name="title">
+     <string>Analysis</string>
+    </property>
+    <addaction name="m_ActionAnalyseSpecDataFile"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTransform"/>
    <addaction name="menuDependencies"/>
+   <addaction name="menuAnalysis"/>
    <addaction name="menuOther"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -351,12 +342,18 @@
     <string>Analyze PE MetaData</string>
    </property>
   </action>
+  <action name="m_ActionAnalyseSpecDataFile">
+   <property name="text">
+    <string>Analyze spec data file...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

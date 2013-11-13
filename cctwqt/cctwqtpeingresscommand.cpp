@@ -1,5 +1,7 @@
 #include "cctwqtpeingresscommand.h"
 #include "cctwqtapplication.h"
+#include "cctwqtlinearfitter.h"
+#include "qwt_plot.h"
 #include <QFile>
 
 CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent) :
@@ -14,6 +16,10 @@ void CctwqtPEIngressCommand::testSlot()
 
 void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
 {
+}
+
+void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
+{
   m_Application->set_Halting(false);
 
   printMessage(tr("Analyzing PE MetaData from %1").arg(path));
@@ -21,17 +27,17 @@ void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
   QFile file(path);
 
   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    QSharedPointer<CctwqtLinearFitter> fit1(new CctwqtLinearFitter());
+//    QSharedPointer<CctwqtLinearFitter> fit2(new CctwqtLinearFitter());
+//    QSharedPointer<CctwqtLinearFitter> fit3(new CctwqtLinearFitter());
+//    QSharedPointer<CctwqtLinearFitter> fit4(new CctwqtLinearFitter());
+
     int ncols = 0;
     int line1 = true;
     int scanNumber = -1;
     int rowNum = -1;
     QString scanCmd;
     int isRotScan = false;
-
-    double x0 = 0, y0 = 0;
-
-    long double sumn, sumx, sumy, sumxy, sumxx, sumn10, sumx10, sumy10, sumxy10, sumxx10;
-    sumn = sumx = sumy = sumxy = sumxx = sumn10 = sumx10 = sumy10 = sumxy10 = sumxx10 = 0;
 
     QRegExp scanRE("^#S\\s*(\\d+)\\s+(\\w+)");
     QRegExp ncolsRE("^#N\\s*(\\d+)");
@@ -41,31 +47,24 @@ void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
 
       if (line.startsWith("#S")) {
         if (line.contains(scanRE)) {
-          if (sumn > 0) {
-            double grad = (sumxy - sumx*sumy/sumn)/(sumxx - sumx*sumx/sumn);
-            double intcp = sumy/sumn - grad*sumx/sumn + y0;
-
-            if (sumn10 > 1000) {
-              double grad10 = (sumxy10 - sumx10*sumy10/sumn10)/(sumxx10 - sumx10*sumx10/sumn10);
-              double intcp10 = sumy10/sumn10 - grad10*sumx10/sumn10 + y0;
-              printLine(tr("%1  %2  %3  %4  %5")
-                        .arg(scanNumber, 6)
-                        .arg(grad, 20, 'f', 14)
-                        .arg(intcp, 20, 'f', 14)
-                        .arg(grad10, 20, 'f', 14)
-                        .arg(intcp10, 20, 'f', 14));
-            } else {
-//              printLine(tr("Slope: %1 Intercept: %2").arg(double(grad)).arg(double(intcp)));
-            }
+          if (isRotScan && (rowNum >= 1200)) {
+            fit1->performFit(10, 80);
+            printLine(tr("%1  %2  %3  %4 %5")
+                      .arg(rowNum)
+                      .arg(scanNumber, 6)
+                      .arg(fit1->slope(), 20, 'f', 14)
+                      .arg(fit1->intercept(), 20, 'f', 14)
+                      .arg(fit1->rSquared(), 20, 'f', 14));
+            //          printLine(tr("Scan %1, cmd %2").arg(scanRE.cap(1)).arg(scanRE.cap(2)));
+            //          fit2->performFit(10, 10);
+            //          fit3->performFit(10, 10);
+            //          fit4->performFit(10, 10);
           }
-//          printLine(tr("Scan %1, cmd %2").arg(scanRE.cap(1)).arg(scanRE.cap(2)));
 
           scanNumber = scanRE.cap(1).toInt();
           scanCmd    = scanRE.cap(2);
-          isRotScan  = (scanCmd == "rotscan");
-
-          sumn = sumx = sumy = sumxy = sumxx = sumn10 = sumx10 = sumy10 = sumxy10 = sumxx10 = 0;
-          rowNum = 0;
+          isRotScan  = (scanCmd == "rotscan") && line.contains("auxth");
+          rowNum     = 0;
         }
         line1 = true;
         // scan start
@@ -77,7 +76,7 @@ void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
         if (line.contains(ncolsRE)) {
           QString f = ncolsRE.cap(1);
 
-//          printLine(tr("Ncols = %1").arg(f));
+          //          printLine(tr("Ncols = %1").arg(f));
 
           ncols = f.toInt();
         }
@@ -96,26 +95,10 @@ void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
 
           if (line1) {
             line1 = false;
-            x0 = x;
-            y0 = y;
+            fit1->startNewFit();
           }
 
-          x -= x0;
-          y -= y0;
-
-          sumn += 1;
-          sumx += x;
-          sumy += y;
-          sumxx += x*x;
-          sumxy += x*y;
-
-          if (rowNum >= 10) {
-            sumn10 += 1;
-            sumx10 += x;
-            sumy10 += y;
-            sumxx10 += x*x;
-            sumxy10 += x*y;
-          }
+          fit1->appendPoint(x, y);
         }
       }
     }
