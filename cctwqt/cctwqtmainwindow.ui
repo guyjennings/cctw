@@ -14,127 +14,140 @@
    <string>CCTW - Crystal Coordinate Transformation Workflow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Input Data:</string>
-      </property>
-     </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="5">
+       <widget class="QPushButton" name="m_SetupInputButton">
+        <property name="text">
+         <string>Setup Input...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_InputData"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="m_SetupSliceButton">
+        <property name="text">
+         <string>Setup Slice...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="m_TransformOneButton">
+        <property name="text">
+         <string>Transform One...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_OutputSliceData"/>
+      </item>
+      <item row="4" column="5">
+       <widget class="QCheckBox" name="m_Halting">
+        <property name="text">
+         <string>Halting?</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Input Data:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="m_SetupOutputButton">
+        <property name="text">
+         <string>Setup Output...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="m_DependenciesButton">
+        <property name="text">
+         <string>Dependencies</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Output Data:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QPushButton" name="m_PEMetaDataButton">
+        <property name="text">
+         <string>PE MetaData...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="m_SetupTransformButton">
+        <property name="text">
+         <string>Setup Transform...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QCheckBox" name="m_InverseAvailable">
+        <property name="text">
+         <string>Inverse Available?</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QPushButton" name="m_LoadDepsButton">
+        <property name="text">
+         <string>Load Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="m_TransformAllButton">
+        <property name="text">
+         <string>Transform All</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_OutputData"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="m_SaveDepsButton">
+        <property name="text">
+         <string>Save Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="m_HaltButton">
+        <property name="text">
+         <string>Halt</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Output Data:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QPushButton" name="m_TransformSliceButton">
+        <property name="text">
+         <string>Slice</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item row="0" column="6" colspan="2">
-     <widget class="QPushButton" name="m_SetupInputButton">
-      <property name="text">
-       <string>Setup Input...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Output Data:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="6" colspan="2">
-     <widget class="QPushButton" name="m_SetupOutputButton">
-      <property name="text">
-       <string>Setup Output...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Output Data:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="6" colspan="2">
-     <widget class="QCheckBox" name="m_InverseAvailable">
-      <property name="text">
-       <string>Inverse Available?</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QPushButton" name="m_SetupTransformButton">
-      <property name="text">
-       <string>Setup Transform...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="m_TransformOneButton">
-      <property name="text">
-       <string>Transform One...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <widget class="QPushButton" name="m_TransformAllButton">
-      <property name="text">
-       <string>Transform All</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3">
-     <widget class="QPushButton" name="m_SetupSliceButton">
-      <property name="text">
-       <string>Setup Slice...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="4" colspan="2">
-     <widget class="QPushButton" name="m_TransformSliceButton">
-      <property name="text">
-       <string>Slice</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="6" colspan="2">
-     <widget class="QPushButton" name="m_HaltButton">
-      <property name="text">
-       <string>Halt</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QPushButton" name="m_DependenciesButton">
-      <property name="text">
-       <string>Dependencies</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="m_SaveDepsButton">
-      <property name="text">
-       <string>Save Deps...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <widget class="QPushButton" name="m_LoadDepsButton">
-      <property name="text">
-       <string>Load Deps...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3">
-     <widget class="QPushButton" name="m_PEMetaDataButton">
-      <property name="text">
-       <string>PE MetaData...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="6" colspan="2">
-     <widget class="QCheckBox" name="m_Halting">
-      <property name="text">
-       <string>Halting?</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0" colspan="8">
+    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -144,7 +157,7 @@
         <string>Messages</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QTextEdit" name="m_OutputMessages">
           <property name="readOnly">
            <bool>true</bool>
@@ -165,50 +178,70 @@
       </widget>
      </widget>
     </item>
-    <item row="6" column="0" colspan="8">
+    <item>
      <widget class="QLineEdit" name="m_CommandInput">
       <property name="layoutDirection">
        <enum>Qt::RightToLeft</enum>
       </property>
      </widget>
     </item>
-    <item row="7" column="0" colspan="5">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>596</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="7" column="5" colspan="2">
-     <widget class="QLabel" name="m_ProgressLabel">
-      <property name="text">
-       <string>Progress</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="7">
-     <widget class="QProgressBar" name="m_ProgressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" colspan="5">
-     <widget class="QLineEdit" name="m_InputData"/>
-    </item>
-    <item row="1" column="1" colspan="5">
-     <widget class="QLineEdit" name="m_OutputData"/>
-    </item>
-    <item row="2" column="1" colspan="5">
-     <widget class="QLineEdit" name="m_OutputSliceData"/>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>596</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="m_ProgressLabel">
+        <property name="text">
+         <string>Progress</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="m_ProgressBar">
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
+   <zorder>m_InputData</zorder>
+   <zorder>m_CommandInput</zorder>
+   <zorder>m_ProgressLabel</zorder>
+   <zorder>m_OutputData</zorder>
+   <zorder>label_2</zorder>
+   <zorder>m_SetupOutputButton</zorder>
+   <zorder>m_SetupInputButton</zorder>
+   <zorder>label_3</zorder>
+   <zorder>m_ProgressBar</zorder>
+   <zorder>label</zorder>
+   <zorder>m_OutputSliceData</zorder>
+   <zorder>m_InverseAvailable</zorder>
+   <zorder>m_SetupTransformButton</zorder>
+   <zorder>m_TransformOneButton</zorder>
+   <zorder>m_TransformAllButton</zorder>
+   <zorder>m_SetupSliceButton</zorder>
+   <zorder>m_TransformSliceButton</zorder>
+   <zorder>m_HaltButton</zorder>
+   <zorder>m_Halting</zorder>
+   <zorder>m_DependenciesButton</zorder>
+   <zorder>m_SaveDepsButton</zorder>
+   <zorder>m_LoadDepsButton</zorder>
+   <zorder>m_PEMetaDataButton</zorder>
+   <zorder>horizontalSpacer</zorder>
+   <zorder>tabWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
