@@ -4,7 +4,7 @@ CONFIG += uitools debug
 
 include("../cctw.pri")
 
-QT += concurrent core gui network script widgets
+QT += concurrent core gui network script widgets opengl svg
 
 target.path=$$prefix/lib
 INSTALLS += target
@@ -29,6 +29,7 @@ release {
 
 include("../cctwqt/qceplib-code/qceplib.pri")
 include("../cctwqt/qceplib-code/qt-hdf5.pri")
+include("../cctwqt/qceplib-code/qwt-6.1.pri")
 #include("../cctwqt/qceplib-code/qt-nexus.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")

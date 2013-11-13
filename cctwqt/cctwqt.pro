@@ -8,7 +8,7 @@ TEMPLATE = app
 
 include(../cctw.pri)
 
-QT          += concurrent core gui network script
+QT          += concurrent core gui network script opengl svg
 
 TARGET       = cctwqt
 
@@ -26,6 +26,7 @@ RCC_DIR = rcc
 
 include(qceplib-code/qceplib.pri)
 include(qceplib-code/qt-hdf5.pri)
+include(qceplib-code/qwt-6.1.pri)
 #include(qceplib-code/qt-nexus.pri)
 include(../cctwlib/cctwlib.pri)
 include(cctwqt.pri)

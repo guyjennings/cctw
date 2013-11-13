@@ -14,33 +14,23 @@
    <string>CCTW - Crystal Coordinate Transformation Workflow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1" colspan="4">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Input Data:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
      <widget class="QLineEdit" name="m_InputData"/>
     </item>
-    <item row="6" column="0" colspan="6">
-     <widget class="QLineEdit" name="m_CommandInput">
-      <property name="layoutDirection">
-       <enum>Qt::RightToLeft</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="m_ProgressLabel">
+    <item row="0" column="6" colspan="2">
+     <widget class="QPushButton" name="m_SetupInputButton">
       <property name="text">
-       <string>Progress</string>
+       <string>Setup Input...</string>
       </property>
      </widget>
-    </item>
-    <item row="5" column="0" colspan="6">
-     <widget class="QTextEdit" name="m_OutputMessages">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1" colspan="4">
-     <widget class="QLineEdit" name="m_OutputData"/>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
@@ -49,17 +39,13 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="5">
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="m_OutputData"/>
+    </item>
+    <item row="1" column="6" colspan="2">
      <widget class="QPushButton" name="m_SetupOutputButton">
       <property name="text">
        <string>Setup Output...</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QPushButton" name="m_SetupInputButton">
-      <property name="text">
-       <string>Setup Input...</string>
       </property>
      </widget>
     </item>
@@ -70,24 +56,10 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="1" colspan="5">
-     <widget class="QProgressBar" name="m_ProgressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Input Data:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1" colspan="4">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="m_OutputSliceData"/>
     </item>
-    <item row="2" column="5">
+    <item row="2" column="6" colspan="2">
      <widget class="QCheckBox" name="m_InverseAvailable">
       <property name="text">
        <string>Inverse Available?</string>
@@ -122,24 +94,17 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="4">
+    <item row="3" column="4" colspan="2">
      <widget class="QPushButton" name="m_TransformSliceButton">
       <property name="text">
        <string>Slice</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="5">
+    <item row="3" column="6" colspan="2">
      <widget class="QPushButton" name="m_HaltButton">
       <property name="text">
        <string>Halt</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="5">
-     <widget class="QCheckBox" name="m_Halting">
-      <property name="text">
-       <string>Halting?</string>
       </property>
      </widget>
     </item>
@@ -171,6 +136,78 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="6" colspan="2">
+     <widget class="QCheckBox" name="m_Halting">
+      <property name="text">
+       <string>Halting?</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="8">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Messages</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QTextEdit" name="m_OutputMessages">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Graph</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QwtPlot" name="m_CctwGraph"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="8">
+     <widget class="QLineEdit" name="m_CommandInput">
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="5">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>596</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="7" column="5" colspan="2">
+     <widget class="QLabel" name="m_ProgressLabel">
+      <property name="text">
+       <string>Progress</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="7">
+     <widget class="QProgressBar" name="m_ProgressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -179,7 +216,7 @@
      <x>0</x>
      <y>0</y>
      <width>855</width>
-     <height>22</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -282,6 +319,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
