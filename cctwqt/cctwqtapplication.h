@@ -23,6 +23,7 @@
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
 class QwtPlot;
+class QwtPlotCurve;
 
 class CctwqtApplication
 #ifdef NO_GUI
@@ -74,6 +75,7 @@ public slots:
 
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path, QwtPlot *graph);
+  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3);
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 

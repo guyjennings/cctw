@@ -5,6 +5,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include "qwt_plot_curve.h"
+#include "qwt_legend.h"
+#include "qwt_plot_panner.h"
+#include "qwt_plot_magnifier.h"
+#include "qwt_plot_zoomer.h"
+#include "qwt_symbol.h"
 
 CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -14,7 +20,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
   m_SetupSliceDialog(NULL),
-  m_TransformOneDialog(NULL)
+  m_TransformOneDialog(NULL),
+  m_Legend(NULL),
+  m_Panner(NULL),
+  m_Magnifier(NULL),
+  m_Zoomer(NULL)
 {
   ui->setupUi(this);
 
@@ -53,6 +63,29 @@ CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
+
+  qRegisterMetaType<QwtPlotCurve*>("QwtPlotCurve*");
+
+  m_Panner = new QwtPlotPanner(ui->m_CctwGraph->canvas());
+  m_Panner -> setMouseButton(Qt::MidButton);
+  m_Panner -> setEnabled(true);
+
+  m_Zoomer = new QwtPlotZoomer(QwtPlot::xBottom, QwtPlot::yLeft, ui->m_CctwGraph->canvas());
+  m_Zoomer -> setTrackerMode(QwtPicker::AlwaysOn);
+  m_Zoomer -> setMousePattern(QwtEventPattern::MouseSelect2,
+                              Qt::LeftButton, Qt::ControlModifier | Qt::ShiftModifier);
+  m_Zoomer -> setMousePattern(QwtEventPattern::MouseSelect3,
+                              Qt::LeftButton, Qt::ControlModifier);
+//  m_Zoomer -> setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+
+  m_Magnifier = new QwtPlotMagnifier(ui->m_CctwGraph->canvas());
+  m_Magnifier -> setMouseFactor(1.0);
+
+  m_Legend = new QwtLegend;
+  m_Legend -> setFrameStyle(QFrame::Box|QFrame::Sunken);
+//  m_Legend -> setItemMode(QwtLegend::CheckableItem);
+
+  ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
@@ -244,4 +277,33 @@ void CctwqtMainWindow::onProgressUpdate()
 
   ui->m_ProgressBar->setMaximum(lim);
   ui->m_ProgressBar->setValue(prog);
+}
+
+void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3)
+{
+  if (QThread::currentThread() != thread()) {
+    QMetaObject::invokeMethod(this, "plotCurves", Q_ARG(QwtPlotCurve*, c1), Q_ARG(QwtPlotCurve*, c2), Q_ARG(QwtPlotCurve*, c3));
+  } else {
+    c1->setBrush(QBrush(Qt::red));
+    c1->setStyle(QwtPlotCurve::NoCurve);
+    c1->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::red),QPen(Qt::red),QSize(3,3)));
+
+    c2->setBrush(QBrush(Qt::blue));
+    c2->setStyle(QwtPlotCurve::NoCurve);
+    c2->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::blue),QPen(Qt::blue),QSize(3,3)));
+
+    c3->setBrush(QBrush(Qt::green));
+    c3->setStyle(QwtPlotCurve::NoCurve);
+    c3->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::green),QPen(Qt::green),QSize(3,3)));
+
+    c1 -> attach(ui->m_CctwGraph);
+    c2 -> attach(ui->m_CctwGraph);
+    c3 -> attach(ui->m_CctwGraph);
+
+    ui->m_CctwGraph -> setAxisAutoScale(QwtPlot::xBottom);
+    ui->m_CctwGraph -> setAxisAutoScale(QwtPlot::yLeft);
+    ui->m_CctwGraph -> setAxisAutoScale(QwtPlot::yRight);
+
+    m_Zoomer->setZoomBase();
+  }
 }

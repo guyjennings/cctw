@@ -16,6 +16,11 @@ class CctwqtMainWindow;
 }
 
 class CctwqtApplication;
+class QwtPlotCurve;
+class QwtLegend;
+class QwtPlotPanner;
+class QwtPlotMagnifier;
+class QwtPlotZoomer;
 
 class CctwqtMainWindow : public QMainWindow
 {
@@ -45,6 +50,7 @@ public slots:
   void doAnalyzePEMetaData();
   void doAnalyzeSpecDataFile();
   void possiblyClose();
+  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3);
 
 private:
   bool wantToClose();
@@ -64,6 +70,10 @@ private:
 //  CctwqtSetupTransformDialog  *m_SetupTransformDialog;
 //  CctwqtSetupSliceDialog      *m_SetupSliceDialog;
 //  CctwqtTransformOneDialog    *m_TransformOneDialog;
+  QwtLegend                     *m_Legend;
+  QwtPlotPanner                 *m_Panner;
+  QwtPlotMagnifier              *m_Magnifier;
+  QwtPlotZoomer                 *m_Zoomer;
 };
 
 #endif // CCTWQTMAINWINDOW_H

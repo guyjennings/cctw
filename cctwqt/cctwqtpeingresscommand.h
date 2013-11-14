@@ -18,6 +18,9 @@ public slots:
   void analyzeSpecDataFile(QString path, QwtPlot *graph);
 
 private:
+  double normalizedValue(double v);
+
+private:
   CctwqtApplication *m_Application;
 };
 

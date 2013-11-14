@@ -1090,3 +1090,12 @@ void CctwqtApplication::analyzeSpecDataFile(QString path, QwtPlot *graph)
 
   QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path, graph);
 }
+
+void CctwqtApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3)
+{
+#ifndef NO_GUI
+  if (m_Window) {
+    m_Window->plotCurves(c1, c2, c3);
+  }
+#endif
+}
