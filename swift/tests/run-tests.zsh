@@ -7,6 +7,12 @@ print
 
 PROCS=$(( TURBINE_WORKERS + 2 ))
 
+if [[ -z ${TURBINE_USER_LIB} ]]
+then
+  print "Set TURBINE_USER_LIB to the directory containing pkgIndex.tcl"
+  exit 1
+fi
+
 @()
 # Verbose operation
 {
