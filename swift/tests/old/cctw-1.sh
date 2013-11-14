@@ -8,5 +8,5 @@ CCTW_SWIFT_PKG=$(/bin/pwd)
 
 cd tests
 
-stc -I $CCTW_SWIFT_PKG -r $CCTW_SWIFT_PKG cctw-1.swift cctw-1.tcl
+stc -I $CCTW_SWIFT_PKG -r $CCTW_SWIFT_PKG cctw-1.swift
 turbine cctw-1.tcl
