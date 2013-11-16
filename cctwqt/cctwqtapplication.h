@@ -75,7 +75,7 @@ public slots:
 
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path, QwtPlot *graph);
-  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3);
+  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 

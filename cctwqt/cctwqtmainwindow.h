@@ -50,7 +50,7 @@ public slots:
   void doAnalyzePEMetaData();
   void doAnalyzeSpecDataFile();
   void possiblyClose();
-  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3);
+  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 
 private:
   bool wantToClose();

@@ -279,10 +279,15 @@ void CctwqtMainWindow::onProgressUpdate()
   ui->m_ProgressBar->setValue(prog);
 }
 
-void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3)
+void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4)
 {
   if (QThread::currentThread() != thread()) {
-    QMetaObject::invokeMethod(this, "plotCurves", Q_ARG(QwtPlotCurve*, c1), Q_ARG(QwtPlotCurve*, c2), Q_ARG(QwtPlotCurve*, c3));
+    QMetaObject::invokeMethod(this,
+                              "plotCurves",
+                              Q_ARG(QwtPlotCurve*, c1),
+                              Q_ARG(QwtPlotCurve*, c2),
+                              Q_ARG(QwtPlotCurve*, c3),
+                              Q_ARG(QwtPlotCurve*, c4));
   } else {
     c1->setBrush(QBrush(Qt::red));
     c1->setStyle(QwtPlotCurve::NoCurve);
@@ -296,9 +301,14 @@ void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCur
     c3->setStyle(QwtPlotCurve::NoCurve);
     c3->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::green),QPen(Qt::green),QSize(3,3)));
 
+    c4->setBrush(QBrush(Qt::black));
+    c4->setStyle(QwtPlotCurve::NoCurve);
+    c4->setSymbol(new QwtSymbol(QwtSymbol::Rect,QBrush(Qt::black),QPen(Qt::black),QSize(3,3)));
+
     c1 -> attach(ui->m_CctwGraph);
     c2 -> attach(ui->m_CctwGraph);
     c3 -> attach(ui->m_CctwGraph);
+    c4 -> attach(ui->m_CctwGraph);
 
     ui->m_CctwGraph -> setAxisAutoScale(QwtPlot::xBottom);
     ui->m_CctwGraph -> setAxisAutoScale(QwtPlot::yLeft);

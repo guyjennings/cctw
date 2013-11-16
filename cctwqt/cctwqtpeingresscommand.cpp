@@ -27,13 +27,13 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
 
   QFile file(path);
 
-  QVector<double> xData, y1Data, y2Data, y3Data;
+  QVector<double> xData, y1Data, y2Data, y3Data, y4Data;
 
   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     QSharedPointer<CctwqtLinearFitter> fit1(new CctwqtLinearFitter());
     QSharedPointer<CctwqtLinearFitter> fit2(new CctwqtLinearFitter());
     QSharedPointer<CctwqtLinearFitter> fit3(new CctwqtLinearFitter());
-//    QSharedPointer<CctwqtLinearFitter> fit4(new CctwqtLinearFitter());
+    QSharedPointer<CctwqtLinearFitter> fit4(new CctwqtLinearFitter());
 
     int ncols = 0;
     int line1 = true;
@@ -54,6 +54,7 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
             fit1->performFit(10, 80);
             fit2->performFit(10, 80);
             fit3->performFit(10, 80);
+            fit4->performFit(10, 80);
             printLine(tr("%1  %2  %3 %4 %5, %6 %7 %8")
                       .arg(rowNum)
                       .arg(scanNumber, 6)
@@ -66,7 +67,11 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
                       tr(", %1 %2 %3")
                       .arg(fit3->slope(), 20, 'f', 14)
                       .arg(fit3->intercept(), 20, 'f', 14)
-                      .arg(fit3->rSquared(), 20, 'f', 14));
+                      .arg(fit3->rSquared(), 20, 'f', 14) +
+                      tr(", %1 %2 %3")
+                      .arg(fit4->slope(), 20, 'f', 14)
+                      .arg(fit4->intercept(), 20, 'f', 14)
+                      .arg(fit4->rSquared(), 20, 'f', 14));
             //          printLine(tr("Scan %1, cmd %2").arg(scanRE.cap(1)).arg(scanRE.cap(2)));
             //          fit2->performFit(10, 10);
             //          fit3->performFit(10, 10);
@@ -76,6 +81,7 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
             y1Data.append(normalizedValue(fit1->slope()));
             y2Data.append(normalizedValue(fit2->slope()));
             y3Data.append(normalizedValue(fit3->slope()));
+            y4Data.append(normalizedValue(fit4->slope()));
           }
 
           scanNumber = scanRE.cap(1).toInt();
@@ -116,16 +122,21 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
           double x3 = fields[1].toDouble()/* + fields[2].toDouble()*/;
           double y3 = fields[3].toDouble();
 
+          double x4 = fields[3].toDouble();
+          double y4 = fields[0].toDouble();
+
           if (line1) {
             line1 = false;
             fit1->startNewFit();
             fit2->startNewFit();
             fit3->startNewFit();
+            fit4->startNewFit();
           }
 
           fit1->appendPoint(x1, y1);
           fit2->appendPoint(x2, y2);
           fit3->appendPoint(x3, y3);
+          fit4->appendPoint(x4, y4);
         }
       }
     }
@@ -145,7 +156,11 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
 
     pc3->setSamples(xData, y3Data);
 
-    m_Application->plotCurves(pc1, pc2, pc3);
+    QwtPlotCurve *pc4 = new QwtPlotCurve("auxth vs index");
+
+    pc4->setSamples(xData, y4Data);
+
+    m_Application->plotCurves(pc1, pc2, pc3, pc4);
 //    pc1->attach(graph);
 
 //    graph -> setAxisAutoScale(QwtPlot::xBottom);
