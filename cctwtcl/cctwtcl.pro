@@ -52,7 +52,8 @@ HEADERS += \
 SOURCES += \
     cctwtcl.cpp \
     cctwtcl_commands.cpp \
-    cctwtcltiff.cpp
+    cctwtcltiff.cpp \
+    cctw-dummies.cpp
 
 OTHER_FILES += \
     cctwtcltest.tcl
