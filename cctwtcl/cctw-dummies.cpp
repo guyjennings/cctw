@@ -44,14 +44,18 @@ bool forward_transform(int max_i, int max_j, int max_k,
   for (int i = 0; i < count; i++)
   {
     output_entry* entry = (output_entry*) malloc(sizeof(output_entry));
-    random_indices(&entry->i, &entry->j, &entry->k);
+    random_indices(max_i, max_j, max_k,
+                   &entry->i, &entry->j, &entry->k);
     entry->intensity_count = 10;
-    entry->intensity = calloc(entry->intensity_count, sizeof(double));
+    entry->intensity =
+        (double*) calloc(entry->intensity_count, sizeof(double));
     entry->weight_count = 10;
-    entry->weight = calloc(entry->weight_count, sizeof(double));
+    entry->weight =
+        (double*) calloc(entry->weight_count, sizeof(double));
     output[i] = entry;
   }
   *output_count = count;
+  return true;
 }
 
 static void random_indices(int max_i, int max_j, int max_k,
