@@ -1,10 +1,13 @@
+
+# USAGE: Set TCL=/path/to/tcl to override default Tcl installation
+
 TARGET = CctwTcl
 TEMPLATE = lib
 CONFIG += uitools debug
 
 include("../cctw.pri")
 
-QT += concurrent core gui network script widgets opengl svg
+QT += concurrent core gui network script widgets opengl printsupport svg
 
 target.path=$$prefix/lib
 INSTALLS += target
@@ -34,10 +37,10 @@ include("../cctwqt/qceplib-code/qwt-6.1.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")
 
-exists($(HOME)/sfw/tcl-8.6.0/include) {
-    INCLUDEPATH += $(HOME)/sfw/tcl-8.6.0/include
-
-    LIBS += -L$(HOME)/sfw/tcl-8.6.0/lib -ltcl8.6
+defined(TCL,var) {
+    message("using TCL: $${TCL}")
+    INCLUDEPATH += $${TCL}/include
+    LIBS += -L$${TCL}/lib -ltcl8.6
 } else {
     LIBS += -ltcl
 }
