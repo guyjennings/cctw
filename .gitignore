@@ -11,6 +11,7 @@ adlb.clog2
 ui_*.h
 moc
 cctw
+cctwqt/cctwqt
 cctwtcl/libCctwTcl.so*
 cctwtcl/pkgIndex.tcl
 *.tif
