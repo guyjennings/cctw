@@ -4,6 +4,8 @@
 
 #include "cctw-dummies.h"
 
+#define UNUSED __attribute__((unused))
+
 static bool initialized;
 
 static unsigned int seedp;
@@ -31,17 +33,39 @@ output_entry** allocate_output_entries(int count)
   return result;
 }
 
+bool read_hdf_fragment(UNUSED const char* filename,
+                       void** output, int* output_length)
+{
+  int count = 1024;
+  int length = count * sizeof(double);
+  *output = calloc(count, sizeof(double));
+  *output_length = length;
+  return true;
+}
+
+bool unpack_fragment(void* fragment, UNUSED void* fragment_length,
+                     double** intensity, int* intensity_count,
+                     double** weight, int* weight_count)
+{
+  double* p = (double*) fragment;
+  *intensity = p + 0;
+  *weight = p + 512;
+  *intensity_count = 512;
+  *weight_count = 512;
+  return true;
+}
+
 static void random_indices(int max_i, int max_j, int max_k,
                            int* i, int* j, int* k);
 
 bool forward_transform(int max_i, int max_j, int max_k,
-                       int i, int j, int k,
-                       double* intensity, int intensity_count,
-                       double* weight, int weight_count,
+                       UNUSED int i, UNUSED int j, UNUSED int k,
+                       UNUSED double* intensity, int UNUSED intensity_count,
+                       UNUSED double* weight, UNUSED int weight_count,
                        output_entry** output, int* output_count)
 {
   int count = random_output_count();
-  for (int i = 0; i < count; i++)
+  for (int c = 0; c < count; c++)
   {
     output_entry* entry = (output_entry*) malloc(sizeof(output_entry));
     random_indices(max_i, max_j, max_k,
@@ -52,7 +76,7 @@ bool forward_transform(int max_i, int max_j, int max_k,
     entry->weight_count = 10;
     entry->weight =
         (double*) calloc(entry->weight_count, sizeof(double));
-    output[i] = entry;
+    output[c] = entry;
   }
   *output_count = count;
   return true;
