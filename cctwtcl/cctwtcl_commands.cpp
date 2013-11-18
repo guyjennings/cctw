@@ -46,10 +46,22 @@ int Cctwtcl_Cmd             (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-//int Cctwtcl_Parameters_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
-//{
-//  return TCL_OK;
-//}
+int Cctwtcl_Count_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  if (objc != 1) {
+    Tcl_SetResult(interp, "No parameters expected: usage: cctw_count", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->inputChunkCount()));
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->outputChunkCount()));
+
+    Tcl_SetObjResult(interp, res);
+  }
+
+  return TCL_OK;
+}
 
 int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
@@ -100,119 +112,251 @@ int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_ERROR;
 }
 
-static CctwqtDataChunk* Cctwtcl_Input_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, Tcl_Obj *obj)
+int Cctwtcl_Input_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  int       objc;
-  Tcl_Obj** objv;
+  // cctw_input <input_chunk_id> <input_data_path> --> <input_data_blob>
+  // Read a blob of input data from the file system, perform any masking and normalization needed
+  // returns a triple { <blobid> <length> <blob> }
 
-  if (Tcl_ListObjGetElements(interp, obj, &objc, &objv) == TCL_OK) {
-    int     chunkNumber = 0;
-    double *data = NULL;
-    double *weight = NULL;
-    int     dataSize = 0;
-    int     weightSize = 0;
-
-    switch (objc) {
-    case 5: // {chunkid datachunk size weightchunk wtsize}
-    {
-      long w;
-
-      if (Tcl_GetLongFromObj(interp, objv[3], &w) == TCL_OK &&
-          Tcl_GetIntFromObj(interp, objv[4], &weightSize) == TCL_OK) {
-        weight = (double*) w;
-      } else {
-        Tcl_SetResult(interp, "Bad input weight", TCL_STATIC);
-        return NULL;
-      }
-    }     // drop through to handle first 3 args
-
-    case 3: // {chunkid datachunk size}
-    {
-      long d;
-
-      if (Tcl_GetLongFromObj(interp, objv[1], &d) == TCL_OK &&
-          Tcl_GetIntFromObj(interp, objv[2], &dataSize) == TCL_OK) {
-        data = (double*) d;
-      } else {
-        Tcl_SetResult(interp, "Bad inpyut data", TCL_STATIC);
-        return NULL;
-      }
-
-      if (Tcl_GetIntFromObj(interp, objv[0], &chunkNumber)) {
-        return g_Application->newInputChunk(chunkNumber, data, dataSize, weight, weightSize);
-      } else {
-        Tcl_SetResult(interp, "Bad input chunk number", TCL_STATIC);
-      }
-    }
-      break;
-
-    default:
-      Tcl_SetResult(interp, "Bad input data chunk", TCL_STATIC);
-      return NULL;
-    }
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_input <chunkid> <input_path>", TCL_STATIC);
+    return TCL_ERROR;
   } else {
-    Tcl_SetResult(interp, "Bad input data chunk argument", TCL_STATIC);
-    return NULL;
+    int chunkId = -1;
+    char *path  = NULL;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    path  = Tcl_GetString(objv[2]);
+
+    if (path==NULL) {
+      return TCL_ERROR;
+    }
+
+    CctwInputDataBlob* blob = g_Application->input(chunkId, path);
+
+    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(blob->blobID()));
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewLongObj((long) blob));
+
+    Tcl_SetObjResult(interp, res);
   }
-}
 
-static CctwqtDataChunk* Cctwtcl_Intermediate_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, const Tcl_Obj *obj)
-{
-}
-
-static CctwqtDataChunk* Cctwtcl_Output_Chunk_Argument(ClientData clientData, Tcl_Interp *interp, const Tcl_Obj *obj)
-{
+  return TCL_OK;
 }
 
 int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
+  // cctw_transform <input_chunk_id> <input_data_blob>  --> a list of <ouput_chunk_id> <intermediate_blob> pairs
+  // Transform a blob of input data into a list of intermediate blobs
+  // returns a list of triples { { <blobid> <length> <blob> }... }
+
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_transform <chunkid> <inputchunk>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long chunkP = 0;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwInputDataBlob *blob = (CctwInputDataBlob*) chunkP;
+
+    QList<CctwIntermediateDataBlob*> res = g_Application->transform(chunkId, blob);
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    foreach(CctwIntermediateDataBlob* blob, res) {
+      Tcl_Obj *item = Tcl_NewListObj(0, NULL);
+
+      Tcl_ListObjAppendElement(interp, item, Tcl_NewIntObj(blob->blobID()));
+      Tcl_ListObjAppendElement(interp, item, Tcl_NewIntObj(blob->blobLength()));
+      Tcl_ListObjAppendElement(interp, item, Tcl_NewLongObj((long) blob));
+
+      Tcl_ListObjAppendElement(interp, result, item);
+    }
+
+    Tcl_SetObjResult(interp, result);
+  }
+
   return TCL_OK;
 }
 
 int Cctwtcl_Merge_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
+  // cctw_merge <output_chunk_id> <intermediate_blob1> <intermediate_blob2> --> <intermediate_blob>
+  // add together two intermediate blobs (with the same chunk_id) into a new intermediate blob
+  // returns a triple { <chunkid> <length> <blob> }
+
+  if (objc != 4) {
+    Tcl_SetResult(interp, "Wrong number of parameters: usage: cctw_merge <chunkid> <blob1> <blob2>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long blob1P = 0, blob2P = 0;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &blob1P) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[3], &blob2P) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwIntermediateDataBlob *blob = g_Application->merge(chunkId, (CctwIntermediateDataBlob*) blob1P, (CctwIntermediateDataBlob*) blob2P);
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
+    Tcl_ListObjAppendElement(interp, result,  Tcl_NewIntObj(blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewLongObj((long) blob));
+
+    Tcl_SetObjResult(interp, result);
+  }
+
   return TCL_OK;
 }
 
 int Cctwtcl_Normalize_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
+  // cctw_normalize <output_chunk_id> <intermediate_blob> --> <output_blob>
+  // divide data by weight in an intermediate blob and produce an output blob
+  // returns a triple { <chunkid> <length> <blob> }
+
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of parameters: usage: cctw_normalize <chunkid> <blob>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long chunkP = 0;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwOutputDataBlob *blob = g_Application->normalize(chunkId, (CctwIntermediateDataBlob*) chunkP);
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
+    Tcl_ListObjAppendElement(interp, result,  Tcl_NewIntObj(blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewLongObj((long) blob));
+
+    Tcl_SetObjResult(interp, result);
+  }
+
   return TCL_OK;
 }
 
-int Cctwtcl_Chunk_Create_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Output_Cmd      (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  if (objc >= 2) {
-    int size;
-    if (Tcl_GetIntFromObj(interp, objv[1], &size) == TCL_OK) {
-      double *buff = new double[size];
+  // cctw_output <output_chunk_id> <output_data_path> <output_blob>
+  // write an output blob onto the file system
 
-      Tcl_SetObjResult(interp, Tcl_NewLongObj((long) buff));
+  if (objc != 4) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_output <chunkid> <path> <blob>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    char *path = NULL;
+    long chunkP = 0;
 
-      return TCL_OK;
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
     }
+
+    path = Tcl_GetString(objv[2]);
+
+    if (path == NULL) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[3], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    g_Application->output(chunkId, path, (CctwOutputDataBlob*) chunkP);
   }
 
-  return TCL_ERROR;
+  return TCL_OK;
 }
 
-
-int Cctwtcl_Chunk_Delete_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Delete_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  printf("objc = %d\n", objc);
+  // cctw_delete <chunkid> <blob>
+  // delete a blob
 
-  if (objc >= 2) {
-    long buff;
-    if (Tcl_GetLongFromObj(interp, objv[1], &buff) == TCL_OK) {
-      double *pbuff = (double*) buff;
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_delete <chunkid> <blob>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long chunkP = 0;
 
-      printf("Deleting %p\n", pbuff);
-
-      delete [] pbuff;
-
-      return TCL_OK;
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
     }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    g_Application->deleteBlob(chunkId, (CctwDataBlob*) chunkP);
   }
 
-  return TCL_ERROR;
+  return TCL_OK;
 }
 
+int Cctwtcl_Blob_Cmd        (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  // cctw_blob <chunkid> <blob>
+  // convert a blob into a tcl byte array object
+  // returns a triple { <chunkid> <length> <blob-bin>
+  // <blob-bin> may be used with the tcl binary command
+
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_blob <chunkid> <blob>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long chunkP = 0;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwDataBlob* blob = (CctwDataBlob*) chunkP;
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewByteArrayObj((const unsigned char*) blob, blob->blobLength()));
+
+    Tcl_SetObjResult(interp, result);
+  }
+
+  return TCL_OK;
+}

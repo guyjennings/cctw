@@ -19,6 +19,7 @@
 #include "qcepobjectnamer.h"
 #include "cctwtransformtest.h"
 #include "cctwqtpeingresscommand.h"
+#include "cctwdatablobs.h"
 
 class CctwqtMainWindow;
 class CctwqtScriptEngine;
@@ -112,6 +113,16 @@ public slots:
                  int       dataOutSize,
                  double*   weightOut,
                  int       weightOutSize);
+
+  CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
+  QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
+  CctwIntermediateDataBlob*         merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2);
+  CctwOutputDataBlob*               normalize (int chunkId, CctwIntermediateDataBlob *chunk);
+  void                              output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk);
+  void                              deleteBlob(int chunkId, CctwDataBlob *blob);
+
+  int inputChunkCount();
+  int outputChunkCount();
 
 public:
   QcepSettingsSaverWPtr saver() const;

@@ -25,7 +25,8 @@ SOURCES += \
     $${PWD}/cctwchunkindex.cpp \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
-    $${PWD}/cctwdatachunk.cpp
+    $${PWD}/cctwdatachunk.cpp \
+    $${PWD}/cctwdatablobs.cpp
 
 HEADERS += \
     $${PWD}/cctwinputdatainterface.h \
@@ -46,4 +47,5 @@ HEADERS += \
     $${PWD}/cctwchunkindex.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
-    $${PWD}/cctwdatachunk.h
+    $${PWD}/cctwdatachunk.h \
+    $${PWD}/cctwdatablobs.h
