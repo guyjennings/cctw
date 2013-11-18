@@ -9,6 +9,12 @@
 extern "C"
 int Cctwtcl_Init(Tcl_Interp *interp)
 {
+  if (sizeof(void*) > sizeof(long)) {
+    Tcl_SetResult(interp, "ERROR: Pointers are bigger than longs", TCL_STATIC);
+
+    return TCL_ERROR;
+  }
+
   if (Tcl_InitStubs(interp, "8.1", 0) == NULL) {
       return TCL_ERROR;
   }
