@@ -4,7 +4,7 @@
 #include "cctwdatachunk.h"
 #include <QVector>
 #include <QSharedPointer>
-#include "cctwqtdataframe.h"
+#include "cctwdataframe.h"
 #include "cctwqtchunkeddata.h"
 #include "cctwdataframemanager.h"
 #include <QMutex>
@@ -60,7 +60,7 @@ private:
 //  CctwIntVector3D                              m_ChunkIndex;
   CctwqtChunkedData                           *m_Data;
   CctwDataFrameManager                      *m_Manager;
-  QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;
+  QVector< QSharedPointer <CctwDataFrame> >  m_DataFrames;
   QVector< CctwIntVector3D >                   m_Dependencies;
   QMutex                                       m_DependenciesLock;
   QMutex                                       m_MergeLock;

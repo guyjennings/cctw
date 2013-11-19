@@ -5,7 +5,7 @@
 #include "cctwqtchunkeddata.h"
 #include <QVector>
 
-class CctwqtDataFrame;
+class CctwDataFrame;
 
 class CctwDataFrameManager : public CctwObject
 {
@@ -27,7 +27,7 @@ public slots:
 protected:
   QMutex                                 m_Mutex;
   CctwqtChunkedData                     *m_Data;
-  QVector<CctwqtDataFrame*>              m_Frames;
+  QVector<CctwDataFrame*>              m_Frames;
 };
 
 #endif // CCTWDATAFRAMEMANAGER_H

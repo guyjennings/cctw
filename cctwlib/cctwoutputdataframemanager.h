@@ -6,7 +6,7 @@
 #include "hdf5.h"
 //#include "napi.h"
 
-class CctwqtDataFrame;
+class CctwDataFrame;
 
 class CctwOutputDataFrameManager : public CctwDataFrameManager
 {

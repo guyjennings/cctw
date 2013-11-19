@@ -1,16 +1,16 @@
-#ifndef CCTWQTDATAFRAME_H
-#define CCTWQTDATAFRAME_H
+#ifndef CCTWDATAFRAME_H
+#define CCTWDATAFRAME_H
 
 #include "cctwobject.h"
 #include <QVector>
 #include <QAtomicInt>
 
-class CctwqtDataFrame : public CctwObject
+class CctwDataFrame : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataFrame(int dimx, int dimy, QObject *parent);
-  virtual ~CctwqtDataFrame();
+  explicit CctwDataFrame(int dimx, int dimy, QObject *parent);
+  virtual ~CctwDataFrame();
 
 signals:
   
@@ -29,4 +29,4 @@ private:
   QVector<double> m_Data;
 };
 
-#endif // CCTWQTDATAFRAME_H
+#endif // CCTWDATAFRAME_H

@@ -17,6 +17,7 @@ SOURCES += \
     $${PWD}/cctwunitcellproperty.cpp \
     $${PWD}/cctwinputdatainterface.cpp \
     $${PWD}/cctwoutputdatainterface.cpp \
+    $${PWD}/cctwdataframe.cpp \
     $${PWD}/cctwdataframemanager.cpp \
     $${PWD}/cctwinputdataframemanager.cpp \
     $${PWD}/cctwoutputdataframemanager.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     $${PWD}/cctwunitcellproperty.h \
     $${PWD}/cctwinputdatainterface.h \
     $${PWD}/cctwoutputdatainterface.h \
+    $${PWD}/cctwdataframe.h \
     $${PWD}/cctwdataframemanager.h \
     $${PWD}/cctwinputdataframemanager.h \
     $${PWD}/cctwoutputdataframemanager.h \

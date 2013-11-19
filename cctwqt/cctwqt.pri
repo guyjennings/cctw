@@ -11,7 +11,6 @@ SOURCES += \
     $${PWD}/cctwqttransformonedialog.cpp \
     $${PWD}/cctwqtsetupslicedialog.cpp \
     $${PWD}/cctwqtoutputslicedata.cpp \
-    $${PWD}/cctwqtdataframe.cpp \
     $${PWD}/cctwqtdatachunk.cpp \
     $${PWD}/cctwqttransformer.cpp \
     $${PWD}/cctwqtcrystalcoordinatetransform.cpp \
@@ -30,7 +29,6 @@ HEADERS += \
     $${PWD}/cctwqttransformonedialog.h \
     $${PWD}/cctwqtsetupslicedialog.h \
     $${PWD}/cctwqtoutputslicedata.h \
-    $${PWD}/cctwqtdataframe.h \
     $${PWD}/cctwqtdatachunk.h \
     $${PWD}/cctwqttransformer.h \
     $${PWD}/cctwqtcrystalcoordinatetransform.h \

@@ -3,7 +3,7 @@
 
 #include "cctwdataframemanager.h"
 
-class CctwqtDataFrame;
+class CctwDataFrame;
 
 class CctwInputDataFrameManager : public CctwDataFrameManager
 {

@@ -1,6 +1,6 @@
 #include "cctwinputdataframemanager.h"
 #include <QThread>
-#include "cctwqtdataframe.h"
+#include "cctwdataframe.h"
 #include "cctwchunkindex.h"
 #include "qcepmutexlocker.h"
 
@@ -24,7 +24,7 @@ int CctwInputDataFrameManager::loadChunk(int ckx, int cky, int ckz)
 
 //      CctwqtInputDataFrameManagerThread::msleep(100);
 
-      m_Frames[nz] = new CctwqtDataFrame(m_Data->dimensions().x(),
+      m_Frames[nz] = new CctwDataFrame(m_Data->dimensions().x(),
                                        m_Data->dimensions().y(),
                                        NULL);
 

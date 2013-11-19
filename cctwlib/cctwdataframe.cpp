@@ -1,7 +1,7 @@
-#include "cctwqtdataframe.h"
+#include "cctwdataframe.h"
 #include "qcepmutexlocker.h"
 
-CctwqtDataFrame::CctwqtDataFrame(int dimx, int dimy, QObject *parent) :
+CctwDataFrame::CctwDataFrame(int dimx, int dimy, QObject *parent) :
   CctwObject(parent),
   m_Counter(0),
   m_DimX(dimx),
@@ -11,11 +11,11 @@ CctwqtDataFrame::CctwqtDataFrame(int dimx, int dimy, QObject *parent) :
 {
 }
 
-CctwqtDataFrame::~CctwqtDataFrame()
+CctwDataFrame::~CctwDataFrame()
 {
 }
 
-int CctwqtDataFrame::reference()
+int CctwDataFrame::reference()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -24,21 +24,21 @@ int CctwqtDataFrame::reference()
   return m_Counter.fetchAndAddOrdered(1) + 1;
 }
 
-int CctwqtDataFrame::referenceCount()
+int CctwDataFrame::referenceCount()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Counter.fetchAndAddOrdered(0);
 }
 
-int CctwqtDataFrame::dereference()
+int CctwDataFrame::dereference()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Counter.fetchAndAddOrdered(-1) - 1;
 }
 
-QDateTime CctwqtDataFrame::lastReferenced()
+QDateTime CctwDataFrame::lastReferenced()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
