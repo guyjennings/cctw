@@ -1,10 +1,10 @@
-#include "cctwqtdoublematrix3x3property.h"
+#include "cctwdoublematrix3x3property.h"
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
 
-CctwqtDoubleMatrix3x3Property::CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
                                                              QObject *parent, const char *name,
                                                              CctwDoubleMatrix3x3 value, QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
@@ -13,7 +13,7 @@ CctwqtDoubleMatrix3x3Property::CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWP
 {
 }
 
-CctwqtDoubleMatrix3x3Property::CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
                                              double r0c0, double r0c1, double r0c2,
                                              double r1c0, double r1c1, double r1c2,
                                              double r2c0, double r2c1, double r2c2,
@@ -32,7 +32,7 @@ CctwqtDoubleMatrix3x3Property::CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWP
   m_Value = val;
 }
 
-void CctwqtDoubleMatrix3x3Property::registerMetaTypes()
+void CctwDoubleMatrix3x3Property::registerMetaTypes()
 {
   qRegisterMetaType< CctwDoubleMatrix3x3 >("CctwDoubleMatrix3x3");
 
@@ -41,21 +41,21 @@ void CctwqtDoubleMatrix3x3Property::registerMetaTypes()
   registerCustomSaver("CctwDoubleMatrix3x3", CctwMatrix3x3<double>::customSaver);
 }
 
-CctwDoubleMatrix3x3 CctwqtDoubleMatrix3x3Property::value() const
+CctwDoubleMatrix3x3 CctwDoubleMatrix3x3Property::value() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Value;
 }
 
-CctwDoubleMatrix3x3 CctwqtDoubleMatrix3x3Property::defaultValue() const
+CctwDoubleMatrix3x3 CctwDoubleMatrix3x3Property::defaultValue() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Default;
 }
 
-void CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val, int index)
+void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val, int index)
 {
   if (debug()) {
     printMessage(tr("%1 CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 %2, int %3) [%4]")
@@ -67,7 +67,7 @@ void CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val, int index)
   }
 }
 
-void CctwqtDoubleMatrix3x3Property::incValue(CctwDoubleMatrix3x3 step)
+void CctwDoubleMatrix3x3Property::incValue(CctwDoubleMatrix3x3 step)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -87,7 +87,7 @@ void CctwqtDoubleMatrix3x3Property::incValue(CctwDoubleMatrix3x3 step)
   emit valueChanged(m_Value, incIndex(1));
 }
 
-QString CctwqtDoubleMatrix3x3Property::toString(const CctwDoubleMatrix3x3 &val)
+QString CctwDoubleMatrix3x3Property::toString(const CctwDoubleMatrix3x3 &val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -106,7 +106,7 @@ QString CctwqtDoubleMatrix3x3Property::toString(const CctwDoubleMatrix3x3 &val)
   return res;
 }
 
-void CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
+void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -133,14 +133,14 @@ void CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
   }
 }
 
-void CctwqtDoubleMatrix3x3Property::setDefaultValue(CctwDoubleMatrix3x3 val)
+void CctwDoubleMatrix3x3Property::setDefaultValue(CctwDoubleMatrix3x3 val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   m_Default = val;
 }
 
-void CctwqtDoubleMatrix3x3Property::resetValue()
+void CctwDoubleMatrix3x3Property::resetValue()
 {
   if (qcepDebug(DEBUG_PROPERTIES)) {
     printMessage(tr("%1: CctwqtDoubleMatrix3x3Property::resetValue").arg(name()));
@@ -149,7 +149,7 @@ void CctwqtDoubleMatrix3x3Property::resetValue()
   setValue(defaultValue());
 }
 
-QScriptValue CctwqtDoubleMatrix3x3Property::toScriptValue(QScriptEngine *engine, const CctwDoubleMatrix3x3 &mat)
+QScriptValue CctwDoubleMatrix3x3Property::toScriptValue(QScriptEngine *engine, const CctwDoubleMatrix3x3 &mat)
 {
   QScriptValue obj = engine->newArray(3);
 
@@ -172,7 +172,7 @@ QScriptValue CctwqtDoubleMatrix3x3Property::toScriptValue(QScriptEngine *engine,
   return obj;
 }
 
-void CctwqtDoubleMatrix3x3Property::fromScriptValue(const QScriptValue &obj, CctwDoubleMatrix3x3 &mat)
+void CctwDoubleMatrix3x3Property::fromScriptValue(const QScriptValue &obj, CctwDoubleMatrix3x3 &mat)
 {
   for (int r=0; r<3; r++) {
     for (int c=0; c<3; c++) {

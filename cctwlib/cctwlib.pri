@@ -8,6 +8,10 @@ INCLUDEPATH += $${PWD}
 
 SOURCES += \
     $${PWD}/cctwobject.cpp \
+    $${PWD}/cctwintvector3dproperty.cpp \
+    $${PWD}/cctwdoublevector3dproperty.cpp \
+    $${PWD}/cctwdoublematrix3x3property.cpp \
+    $${PWD}/cctwunitcellproperty.cpp \
     $${PWD}/cctwinputdatainterface.cpp \
     $${PWD}/cctwoutputdatainterface.cpp \
     $${PWD}/cctwswiftinputdata.cpp \
@@ -32,6 +36,10 @@ SOURCES += \
 
 HEADERS += \
     $${PWD}/cctwobject.h \
+    $${PWD}/cctwintvector3dproperty.h \
+    $${PWD}/cctwdoublevector3dproperty.h \
+    $${PWD}/cctwdoublematrix3x3property.h \
+    $${PWD}/cctwunitcellproperty.h \
     $${PWD}/cctwinputdatainterface.h \
     $${PWD}/cctwoutputdatainterface.h \
     $${PWD}/cctwswiftinputdata.h \

@@ -1,20 +1,20 @@
-#ifndef CCTWQTUNITCELLPROPERTY_H
-#define CCTWQTUNITCELLPROPERTY_H
+#ifndef CCTWUNITCELLPROPERTY_H
+#define CCTWUNITCELLPROPERTY_H
 
 #include "qcepproperty.h"
 #include "cctwunitcell.h"
 
-class CctwqtUnitCellProperty : public QcepProperty
+class CctwUnitCellProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
+  explicit CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
                                   QObject *parent,
                                   const char *name,
                                   CctwUnitCell value,
                                   QString toolTip);
 
-  explicit CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
+  explicit CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
                                   QObject *parent,
                                   const char *name,
                                   double a, double b, double c,
@@ -43,7 +43,7 @@ private:
   CctwUnitCell m_Value;
 };
 
-#define CCTWQT_UNITCELL_PROPERTY(propname) \
+#define CCTW_UNITCELL_PROPERTY(propname) \
 public: \
 CctwUnitCell get_##propname() const \
 { \
@@ -70,12 +70,12 @@ void reset_##propname() \
   m_##propname.resetValue(); \
 } \
 \
-CctwqtUnitCellProperty *prop_##propname() { \
+CctwUnitCellProperty *prop_##propname() { \
   return &m_##propname; \
 } \
 \
 private: \
-CctwqtUnitCellProperty m_##propname;
+CctwUnitCellProperty m_##propname;
 
 #ifndef QT_NO_DATASTREAM
 

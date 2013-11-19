@@ -1,16 +1,16 @@
-#ifndef CCTWQTDOUBLEMATRIX3X3PROPERTY_H
-#define CCTWQTDOUBLEMATRIX3X3PROPERTY_H
+#ifndef CCTWDOUBLEMATRIX3X3PROPERTY_H
+#define CCTWDOUBLEMATRIX3X3PROPERTY_H
 
 #include "qcepproperty.h"
 #include "cctwmatrix3x3.h"
 
-class CctwqtDoubleMatrix3x3Property : public QcepProperty
+class CctwDoubleMatrix3x3Property : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
+  explicit CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
                                          CctwDoubleMatrix3x3 value, QString toolTip);
-  explicit CctwqtDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
+  explicit CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
                                          double r0c0, double r0c1, double r0c2,
                                          double r1c0, double r1c1, double r1c2,
                                          double r2c0, double r2c1, double r2c2,
@@ -39,7 +39,7 @@ private:
   CctwDoubleMatrix3x3 m_Value;
 };
 
-#define CCTWQT_DOUBLEMATRIX3X3_PROPERTY(propname) \
+#define CCTW_DOUBLEMATRIX3X3_PROPERTY(propname) \
 public: \
 CctwDoubleMatrix3x3 get_##propname() const \
 { \
@@ -66,12 +66,12 @@ void reset_##propname() \
   m_##propname.resetValue(); \
 } \
 \
-CctwqtDoubleMatrix3x3Property *prop_##propname() { \
+CctwDoubleMatrix3x3Property *prop_##propname() { \
   return &m_##propname; \
 } \
 \
 private: \
-CctwqtDoubleMatrix3x3Property m_##propname;
+CctwDoubleMatrix3x3Property m_##propname;
 
 #ifndef QT_NO_DATASTREAM
 
@@ -99,4 +99,4 @@ QDataStream &operator>>(QDataStream &stream, CctwMatrix3x3<T> &matrix)
 
 #endif
 
-#endif // CCTWQTDOUBLEMATRIX3X3PROPERTY_H
+#endif // CCTWDOUBLEMATRIX3X3PROPERTY_H

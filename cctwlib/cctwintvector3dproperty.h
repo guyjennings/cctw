@@ -1,16 +1,16 @@
-#ifndef CCTWQTINTVECTOR3DPROPERTY_H
-#define CCTWQTINTVECTOR3DPROPERTY_H
+#ifndef CCTWINTVECTOR3DPROPERTY_H
+#define CCTWINTVECTOR3DPROPERTY_H
 
 
 #include "qcepproperty.h"
 #include "cctwvector3d.h"
 
-class CctwqtIntVector3DProperty : public QcepProperty
+class CctwIntVector3DProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwqtIntVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwIntVector3D value, QString toolTip);
-  explicit CctwqtIntVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, int x, int y, int z, QString toolTip);
+  explicit CctwIntVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwIntVector3D value, QString toolTip);
+  explicit CctwIntVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, int x, int y, int z, QString toolTip);
 
   CctwIntVector3D value() const;
   CctwIntVector3D defaultValue() const;
@@ -35,7 +35,7 @@ private:
   CctwIntVector3D m_Value;
 };
 
-#define CCTWQT_INTVECTOR3D_PROPERTY(propname) \
+#define CCTW_INTVECTOR3D_PROPERTY(propname) \
 public: \
 CctwIntVector3D get_##propname() const \
 { \
@@ -62,12 +62,12 @@ void reset_##propname() \
   m_##propname.resetValue(); \
 } \
 \
-CctwqtIntVector3DProperty *prop_##propname() { \
+CctwIntVector3DProperty *prop_##propname() { \
   return &m_##propname; \
 } \
 \
 private: \
-CctwqtIntVector3DProperty m_##propname;
+CctwIntVector3DProperty m_##propname;
 
 #ifndef QT_NO_DATASTREAM
 
@@ -76,4 +76,4 @@ extern QDataStream &operator>>(QDataStream &stream, CctwIntVector3D &vec);
 
 #endif
 
-#endif // CCTWQTINTVECTOR3DPROPERTY_H
+#endif // CCTWINTVECTOR3DPROPERTY_H

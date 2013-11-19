@@ -12,7 +12,7 @@
 #include "qcepsettingssaver.h"
 #include <QtConcurrentRun>
 #include <QFile>
-#include "cctwqtintvector3dproperty.h"
+#include "cctwintvector3dproperty.h"
 #include "cctwqtthread.h"
 #include "cctwdatachunk.h"
 
@@ -61,10 +61,10 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file")
 {
   QcepProperty::registerMetaTypes();
-  CctwqtDoubleMatrix3x3Property::registerMetaTypes();
-  CctwqtDoubleVector3DProperty::registerMetaTypes();
-  CctwqtIntVector3DProperty::registerMetaTypes();
-  CctwqtUnitCellProperty::registerMetaTypes();
+  CctwDoubleMatrix3x3Property::registerMetaTypes();
+  CctwDoubleVector3DProperty::registerMetaTypes();
+  CctwIntVector3DProperty::registerMetaTypes();
+  CctwUnitCellProperty::registerMetaTypes();
 
   g_Saver = m_Saver;
 

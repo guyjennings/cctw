@@ -19,11 +19,7 @@ SOURCES += \
     $${PWD}/cctwqtdebug.cpp \
     $${PWD}/cctwqtchunkeddata.cpp \
     $${PWD}/cctwtransformtest.cpp \
-    $${PWD}/cctwqtdoublevector3dproperty.cpp \
-    $${PWD}/cctwqtdoublematrix3x3property.cpp \
-    $${PWD}/cctwqtunitcellproperty.cpp \
     $${PWD}/cctwqtcrystalcoordinateparameters.cpp \
-    $${PWD}/cctwqtintvector3dproperty.cpp \
     $${PWD}/cctwqtinputdataframemanager.cpp \
     $${PWD}/cctwqtoutputdataframemanager.cpp \
     $${PWD}/cctwqtdataframemanager.cpp \
@@ -49,11 +45,7 @@ HEADERS += \
     $${PWD}/cctwqtdebug.h \
     $${PWD}/cctwqtchunkeddata.h \
     $${PWD}/cctwtransformtest.h \
-    $${PWD}/cctwqtdoublevector3dproperty.h \
-    $${PWD}/cctwqtdoublematrix3x3property.h \
-    $${PWD}/cctwqtunitcellproperty.h \
     $${PWD}/cctwqtcrystalcoordinateparameters.h \
-    $${PWD}/cctwqtintvector3dproperty.h \
     $${PWD}/cctwqtinputdataframemanager.h \
     $${PWD}/cctwqtoutputdataframemanager.h \
     $${PWD}/cctwqtdataframemanager.h \

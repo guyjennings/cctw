@@ -1,6 +1,6 @@
 #include "cctwqtscriptengine.h"
 #include "cctwqtapplication.h"
-#include "cctwqtintvector3dproperty.h"
+#include "cctwintvector3dproperty.h"
 
 CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) :
   QScriptEngine(parent),
@@ -12,10 +12,10 @@ CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) 
   globalObject().setProperty("loadPreferences",  newFunction(loadPreferencesFunc));
   globalObject().setProperty("executeScriptFile",  newFunction(executeScriptFileFunc));
 
-  qScriptRegisterMetaType(this, CctwqtDoubleVector3DProperty::toScriptValue, CctwqtDoubleVector3DProperty::fromScriptValue);
-  qScriptRegisterMetaType(this, CctwqtIntVector3DProperty::toScriptValue, CctwqtIntVector3DProperty::fromScriptValue);
-  qScriptRegisterMetaType(this, CctwqtDoubleMatrix3x3Property::toScriptValue, CctwqtDoubleMatrix3x3Property::fromScriptValue);
-  qScriptRegisterMetaType(this, CctwqtUnitCellProperty::toScriptValue, CctwqtUnitCellProperty::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwDoubleVector3DProperty::toScriptValue, CctwDoubleVector3DProperty::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwIntVector3DProperty::toScriptValue, CctwIntVector3DProperty::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwDoubleMatrix3x3Property::toScriptValue, CctwDoubleMatrix3x3Property::fromScriptValue);
+  qScriptRegisterMetaType(this, CctwUnitCellProperty::toScriptValue, CctwUnitCellProperty::fromScriptValue);
 }
 
 CctwqtApplication* CctwqtScriptEngine::application() const

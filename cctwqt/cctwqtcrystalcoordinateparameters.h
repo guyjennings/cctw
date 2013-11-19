@@ -3,9 +3,9 @@
 
 #include "cctwobject.h"
 #include "cctwcrystalcoordinateparameters.h"
-#include "cctwqtunitcellproperty.h"
-#include "cctwqtdoublematrix3x3property.h"
-#include "cctwqtdoublevector3dproperty.h"
+#include "cctwunitcellproperty.h"
+#include "cctwdoublematrix3x3property.h"
+#include "cctwdoublevector3dproperty.h"
 
 class CctwqtApplication;
 

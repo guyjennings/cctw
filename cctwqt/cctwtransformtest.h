@@ -2,9 +2,9 @@
 #define CCTWTRANSFORMTEST_H
 
 #include "cctwobject.h"
-#include "cctwqtdoublematrix3x3property.h"
-#include "cctwqtdoublevector3dproperty.h"
-#include "cctwqtunitcellproperty.h"
+#include "cctwdoublematrix3x3property.h"
+#include "cctwdoublevector3dproperty.h"
+#include "cctwunitcellproperty.h"
 
 class CctwqtApplication;
 
@@ -53,13 +53,13 @@ private:
   QCEP_DOUBLE_PROPERTY(Distance)
 
   Q_PROPERTY(CctwUnitCell unitCell READ get_UnitCell WRITE set_UnitCell)
-  CCTWQT_UNITCELL_PROPERTY(UnitCell)
+  CCTW_UNITCELL_PROPERTY(UnitCell)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 ubMat READ get_UBMat WRITE set_UBMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(UBMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(UBMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 ubMatInv READ get_UBMatInv WRITE set_UBMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(UBMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(UBMatInv)
 
   Q_PROPERTY(double det0x READ get_Det0x WRITE set_Det0x)
   QCEP_DOUBLE_PROPERTY(Det0x)
@@ -68,7 +68,7 @@ private:
   QCEP_DOUBLE_PROPERTY(Det0y)
 
   Q_PROPERTY(CctwDoubleVector3D xtrans READ get_Xtrans WRITE set_Xtrans)
-  CCTWQT_DOUBLEVECTOR3D_PROPERTY(Xtrans)
+  CCTW_DOUBLEVECTOR3D_PROPERTY(Xtrans)
 
   Q_PROPERTY(double orientErrorDetPitch READ get_OrientErrorDetPitch WRITE set_OrientErrorDetPitch)
   QCEP_DOUBLE_PROPERTY(OrientErrorDetPitch)
@@ -122,52 +122,52 @@ private:
   QCEP_DOUBLE_PROPERTY(PhiAngle)
 
   Q_PROPERTY(CctwDoubleVector3D  gridOrigin READ get_GridOrigin WRITE set_GridOrigin)
-  CCTWQT_DOUBLEVECTOR3D_PROPERTY(GridOrigin)
+  CCTW_DOUBLEVECTOR3D_PROPERTY(GridOrigin)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 gridBasis READ get_GridBasis WRITE set_GridBasis)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(GridBasis)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(GridBasis)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 gridBasisInv READ get_GridBasisInv WRITE set_GridBasisInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(GridBasisInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(GridBasisInv)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 oMat READ get_OMat WRITE set_OMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(OMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(OMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 oMatInv READ get_OMatInv WRITE set_OMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(OMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(OMatInv)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 dMat READ get_DMat WRITE set_DMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(DMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(DMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 dMatInv READ get_DMatInv WRITE set_DMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(DMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(DMatInv)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 uMat READ get_UMat WRITE set_UMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(UMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(UMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 uMatInv READ get_UMatInv WRITE set_UMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(UMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(UMatInv)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 bMat READ get_BMat WRITE set_BMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(BMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(BMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 bMatInv READ get_BMatInv WRITE set_BMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(BMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(BMatInv)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 gMat READ get_GMat WRITE set_GMat)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(GMat)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(GMat)
 
   Q_PROPERTY(CctwDoubleMatrix3x3 gMatInv READ get_GMatInv WRITE set_GMatInv)
-  CCTWQT_DOUBLEMATRIX3X3_PROPERTY(GMatInv)
+  CCTW_DOUBLEMATRIX3X3_PROPERTY(GMatInv)
 
   Q_PROPERTY(CctwDoubleVector3D cD READ get_CD WRITE set_CD)
-  CCTWQT_DOUBLEVECTOR3D_PROPERTY(CD)
+  CCTW_DOUBLEVECTOR3D_PROPERTY(CD)
 
   Q_PROPERTY(CctwDoubleVector3D nD READ get_ND WRITE set_ND)
-  CCTWQT_DOUBLEVECTOR3D_PROPERTY(ND)
+  CCTW_DOUBLEVECTOR3D_PROPERTY(ND)
 
   Q_PROPERTY(CctwDoubleVector3D gridDim READ get_GridDim WRITE set_GridDim)
-  CCTWQT_DOUBLEVECTOR3D_PROPERTY(GridDim)
+  CCTW_DOUBLEVECTOR3D_PROPERTY(GridDim)
 };
 
 #endif // CCTWTRANSFORMTEST_H

@@ -1,10 +1,10 @@
-#include "cctwqtunitcellproperty.h"
+#include "cctwunitcellproperty.h"
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
 
-CctwqtUnitCellProperty::CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
+CctwUnitCellProperty::CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
     QObject *parent,
     const char *name,
     CctwUnitCell value,
@@ -15,7 +15,7 @@ CctwqtUnitCellProperty::CctwqtUnitCellProperty(QcepSettingsSaverWPtr saver,
 {
 }
 
-CctwqtUnitCellProperty::CctwqtUnitCellProperty(
+CctwUnitCellProperty::CctwUnitCellProperty(
     QcepSettingsSaverWPtr saver,
     QObject *parent,
     const char *name,
@@ -28,7 +28,7 @@ CctwqtUnitCellProperty::CctwqtUnitCellProperty(
 {
 }
 
-void CctwqtUnitCellProperty::registerMetaTypes()
+void CctwUnitCellProperty::registerMetaTypes()
 {
   qRegisterMetaType< CctwUnitCell >("CctwUnitCell");
 
@@ -37,21 +37,21 @@ void CctwqtUnitCellProperty::registerMetaTypes()
   registerCustomSaver("CctwUnitCell", CctwUnitCell::customSaver);
 }
 
-CctwUnitCell CctwqtUnitCellProperty::value() const
+CctwUnitCell CctwUnitCellProperty::value() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Value;
 }
 
-CctwUnitCell CctwqtUnitCellProperty::defaultValue() const
+CctwUnitCell CctwUnitCellProperty::defaultValue() const
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   return m_Default;
 }
 
-void CctwqtUnitCellProperty::setValue(CctwUnitCell val, int index)
+void CctwUnitCellProperty::setValue(CctwUnitCell val, int index)
 {
   if (debug()) {
     printMessage(tr("%1 CctwqtUnitCellProperty::setValue(CctwUnitCell %2, int %3) [%4]")
@@ -63,7 +63,7 @@ void CctwqtUnitCellProperty::setValue(CctwUnitCell val, int index)
   }
 }
 
-QString CctwqtUnitCellProperty::toString(const CctwUnitCell &val)
+QString CctwUnitCellProperty::toString(const CctwUnitCell &val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -73,7 +73,7 @@ QString CctwqtUnitCellProperty::toString(const CctwUnitCell &val)
   return res;
 }
 
-void CctwqtUnitCellProperty::setValue(CctwUnitCell val)
+void CctwUnitCellProperty::setValue(CctwUnitCell val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -100,14 +100,14 @@ void CctwqtUnitCellProperty::setValue(CctwUnitCell val)
   }
 }
 
-void CctwqtUnitCellProperty::setDefaultValue(CctwUnitCell val)
+void CctwUnitCellProperty::setDefaultValue(CctwUnitCell val)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
   m_Default = val;
 }
 
-void CctwqtUnitCellProperty::resetValue()
+void CctwUnitCellProperty::resetValue()
 {
   if (qcepDebug(DEBUG_PROPERTIES)) {
     printMessage(tr("%1: CctwqtUnitCellProperty::resetValue").arg(name()));
@@ -144,7 +144,7 @@ QDataStream &operator>>(QDataStream &stream, CctwUnitCell &cell)
 
 #endif
 
-QScriptValue CctwqtUnitCellProperty::toScriptValue(QScriptEngine *engine, const CctwUnitCell &cell)
+QScriptValue CctwUnitCellProperty::toScriptValue(QScriptEngine *engine, const CctwUnitCell &cell)
 {
   QScriptValue obj = engine->newArray(6);
 
@@ -158,7 +158,7 @@ QScriptValue CctwqtUnitCellProperty::toScriptValue(QScriptEngine *engine, const 
   return obj;
 }
 
-void CctwqtUnitCellProperty::fromScriptValue(const QScriptValue &obj, CctwUnitCell &cell)
+void CctwUnitCellProperty::fromScriptValue(const QScriptValue &obj, CctwUnitCell &cell)
 {
   cell.a() = obj.property(0).toNumber();
   cell.b() = obj.property(1).toNumber();
