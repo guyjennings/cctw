@@ -4,11 +4,11 @@
 #include <QScriptEngine>
 class CctwqtApplication;
 
-class CctwqtScriptEngine : public QScriptEngine
+class CctwScriptEngine : public QScriptEngine
 {
   Q_OBJECT
 public:
-  explicit CctwqtScriptEngine(CctwqtApplication *app, QObject *parent = 0);
+  explicit CctwScriptEngine(CctwqtApplication *app, QObject *parent = 0);
   
 signals:
   

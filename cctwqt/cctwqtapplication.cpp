@@ -6,7 +6,7 @@
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwtransformer.h"
 #include <QScriptValue>
-#include "cctwqtscriptengine.h"
+#include "cctwscriptengine.h"
 #include "qcepproperty.h"
 #include "cctwdebug.h"
 #include "qcepsettingssaver.h"
@@ -241,7 +241,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
 
   m_TransformTest    = new CctwTransformTest(this, this);
   m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
-  m_ScriptEngine     = new CctwqtScriptEngine(this, this);
+  m_ScriptEngine     = new CctwScriptEngine(this, this);
 
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));

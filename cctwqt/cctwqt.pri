@@ -5,7 +5,6 @@ SOURCES += \
     $${PWD}/cctwqtoutputdata.cpp \
     $${PWD}/cctwqtmainwindow.cpp \
     $${PWD}/cctwqtinputdata.cpp \
-    $${PWD}/cctwqtscriptengine.cpp \
     $${PWD}/cctwqtsetupinputdialog.cpp \
     $${PWD}/cctwqtsetupoutputdialog.cpp \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
@@ -29,7 +28,6 @@ HEADERS += \
     $${PWD}/cctwqtoutputdata.h \
     $${PWD}/cctwqtmainwindow.h \
     $${PWD}/cctwqtinputdata.h \
-    $${PWD}/cctwqtscriptengine.h \
     $${PWD}/cctwqtsetupinputdialog.h \
     $${PWD}/cctwqtsetupoutputdialog.h \
     $${PWD}/cctwqtsetuptransformdialog.h \

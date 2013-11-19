@@ -1,8 +1,8 @@
-#include "cctwqtscriptengine.h"
+#include "cctwscriptengine.h"
 #include "cctwqtapplication.h"
 #include "cctwintvector3dproperty.h"
 
-CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) :
+CctwScriptEngine::CctwScriptEngine(CctwqtApplication *app, QObject *parent) :
   QScriptEngine(parent),
   m_Application(app)
 {
@@ -18,14 +18,14 @@ CctwqtScriptEngine::CctwqtScriptEngine(CctwqtApplication *app, QObject *parent) 
   qScriptRegisterMetaType(this, CctwUnitCellProperty::toScriptValue, CctwUnitCellProperty::fromScriptValue);
 }
 
-CctwqtApplication* CctwqtScriptEngine::application() const
+CctwqtApplication* CctwScriptEngine::application() const
 {
   return m_Application;
 }
 
-QScriptValue CctwqtScriptEngine::printFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::printFunc(QScriptContext *context, QScriptEngine *engine)
 {
-  CctwqtScriptEngine *eng = qobject_cast<CctwqtScriptEngine*>(engine);
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 
   if (eng) {
     int nArgs = context->argumentCount();
@@ -49,9 +49,9 @@ QScriptValue CctwqtScriptEngine::printFunc(QScriptContext *context, QScriptEngin
   return QScriptValue(engine, "");
 }
 
-QScriptValue CctwqtScriptEngine::waitFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::waitFunc(QScriptContext *context, QScriptEngine *engine)
 {
-  CctwqtScriptEngine *eng = qobject_cast<CctwqtScriptEngine*>(engine);
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 
   if (eng) {
     int nArgs = context->argumentCount();
@@ -75,9 +75,9 @@ QScriptValue CctwqtScriptEngine::waitFunc(QScriptContext *context, QScriptEngine
   return QScriptValue(engine, "");
 }
 
-QScriptValue CctwqtScriptEngine::loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine)
 {
-  CctwqtScriptEngine *eng = qobject_cast<CctwqtScriptEngine*>(engine);
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 
   if (eng) {
     int nArgs = context->argumentCount();
@@ -101,9 +101,9 @@ QScriptValue CctwqtScriptEngine::loadPreferencesFunc(QScriptContext *context, QS
   return QScriptValue(engine, "");
 }
 
-QScriptValue CctwqtScriptEngine::executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine)
 {
-  CctwqtScriptEngine *eng = qobject_cast<CctwqtScriptEngine*>(engine);
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 
   if (eng) {
     int nArgs = context->argumentCount();

@@ -22,7 +22,7 @@
 #include "cctwdatablobs.h"
 
 class CctwqtMainWindow;
-class CctwqtScriptEngine;
+class CctwScriptEngine;
 class QwtPlot;
 class QwtPlotCurve;
 
@@ -157,7 +157,7 @@ public:
   CctwqtTransformer                  *m_Transformer;
   CctwqtCrystalCoordinateTransform   *m_SliceTransform;
   CctwqtTransformer                  *m_SliceTransformer;
-  CctwqtScriptEngine                 *m_ScriptEngine;
+  CctwScriptEngine                 *m_ScriptEngine;
   CctwTransformTest                  *m_TransformTest;
   CctwqtPEIngressCommand             *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
