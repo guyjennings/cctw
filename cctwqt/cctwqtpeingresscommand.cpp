@@ -1,6 +1,6 @@
 #include "cctwqtpeingresscommand.h"
 #include "cctwqtapplication.h"
-#include "cctwqtlinearfitter.h"
+#include "cctwlinearfitter.h"
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
 #include <QFile>
@@ -30,10 +30,10 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
   QVector<double> xData, y1Data, y2Data, y3Data, y4Data;
 
   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    QSharedPointer<CctwqtLinearFitter> fit1(new CctwqtLinearFitter());
-    QSharedPointer<CctwqtLinearFitter> fit2(new CctwqtLinearFitter());
-    QSharedPointer<CctwqtLinearFitter> fit3(new CctwqtLinearFitter());
-    QSharedPointer<CctwqtLinearFitter> fit4(new CctwqtLinearFitter());
+    QSharedPointer<CctwLinearFitter> fit1(new CctwLinearFitter());
+    QSharedPointer<CctwLinearFitter> fit2(new CctwLinearFitter());
+    QSharedPointer<CctwLinearFitter> fit3(new CctwLinearFitter());
+    QSharedPointer<CctwLinearFitter> fit4(new CctwLinearFitter());
 
     int ncols = 0;
     int line1 = true;

@@ -1,12 +1,12 @@
-#include "cctwqtlinearfitter.h"
+#include "cctwlinearfitter.h"
 
-CctwqtLinearFitter::CctwqtLinearFitter(QObject *parent) :
+CctwLinearFitter::CctwLinearFitter(QObject *parent) :
   CctwObject(parent)
 {
   startNewFit();
 }
 
-void CctwqtLinearFitter::startNewFit()
+void CctwLinearFitter::startNewFit()
 {
   m_XData.resize(0);
   m_YData.resize(0);
@@ -15,13 +15,13 @@ void CctwqtLinearFitter::startNewFit()
   m_RSquared = 0;
 }
 
-void CctwqtLinearFitter::appendPoint(double x, double y)
+void CctwLinearFitter::appendPoint(double x, double y)
 {
   m_XData.append(x);
   m_YData.append(y);
 }
 
-void CctwqtLinearFitter::performFit(int skipStart, int skipEnd)
+void CctwLinearFitter::performFit(int skipStart, int skipEnd)
 {
   int start = skipStart, end = m_XData.count()-skipEnd;
 
@@ -56,17 +56,17 @@ void CctwqtLinearFitter::performFit(int skipStart, int skipEnd)
   m_RSquared  = (ssxy*ssxy)/(ssxx*ssyy);
 }
 
-double CctwqtLinearFitter::slope()
+double CctwLinearFitter::slope()
 {
   return m_Slope;
 }
 
-double CctwqtLinearFitter::intercept()
+double CctwLinearFitter::intercept()
 {
   return m_Intercept;
 }
 
-double CctwqtLinearFitter::rSquared()
+double CctwLinearFitter::rSquared()
 {
   return m_RSquared;
 }

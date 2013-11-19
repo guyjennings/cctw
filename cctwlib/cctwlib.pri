@@ -27,6 +27,7 @@ SOURCES += \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
     $${PWD}/cctwdatachunk.cpp \
+    $${PWD}/cctwlinearfitter.cpp \
     $${PWD}/cctwdatablobs.cpp
 
 HEADERS += \
@@ -50,4 +51,5 @@ HEADERS += \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
     $${PWD}/cctwdatachunk.h \
+    $${PWD}/cctwlinearfitter.h \
     $${PWD}/cctwdatablobs.h

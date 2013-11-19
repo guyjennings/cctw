@@ -1,13 +1,13 @@
-#ifndef CCTWQTLINEARFITTER_H
-#define CCTWQTLINEARFITTER_H
+#ifndef CCTWLINEARFITTER_H
+#define CCTWLINEARFITTER_H
 
 #include "cctwobject.h"
 
-class CctwqtLinearFitter : public CctwObject
+class CctwLinearFitter : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtLinearFitter(QObject *parent = 0);
+  explicit CctwLinearFitter(QObject *parent = 0);
   
 signals:
   
@@ -27,4 +27,4 @@ private:
   double          m_RSquared;
 };
 
-#endif // CCTWQTLINEARFITTER_H
+#endif // CCTWLINEARFITTER_H
