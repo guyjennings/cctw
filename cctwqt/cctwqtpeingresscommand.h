@@ -15,7 +15,7 @@ public:
 public slots:
   void testSlot();
   void analyzePEMetaData(QString path);
-  void analyzeSpecDataFile(QString path, QwtPlot *graph);
+  void analyzeSpecDataFile(QString path);
 
 private:
   double normalizedValue(double v);

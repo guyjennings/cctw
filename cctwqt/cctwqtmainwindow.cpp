@@ -266,7 +266,7 @@ void CctwqtMainWindow::doAnalyzeSpecDataFile()
                                               m_Application->get_SpecDataFilePath());
 
   if (path.length()) {
-    m_Application->analyzeSpecDataFile(path, ui->m_CctwGraph);
+    m_Application->analyzeSpecDataFile(path);
   }
 }
 

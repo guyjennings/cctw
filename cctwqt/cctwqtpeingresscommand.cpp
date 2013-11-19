@@ -1,9 +1,14 @@
 #include "cctwqtpeingresscommand.h"
 #include "cctwqtapplication.h"
 #include "cctwlinearfitter.h"
+
+#ifndef NO_GUI
 #include "qwt_plot.h"
 #include "qwt_plot_curve.h"
+#endif
+
 #include <QFile>
+#include <math.h>
 
 CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent) :
   CctwObject(parent),
@@ -19,7 +24,7 @@ void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
 {
 }
 
-void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
+void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path)
 {
   m_Application->set_Halting(false);
 
@@ -142,32 +147,26 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path, QwtPlot *graph)
     }
   }
 
-  if (graph) {
-    QwtPlotCurve *pc1 = new QwtPlotCurve("auxth vs spec epoch");
+#ifndef NO_GUI
+  QwtPlotCurve *pc1 = new QwtPlotCurve("auxth vs spec epoch");
 
-    pc1->setSamples(xData, y1Data);
+  pc1->setSamples(xData, y1Data);
 
-    QwtPlotCurve *pc2 = new QwtPlotCurve("auxth vs det epoch");
+  QwtPlotCurve *pc2 = new QwtPlotCurve("auxth vs det epoch");
 
-    pc2->setSamples(xData, y2Data);
-//    pc1->attach(graph);
+  pc2->setSamples(xData, y2Data);
+  //    pc1->attach(graph);
 
-    QwtPlotCurve *pc3 = new QwtPlotCurve("index vs spec epoch");
+  QwtPlotCurve *pc3 = new QwtPlotCurve("index vs spec epoch");
 
-    pc3->setSamples(xData, y3Data);
+  pc3->setSamples(xData, y3Data);
 
-    QwtPlotCurve *pc4 = new QwtPlotCurve("auxth vs index");
+  QwtPlotCurve *pc4 = new QwtPlotCurve("auxth vs index");
 
-    pc4->setSamples(xData, y4Data);
+  pc4->setSamples(xData, y4Data);
 
-    m_Application->plotCurves(pc1, pc2, pc3, pc4);
-//    pc1->attach(graph);
-
-//    graph -> setAxisAutoScale(QwtPlot::xBottom);
-//    graph -> setAxisAutoScale(QwtPlot::yLeft);
-//    graph -> setAxisAutoScale(QwtPlot::yRight);
-//    graph -> replot();
-  }
+  m_Application->plotCurves(pc1, pc2, pc3, pc4);
+#endif
 }
 
 double CctwqtPEIngressCommand::normalizedValue(double v)
@@ -180,8 +179,10 @@ double CctwqtPEIngressCommand::normalizedValue(double v)
     r = r / 5.0;
   } else if (r > 0.8) {
 
-  } else {
+  } else if (r > 0.4) {
     r = r * 2;
+  } else {
+    r = r * 10;
   }
 
   return r;
