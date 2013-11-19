@@ -30,8 +30,8 @@ CctwTransformer::CctwTransformer(CctwInputDataInterface *input,
 {
   m_ChunksUsed = new int[m_ChunksTotal];
 
-  printf("CctwTransformer::CctwTransformer - Chunk Count : [%d,%d,%d], total %d\n",
-         m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(), m_ChunksTotal);
+//  printf("CctwTransformer::CctwTransformer - Chunk Count : [%d,%d,%d], total %d\n",
+//         m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(), m_ChunksTotal);
 }
 
 CctwTransformer::~CctwTransformer()
