@@ -38,7 +38,7 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
 
     QString valStr = val.toString();
 
-    printf("%s -> %s\n", cmd, qPrintable(valStr));
+//    printf("%s -> %s\n", cmd, qPrintable(valStr));
 
     Tcl_Obj *result = Tcl_NewStringObj(qPrintable(valStr), -1);
 
