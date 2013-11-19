@@ -228,15 +228,15 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
                                                               m_OutputSliceDataManager, this);
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, this);
-  m_Transformer      = new CctwqtTransformer(this,
+  m_Transformer      = new CctwTransformer(this,
                                              m_InputData,
                                              m_OutputData,
-                                             m_Transform, 1, 1, 1, this);
+                                             m_Transform, 1, 1, 1, 0, this);
   m_SliceTransform   = new CctwCrystalCoordinateTransform(m_Parameters, this);
-  m_SliceTransformer = new CctwqtTransformer(this,
+  m_SliceTransformer = new CctwTransformer(this,
                                              m_InputData,
                                              m_OutputSliceData,
-                                             m_SliceTransform, 1, 1, 1, this);
+                                             m_SliceTransform, 1, 1, 1, 0, this);
 
   m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
   m_ScriptEngine     = new CctwScriptEngine(this, this);

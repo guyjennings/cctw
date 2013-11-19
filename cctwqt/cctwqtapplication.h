@@ -11,7 +11,7 @@
 #include "cctwoutputslicedata.h"
 #include "cctwinputdataframemanager.h"
 #include "cctwoutputdataframemanager.h"
-#include "cctwqttransformer.h"
+#include "cctwtransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "qcepsettingssaver-ptr.h"
@@ -159,9 +159,9 @@ public:
   CctwOutputDataFrameManager         *m_OutputSliceDataManager;
   CctwOutputSliceData                *m_OutputSliceData;
   CctwCrystalCoordinateTransform     *m_Transform;
-  CctwqtTransformer                  *m_Transformer;
+  CctwTransformer                    *m_Transformer;
   CctwCrystalCoordinateTransform     *m_SliceTransform;
-  CctwqtTransformer                  *m_SliceTransformer;
+  CctwTransformer                    *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
   CctwqtPEIngressCommand             *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
