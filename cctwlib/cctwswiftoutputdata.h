@@ -3,31 +3,16 @@
 
 #include "cctwoutputdatainterface.h"
 
-#ifdef USE_QT
 class CctwSwiftOutputData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
   CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
                       CctwIntVector3D chunkSize,  // Chunk size
-//                      CctwDoubleVector3D origin,
-//                      CctwDoubleVector3D scale,
                       CctwqtOutputDataFrameManager *manager,
                       QObject *parent);
-#else
-class CctwSwiftOutputData : public CctwOutputDataInterface
-{
-public:
-  CctwSwiftOutputData(CctwIntVector3D dim,        // Data set dimension
-                      CctwIntVector3D chunkSize/*,  // Chunk size
-                      CctwDoubleVector3D origin,
-                      CctwDoubleVector3D scale*/);
-#endif
 
 public:
-//  static CctwSwiftOutputData* createNew(int argc, char *argv[]);
-//                                              // Allocate and return a swift output data object according to the command line passed
-//                                              // in argc and argv
 
   virtual int useChunk(int nx, int ny, int nz);
                                               // Indicate that we'll want to be using chunk number nx,ny,nz of the output data.

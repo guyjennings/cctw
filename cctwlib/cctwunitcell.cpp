@@ -133,8 +133,6 @@ bool CctwUnitCell::operator != (const CctwUnitCell &cell) const
       alpha()!=cell.alpha() || beta()!=cell.beta() || gamma()!=cell.gamma();
 }
 
-#ifdef USE_QT
-
 void CctwUnitCell::setSettingsValue(QSettings *settings, QString name)
 {
   settings->beginGroup(name);
@@ -155,6 +153,4 @@ void CctwUnitCell::customSaver(const QVariant &val, QSettings *settings, QString
 
   vec.setSettingsValue(settings, name);
 }
-
-#endif
 

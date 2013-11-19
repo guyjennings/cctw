@@ -1,15 +1,9 @@
 #include "cctwtransforminterface.h"
 
-#ifdef USE_QT
 CctwTransformInterface::CctwTransformInterface(QObject *parent) :
   CctwObject(parent)
 {
 }
-#else
-CctwTransformInterface::CctwTransformInterface()
-{
-}
-#endif
 
 CctwDoubleVector3D CctwTransformInterface::forward(double x, double y, double z)
 {

@@ -1,24 +1,9 @@
 #include "cctwoutputdatainterface.h"
 
-#ifdef USE_QT
-
 CctwOutputDataInterface::CctwOutputDataInterface(CctwIntVector3D dim,
                                                  CctwIntVector3D chunkSize,
-                                                 /*CctwDoubleVector3D origin,
-                                                 CctwDoubleVector3D scale, */CctwqtOutputDataFrameManager *manager,
+                                                 CctwqtOutputDataFrameManager *manager,
                                                  QObject *parent)
-  : CctwqtChunkedData(dim, chunkSize, /*origin, scale,*/ manager, parent)
+  : CctwqtChunkedData(dim, chunkSize, manager, parent)
 {
 }
-
-#else
-
-CctwOutputDataInterface::CctwOutputDataInterface(CctwIntVector3D dim,
-                                                 CctwIntVector3D chunkSize/*,
-                                                 CctwDoubleVector3D origin,
-                                                 CctwDoubleVector3D scale*/)
-  : CctwChunkedDataInterface(dim, chunkSize/*, origin, scale*/)
-{
-}
-
-#endif

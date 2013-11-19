@@ -2,8 +2,6 @@
 #include "cctwchunkeddatainterface.h"
 #include <stdio.h>
 
-#ifdef USE_QT
-
 CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index, QObject *parent) :
   CctwObject(parent),
   m_Data(data),
@@ -15,18 +13,6 @@ CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D ind
   m_WeightsWritten(0)
 {
 }
-
-#else
-
-CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index) :
-  m_Data(data),
-  m_ChunkIndex(index),
-  m_ChunkData(NULL),
-  m_ChunkWeights(NULL)
-{
-}
-
-#endif
 
 CctwDataChunk::~CctwDataChunk()
 {

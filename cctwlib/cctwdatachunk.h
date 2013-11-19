@@ -1,34 +1,21 @@
 #ifndef CCTWDATACHUNK_H
 #define CCTWDATACHUNK_H
 
+#include "cctwobject.h"
 #include "cctwvector3d.h"
 //#include "cctwchunkindex.h"
 class CctwChunkedDataInterface;
 
-#ifdef USE_QT
-#include "cctwobject.h"
-#endif
 
-#ifdef USE_QT
 class CctwDataChunk : public CctwObject
 {
   Q_OBJECT
 public:
   CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index, QObject *parent);
-#else
-class CctwDataChunk
-{
-public:
-  CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index);
-#endif
 
   virtual ~CctwDataChunk();
 
-#ifdef USE_QT
 public slots:
-#else
-public:
-#endif
 
   virtual int readData();
   virtual int readWeights();

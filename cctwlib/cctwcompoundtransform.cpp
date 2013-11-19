@@ -1,20 +1,11 @@
 #include "cctwcompoundtransform.h"
 
-#ifdef USE_QT
 CctwCompoundTransform::CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QObject *parent)
   : CctwTransformInterface(parent),
     m_Transform1(t1),
     m_Transform2(t2)
 {
 }
-#else
-CctwCompoundTransform::CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2)
-  : CctwTransformInterface(),
-    m_Transform1(t1),
-    m_Transform2(t2)
-{
-}
-#endif
 
 CctwDoubleVector3D CctwCompoundTransform::forward(CctwDoubleVector3D a)
 {

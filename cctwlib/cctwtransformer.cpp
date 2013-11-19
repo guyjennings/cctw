@@ -5,18 +5,11 @@
 #include <math.h>
 #include "cctwmatrix3x3.h"
 
-#ifdef USE_QT
 CctwTransformer::CctwTransformer(CctwInputDataInterface *input,
                                  CctwOutputDataInterface *output,
                                  CctwTransformInterface *xform,
                                  int osx, int osy, int osz, int nTests, QObject *parent) :
   CctwObject(parent),
-#else
-CctwTransformer::CctwTransformer(CctwInputDataInterface *input,
-                                 CctwOutputDataInterface *output,
-                                 CctwTransformInterface *xform,
-                                 int osx, int osy, int osz, int nTests) :
-#endif
     m_InputData(input),
     m_OutputData(output),
     m_Transform(xform),

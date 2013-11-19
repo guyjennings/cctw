@@ -1,26 +1,16 @@
 #ifndef CCTWCRYSTALCOORDINATEPARAMETERS_H
 #define CCTWCRYSTALCOORDINATEPARAMETERS_H
 
-#ifdef USE_QT
 #include "cctwobject.h"
-#endif
-
 #include "cctwvector3d.h"
 #include "cctwmatrix3x3.h"
 #include "cctwunitcell.h"
 
-#ifdef USE_QT
 class CctwCrystalCoordinateParameters : public CctwObject
 {
   Q_OBJECT
 public:
   CctwCrystalCoordinateParameters(QObject *parent);
-#else
-class CctwCrystalCoordinateParameters
-{
-public:
-  CctwCrystalCoordinateParameters();
-#endif
 
 public:
   double pixelSize() const { return m_PixelSize; }
@@ -123,7 +113,6 @@ private:
   CctwDoubleMatrix3x3 m_GridBasis;
   CctwDoubleVector3D  m_GridDim;
 
-#ifdef USE_QT
 public:
   Q_PROPERTY(double pixelSize                READ pixelSize    WRITE setPixelSize)
   Q_PROPERTY(double wavelength               READ wavelength   WRITE setWavelength)
@@ -157,7 +146,6 @@ public:
   Q_PROPERTY(CctwDoubleVector3D  gridOrigin  READ gridOrigin           WRITE setGridOrigin)
   Q_PROPERTY(CctwDoubleMatrix3x3 gridBasis   READ gridBasis            WRITE setGridBasis)
   Q_PROPERTY(CctwDoubleVector3D  gridDim     READ gridDim              WRITE setGridDim)
-#endif
 };
 
 #endif // CCTWCRYSTALCOORDINATEPARAMETERS_H

@@ -1,7 +1,6 @@
 #include "cctwcrystalcoordinatetransform.h"
 #include <cmath>
 
-#ifdef USE_QT
 CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent) :
   CctwTransformInterface(parent),
   m_Parms(parms),
@@ -11,17 +10,6 @@ CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordi
   updateFromParameters();
   setCurrentFrame(0.0);
 }
-#else
-CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms) :
-  CctwTransformInterface(),
-  m_Parms(parms),
-  m_CurrentFrame(-1),
-  m_CurrentFrameChangeCount(0)
-{
-  updateFromParameters();
-  setCurrentFrame(0.0);
-}
-#endif
 
 void CctwCrystalCoordinateTransform::updateFromParameters()
 {
@@ -121,11 +109,6 @@ bool CctwCrystalCoordinateTransform::hasInverse() const
 {
   return false;
 }
-
-//CctwCrystalCoordinateTransform *CctwCrystalCoordinateTransform::createNew(int argc, char *argv[])
-//{
-//  return new CctwCrystalCoordinateTransform();
-//}
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::forward(CctwDoubleVector3D a)
 {

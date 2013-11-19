@@ -5,30 +5,13 @@
 #include "cctwmatrix3x3.h"
 #include "cctwcrystalcoordinateparameters.h"
 
-#ifdef USE_QT
-#include "cctwobject.h"
-#endif
-
 class CctwCrystalCoordinateTransform : public CctwTransformInterface
 {
-#ifdef USE_QT
   Q_OBJECT
 public:
   CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
-#else
-public:
-  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms);
-#endif
 
-#ifdef USE_QT
 public slots:
-#else
-public:
-#endif
-
-//  static CctwCrystalCoordinateTransform* createNew(int argc, char *argv[]);
-//                                          // Allocate and return a new crystal coordinate transformation object
-//                                          // based on the command line parameters passed in argc and argv
 
   virtual bool hasInverse() const;
 

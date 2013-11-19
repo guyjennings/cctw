@@ -3,32 +3,16 @@
 
 #include "cctwinputdatainterface.h"
 
-#ifdef USE_QT
 class CctwSwiftInputData : public CctwInputDataInterface
 {
   Q_OBJECT
 public:
   CctwSwiftInputData(CctwIntVector3D dim,        // Data set dimension
                      CctwIntVector3D chunkSize,  // Chunk size
-//                     CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
-//                     CctwDoubleVector3D scale,   // Real offset of pixel 1,1,1
                      CctwqtInputDataFrameManager *manager,
                      QObject *parent);
-#else
-class CctwSwiftInputData : public CctwInputDataInterface
-{
-public:
-  CctwSwiftInputData(CctwIntVector3D dim,        // Data set dimension
-                     CctwIntVector3D chunkSize/*,  // Chunk size
-                     CctwDoubleVector3D origin,  // Real coords of pixel 0,0,0
-                     CctwDoubleVector3D scale*/);  // Real offset of pixel 1,1,1
-
-#endif
 
 public:
-//  static CctwSwiftInputData *createNew(int argc, char *argv[]);
-//                                              // Allocate and return a swift input data object according to the command line passed
-//                                              // in argc and argv
 
   virtual int useChunk(int nx, int ny, int nz);
                                               // Indicate that we'll want to be using chunk number nx,ny,nz of the input data.

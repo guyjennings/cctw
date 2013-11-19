@@ -5,19 +5,11 @@
 
 class CctwRotationTransform : public CctwTransformInterface
 {
-#ifdef USE_QT
   Q_OBJECT
 public:
   CctwRotationTransform(QObject *parent);
-#else
-public:
-  CctwRotationTransform();
-#endif
 
 public:
-//  static CctwRotationTransform* createNew(int argc, char *argv[]);
-//                                          // Allocate and return a new rotation transformation object
-//                                          // based on the command line parameters passed in argc and argv
 
   virtual bool hasInverse() const;
 

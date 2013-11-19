@@ -324,8 +324,6 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::identity()
   return CctwMatrix3x3<T>(1,0,0, 0,1,0, 0,0,1);
 }
 
-#ifdef USE_QT
-
 template <typename T>
 void CctwMatrix3x3<T>::setSettingsValue(QSettings *settings, QString name)
 {
@@ -355,8 +353,6 @@ void CctwMatrix3x3<int>::customSaver(const QVariant &val, QSettings *settings, Q
 
   mat.setSettingsValue(settings, name);
 }
-
-#endif
 
 template class CctwMatrix3x3<int>;
 template class CctwMatrix3x3<double>;

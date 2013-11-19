@@ -14,7 +14,6 @@ TARGET       = cctwqt
 
 INCLUDEPATH += . ../cctwlib/
 
-DEFINES     += USE_QT
 DEFINES     += CCTW_VERSION=\"$$VERSION\"
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets concurrent

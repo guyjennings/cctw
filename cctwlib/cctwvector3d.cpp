@@ -261,8 +261,6 @@ CctwVector3D<T> CctwVector3D<T>::normal(const CctwVector3D<T> &v1, const CctwVec
   return crossProduct(v1, v2).normalized();
 }
 
-#ifdef USE_QT
-
 template <typename T>
 void CctwVector3D<T>::setSettingsValue(QSettings *settings, QString name)
 {
@@ -290,8 +288,6 @@ void CctwVector3D<double>::customSaver(const QVariant &val, QSettings *settings,
 
   vec.setSettingsValue(settings, name);
 }
-
-#endif
 
 template class CctwVector3D<int>;
 template class CctwVector3D<double>;

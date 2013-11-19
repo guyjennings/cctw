@@ -1,16 +1,12 @@
 #ifndef CCTWTRANSFORMER_H
 #define CCTWTRANSFORMER_H
 
+#include "cctwobject.h"
 #include "cctwinputdatainterface.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwtransforminterface.h"
 #include "cctwinputchunkindex.h"
 
-#ifdef USE_QT
-#include "cctwobject.h"
-#endif
-
-#ifdef USE_QT
 class CctwTransformer : public CctwObject
 {
   Q_OBJECT
@@ -21,16 +17,6 @@ public:
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests,
                   QObject *parent);
-#else
-class CctwTransformer
-{
-public:
-  CctwTransformer(CctwInputDataInterface *input,    // The input data
-                  CctwOutputDataInterface *output,  // The output data
-                  CctwTransformInterface *xform,    // The transform
-                  int osx, int osy, int osz,        // Oversampling factors
-                  int nTests);
-#endif
 
   virtual ~CctwTransformer();
 
@@ -38,18 +24,7 @@ public:
 
   static const int MAX_REQUISITES = 128; // Maximal number of chunks required to produce an output chunk
 
-#ifdef USE_QT
 public slots:
-#else
-public:
-#endif
-//  static CctwTransformer *createNew(int argc, char *argv[],
-//                                    CctwInputDataInterface *input,    // The input data
-//                                    CctwOutputDataInterface *output,  // The output data
-//                                    CctwTransformInterface *xform);
-//                                                // Allocate and return a new transformer object according to the
-//                                                // command line passed in argc and argv and using the given
-//                                                // input data, output data and transform
 
   static int XYZtoID(int max_x, int max_y, int max_z,
                      int x, int y, int z);

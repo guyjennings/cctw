@@ -1,18 +1,13 @@
 #include "cctwchunkeddatainterface.h"
 #include <math.h>
 
-#ifdef USE_QT
 CctwChunkedDataInterface::CctwChunkedDataInterface
   (CctwIntVector3D dim,
    CctwIntVector3D chunkSize,
-//   CctwDoubleVector3D origin,
-//   CctwDoubleVector3D scale,
    QObject *parent)
   : CctwObject(parent),
     m_Dimensions(dim),
     m_ChunkSize(chunkSize),
-//    m_Origin(origin),
-//    m_Scale(scale),
     m_ChunkCount((dim-CctwIntVector3D(1,1,1))/chunkSize+CctwIntVector3D(1,1,1))
 {
 }
@@ -21,43 +16,9 @@ CctwChunkedDataInterface::CctwChunkedDataInterface(QObject *parent)
 {
 }
 
-#else
-
-CctwChunkedDataInterface::CctwChunkedDataInterface
-  (CctwIntVector3D dim,
-   CctwIntVector3D chunkSize,
-   CctwDoubleVector3D origin/*,
-   CctwDoubleVector3D scale*/)
-  : CctwqtObject(parent),
-    m_Dimensions(dim),
-    m_ChunkSize(chunkSize),
-//    m_Origin(origin),
-//    m_Scale(scale),
-    m_ChunkCount((dim-CctwIntVector3D(1,1,1))/chunkSize+CctwIntVector3D(1,1,1))
-{
-}
-
-CctwChunkedDataInterface::CctwChunkedDataInterface()
-{
-}
-
-#endif
-
 void                CctwChunkedDataInterface::initialize(void *buffer)
 {
 }
-
-//CctwDoubleVector3D  CctwChunkedDataInterface::toReal(CctwIntVector3D vec)
-//{
-//  return m_Origin+m_Scale*CctwDoubleVector3D(vec.x(), vec.y(), vec.z());
-//}
-
-//CctwIntVector3D     CctwChunkedDataInterface::toPixel(CctwDoubleVector3D vec)
-//{
-//  CctwDoubleVector3D pix = (vec - m_Origin)/m_Scale;
-
-//  return CctwIntVector3D(floor(pix.x()), floor(pix.y()), floor(pix.z()));
-//}
 
 bool                CctwChunkedDataInterface::containsPixel(CctwIntVector3D pixelCoord)
 {
@@ -94,13 +55,6 @@ CctwIntVector3D     CctwChunkedDataInterface::chunkCount() const
 {
   return m_ChunkCount;
 }
-
-//CctwIntVector3D     CctwChunkedDataInterface::findChunkIndexContaining(CctwDoubleVector3D coords)
-//{
-//  CctwIntVector3D pxlCoords = toPixel(coords);
-
-//  return chunkIndex(pxlCoords);
-//}
 
 bool CctwChunkedDataInterface::containsChunk(CctwIntVector3D chunkIdx)
 {
@@ -158,13 +112,3 @@ void CctwChunkedDataInterface::setChunkSize(CctwIntVector3D cksz)
 
   m_ChunkCount = (m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1);
 }
-
-//void CctwChunkedDataInterface::setOrigin(CctwDoubleVector3D org)
-//{
-//  m_Origin = org;
-//}
-
-//void CctwChunkedDataInterface::setScale(CctwDoubleVector3D scal)
-//{
-//  m_Scale = scal;
-//}
