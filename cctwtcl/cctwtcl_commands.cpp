@@ -6,8 +6,12 @@
 #include "cctwqtapplication.h"
 #include "cctwcrystalcoordinateparameters.h"
 
+#include "cctwtclutils.h"
+
 static CctwqtApplication *g_Application = NULL;
 static CctwCrystalCoordinateParameters *g_Parameters = NULL;
+
+#define UNUSED __attribute__((unused))
 
 int Cctwtcl_Initialize()
 {
@@ -25,7 +29,7 @@ int Cctwtcl_Initialize()
   return TCL_OK;
 }
 
-int Cctwtcl_Cmd             (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Cmd(UNUSED ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
   if (objc >= 2) {
     const char *cmd = Tcl_GetString(objv[1]);
@@ -46,7 +50,7 @@ int Cctwtcl_Cmd             (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-int Cctwtcl_Count_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Count_Cmd  (UNUSED ClientData clientData, Tcl_Interp *interp, int objc, UNUSED Tcl_Obj *const objv[])
 {
   if (objc != 1) {
     Tcl_SetResult(interp, "No parameters expected: usage: cctw_count", TCL_STATIC);
@@ -63,7 +67,32 @@ int Cctwtcl_Count_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl
   return TCL_OK;
 }
 
-int Cctwtcl_Dependencies_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_ijk2id_Cmd(UNUSED ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
+  TCL_ARGS(7);
+
+  int max_x, max_y, max_z, x, y, z;
+  int rc;
+  rc = Tcl_GetIntFromObj(interp, objv[1], &max_x);
+  TCL_CHECK(rc);
+  rc = Tcl_GetIntFromObj(interp, objv[2], &max_y);
+  TCL_CHECK(rc);
+  rc = Tcl_GetIntFromObj(interp, objv[3], &max_z);
+  TCL_CHECK(rc);
+  rc = Tcl_GetIntFromObj(interp, objv[4], &x);
+  TCL_CHECK(rc);
+  rc = Tcl_GetIntFromObj(interp, objv[5], &y);
+  TCL_CHECK(rc);
+  rc = Tcl_GetIntFromObj(interp, objv[6], &z);
+  TCL_CHECK(rc);
+
+  int result = CctwTransformer::XYZtoID(max_x, max_y, max_z,
+                                        x, y, z);
+
+  Tcl_SetObjResult(interp, Tcl_NewIntObj(result));
+  return TCL_OK;
+}
+
+int Cctwtcl_Dependencies_Cmd(UNUSED ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
   if (objc == 2) {
     int chunkId;
@@ -149,7 +178,7 @@ int Cctwtcl_Input_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Transform_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
   // cctw_transform <input_chunk_id> <input_data_blob>  --> a list of <ouput_chunk_id> <intermediate_blob> pairs
   // Transform a blob of input data into a list of intermediate blobs
@@ -192,7 +221,7 @@ int Cctwtcl_Transform_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-int Cctwtcl_Merge_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Merge_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
   // cctw_merge <output_chunk_id> <intermediate_blob1> <intermediate_blob2> --> <intermediate_blob>
   // add together two intermediate blobs (with the same chunk_id) into a new intermediate blob
@@ -231,7 +260,7 @@ int Cctwtcl_Merge_Cmd       (ClientData clientData, Tcl_Interp *interp, int objc
   return TCL_OK;
 }
 
-int Cctwtcl_Normalize_Cmd   (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int Cctwtcl_Normalize_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
   // cctw_normalize <output_chunk_id> <intermediate_blob> --> <output_blob>
   // divide data by weight in an intermediate blob and produce an output blob

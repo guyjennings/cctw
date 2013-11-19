@@ -8,6 +8,9 @@ int Cctwtcl_Initialize();
 int Cctwtcl_Cmd               (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 
 int Cctwtcl_Count_Cmd         (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+
+int Cctwtcl_ijk2id_Cmd        (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+
 int Cctwtcl_Dependencies_Cmd  (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 
 int Cctwtcl_Input_Cmd         (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);

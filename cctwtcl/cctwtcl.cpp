@@ -10,7 +10,7 @@ extern "C"
 int Cctwtcl_Init(Tcl_Interp *interp)
 {
   if (sizeof(void*) > sizeof(long)) {
-    Tcl_SetResult(interp, "ERROR: Pointers are bigger than longs", TCL_STATIC);
+    Tcl_SetResult(interp, (char*) "ERROR: Pointers are bigger than longs", TCL_STATIC);
 
     return TCL_ERROR;
   }
@@ -32,6 +32,9 @@ int Cctwtcl_Init(Tcl_Interp *interp)
 
   Tcl_CreateObjCommand(interp, "cctw_count", (Tcl_ObjCmdProc*) Cctwtcl_Count_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_ijk2id", (Tcl_ObjCmdProc*) Cctwtcl_ijk2id_Cmd,
+                      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
   Tcl_CreateObjCommand(interp, "cctw_dependencies", (Tcl_ObjCmdProc*) Cctwtcl_Dependencies_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
