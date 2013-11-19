@@ -1,6 +1,6 @@
 #include "cctwqtdatachunk.h"
 #include <QSemaphore>
-#include "cctwqtthread.h"
+#include "cctwthread.h"
 
 CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
                                  CctwqtDataFrameManager *manager,
@@ -133,7 +133,7 @@ void CctwqtDataChunk::waitForData()
   if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
     printMessage(tr("Trying to allocate too many blocks - will sleep 5 secs then proceed anyway"));
 
-    CctwqtThread::sleep(5);
+    CctwThread::sleep(5);
   } else {
 //    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
 

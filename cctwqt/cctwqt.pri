@@ -22,8 +22,7 @@ SOURCES += \
     $${PWD}/cctwqtinputdataframemanager.cpp \
     $${PWD}/cctwqtoutputdataframemanager.cpp \
     $${PWD}/cctwqtdataframemanager.cpp \
-    $${PWD}/cctwqtpeingresscommand.cpp  \
-    $${PWD}/cctwqtthread.cpp
+    $${PWD}/cctwqtpeingresscommand.cpp
 
 HEADERS += \
     $${PWD}/cctwqtapplication.h \
@@ -47,8 +46,7 @@ HEADERS += \
     $${PWD}/cctwqtinputdataframemanager.h \
     $${PWD}/cctwqtoutputdataframemanager.h \
     $${PWD}/cctwqtdataframemanager.h \
-    $${PWD}/cctwqtpeingresscommand.h \
-    $${PWD}/cctwqtthread.h
+    $${PWD}/cctwqtpeingresscommand.h
 
 FORMS += \
     $${PWD}/cctwqtmainwindow.ui \

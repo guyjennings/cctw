@@ -13,7 +13,7 @@
 #include <QtConcurrentRun>
 #include <QFile>
 #include "cctwintvector3dproperty.h"
-#include "cctwqtthread.h"
+#include "cctwthread.h"
 #include "cctwdatachunk.h"
 
 #ifdef Q_OS_UNIX
@@ -602,7 +602,7 @@ void CctwqtApplication::calculateDependencies()
 
 abort:
   while (m_DependencyCounter.fetchAndAddOrdered(0) > 0) {
-    CctwqtThread::msleep(10);
+    CctwThread::msleep(10);
     processEvents();
   }
 
@@ -1020,7 +1020,7 @@ void CctwqtApplication::workCompleted(int amt)
 void CctwqtApplication::waitCompleted()
 {
   while (m_WorkOutstanding.fetchAndAddOrdered(0) > 0) {
-    CctwqtThread::msleep(100);
+    CctwThread::msleep(100);
     processEvents(QEventLoop::ExcludeUserInputEvents);
   }
 }

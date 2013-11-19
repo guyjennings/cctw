@@ -1,13 +1,13 @@
-#ifndef CCTWQTTHREAD_H
-#define CCTWQTTHREAD_H
+#ifndef CCTWTHREAD_H
+#define CCTWTHREAD_H
 
 #include <QThread>
 
-class CctwqtThread : public QThread
+class CctwThread : public QThread
 {
   Q_OBJECT
 public:
-  explicit CctwqtThread(QObject *parent = 0);
+  explicit CctwThread(QObject *parent = 0);
   
 signals:
   

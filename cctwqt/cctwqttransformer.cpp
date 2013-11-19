@@ -2,7 +2,7 @@
 #include <QtConcurrentRun>
 #include "cctwqtdatachunk.h"
 #include "cctwqtapplication.h"
-#include "cctwqtthread.h"
+#include "cctwthread.h"
 
 CctwqtTransformer::CctwqtTransformer
   (CctwqtApplication *application,
@@ -197,7 +197,7 @@ void CctwqtTransformer::transform()
   }
 
   while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwqtThread::msleep(10);
+    CctwThread::msleep(10);
     m_Application->processEvents();
   }
 
