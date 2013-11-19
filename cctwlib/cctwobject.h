@@ -1,5 +1,5 @@
-#ifndef CCTWQTOBJECT_H
-#define CCTWQTOBJECT_H
+#ifndef CCTWOBJECT_H
+#define CCTWOBJECT_H
 
 #include <QObject>
 #include <QSettings>
@@ -26,4 +26,4 @@ public:
   QCEP_STRING_PROPERTY(Name)
 };
 
-#endif // CCTWQTOBJECT_H
+#endif // CCTWOBJECT_H
