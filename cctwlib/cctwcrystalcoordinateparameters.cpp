@@ -3,7 +3,7 @@
 #ifdef USE_QT
 
 CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QObject *parent) :
-  CctwqtObject(parent)
+  CctwObject(parent)
 {
 }
 

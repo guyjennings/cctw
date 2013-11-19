@@ -7,11 +7,11 @@
 #include "cctwinputchunkindex.h"
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 #ifdef USE_QT
-class CctwTransformer : public CctwqtObject
+class CctwTransformer : public CctwObject
 {
   Q_OBJECT
 public:
@@ -56,7 +56,6 @@ public:
 
   void performTests();
 
-  virtual void transformChunk(int nx, int ny, int nz) = 0;
   virtual void transform() = 0;
 
 private:

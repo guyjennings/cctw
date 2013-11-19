@@ -1,7 +1,7 @@
 #ifndef CCTWQTCRYSTALCOORDINATETRANSFORM_H
 #define CCTWQTCRYSTALCOORDINATETRANSFORM_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwqtcrystalcoordinateparameters.h"
 

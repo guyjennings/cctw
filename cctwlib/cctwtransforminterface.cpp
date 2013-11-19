@@ -2,7 +2,7 @@
 
 #ifdef USE_QT
 CctwTransformInterface::CctwTransformInterface(QObject *parent) :
-  CctwqtObject(parent)
+  CctwObject(parent)
 {
 }
 #else

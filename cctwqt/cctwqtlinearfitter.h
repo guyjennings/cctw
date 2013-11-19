@@ -1,9 +1,9 @@
 #ifndef CCTWQTLINEARFITTER_H
 #define CCTWQTLINEARFITTER_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 
-class CctwqtLinearFitter : public CctwqtObject
+class CctwqtLinearFitter : public CctwObject
 {
   Q_OBJECT
 public:

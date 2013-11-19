@@ -1,13 +1,13 @@
 #ifndef CCTWQTDATAFRAMEMANAGER_H
 #define CCTWQTDATAFRAMEMANAGER_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include "cctwqtchunkeddata.h"
 #include <QVector>
 
 class CctwqtDataFrame;
 
-class CctwqtDataFrameManager : public CctwqtObject
+class CctwqtDataFrameManager : public CctwObject
 {
   Q_OBJECT
 public:

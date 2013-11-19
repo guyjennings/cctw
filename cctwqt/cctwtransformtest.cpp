@@ -3,7 +3,7 @@
 #include <math.h>
 
 CctwTransformTest::CctwTransformTest(CctwqtApplication *app, QObject *parent) :
-  CctwqtObject(parent),
+  CctwObject(parent),
   m_Application(app),
   m_Frame(m_Application->saver(), this, "frame", 5, "Frame Number"),
   m_PixelSize(m_Application->saver(), this, "pixelSize", 0.080567, "Detector Pixel Size (mm)"),

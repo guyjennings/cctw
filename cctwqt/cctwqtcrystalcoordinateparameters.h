@@ -1,7 +1,7 @@
 #ifndef CCTWQTCRYSTALCOORDINATEPARAMETERS_H
 #define CCTWQTCRYSTALCOORDINATEPARAMETERS_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwqtunitcellproperty.h"
 #include "cctwqtdoublematrix3x3property.h"

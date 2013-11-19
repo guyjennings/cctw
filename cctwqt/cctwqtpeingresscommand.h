@@ -1,12 +1,12 @@
 #ifndef CCTWQTPEINGRESSCOMMAND_H
 #define CCTWQTPEINGRESSCOMMAND_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 
 class CctwqtApplication;
 class QwtPlot;
 
-class CctwqtPEIngressCommand : public CctwqtObject
+class CctwqtPEIngressCommand : public CctwObject
 {
   Q_OBJECT
 public:

@@ -22,7 +22,6 @@ public:
 signals:
   
 public slots:
-  void transformChunk(int nx, int ny, int nz);
   void transform();
   void checkTransform();
 

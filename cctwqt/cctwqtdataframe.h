@@ -1,11 +1,11 @@
 #ifndef CCTWQTDATAFRAME_H
 #define CCTWQTDATAFRAME_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include <QVector>
 #include <QAtomicInt>
 
-class CctwqtDataFrame : public CctwqtObject
+class CctwqtDataFrame : public CctwObject
 {
   Q_OBJECT
 public:

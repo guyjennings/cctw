@@ -6,11 +6,11 @@
 class CctwChunkedDataInterface;
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 #ifdef USE_QT
-class CctwDataChunk : public CctwqtObject
+class CctwDataChunk : public CctwObject
 {
   Q_OBJECT
 public:

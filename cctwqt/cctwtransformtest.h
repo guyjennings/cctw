@@ -1,14 +1,14 @@
 #ifndef CCTWTRANSFORMTEST_H
 #define CCTWTRANSFORMTEST_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include "cctwqtdoublematrix3x3property.h"
 #include "cctwqtdoublevector3dproperty.h"
 #include "cctwqtunitcellproperty.h"
 
 class CctwqtApplication;
 
-class CctwTransformTest : public CctwqtObject
+class CctwTransformTest : public CctwObject
 {
   Q_OBJECT
 public:

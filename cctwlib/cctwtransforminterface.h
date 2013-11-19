@@ -2,13 +2,13 @@
 #define CCTWTRANSFORMINTERFACE_H
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 #include "cctwvector3d.h"
 
 #ifdef USE_QT
-class CctwTransformInterface : public CctwqtObject
+class CctwTransformInterface : public CctwObject
 {
   Q_OBJECT
 public:

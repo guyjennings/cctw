@@ -2,13 +2,13 @@
 #define CCTWCHUNKEDDATAINTERFACE_H
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 #include "cctwvector3d.h"
 
 #ifdef USE_QT
-class CctwChunkedDataInterface : public CctwqtObject
+class CctwChunkedDataInterface : public CctwObject
 {
   Q_OBJECT
 public:

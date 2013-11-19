@@ -8,7 +8,7 @@ CctwChunkedDataInterface::CctwChunkedDataInterface
 //   CctwDoubleVector3D origin,
 //   CctwDoubleVector3D scale,
    QObject *parent)
-  : CctwqtObject(parent),
+  : CctwObject(parent),
     m_Dimensions(dim),
     m_ChunkSize(chunkSize),
 //    m_Origin(origin),

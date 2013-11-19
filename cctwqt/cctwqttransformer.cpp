@@ -21,10 +21,6 @@ CctwqtTransformer::CctwqtTransformer
 {
 }
 
-void CctwqtTransformer::transformChunk(int nx, int ny, int nz)
-{
-}
-
 void CctwqtTransformer::runTransformChunkNumber(int n)
 {
   if (m_Application && !m_Application->get_Halting()) {

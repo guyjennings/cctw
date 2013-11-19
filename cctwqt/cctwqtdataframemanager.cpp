@@ -2,7 +2,7 @@
 #include "qcepmutexlocker.h"
 
 CctwqtDataFrameManager::CctwqtDataFrameManager(QObject *parent) :
-  CctwqtObject(parent),
+  CctwObject(parent),
   m_Data(NULL)
 {
 }

@@ -2,7 +2,7 @@
 #include "qcepmutexlocker.h"
 
 CctwqtDataFrame::CctwqtDataFrame(int dimx, int dimy, QObject *parent) :
-  CctwqtObject(parent),
+  CctwObject(parent),
   m_Counter(0),
   m_DimX(dimx),
   m_DimY(dimy),

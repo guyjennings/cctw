@@ -5,11 +5,11 @@
 #include <QSettings>
 #include "qcepproperty.h"
 
-class CctwqtObject : public QObject
+class CctwObject : public QObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtObject(QObject *parent = 0);
+  explicit CctwObject(QObject *parent = 0);
   
 signals:
 

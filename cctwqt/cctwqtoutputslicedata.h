@@ -1,7 +1,7 @@
 #ifndef CCTWQTOUTPUTSLICEDATA_H
 #define CCTWQTOUTPUTSLICEDATA_H
 
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwqtdatachunk.h"
 #include "cctwqtoutputdataframemanager.h"

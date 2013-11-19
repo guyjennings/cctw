@@ -7,6 +7,7 @@
 INCLUDEPATH += $${PWD}
 
 SOURCES += \
+    $${PWD}/cctwobject.cpp \
     $${PWD}/cctwinputdatainterface.cpp \
     $${PWD}/cctwoutputdatainterface.cpp \
     $${PWD}/cctwswiftinputdata.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
     $${PWD}/cctwdatablobs.cpp
 
 HEADERS += \
+    $${PWD}/cctwobject.h \
     $${PWD}/cctwinputdatainterface.h \
     $${PWD}/cctwoutputdatainterface.h \
     $${PWD}/cctwswiftinputdata.h \

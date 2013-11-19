@@ -2,7 +2,7 @@
 #define CCTWCRYSTALCOORDINATEPARAMETERS_H
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 #include "cctwvector3d.h"
@@ -10,7 +10,7 @@
 #include "cctwunitcell.h"
 
 #ifdef USE_QT
-class CctwCrystalCoordinateParameters : public CctwqtObject
+class CctwCrystalCoordinateParameters : public CctwObject
 {
   Q_OBJECT
 public:

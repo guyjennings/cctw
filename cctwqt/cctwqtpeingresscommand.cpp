@@ -6,7 +6,7 @@
 #include <QFile>
 
 CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent) :
-  CctwqtObject(parent),
+  CctwObject(parent),
   m_Application(app)
 {
 }

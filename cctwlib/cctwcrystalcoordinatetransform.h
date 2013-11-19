@@ -6,7 +6,7 @@
 #include "cctwcrystalcoordinateparameters.h"
 
 #ifdef USE_QT
-#include "cctwqtobject.h"
+#include "cctwobject.h"
 #endif
 
 class CctwCrystalCoordinateTransform : public CctwTransformInterface

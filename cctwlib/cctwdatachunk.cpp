@@ -5,7 +5,7 @@
 #ifdef USE_QT
 
 CctwDataChunk::CctwDataChunk(CctwChunkedDataInterface *data, CctwIntVector3D index, QObject *parent) :
-  CctwqtObject(parent),
+  CctwObject(parent),
   m_Data(data),
   m_ChunkIndex(index),
   m_ChunkData(NULL),
