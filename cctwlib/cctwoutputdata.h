@@ -1,26 +1,23 @@
-#ifndef CCTWQTOUTPUTSLICEDATA_H
-#define CCTWQTOUTPUTSLICEDATA_H
+#ifndef CCTWOUTPUTDATA_H
+#define CCTWOUTPUTDATA_H
 
-#include "cctwobject.h"
 #include "cctwoutputdatainterface.h"
-#include "cctwqtdatachunk.h"
-#include "cctwoutputdataframemanager.h"
 
-class CctwqtOutputSliceData : public CctwOutputDataInterface
+class CctwOutputData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputSliceData(CctwIntVector3D dim,        // Data set dimension
-                                 CctwIntVector3D chunkSize,  // Chunk size
-//                                 CctwDoubleVector3D origin,
-//                                 CctwDoubleVector3D scale,
-                                 CctwOutputDataFrameManager *manager,
-                                 QObject *parent);
-
+  explicit CctwOutputData(CctwIntVector3D dim,        // Data set dimension
+                            CctwIntVector3D chunkSize,  // Chunk size
+//                            CctwDoubleVector3D origin,
+//                            CctwDoubleVector3D scale,
+                            CctwOutputDataFrameManager *manager,
+                            QObject *parent);
+  
 signals:
-
+  
 public slots:
-
+  
 public:
   virtual int useChunk(int nx, int ny, int nz);
                                               // Indicate that we'll want to be using chunk number nx,ny,nz of the output data.
@@ -42,4 +39,4 @@ public:
   virtual void endTransform();
 };
 
-#endif // CCTWQTOUTPUTSLICEDATA_H
+#endif // CCTWOUTPUTDATA_H

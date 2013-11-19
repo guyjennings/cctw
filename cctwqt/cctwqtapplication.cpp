@@ -1,8 +1,5 @@
 #include "cctwqtapplication.h"
 #include "cctwqtmainwindow.h"
-#include "cctwqtinputdata.h"
-#include "cctwqtoutputdata.h"
-#include "cctwqtoutputslicedata.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwtransformer.h"
 #include <QScriptValue>
@@ -203,7 +200,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
 
   m_InputDataManager        = new CctwInputDataFrameManager(this);
-  m_InputData               = new CctwqtInputData(CctwIntVector3D(2048,2048,2048),
+  m_InputData               = new CctwInputData(CctwIntVector3D(2048,2048,2048),
                                                   CctwIntVector3D(128, 128, 128),
 //                                                  CctwDoubleVector3D(-5,-5,-5),
 //                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
@@ -212,7 +209,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_InputData               -> allocateChunks();
 
   m_OutputDataManager       = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputData              = new CctwqtOutputData(CctwIntVector3D(2048,2048,2048),
+  m_OutputData              = new CctwOutputData(CctwIntVector3D(2048,2048,2048),
                                                    CctwIntVector3D(128, 128, 128),
 //                                                   CctwDoubleVector3D(-5,-5,-5),
 //                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
@@ -221,7 +218,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_OutputData              -> allocateChunks();
 
   m_OutputSliceDataManager        = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputSliceData               = new CctwqtOutputSliceData(CctwIntVector3D(2048,2048,1),
+  m_OutputSliceData               = new CctwOutputSliceData(CctwIntVector3D(2048,2048,1),
                                                               CctwIntVector3D(128, 128, 1),
 //                                                              CctwDoubleVector3D(-5,-5, 0),
 //                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),

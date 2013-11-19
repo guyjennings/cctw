@@ -2,15 +2,12 @@ INCLUDEPATH += $${PWD}
 
 SOURCES += \
     $${PWD}/cctwqtapplication.cpp \
-    $${PWD}/cctwqtoutputdata.cpp \
     $${PWD}/cctwqtmainwindow.cpp \
-    $${PWD}/cctwqtinputdata.cpp \
     $${PWD}/cctwqtsetupinputdialog.cpp \
     $${PWD}/cctwqtsetupoutputdialog.cpp \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
     $${PWD}/cctwqttransformonedialog.cpp \
     $${PWD}/cctwqtsetupslicedialog.cpp \
-    $${PWD}/cctwqtoutputslicedata.cpp \
     $${PWD}/cctwqtdatachunk.cpp \
     $${PWD}/cctwqttransformer.cpp \
     $${PWD}/cctwqtcrystalcoordinatetransform.cpp \
@@ -19,15 +16,12 @@ SOURCES += \
 
 HEADERS += \
     $${PWD}/cctwqtapplication.h \
-    $${PWD}/cctwqtoutputdata.h \
     $${PWD}/cctwqtmainwindow.h \
-    $${PWD}/cctwqtinputdata.h \
     $${PWD}/cctwqtsetupinputdialog.h \
     $${PWD}/cctwqtsetupoutputdialog.h \
     $${PWD}/cctwqtsetuptransformdialog.h \
     $${PWD}/cctwqttransformonedialog.h \
     $${PWD}/cctwqtsetupslicedialog.h \
-    $${PWD}/cctwqtoutputslicedata.h \
     $${PWD}/cctwqtdatachunk.h \
     $${PWD}/cctwqttransformer.h \
     $${PWD}/cctwqtcrystalcoordinatetransform.h \

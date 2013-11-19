@@ -6,9 +6,9 @@
 #ifndef NO_GUI
 #include "cctwqtmainwindow.h"
 #endif
-#include "cctwqtinputdata.h"
-#include "cctwqtoutputdata.h"
-#include "cctwqtoutputslicedata.h"
+#include "cctwinputdata.h"
+#include "cctwoutputdata.h"
+#include "cctwoutputslicedata.h"
 #include "cctwinputdataframemanager.h"
 #include "cctwoutputdataframemanager.h"
 #include "cctwqttransformer.h"
@@ -153,11 +153,11 @@ public:
 #endif
   CctwqtCrystalCoordinateParameters  *m_Parameters;
   CctwInputDataFrameManager          *m_InputDataManager;
-  CctwqtInputData                    *m_InputData;
+  CctwInputData                    *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;
-  CctwqtOutputData                   *m_OutputData;
+  CctwOutputData                   *m_OutputData;
   CctwOutputDataFrameManager         *m_OutputSliceDataManager;
-  CctwqtOutputSliceData              *m_OutputSliceData;
+  CctwOutputSliceData              *m_OutputSliceData;
   CctwqtCrystalCoordinateTransform   *m_Transform;
   CctwqtTransformer                  *m_Transformer;
   CctwqtCrystalCoordinateTransform   *m_SliceTransform;

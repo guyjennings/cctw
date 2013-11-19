@@ -1,6 +1,6 @@
-#include "cctwqtoutputdata.h"
+#include "cctwoutputdata.h"
 
-CctwqtOutputData::CctwqtOutputData(CctwIntVector3D dim,        // Data set dimension
+CctwOutputData::CctwOutputData(CctwIntVector3D dim,        // Data set dimension
                                    CctwIntVector3D chunkSize,  // Chunk size
 //                                   CctwDoubleVector3D origin,
 //                                   CctwDoubleVector3D scale,
@@ -10,25 +10,25 @@ CctwqtOutputData::CctwqtOutputData(CctwIntVector3D dim,        // Data set dimen
 {
 }
 
-int CctwqtOutputData::useChunk(int nx, int ny, int nz)
+int CctwOutputData::useChunk(int nx, int ny, int nz)
 {
   return -1;
 }
 
-void CctwqtOutputData::writeData(int chunkId, int dx, int dy, int dz, double value)
+void CctwOutputData::writeData(int chunkId, int dx, int dy, int dz, double value)
 {
 }
 
-void CctwqtOutputData::releaseChunk(int chunkId)
+void CctwOutputData::releaseChunk(int chunkId)
 {
 }
 
-void CctwqtOutputData::beginTransform()
+void CctwOutputData::beginTransform()
 {
   m_Manager -> beginTransform();
 }
 
-void CctwqtOutputData::endTransform()
+void CctwOutputData::endTransform()
 {
   m_Manager -> endTransform();
 }

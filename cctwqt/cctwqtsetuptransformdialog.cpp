@@ -44,7 +44,7 @@ void CctwqtSetupTransformDialog::accept()
 void CctwqtSetupTransformDialog::copyParametersToDialog()
 {
   CctwqtCrystalCoordinateParameters *parms = m_Application->m_Parameters;
-  CctwqtInputData *input = m_Application->m_InputData;
+  CctwInputData *input = m_Application->m_InputData;
 
   ui->m_PixelDimensionX->setValue(input->dimensions().x());
   ui->m_PixelDimensionY->setValue(input->dimensions().y());

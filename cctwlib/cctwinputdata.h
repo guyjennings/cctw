@@ -1,13 +1,13 @@
-#ifndef CCTWQTINPUTDATA_H
-#define CCTWQTINPUTDATA_H
+#ifndef CCTWINPUTDATA_H
+#define CCTWINPUTDATA_H
 
 #include "cctwinputdatainterface.h"
 
-class CctwqtInputData : public CctwInputDataInterface
+class CctwInputData : public CctwInputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtInputData(CctwIntVector3D dim,        // Data set dimension
+  explicit CctwInputData(CctwIntVector3D dim,        // Data set dimension
                            CctwIntVector3D chunkSize,  // Chunk size
 //                           CctwDoubleVector3D origin,
 //                           CctwDoubleVector3D scale,
@@ -35,4 +35,4 @@ public:
                                               // is invalid.
 };
 
-#endif // CCTWQTINPUTDATA_H
+#endif // CCTWINPUTDATA_H
