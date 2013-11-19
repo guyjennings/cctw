@@ -14,21 +14,13 @@ main
 
   // E.g. fragment[(1,1,1)] = <binary data>
 
-  blob fragment[];
+  foreach i,j,k {
+    string hdf_file = sprintf("fragment-%i-%i-%i.hdf");
+    int id = cctw_ijk2id(i,j,k);
+    printf("opening: %s for chunk id: %i");
+    // fragment[] = read_hdf_fragment(hdf_file, i,j,k);
+  }
 
-  int max_i = 2;
-  int max_j = 2;
-  int max_k = 2;
-
-  foreach i in [0:max_i-1] {
-    foreach j in [0:max_j-1] {
-      foreach k in [0:max_k-1] {
-        string hdf_file = sprintf("fragment-%i-%i-%i.hdf", i, j, k);
-        int id = cctw_ijk2id(max_i,max_j,max_k,i,j,k);
-        printf("opening: %s for chunk id: %i", hdf_file, id);
-        // fragment[] = read_hdf_fragment(hdf_file, i,j,k);
-      }}}
-/*
   output_chunks_x = 16; // toint(argv("chunks_x"));
   output_chunks_y = 16; // toint(argv("chunks_y"));
   output_chunks_z = 16; //
@@ -79,5 +71,4 @@ main
 
   // Merge/sum output buffers?
   outputs[id] = cctwMerge(output_products[id]);
-*/
 }

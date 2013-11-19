@@ -5,6 +5,12 @@ import string;
 (string result) cctw(string code) "cctw" "0.1"
 [ "set <<result>> [ cctw <<code>> ]" ];
 
+(int id) cctw_ijk2id(int max_i, int max_j, int max_k,
+                     int i, int j, int k) "cctw" "0.1"
+[
+  "set <<id>> [ cctw_ijk2id <<max_i>> <<max_j>> <<max_k>> <<i>> <<j>> <<k>> ]"
+];
+
 (int result) cctw_dimension(int i)
 {
   string t = sprintf("inputData.dimensions[%i]", i);
