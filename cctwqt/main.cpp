@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include "cctwswiftinputdata.h"
-#include "cctwswiftoutputdata.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwrotationtransform.h"
 #include "cctwcompoundtransform.h"
