@@ -1,7 +1,7 @@
 #include "cctwoutputdataframemanager.h"
 #include "cctwdataframe.h"
 #include "cctwchunkindex.h"
-#include "cctwqtdatachunk.h"
+#include "cctwdatachunk.h"
 
 CctwOutputDataFrameManager::CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :
   CctwDataFrameManager(parent),
@@ -87,7 +87,7 @@ void CctwOutputDataFrameManager::closeOutputFile()
   }
 }
 
-void CctwOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
+void CctwOutputDataFrameManager::writeChunk(CctwDataChunk *chunk)
 {
   QMutexLocker lock(&m_WriteLock);
 

@@ -19,7 +19,7 @@ public slots:
   void setData(CctwChunkedData *data);
   virtual int  loadChunk(int nx, int ny, int nz) = 0;
   virtual void releaseChunk(int chunkId) = 0;
-  virtual void writeChunk(CctwqtDataChunk *chunk) = 0;
+  virtual void writeChunk(CctwDataChunk *chunk) = 0;
 
   virtual void beginTransform() = 0;
   virtual void endTransform() = 0;

@@ -19,7 +19,7 @@ signals:
 public slots:
   int  loadChunk(int nx, int ny, int nz);
   void releaseChunk(int chunkId);
-  void writeChunk(CctwqtDataChunk *chunk);
+  void writeChunk(CctwDataChunk *chunk);
 
   void beginTransform();
   void endTransform();

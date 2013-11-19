@@ -7,6 +7,7 @@
 #include "cctwqtapplication.h"
 #include <QtConcurrentRun>
 #include "cctwthread.h"
+#include "cctwdatachunk.h"
 
 CctwTransformer::CctwTransformer(CctwqtApplication *application,
                                  CctwInputDataInterface *input,
@@ -168,8 +169,8 @@ void CctwTransformer::transformChunkNumber(int n)
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);
-  CctwqtDataChunk *inputChunk = m_InputData->chunk(idx);
-  CctwqtDataChunk *lastChunk = NULL;
+  CctwDataChunk *inputChunk = m_InputData->chunk(idx);
+  CctwDataChunk *lastChunk = NULL;
 
   CctwIntVector3D chStart = m_InputData->chunkStart(idx);
   CctwIntVector3D chSize  = m_InputData->chunkSize();
@@ -178,7 +179,7 @@ void CctwTransformer::transformChunkNumber(int n)
   if (inputChunk) {
     inputChunk->waitForData();
 
-    QMap<CctwIntVector3D, CctwqtDataChunk*> outputChunks;
+    QMap<CctwIntVector3D, CctwDataChunk*> outputChunks;
 
     inputChunk->readData();
     inputChunk->readWeights();
@@ -204,8 +205,8 @@ void CctwTransformer::transformChunkNumber(int n)
 //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
 //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
 
-                CctwqtDataChunk *chunk =
-                    new CctwqtDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
+                CctwDataChunk *chunk =
+                    new CctwDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
 
                 if (chunk) {
                   chunk->allocateData();
@@ -246,7 +247,7 @@ void CctwTransformer::transformChunkNumber(int n)
                    .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
     }
 
-    foreach(CctwqtDataChunk *outputChunk, outputChunks) {
+    foreach(CctwDataChunk *outputChunk, outputChunks) {
       m_OutputData->mergeChunk(outputChunk);
 
       delete outputChunk;
@@ -277,7 +278,7 @@ void CctwTransformer::transform()
   m_InputData->clearMergeCounters();
   m_OutputData->clearMergeCounters();
 
-  CctwqtDataChunk::resetAllocationLimits(get_BlocksLimit());
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
   CctwIntVector3D chunks = m_OutputData->chunkCount();
 
@@ -286,7 +287,7 @@ void CctwTransformer::transform()
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
       for (int x=0; x<chunks.x(); x++) {
-        CctwqtDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
 
         if (chunk) {
           int n = chunk->dependencyCount();
@@ -327,7 +328,7 @@ void CctwTransformer::transform()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-  set_BlocksMax(CctwqtDataChunk::maxAllocated());
+  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_OutputData -> endTransform();
 
@@ -341,7 +342,7 @@ void CctwTransformer::checkTransform()
   for (int z=0; z<chunks.z(); z++) {
     for (int y=0; y<chunks.y(); y++) {
       for (int x=0; x<chunks.x(); x++) {
-        CctwqtDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
 
         if (chunk) {
           if (chunk->dependencyCount() != chunk->mergeCount()) {

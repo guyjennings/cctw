@@ -3,7 +3,6 @@
 
 #include "cctwobject.h"
 #include "cctwoutputdatainterface.h"
-#include "cctwqtdatachunk.h"
 #include "cctwoutputdataframemanager.h"
 
 class CctwOutputSliceData : public CctwOutputDataInterface

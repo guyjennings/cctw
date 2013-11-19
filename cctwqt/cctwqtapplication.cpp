@@ -618,7 +618,7 @@ void CctwqtApplication::saveDependencies(QString path)
       for (int x=0; x<chunks.x(); x++) {
         CctwIntVector3D idx(x,y,z);
 
-        CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+        CctwDataChunk *chunk = m_InputData->chunk(idx);
 
         chunk->sortDependencies();
 
@@ -781,7 +781,7 @@ void CctwqtApplication::reportDependencies()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          CctwqtDataChunk *chunk = m_InputData -> chunk(idx);
+          CctwDataChunk *chunk = m_InputData -> chunk(idx);
 
           if (chunk) {
             chunk->reportDependencies();
@@ -853,7 +853,7 @@ void CctwqtApplication::reportOutputDependencies()
 
 void CctwqtApplication::reportOutputDependencies(CctwIntVector3D idx)
 {
-  CctwqtDataChunk *chunk = m_OutputData->chunk(idx);
+  CctwDataChunk *chunk = m_OutputData->chunk(idx);
 
   if (chunk) {
     chunk->reportDependencies();
@@ -885,7 +885,7 @@ void CctwqtApplication::reportInputDependencies()
 
 void CctwqtApplication::reportInputDependencies(CctwIntVector3D idx)
 {
-  CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+  CctwDataChunk *chunk = m_InputData->chunk(idx);
 
   if (chunk) {
     chunk->reportDependencies();
@@ -910,7 +910,7 @@ void CctwqtApplication::reportInputChunkCounts()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          CctwqtDataChunk *chunk = m_InputData->chunk(idx);
+          CctwDataChunk *chunk = m_InputData->chunk(idx);
 
           if (chunk) {
             int nDeps = chunk->dependencyCount();
@@ -953,7 +953,7 @@ void CctwqtApplication::reportOutputChunkCounts()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          CctwqtDataChunk *chunk = m_OutputData->chunk(idx);
+          CctwDataChunk *chunk = m_OutputData->chunk(idx);
 
           if (chunk) {
             int nDeps = chunk->dependencyCount();
@@ -982,7 +982,7 @@ int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D l
 {
   CctwIntVector3D idx(index.x(), index.y(), index.z());
 
-  CctwDataChunk *chunk = new CctwqtDataChunk(m_InputData, idx, NULL, this);
+  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, NULL, this);
 
   int offset = chunk->pixelOffset(localcoords);
 
@@ -1029,12 +1029,12 @@ QList<CctwIntVector3D> CctwqtApplication::dependencies(int cx, int cy, int cz)
   return m_Transformer->dependencies(cx, cy, cz);
 }
 
-CctwqtDataChunk * CctwqtApplication::newInputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
+CctwDataChunk * CctwqtApplication::newInputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
 {
   return NULL;
 }
 
-CctwqtDataChunk * CctwqtApplication::newOutputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
+CctwDataChunk * CctwqtApplication::newOutputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
 {
   return NULL;
 }

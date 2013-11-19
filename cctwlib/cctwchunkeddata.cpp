@@ -1,5 +1,5 @@
 #include "cctwchunkeddata.h"
-#include "cctwqtdatachunk.h"
+#include "cctwdatachunk.h"
 
 CctwChunkedData::CctwChunkedData(CctwIntVector3D dim,
                                      CctwIntVector3D chunkSize,
@@ -26,7 +26,7 @@ void CctwChunkedData::allocateChunks()
   m_DataChunks.resize(n);
 
   for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwqtDataChunk(this,
+    m_DataChunks[i] = new CctwDataChunk(this,
                                           chunkIndexFromNumber(i),
                                           m_Manager, parent());
   }
@@ -48,7 +48,7 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 
 void CctwChunkedData::clearDependencies()
 {
-  foreach(CctwqtDataChunk* p, m_DataChunks) {
+  foreach(CctwDataChunk* p, m_DataChunks) {
     if (p) {
       p->clearDependencies();
     }
@@ -64,12 +64,12 @@ void CctwChunkedData::addDependency(CctwIntVector3D f, CctwIntVector3D t)
   }
 }
 
-CctwqtDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
+CctwDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
 {
   int n = chunkNumberFromIndex(idx);
 
   if (n >= 0 && n < m_DataChunks.count()) {
-    CctwqtDataChunk *chunk = m_DataChunks[n];
+    CctwDataChunk *chunk = m_DataChunks[n];
 
     if (chunk && chunk->index() != idx) {
       printMessage(tr("Chunk anomaly"));
@@ -80,12 +80,12 @@ CctwqtDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
   }
 }
 
-void CctwChunkedData::mergeChunk(CctwqtDataChunk *chunk)
+void CctwChunkedData::mergeChunk(CctwDataChunk *chunk)
 {
   if (chunk) {
     CctwIntVector3D idx = chunk->index();
 
-    CctwqtDataChunk *outchunk = this->chunk(idx);
+    CctwDataChunk *outchunk = this->chunk(idx);
 
     if (outchunk) {
       outchunk -> mergeChunk(chunk);
@@ -95,7 +95,7 @@ void CctwChunkedData::mergeChunk(CctwqtDataChunk *chunk)
 
 void CctwChunkedData::clearMergeCounters()
 {
-  foreach (CctwqtDataChunk *dc, m_DataChunks) {
+  foreach (CctwDataChunk *dc, m_DataChunks) {
     if (dc) {
       dc -> clearMergeCounters();
     }

@@ -85,7 +85,7 @@ void CctwInputDataFrameManager::garbageCollectFrames()
   }
 }
 
-void CctwInputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
+void CctwInputDataFrameManager::writeChunk(CctwDataChunk *chunk)
 {
   printMessage("Shouldn't write data on input dataset");
 }

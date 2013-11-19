@@ -5,7 +5,7 @@
 #include "cctwchunkeddatainterface.h"
 
 class CctwDataFrameManager;
-class CctwqtDataChunk;
+class CctwDataChunk;
 
 class CctwChunkedData : public CctwChunkedDataInterface
 {
@@ -28,14 +28,14 @@ public slots:
   void setDimensions(CctwIntVector3D dim);
   void setChunkSize(CctwIntVector3D cksz);
 
-  CctwqtDataChunk *chunk(CctwIntVector3D idx);
+  CctwDataChunk *chunk(CctwIntVector3D idx);
 
-  void mergeChunk(CctwqtDataChunk *chunk);
+  void mergeChunk(CctwDataChunk *chunk);
   void clearMergeCounters();
 
 protected:
   CctwDataFrameManager      *m_Manager;
-  QVector< CctwqtDataChunk* >  m_DataChunks;
+  QVector< CctwDataChunk* >  m_DataChunks;
 };
 
 #endif // CCTWCHUNKEDDATA_H
