@@ -1,10 +1,10 @@
-#include "cctwqtoutputdataframemanager.h"
+#include "cctwoutputdataframemanager.h"
 #include "cctwqtdataframe.h"
 #include "cctwchunkindex.h"
 #include "cctwqtdatachunk.h"
 
-CctwqtOutputDataFrameManager::CctwqtOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :
-  CctwqtDataFrameManager(parent),
+CctwOutputDataFrameManager::CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :
+  CctwDataFrameManager(parent),
   m_ObjectNamer(this, "outputDataManager"),
   m_Saver(saver),
   m_FileId(-1),
@@ -15,7 +15,7 @@ CctwqtOutputDataFrameManager::CctwqtOutputDataFrameManager(QcepSettingsSaverPtr 
 {
 }
 
-int CctwqtOutputDataFrameManager::loadChunk(int nx, int ny, int nz)
+int CctwOutputDataFrameManager::loadChunk(int nx, int ny, int nz)
 {
 //  if (QThread::currentThread() != thread()) {
 //    QMetaObject::invokeMethod(this, "loadChunk", Qt::BlockingQueuedConnection, Q_ARG(int, nx), Q_ARG(int, ny), Q_ARG(int, nz));
@@ -34,7 +34,7 @@ int CctwqtOutputDataFrameManager::loadChunk(int nx, int ny, int nz)
   return m_Data->chunkNumberFromIndex(CctwIntVector3D(nx, ny, nz));
 }
 
-void CctwqtOutputDataFrameManager::releaseChunk(int chunkId)
+void CctwOutputDataFrameManager::releaseChunk(int chunkId)
 {
   int nz = m_Data->chunkIndexFromNumber(chunkId).z();
 
@@ -43,7 +43,7 @@ void CctwqtOutputDataFrameManager::releaseChunk(int chunkId)
   }
 }
 
-void CctwqtOutputDataFrameManager::openOutputFile()
+void CctwOutputDataFrameManager::openOutputFile()
 {
   closeOutputFile();
 
@@ -66,7 +66,7 @@ void CctwqtOutputDataFrameManager::openOutputFile()
   }
 }
 
-void CctwqtOutputDataFrameManager::closeOutputFile()
+void CctwOutputDataFrameManager::closeOutputFile()
 {
   if (m_FileId >= 0) {
     if (m_DataspaceId >= 0) {
@@ -87,7 +87,7 @@ void CctwqtOutputDataFrameManager::closeOutputFile()
   }
 }
 
-void CctwqtOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
+void CctwOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
 {
   QMutexLocker lock(&m_WriteLock);
 
@@ -135,7 +135,7 @@ void CctwqtOutputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
   }
 }
 
-void CctwqtOutputDataFrameManager::beginTransform()
+void CctwOutputDataFrameManager::beginTransform()
 {
   QMutexLocker lock(&m_WriteLock);
 
@@ -144,7 +144,7 @@ void CctwqtOutputDataFrameManager::beginTransform()
   }
 }
 
-void CctwqtOutputDataFrameManager::endTransform()
+void CctwOutputDataFrameManager::endTransform()
 {
   QMutexLocker lock(&m_WriteLock);
 

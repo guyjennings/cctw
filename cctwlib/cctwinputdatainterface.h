@@ -2,7 +2,7 @@
 #define CCTWINPUTDATAINTERFACE_H
 
 #include "cctwqtchunkeddata.h"
-#include "cctwqtinputdataframemanager.h"
+#include "cctwinputdataframemanager.h"
 
 class CctwInputDataInterface : public CctwqtChunkedData
 {
@@ -10,7 +10,7 @@ class CctwInputDataInterface : public CctwqtChunkedData
 public:
   CctwInputDataInterface(CctwIntVector3D dim,        // Data set dimension
                          CctwIntVector3D chunkSize,  // Chunk size
-                         CctwqtInputDataFrameManager *manager,
+                         CctwInputDataFrameManager *manager,
                          QObject *parent);
 
 public slots:

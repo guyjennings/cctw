@@ -18,9 +18,6 @@ SOURCES += \
     $${PWD}/cctwqtchunkeddata.cpp \
     $${PWD}/cctwtransformtest.cpp \
     $${PWD}/cctwqtcrystalcoordinateparameters.cpp \
-    $${PWD}/cctwqtinputdataframemanager.cpp \
-    $${PWD}/cctwqtoutputdataframemanager.cpp \
-    $${PWD}/cctwqtdataframemanager.cpp \
     $${PWD}/cctwqtpeingresscommand.cpp
 
 HEADERS += \
@@ -41,9 +38,6 @@ HEADERS += \
     $${PWD}/cctwqtchunkeddata.h \
     $${PWD}/cctwtransformtest.h \
     $${PWD}/cctwqtcrystalcoordinateparameters.h \
-    $${PWD}/cctwqtinputdataframemanager.h \
-    $${PWD}/cctwqtoutputdataframemanager.h \
-    $${PWD}/cctwqtdataframemanager.h \
     $${PWD}/cctwqtpeingresscommand.h
 
 FORMS += \

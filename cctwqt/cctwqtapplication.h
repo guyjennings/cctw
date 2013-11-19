@@ -9,8 +9,8 @@
 #include "cctwqtinputdata.h"
 #include "cctwqtoutputdata.h"
 #include "cctwqtoutputslicedata.h"
-#include "cctwqtinputdataframemanager.h"
-#include "cctwqtoutputdataframemanager.h"
+#include "cctwinputdataframemanager.h"
+#include "cctwoutputdataframemanager.h"
 #include "cctwqttransformer.h"
 #include "cctwqtcrystalcoordinateparameters.h"
 #include "cctwqtcrystalcoordinatetransform.h"
@@ -147,11 +147,11 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwqtCrystalCoordinateParameters  *m_Parameters;
-  CctwqtInputDataFrameManager        *m_InputDataManager;
+  CctwInputDataFrameManager        *m_InputDataManager;
   CctwqtInputData                    *m_InputData;
-  CctwqtOutputDataFrameManager       *m_OutputDataManager;
+  CctwOutputDataFrameManager       *m_OutputDataManager;
   CctwqtOutputData                   *m_OutputData;
-  CctwqtOutputDataFrameManager       *m_OutputSliceDataManager;
+  CctwOutputDataFrameManager       *m_OutputSliceDataManager;
   CctwqtOutputSliceData              *m_OutputSliceData;
   CctwqtCrystalCoordinateTransform   *m_Transform;
   CctwqtTransformer                  *m_Transformer;

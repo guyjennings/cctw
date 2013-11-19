@@ -1,18 +1,18 @@
-#ifndef CCTWQTOUTPUTDATAFRAMEMANAGER_H
-#define CCTWQTOUTPUTDATAFRAMEMANAGER_H
+#ifndef CCTWOUTPUTDATAFRAMEMANAGER_H
+#define CCTWOUTPUTDATAFRAMEMANAGER_H
 
-#include "cctwqtdataframemanager.h"
+#include "cctwdataframemanager.h"
 #include "qcepobjectnamer.h"
 #include "hdf5.h"
 //#include "napi.h"
 
 class CctwqtDataFrame;
 
-class CctwqtOutputDataFrameManager : public CctwqtDataFrameManager
+class CctwOutputDataFrameManager : public CctwDataFrameManager
 {
   Q_OBJECT
 public:
-  explicit CctwqtOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent);
+  explicit CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent);
 
 signals:
 

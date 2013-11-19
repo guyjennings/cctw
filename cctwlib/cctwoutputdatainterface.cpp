@@ -2,7 +2,7 @@
 
 CctwOutputDataInterface::CctwOutputDataInterface(CctwIntVector3D dim,
                                                  CctwIntVector3D chunkSize,
-                                                 CctwqtOutputDataFrameManager *manager,
+                                                 CctwOutputDataFrameManager *manager,
                                                  QObject *parent)
   : CctwqtChunkedData(dim, chunkSize, manager, parent)
 {

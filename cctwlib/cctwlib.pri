@@ -17,6 +17,9 @@ SOURCES += \
     $${PWD}/cctwunitcellproperty.cpp \
     $${PWD}/cctwinputdatainterface.cpp \
     $${PWD}/cctwoutputdatainterface.cpp \
+    $${PWD}/cctwdataframemanager.cpp \
+    $${PWD}/cctwinputdataframemanager.cpp \
+    $${PWD}/cctwoutputdataframemanager.cpp \
     $${PWD}/cctwtransforminterface.cpp \
     $${PWD}/cctwtransformer.cpp \
     $${PWD}/cctwvector3d.cpp \
@@ -46,6 +49,9 @@ HEADERS += \
     $${PWD}/cctwunitcellproperty.h \
     $${PWD}/cctwinputdatainterface.h \
     $${PWD}/cctwoutputdatainterface.h \
+    $${PWD}/cctwdataframemanager.h \
+    $${PWD}/cctwinputdataframemanager.h \
+    $${PWD}/cctwoutputdataframemanager.h \
     $${PWD}/cctwtransforminterface.h \
     $${PWD}/cctwtransformer.h \
     $${PWD}/cctwvector3d.h \

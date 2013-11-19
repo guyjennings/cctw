@@ -1,13 +1,13 @@
-#include "cctwqtdataframemanager.h"
+#include "cctwdataframemanager.h"
 #include "qcepmutexlocker.h"
 
-CctwqtDataFrameManager::CctwqtDataFrameManager(QObject *parent) :
+CctwDataFrameManager::CctwDataFrameManager(QObject *parent) :
   CctwObject(parent),
   m_Data(NULL)
 {
 }
 
-void CctwqtDataFrameManager::setData(CctwqtChunkedData *data)
+void CctwDataFrameManager::setData(CctwqtChunkedData *data)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 

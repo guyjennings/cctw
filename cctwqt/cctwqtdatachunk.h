@@ -6,7 +6,7 @@
 #include <QSharedPointer>
 #include "cctwqtdataframe.h"
 #include "cctwqtchunkeddata.h"
-#include "cctwqtinputdataframemanager.h"
+#include "cctwdataframemanager.h"
 #include <QMutex>
 
 class CctwqtDataChunk : public CctwDataChunk
@@ -15,7 +15,7 @@ class CctwqtDataChunk : public CctwDataChunk
 public:
   explicit CctwqtDataChunk(CctwqtChunkedData *data,
                            CctwIntVector3D idx,
-                           CctwqtDataFrameManager *manager,
+                           CctwDataFrameManager *manager,
                            QObject *parent);
   ~CctwqtDataChunk();
 
@@ -59,7 +59,7 @@ public slots:
 private:
 //  CctwIntVector3D                              m_ChunkIndex;
   CctwqtChunkedData                           *m_Data;
-  CctwqtDataFrameManager                      *m_Manager;
+  CctwDataFrameManager                      *m_Manager;
   QVector< QSharedPointer <CctwqtDataFrame> >  m_DataFrames;
   QVector< CctwIntVector3D >                   m_Dependencies;
   QMutex                                       m_DependenciesLock;

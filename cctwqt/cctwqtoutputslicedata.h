@@ -4,7 +4,7 @@
 #include "cctwobject.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwqtdatachunk.h"
-#include "cctwqtoutputdataframemanager.h"
+#include "cctwoutputdataframemanager.h"
 
 class CctwqtOutputSliceData : public CctwOutputDataInterface
 {
@@ -14,7 +14,7 @@ public:
                                  CctwIntVector3D chunkSize,  // Chunk size
 //                                 CctwDoubleVector3D origin,
 //                                 CctwDoubleVector3D scale,
-                                 CctwqtOutputDataFrameManager *manager,
+                                 CctwOutputDataFrameManager *manager,
                                  QObject *parent);
 
 signals:

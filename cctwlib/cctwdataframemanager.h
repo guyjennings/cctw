@@ -1,5 +1,5 @@
-#ifndef CCTWQTDATAFRAMEMANAGER_H
-#define CCTWQTDATAFRAMEMANAGER_H
+#ifndef CCTWDATAFRAMEMANAGER_H
+#define CCTWDATAFRAMEMANAGER_H
 
 #include "cctwobject.h"
 #include "cctwqtchunkeddata.h"
@@ -7,11 +7,11 @@
 
 class CctwqtDataFrame;
 
-class CctwqtDataFrameManager : public CctwObject
+class CctwDataFrameManager : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtDataFrameManager(QObject *parent);
+  explicit CctwDataFrameManager(QObject *parent);
 
 signals:
 

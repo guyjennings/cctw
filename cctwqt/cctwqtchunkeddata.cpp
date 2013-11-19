@@ -5,7 +5,7 @@ CctwqtChunkedData::CctwqtChunkedData(CctwIntVector3D dim,
                                      CctwIntVector3D chunkSize,
 //                                     CctwDoubleVector3D origin,
 //                                     CctwDoubleVector3D scale,
-                                     CctwqtDataFrameManager *manager,
+                                     CctwDataFrameManager *manager,
                                      QObject *parent) :
   CctwChunkedDataInterface(dim, chunkSize, /*origin, scale,*/ parent),
   m_Manager(manager)

@@ -3,7 +3,7 @@
 #include "cctwthread.h"
 
 CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
-                                 CctwqtDataFrameManager *manager,
+                                 CctwDataFrameManager *manager,
                                  QObject *parent) :
   CctwDataChunk(data, idx, parent),
 //  m_ChunkIndex(idx),

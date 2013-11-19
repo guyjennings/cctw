@@ -2,7 +2,7 @@
 #define CCTWOUTPUTDATAINTERFACE_H
 
 #include "cctwqtchunkeddata.h"
-#include "cctwqtoutputdataframemanager.h"
+#include "cctwoutputdataframemanager.h"
 
 class CctwOutputDataInterface : public CctwqtChunkedData
 {
@@ -10,7 +10,7 @@ class CctwOutputDataInterface : public CctwqtChunkedData
 public:
   CctwOutputDataInterface(CctwIntVector3D dim,        // Data set dimension
                           CctwIntVector3D chunkSize,  // Chunk size
-                          CctwqtOutputDataFrameManager *manager,
+                          CctwOutputDataFrameManager *manager,
                           QObject *parent);
 
 public slots:

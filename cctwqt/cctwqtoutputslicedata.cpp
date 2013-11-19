@@ -4,7 +4,7 @@ CctwqtOutputSliceData::CctwqtOutputSliceData(CctwIntVector3D dim,        // Data
                                              CctwIntVector3D chunkSize,  // Chunk size
 //                                             CctwDoubleVector3D origin,
 //                                             CctwDoubleVector3D scale,
-                                             CctwqtOutputDataFrameManager *manager,
+                                             CctwOutputDataFrameManager *manager,
                                              QObject *parent) :
   CctwOutputDataInterface(dim, chunkSize, /*origin, scale,*/ manager, parent)
 {

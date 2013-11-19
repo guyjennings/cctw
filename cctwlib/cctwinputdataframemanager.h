@@ -1,15 +1,15 @@
-#ifndef CCTWQTINPUTDATAFRAMEMANAGER_H
-#define CCTWQTINPUTDATAFRAMEMANAGER_H
+#ifndef CCTWINPUTDATAFRAMEMANAGER_H
+#define CCTWINPUTDATAFRAMEMANAGER_H
 
-#include "cctwqtdataframemanager.h"
+#include "cctwdataframemanager.h"
 
 class CctwqtDataFrame;
 
-class CctwqtInputDataFrameManager : public CctwqtDataFrameManager
+class CctwInputDataFrameManager : public CctwDataFrameManager
 {
   Q_OBJECT
 public:
-  explicit CctwqtInputDataFrameManager(QObject *parent);
+  explicit CctwInputDataFrameManager(QObject *parent);
   
 signals:
   
@@ -29,4 +29,4 @@ private:
   int m_NLoadedFramesLimit;
 };
 
-#endif // CCTWQTINPUTDATAFRAMEMANAGER_H
+#endif // CCTWINPUTDATAFRAMEMANAGER_H

@@ -4,7 +4,7 @@
 #include <QVector>
 #include "cctwchunkeddatainterface.h"
 
-class CctwqtDataFrameManager;
+class CctwDataFrameManager;
 class CctwqtDataChunk;
 
 class CctwqtChunkedData : public CctwChunkedDataInterface
@@ -15,7 +15,7 @@ public:
                              CctwIntVector3D chunkSize,  // Chunk size
 //                             CctwDoubleVector3D origin,
 //                             CctwDoubleVector3D scale,
-                             CctwqtDataFrameManager *manager,
+                             CctwDataFrameManager *manager,
                              QObject *parent);
   void allocateChunks();
 
@@ -34,7 +34,7 @@ public slots:
   void clearMergeCounters();
 
 protected:
-  CctwqtDataFrameManager      *m_Manager;
+  CctwDataFrameManager      *m_Manager;
   QVector< CctwqtDataChunk* >  m_DataChunks;
 };
 

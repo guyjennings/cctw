@@ -1,17 +1,17 @@
-#include "cctwqtinputdataframemanager.h"
+#include "cctwinputdataframemanager.h"
 #include <QThread>
 #include "cctwqtdataframe.h"
 #include "cctwchunkindex.h"
 #include "qcepmutexlocker.h"
 
-CctwqtInputDataFrameManager::CctwqtInputDataFrameManager(QObject *parent) :
-  CctwqtDataFrameManager(parent),
+CctwInputDataFrameManager::CctwInputDataFrameManager(QObject *parent) :
+  CctwDataFrameManager(parent),
   m_NLoadedFrames(0),
   m_NLoadedFramesLimit(256)
 {
 }
 
-int CctwqtInputDataFrameManager::loadChunk(int ckx, int cky, int ckz)
+int CctwInputDataFrameManager::loadChunk(int ckx, int cky, int ckz)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -41,7 +41,7 @@ int CctwqtInputDataFrameManager::loadChunk(int ckx, int cky, int ckz)
   return m_Data->chunkNumberFromIndex(CctwIntVector3D(ckx, cky, ckz));
 }
 
-void CctwqtInputDataFrameManager::releaseChunk(int chunkId)
+void CctwInputDataFrameManager::releaseChunk(int chunkId)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
@@ -57,7 +57,7 @@ void CctwqtInputDataFrameManager::releaseChunk(int chunkId)
   }
 }
 
-void CctwqtInputDataFrameManager::garbageCollectFrames()
+void CctwInputDataFrameManager::garbageCollectFrames()
 {
   int n = -1;
   QDateTime oldest;
@@ -85,15 +85,15 @@ void CctwqtInputDataFrameManager::garbageCollectFrames()
   }
 }
 
-void CctwqtInputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
+void CctwInputDataFrameManager::writeChunk(CctwqtDataChunk *chunk)
 {
   printMessage("Shouldn't write data on input dataset");
 }
 
-void CctwqtInputDataFrameManager::beginTransform()
+void CctwInputDataFrameManager::beginTransform()
 {
 }
 
-void CctwqtInputDataFrameManager::endTransform()
+void CctwInputDataFrameManager::endTransform()
 {
 }
