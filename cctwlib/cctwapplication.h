@@ -1,5 +1,5 @@
-#ifndef CCTWQTAPPLICATION_H
-#define CCTWQTAPPLICATION_H
+#ifndef CCTWAPPLICATION_H
+#define CCTWAPPLICATION_H
 
 #include <QApplication>
 #include <QDateTime>
@@ -28,7 +28,7 @@ class QwtPlot;
 class QwtPlotCurve;
 #endif
 
-class CctwqtApplication
+class CctwApplication
 #ifdef NO_GUI
     : public QCoreApplication
 #else
@@ -37,7 +37,7 @@ class CctwqtApplication
 {
   Q_OBJECT
 public:
-  explicit CctwqtApplication(int &argc, char *argv[]);
+  explicit CctwApplication(int &argc, char *argv[]);
   void initialize(int &argc, char *argv[]);
 
 signals:
@@ -94,30 +94,6 @@ public slots:
 
   QcepIntList dependencies(int chunkId);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
-
-  CctwDataChunk * newInputChunk(int chunkId, double* data, int dataSize, double *weight, int weightSize);
-  CctwDataChunk * newOutputChunk(int chunkId, double* data, int dataSize, double *weight, int weightSize);
-
-  void transform(int        chunkId,
-                 double*    dataIn,
-                 int        dataSize,
-                 double*    weightIn,
-                 int        weightSize,
-                 QList<int>     outputChunkIds,
-                 QList<double*> outputChunks,
-                 QList<int>     outputChunkSizes,
-                 QList<double*> outputWeights,
-                 QList<int>     outputWeightSizes);
-
-  void merge    (int       chunkId,
-                 double*   dataIn,
-                 int       dataInSize,
-                 double*   weightIn,
-                 int       weightInSize,
-                 double*   dataOut,
-                 int       dataOutSize,
-                 double*   weightOut,
-                 int       weightOutSize);
 
   CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
   QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
@@ -214,4 +190,4 @@ public:
 
 extern QcepSettingsSaverPtr g_Saver;
 
-#endif // CCTWQTAPPLICATION_H
+#endif // CCTWAPPLICATION_H

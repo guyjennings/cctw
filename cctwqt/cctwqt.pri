@@ -1,7 +1,6 @@
 INCLUDEPATH += $${PWD}
 
 SOURCES += \
-    $${PWD}/cctwqtapplication.cpp \
     $${PWD}/cctwqtmainwindow.cpp \
     $${PWD}/cctwqtsetupinputdialog.cpp \
     $${PWD}/cctwqtsetupoutputdialog.cpp \
@@ -11,7 +10,6 @@ SOURCES += \
     $${PWD}/cctwqtpeingresscommand.cpp
 
 HEADERS += \
-    $${PWD}/cctwqtapplication.h \
     $${PWD}/cctwqtmainwindow.h \
     $${PWD}/cctwqtsetupinputdialog.h \
     $${PWD}/cctwqtsetupoutputdialog.h \

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QPointer>
 #include <QDateTime>
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 #include "cctwqtsetupinputdialog.h"
 #include "cctwqtsetupoutputdialog.h"
 #include "cctwqtsetuptransformdialog.h"
@@ -15,7 +15,7 @@ namespace Ui {
 class CctwqtMainWindow;
 }
 
-class CctwqtApplication;
+class CctwApplication;
 class QwtPlotCurve;
 class QwtLegend;
 class QwtPlotPanner;
@@ -27,7 +27,7 @@ class CctwqtMainWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  explicit CctwqtMainWindow(CctwqtApplication *app, QWidget *parent = 0);
+  explicit CctwqtMainWindow(CctwApplication *app, QWidget *parent = 0);
   ~CctwqtMainWindow();
   
 public slots:
@@ -58,7 +58,7 @@ private:
 
 private:
   Ui::CctwqtMainWindow       *ui;
-  CctwqtApplication          *m_Application;
+  CctwApplication          *m_Application;
 
   QPointer<CctwqtSetupInputDialog>     m_SetupInputDialog;
   QPointer<CctwqtSetupOutputDialog>    m_SetupOutputDialog;

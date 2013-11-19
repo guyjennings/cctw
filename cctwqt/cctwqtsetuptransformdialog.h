@@ -8,14 +8,14 @@ class CctwqtSetupTransformDialog;
 }
 
 class CctwqtMainWindow;
-class CctwqtApplication;
+class CctwApplication;
 
 class CctwqtSetupTransformDialog : public QDialog
 {
   Q_OBJECT
   
 public:
-  explicit CctwqtSetupTransformDialog(CctwqtApplication *app, CctwqtMainWindow *parent);
+  explicit CctwqtSetupTransformDialog(CctwApplication *app, CctwqtMainWindow *parent);
   ~CctwqtSetupTransformDialog();
   
 public slots:
@@ -36,7 +36,7 @@ private:
 
 private:
   Ui::CctwqtSetupTransformDialog *ui;
-  CctwqtApplication              *m_Application;
+  CctwApplication              *m_Application;
 };
 
 #endif // CCTWQTSETUPTRANSFORMDIALOG_H

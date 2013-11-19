@@ -7,13 +7,13 @@
 #include "cctwtransforminterface.h"
 #include "cctwinputchunkindex.h"
 
-class CctwqtApplication;
+class CctwApplication;
 
 class CctwTransformer : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwTransformer(CctwqtApplication *application,
+  CctwTransformer(CctwApplication *application,
                   CctwInputDataInterface *input,    // The input data
                   CctwOutputDataInterface *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
@@ -46,7 +46,7 @@ private:
   void runTransformChunkNumber(int n);
 
 private:
-  CctwqtApplication       *m_Application;
+  CctwApplication       *m_Application;
   QAtomicInt               m_MergeCounter;
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;

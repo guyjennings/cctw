@@ -3,12 +3,12 @@
 #include "cctwtcl_commands.h"
 #include "cctwdebug.h"
 #include "qcepdocumentationdictionary.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 #include "cctwcrystalcoordinateparameters.h"
 
 #include "cctwtclutils.h"
 
-static CctwqtApplication *g_Application = NULL;
+static CctwApplication *g_Application = NULL;
 static CctwCrystalCoordinateParameters *g_Parameters = NULL;
 
 #define UNUSED __attribute__((unused))
@@ -21,7 +21,7 @@ int Cctwtcl_Initialize()
   g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
-  g_Application = new CctwqtApplication(nargs, args);
+  g_Application = new CctwApplication(nargs, args);
   g_Application -> initialize(nargs, args);
 
   g_Parameters  = new CctwCrystalCoordinateParameters(g_Application);

@@ -7,14 +7,14 @@
 
 #include "cctwdebug.h"
 #include "qcepdocumentationdictionary.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 
 int main(int argc, char *argv[])
 {
   g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
-  CctwqtApplication *app = new CctwqtApplication(argc, argv);
+  CctwApplication *app = new CctwApplication(argc, argv);
 
 //  int appArgc = qApp->argc();
 

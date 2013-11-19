@@ -12,7 +12,7 @@
 #include "qwt_plot_zoomer.h"
 #include "qwt_symbol.h"
 
-CctwqtMainWindow::CctwqtMainWindow(CctwqtApplication *app, QWidget *parent) :
+CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::CctwqtMainWindow),
   m_Application(app),

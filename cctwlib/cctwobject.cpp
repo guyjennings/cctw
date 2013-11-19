@@ -1,6 +1,6 @@
 #include "cctwobject.h"
 #include "qcepproperty.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 
 CctwObject::CctwObject(QObject *parent) :
   QObject(parent),

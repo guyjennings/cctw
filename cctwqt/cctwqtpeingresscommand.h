@@ -3,14 +3,14 @@
 
 #include "cctwobject.h"
 
-class CctwqtApplication;
+class CctwApplication;
 class QwtPlot;
 
 class CctwqtPEIngressCommand : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent);
+  explicit CctwqtPEIngressCommand(CctwApplication *app, QObject *parent);
 
 public slots:
   void testSlot();
@@ -21,7 +21,7 @@ private:
   double normalizedValue(double v);
 
 private:
-  CctwqtApplication *m_Application;
+  CctwApplication *m_Application;
 };
 
 #endif // CCTWQTPEINGRESSCOMMAND_H

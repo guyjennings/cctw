@@ -2,20 +2,20 @@
 #define CCTWQTSCRIPTENGINE_H
 
 #include <QScriptEngine>
-class CctwqtApplication;
+class CctwApplication;
 
 class CctwScriptEngine : public QScriptEngine
 {
   Q_OBJECT
 public:
-  explicit CctwScriptEngine(CctwqtApplication *app, QObject *parent = 0);
+  explicit CctwScriptEngine(CctwApplication *app, QObject *parent = 0);
   
 signals:
   
 public slots:
   
 public:
-  CctwqtApplication* application() const;
+  CctwApplication* application() const;
 
 private:
   static QScriptValue printFunc(QScriptContext *context, QScriptEngine *engine);
@@ -24,7 +24,7 @@ private:
   static QScriptValue executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine);
 
 private:
-  CctwqtApplication *m_Application;
+  CctwApplication *m_Application;
 };
 
 #endif // CCTWQTSCRIPTENGINE_H

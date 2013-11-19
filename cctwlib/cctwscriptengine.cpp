@@ -1,11 +1,11 @@
 #include "cctwscriptengine.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 #include "cctwintvector3dproperty.h"
 #include "cctwdoublevector3dproperty.h"
 #include "cctwdoublematrix3x3property.h"
 #include "cctwunitcellproperty.h"
 
-CctwScriptEngine::CctwScriptEngine(CctwqtApplication *app, QObject *parent) :
+CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   QScriptEngine(parent),
   m_Application(app)
 {
@@ -21,7 +21,7 @@ CctwScriptEngine::CctwScriptEngine(CctwqtApplication *app, QObject *parent) :
   qScriptRegisterMetaType(this, CctwUnitCellProperty::toScriptValue, CctwUnitCellProperty::fromScriptValue);
 }
 
-CctwqtApplication* CctwScriptEngine::application() const
+CctwApplication* CctwScriptEngine::application() const
 {
   return m_Application;
 }
@@ -42,7 +42,7 @@ QScriptValue CctwScriptEngine::printFunc(QScriptContext *context, QScriptEngine 
       msg += context -> argument(i).toString();
     }
 
-    CctwqtApplication *app = eng->application();
+    CctwApplication *app = eng->application();
 
     if (app) {
       app->printMessage(msg);
@@ -68,7 +68,7 @@ QScriptValue CctwScriptEngine::waitFunc(QScriptContext *context, QScriptEngine *
       msg += context -> argument(i).toString();
     }
 
-    CctwqtApplication *app = eng->application();
+    CctwApplication *app = eng->application();
 
     if (app) {
       app->wait(msg);
@@ -94,7 +94,7 @@ QScriptValue CctwScriptEngine::loadPreferencesFunc(QScriptContext *context, QScr
       msg += context -> argument(i).toString();
     }
 
-    CctwqtApplication *app = eng->application();
+    CctwApplication *app = eng->application();
 
     if (app) {
       app->readSettings(msg);
@@ -120,7 +120,7 @@ QScriptValue CctwScriptEngine::executeScriptFileFunc(QScriptContext *context, QS
       msg += context -> argument(i).toString();
     }
 
-    CctwqtApplication *app = eng->application();
+    CctwApplication *app = eng->application();
 
     if (app) {
       app->executeScriptFile(msg);

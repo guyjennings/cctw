@@ -1,5 +1,5 @@
 #include "cctwqtpeingresscommand.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 #include "cctwlinearfitter.h"
 
 #ifndef NO_GUI
@@ -10,7 +10,7 @@
 #include <QFile>
 #include <math.h>
 
-CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwqtApplication *app, QObject *parent) :
+CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwApplication *app, QObject *parent) :
   CctwObject(parent),
   m_Application(app)
 {

@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include "cctwmatrix3x3.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 #include <QtConcurrentRun>
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
 
-CctwTransformer::CctwTransformer(CctwqtApplication *application,
+CctwTransformer::CctwTransformer(CctwApplication *application,
                                  CctwInputDataInterface *input,
                                  CctwOutputDataInterface *output,
                                  CctwTransformInterface *xform,

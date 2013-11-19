@@ -3,9 +3,9 @@
 #include "cctwqtsetuptransformdialog.h"
 #include "ui_cctwqtsetuptransformdialog.h"
 #include "cctwqtmainwindow.h"
-#include "cctwqtapplication.h"
+#include "cctwapplication.h"
 
-CctwqtSetupTransformDialog::CctwqtSetupTransformDialog(CctwqtApplication *app, CctwqtMainWindow *parent) :
+CctwqtSetupTransformDialog::CctwqtSetupTransformDialog(CctwApplication *app, CctwqtMainWindow *parent) :
   QDialog(parent),
   ui(new Ui::CctwqtSetupTransformDialog),
   m_Application(app)

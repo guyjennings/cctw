@@ -1,5 +1,4 @@
-#include "cctwqtapplication.h"
-#include "cctwqtmainwindow.h"
+#include "cctwapplication.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "cctwtransformer.h"
 #include <QScriptValue>
@@ -22,7 +21,7 @@
 
 QcepSettingsSaverPtr g_Saver;
 
-CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
+CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
   : QCoreApplication(argc, argv),
 #else
@@ -73,19 +72,19 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
   connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
 }
 
-QcepSettingsSaverWPtr CctwqtApplication::saver() const
+QcepSettingsSaverWPtr CctwApplication::saver() const
 {
   return m_Saver;
 }
 
-void CctwqtApplication::onDebugChanged(int dbg)
+void CctwApplication::onDebugChanged(int dbg)
 {
   if (g_DebugLevel) {
     g_DebugLevel->setDebugLevel(dbg);
   }
 }
 
-void CctwqtApplication::onProgress(int prg)
+void CctwApplication::onProgress(int prg)
 {
   int prog = (prg*100)/get_ProgressLimit();
 
@@ -102,7 +101,7 @@ void CctwqtApplication::onProgress(int prg)
   }
 }
 
-void CctwqtApplication::decodeCommandLineArgs(int &argc, char *argv[])
+void CctwApplication::decodeCommandLineArgs(int &argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
   decodeCommandLineArgsForUnix(argc, argv);
@@ -113,7 +112,7 @@ void CctwqtApplication::decodeCommandLineArgs(int &argc, char *argv[])
 #endif
 }
 
-void CctwqtApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
+void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
   int c;
@@ -181,11 +180,11 @@ void CctwqtApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 #endif
 }
 
-void CctwqtApplication::decodeCommandLineArgsForWindows(int &argc, char *argv[])
+void CctwApplication::decodeCommandLineArgsForWindows(int &argc, char *argv[])
 {
 }
 
-void CctwqtApplication::initialize(int &argc, char *argv[])
+void CctwApplication::initialize(int &argc, char *argv[])
 {
   decodeCommandLineArgs(argc, argv);
 
@@ -274,12 +273,12 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   }
 }
 
-void CctwqtApplication::doAboutToQuit()
+void CctwApplication::doAboutToQuit()
 {
   writeSettings();
 }
 
-void CctwqtApplication::printLine(QString msg)
+void CctwApplication::printLine(QString msg)
 {
 #ifdef NO_GUI
   printf("%s\n", qPrintable(msg));
@@ -292,7 +291,7 @@ void CctwqtApplication::printLine(QString msg)
 #endif
 }
 
-void CctwqtApplication::printMessage(QString msg, QDateTime dt)
+void CctwApplication::printMessage(QString msg, QDateTime dt)
 {
 #ifdef NO_GUI
   printf("%s\n", qPrintable(msg));
@@ -305,14 +304,14 @@ void CctwqtApplication::printMessage(QString msg, QDateTime dt)
 #endif
 }
 
-void CctwqtApplication::wait(QString msg)
+void CctwApplication::wait(QString msg)
 {
   waitCompleted();
 
 //  printMessage(tr("Wait: %1").arg(msg));
 }
 
-void CctwqtApplication::evaluateCommand(QString cmd)
+void CctwApplication::evaluateCommand(QString cmd)
 {
   if (m_ScriptEngine) {
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
@@ -321,7 +320,7 @@ void CctwqtApplication::evaluateCommand(QString cmd)
   }
 }
 
-QScriptValue CctwqtApplication::evaluate(QString cmd)
+QScriptValue CctwApplication::evaluate(QString cmd)
 {
   if (m_ScriptEngine) {
     return m_ScriptEngine->evaluate(cmd);
@@ -330,7 +329,7 @@ QScriptValue CctwqtApplication::evaluate(QString cmd)
   }
 }
 
-void CctwqtApplication::executeScriptFile(QString path)
+void CctwApplication::executeScriptFile(QString path)
 {
   if (m_ScriptEngine) {
     QFile f(path);
@@ -345,14 +344,14 @@ void CctwqtApplication::executeScriptFile(QString path)
   }
 }
 
-void CctwqtApplication::readSettings()
+void CctwApplication::readSettings()
 {
   QSettings settings("xray.aps.anl.gov", "cctw");
 
   readSettings(&settings);
 }
 
-void CctwqtApplication::readSettings(QString path)
+void CctwApplication::readSettings(QString path)
 {
   QSettings settings(path, QSettings::IniFormat);
 
@@ -363,7 +362,7 @@ void CctwqtApplication::readSettings(QString path)
   set_SettingsPath(path);
 }
 
-void CctwqtApplication::readSettings(QSettings *settings)
+void CctwApplication::readSettings(QSettings *settings)
 {
   QcepProperty::readSettings(this, &staticMetaObject, "cctw", settings, true);
 
@@ -416,7 +415,7 @@ void CctwqtApplication::readSettings(QSettings *settings)
   }
 }
 
-void CctwqtApplication::writeSettings()
+void CctwApplication::writeSettings()
 {
   QSettings settings("xray.aps.anl.gov", "cctw");
 
@@ -425,7 +424,7 @@ void CctwqtApplication::writeSettings()
   writeSettings(&settings);
 }
 
-void CctwqtApplication::writeSettings(QString path)
+void CctwApplication::writeSettings(QString path)
 {
   QSettings settings(path, QSettings::IniFormat);
 
@@ -436,7 +435,7 @@ void CctwqtApplication::writeSettings(QString path)
   writeSettings(&settings);
 }
 
-void CctwqtApplication::writeSettings(QSettings *settings)
+void CctwApplication::writeSettings(QSettings *settings)
 {
   QcepProperty::writeSettings(this, &staticMetaObject, "cctw", settings, true);
 
@@ -491,7 +490,7 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
 //QAtomicInt dependencyCounter;
 
-void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
+void CctwApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
     CctwCrystalCoordinateTransform transform(m_Parameters, NULL);
@@ -542,7 +541,7 @@ void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
   workCompleted(1);
 }
 
-void CctwqtApplication::calculateDependencies()
+void CctwApplication::calculateDependencies()
 {
 //  QVector < QFuture < void > > futures;
   waitCompleted();
@@ -582,7 +581,7 @@ void CctwqtApplication::calculateDependencies()
 
           addWorkOutstanding(1);
 //          futures.append(
-                QtConcurrent::run(this, &CctwqtApplication::calculateChunkDependencies, idx)/*)*/;
+                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, idx)/*)*/;
 //          calculateChunkDependencies(idx);
         }
       }
@@ -604,7 +603,7 @@ abort:
   printMessage(tr("finished calculate dependencies after %1 msec").arg(msec));
 }
 
-void CctwqtApplication::saveDependencies(QString path)
+void CctwApplication::saveDependencies(QString path)
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -650,7 +649,7 @@ void CctwqtApplication::saveDependencies(QString path)
   settings.endArray();
 }
 
-void CctwqtApplication::loadDependencies(QString path)
+void CctwApplication::loadDependencies(QString path)
 {
   m_InputData -> clearDependencies();
   m_OutputData -> clearDependencies();
@@ -689,7 +688,7 @@ void CctwqtApplication::loadDependencies(QString path)
   settings.endArray();
 }
 
-void CctwqtApplication::reportDependencies()
+void CctwApplication::reportDependencies()
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -792,7 +791,7 @@ void CctwqtApplication::reportDependencies()
   }
 }
 
-void CctwqtApplication::dummyInputRun()
+void CctwApplication::dummyInputRun()
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -808,7 +807,7 @@ void CctwqtApplication::dummyInputRun()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          QtConcurrent::run(this, &CctwqtApplication::dummyInputRunChunk, idx);
+          QtConcurrent::run(this, &CctwApplication::dummyInputRunChunk, idx);
 //          calculateChunkDependencies(idx);
         }
       }
@@ -816,7 +815,7 @@ void CctwqtApplication::dummyInputRun()
   }
 }
 
-void CctwqtApplication::dummyInputRunChunk(CctwIntVector3D idx)
+void CctwApplication::dummyInputRunChunk(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
     int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
@@ -828,7 +827,7 @@ void CctwqtApplication::dummyInputRunChunk(CctwIntVector3D idx)
   }
 }
 
-void CctwqtApplication::reportOutputDependencies()
+void CctwApplication::reportOutputDependencies()
 {
   CctwIntVector3D chunks = m_OutputData->chunkCount();
 
@@ -851,7 +850,7 @@ void CctwqtApplication::reportOutputDependencies()
   }
 }
 
-void CctwqtApplication::reportOutputDependencies(CctwIntVector3D idx)
+void CctwApplication::reportOutputDependencies(CctwIntVector3D idx)
 {
   CctwDataChunk *chunk = m_OutputData->chunk(idx);
 
@@ -860,7 +859,7 @@ void CctwqtApplication::reportOutputDependencies(CctwIntVector3D idx)
   }
 }
 
-void CctwqtApplication::reportInputDependencies()
+void CctwApplication::reportInputDependencies()
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -883,7 +882,7 @@ void CctwqtApplication::reportInputDependencies()
   }
 }
 
-void CctwqtApplication::reportInputDependencies(CctwIntVector3D idx)
+void CctwApplication::reportInputDependencies(CctwIntVector3D idx)
 {
   CctwDataChunk *chunk = m_InputData->chunk(idx);
 
@@ -892,7 +891,7 @@ void CctwqtApplication::reportInputDependencies(CctwIntVector3D idx)
   }
 }
 
-void CctwqtApplication::reportInputChunkCounts()
+void CctwApplication::reportInputChunkCounts()
 {
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -935,7 +934,7 @@ void CctwqtApplication::reportInputChunkCounts()
   }
 }
 
-void CctwqtApplication::reportOutputChunkCounts()
+void CctwApplication::reportOutputChunkCounts()
 {
   CctwIntVector3D chunks = m_OutputData->chunkCount();
 
@@ -978,7 +977,7 @@ void CctwqtApplication::reportOutputChunkCounts()
   }
 }
 
-int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
+int CctwApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
 {
   CctwIntVector3D idx(index.x(), index.y(), index.z());
 
@@ -991,22 +990,22 @@ int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D l
   return offset;
 }
 
-CctwCrystalCoordinateParameters *CctwqtApplication::parameters() const
+CctwCrystalCoordinateParameters *CctwApplication::parameters() const
 {
   return m_Parameters;
 }
 
-void CctwqtApplication::addWorkOutstanding(int amt)
+void CctwApplication::addWorkOutstanding(int amt)
 {
   m_WorkOutstanding.fetchAndAddOrdered(amt);
 }
 
-void CctwqtApplication::workCompleted(int amt)
+void CctwApplication::workCompleted(int amt)
 {
   m_WorkOutstanding.fetchAndAddOrdered(-amt);
 }
 
-void CctwqtApplication::waitCompleted()
+void CctwApplication::waitCompleted()
 {
   while (m_WorkOutstanding.fetchAndAddOrdered(0) > 0) {
     CctwThread::msleep(100);
@@ -1014,66 +1013,29 @@ void CctwqtApplication::waitCompleted()
   }
 }
 
-int  CctwqtApplication::workOutstanding()
+int  CctwApplication::workOutstanding()
 {
   return m_WorkOutstanding.fetchAndAddOrdered(0);
 }
 
-QcepIntList CctwqtApplication::dependencies(int chunkIdx)
+QcepIntList CctwApplication::dependencies(int chunkIdx)
 {
   return m_Transformer->dependencies(chunkIdx);
 }
 
-QList<CctwIntVector3D> CctwqtApplication::dependencies(int cx, int cy, int cz)
+QList<CctwIntVector3D> CctwApplication::dependencies(int cx, int cy, int cz)
 {
   return m_Transformer->dependencies(cx, cy, cz);
 }
 
-CctwDataChunk * CctwqtApplication::newInputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
-{
-  return NULL;
-}
-
-CctwDataChunk * CctwqtApplication::newOutputChunk(int chunkId, double *data, int dataSize, double *weight, int weightSize)
-{
-  return NULL;
-}
-
-void CctwqtApplication::transform
-              (int        chunkId,
-               double*    dataIn,
-               int        dataSize,
-               double*    weightIn,
-               int        weightSize,
-               QList<int>     outputChunkIds,
-               QList<double*> outputChunks,
-               QList<int>     outputChunkSizes,
-               QList<double*> outputWeights,
-               QList<int>     outputWeightSizes)
-{
-}
-
-void CctwqtApplication::merge
-              (int       chunkId,
-               double*   dataIn,
-               int       dataInSize,
-               double*   weightIn,
-               int       weightInSize,
-               double*   dataOut,
-               int       dataOutSize,
-               double*   weightOut,
-               int       weightOutSize)
-{
-}
-
-void CctwqtApplication::analyzePEMetaData(QString path)
+void CctwApplication::analyzePEMetaData(QString path)
 {
   set_SpecDataFilePath(path);
 
   QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
 }
 
-void CctwqtApplication::analyzeSpecDataFile(QString path)
+void CctwApplication::analyzeSpecDataFile(QString path)
 {
   set_SpecDataFilePath(path);
 
@@ -1081,7 +1043,7 @@ void CctwqtApplication::analyzeSpecDataFile(QString path)
 }
 
 #ifndef NO_GUI
-void CctwqtApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4)
+void CctwApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4)
 {
   if (m_Window) {
     m_Window->plotCurves(c1, c2, c3, c4);
@@ -1090,7 +1052,7 @@ void CctwqtApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCu
 #endif
 
 CctwInputDataBlob*
-CctwqtApplication::input     (int chunkId, QString inputDataURL)
+CctwApplication::input     (int chunkId, QString inputDataURL)
 {
   CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(chunkId, m_InputData->chunkSize());
 
@@ -1100,7 +1062,7 @@ CctwqtApplication::input     (int chunkId, QString inputDataURL)
 }
 
 QList<CctwIntermediateDataBlob*>
-CctwqtApplication::transform (int chunkId, CctwInputDataBlob *chunk)
+CctwApplication::transform (int chunkId, CctwInputDataBlob *chunk)
 {
   QList<CctwIntermediateDataBlob*> res;
 
@@ -1116,7 +1078,7 @@ CctwqtApplication::transform (int chunkId, CctwInputDataBlob *chunk)
 }
 
 CctwIntermediateDataBlob*
-CctwqtApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
+CctwApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
 {
   CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
 
@@ -1124,7 +1086,7 @@ CctwqtApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, Cct
 }
 
 CctwOutputDataBlob*
-CctwqtApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
+CctwApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
 {
   CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
 
@@ -1132,21 +1094,21 @@ CctwqtApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
 }
 
 void
-CctwqtApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
+CctwApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
 {
 }
 
-void CctwqtApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
+void CctwApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
 {
   CctwDataBlob::deleteBlob(chunkId, blob);
 }
 
-int CctwqtApplication::inputChunkCount()
+int CctwApplication::inputChunkCount()
 {
   return m_InputData->chunkCount().volume();
 }
 
-int CctwqtApplication::outputChunkCount()
+int CctwApplication::outputChunkCount()
 {
   return m_OutputData->chunkCount().volume();
 }
