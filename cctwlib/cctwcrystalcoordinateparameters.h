@@ -12,6 +12,9 @@ class CctwCrystalCoordinateParameters : public CctwObject
 public:
   CctwCrystalCoordinateParameters(QObject *parent);
 
+public slots:
+  void setDefaults();
+
 public:
   double pixelSize() const { return m_PixelSize; }
   double wavelength() const { return m_Wavelength; }

@@ -10,6 +10,9 @@
 #include <QtConcurrentRun>
 #include <QFile>
 #include "cctwintvector3dproperty.h"
+#include "cctwdoublevector3dproperty.h"
+#include "cctwdoublematrix3x3property.h"
+#include "cctwunitcellproperty.h"
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
 
@@ -197,7 +200,7 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
 
-  m_Parameters       = new CctwqtCrystalCoordinateParameters(this);
+  m_Parameters       = new CctwCrystalCoordinateParameters(this);
 
   m_InputDataManager        = new CctwInputDataFrameManager(this);
   m_InputData               = new CctwInputData(CctwIntVector3D(2048,2048,2048),
@@ -988,7 +991,7 @@ int CctwqtApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D l
   return offset;
 }
 
-CctwqtCrystalCoordinateParameters *CctwqtApplication::parameters() const
+CctwCrystalCoordinateParameters *CctwqtApplication::parameters() const
 {
   return m_Parameters;
 }

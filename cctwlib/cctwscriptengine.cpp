@@ -1,6 +1,9 @@
 #include "cctwscriptengine.h"
 #include "cctwqtapplication.h"
 #include "cctwintvector3dproperty.h"
+#include "cctwdoublevector3dproperty.h"
+#include "cctwdoublematrix3x3property.h"
+#include "cctwunitcellproperty.h"
 
 CctwScriptEngine::CctwScriptEngine(CctwqtApplication *app, QObject *parent) :
   QScriptEngine(parent),

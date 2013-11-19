@@ -12,7 +12,7 @@
 #include "cctwinputdataframemanager.h"
 #include "cctwoutputdataframemanager.h"
 #include "cctwqttransformer.h"
-#include "cctwqtcrystalcoordinateparameters.h"
+#include "cctwcrystalcoordinateparameters.h"
 #include "cctwqtcrystalcoordinatetransform.h"
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
@@ -85,7 +85,7 @@ public slots:
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
-  CctwqtCrystalCoordinateParameters *parameters() const;
+  CctwCrystalCoordinateParameters *parameters() const;
 
   void addWorkOutstanding(int amt);
   void workCompleted(int amt);
@@ -151,7 +151,7 @@ public:
 #ifndef NO_GUI
   CctwqtMainWindow                   *m_Window;
 #endif
-  CctwqtCrystalCoordinateParameters  *m_Parameters;
+  CctwCrystalCoordinateParameters  *m_Parameters;
   CctwInputDataFrameManager          *m_InputDataManager;
   CctwInputData                    *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;

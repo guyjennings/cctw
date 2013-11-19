@@ -3,13 +3,13 @@
 
 #include "cctwobject.h"
 #include "cctwcrystalcoordinatetransform.h"
-#include "cctwqtcrystalcoordinateparameters.h"
+#include "cctwcrystalcoordinateparameters.h"
 
 class CctwqtCrystalCoordinateTransform : public CctwCrystalCoordinateTransform
 {
   Q_OBJECT
 public:
-  explicit CctwqtCrystalCoordinateTransform(CctwqtCrystalCoordinateParameters *parms, QObject *parent);
+  explicit CctwqtCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
   
 signals:
   
@@ -18,7 +18,7 @@ public slots:
   void report();
 
 private:
-  CctwqtCrystalCoordinateParameters *m_QTParms;
+  CctwCrystalCoordinateParameters *m_QTParms;
 };
 
 #endif // CCTWQTCRYSTALCOORDINATETRANSFORM_H

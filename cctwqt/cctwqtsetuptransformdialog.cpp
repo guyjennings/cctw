@@ -43,7 +43,7 @@ void CctwqtSetupTransformDialog::accept()
 
 void CctwqtSetupTransformDialog::copyParametersToDialog()
 {
-  CctwqtCrystalCoordinateParameters *parms = m_Application->m_Parameters;
+  CctwCrystalCoordinateParameters *parms = m_Application->m_Parameters;
   CctwInputData *input = m_Application->m_InputData;
 
   ui->m_PixelDimensionX->setValue(input->dimensions().x());
@@ -147,7 +147,7 @@ void CctwqtSetupTransformDialog::updatePhi()
 
 void CctwqtSetupTransformDialog::copyDialogToParameters()
 {
-  CctwqtCrystalCoordinateParameters *parms = m_Application->m_Parameters;
+  CctwCrystalCoordinateParameters *parms = m_Application->m_Parameters;
 
   parms->setPixelSize(ui->m_PixelSize->value());
   parms->setWavelength(ui->m_Wavelength->value());
