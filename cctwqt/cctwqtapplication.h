@@ -13,7 +13,7 @@
 #include "cctwoutputdataframemanager.h"
 #include "cctwqttransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
-#include "cctwqtcrystalcoordinatetransform.h"
+#include "cctwcrystalcoordinatetransform.h"
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
@@ -151,16 +151,16 @@ public:
 #ifndef NO_GUI
   CctwqtMainWindow                   *m_Window;
 #endif
-  CctwCrystalCoordinateParameters  *m_Parameters;
+  CctwCrystalCoordinateParameters    *m_Parameters;
   CctwInputDataFrameManager          *m_InputDataManager;
-  CctwInputData                    *m_InputData;
+  CctwInputData                      *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;
-  CctwOutputData                   *m_OutputData;
+  CctwOutputData                     *m_OutputData;
   CctwOutputDataFrameManager         *m_OutputSliceDataManager;
-  CctwOutputSliceData              *m_OutputSliceData;
-  CctwqtCrystalCoordinateTransform   *m_Transform;
+  CctwOutputSliceData                *m_OutputSliceData;
+  CctwCrystalCoordinateTransform     *m_Transform;
   CctwqtTransformer                  *m_Transformer;
-  CctwqtCrystalCoordinateTransform   *m_SliceTransform;
+  CctwCrystalCoordinateTransform     *m_SliceTransform;
   CctwqtTransformer                  *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
   CctwqtPEIngressCommand             *m_PEIngressCommand;

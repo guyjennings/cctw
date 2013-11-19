@@ -23,6 +23,9 @@ public slots:
   void updateFromParameters();
   void setCurrentFrame(double frame);
 
+  double changeCount();
+  void report();
+
   CctwDoubleMatrix3x3 createBMatrix(const CctwUnitCell &cell) const;
 
   CctwDoubleVector3D getDetPos(double x, double y);
@@ -46,8 +49,6 @@ private:
   CctwCrystalCoordinateParameters *m_Parms;
 
   double m_CurrentFrame;
-
-protected:
   int    m_CurrentFrameChangeCount;
 
 public:

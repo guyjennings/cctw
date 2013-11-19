@@ -39,7 +39,7 @@ void CctwqtTransformer::runTransformChunkNumber(int n)
 
 void CctwqtTransformer::transformChunkNumber(int n)
 {
-  CctwqtCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);
@@ -233,7 +233,7 @@ void CctwqtTransformer::checkTransform()
 
 QcepIntList CctwqtTransformer::dependencies(int chunkIdx)
 {
-  CctwqtCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);

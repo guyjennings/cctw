@@ -77,6 +77,20 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
   }
 }
 
+double CctwCrystalCoordinateTransform::changeCount()
+{
+  return m_CurrentFrameChangeCount;
+}
+
+void CctwCrystalCoordinateTransform::report()
+{
+//  printMessage(tr("CctwqtCrystalCoordinateParameters - wavelength() = %1")
+//               .arg(m_QTParms->wavelength()));
+
+//  printMessage(tr("CctwCrystalCoordinateParameters::m_Wavelength = %1")
+//               .arg(((CctwCrystalCoordinateParameters*) m_QTParms)->m_Wavelength));
+}
+
 CctwDoubleMatrix3x3 CctwCrystalCoordinateTransform::createBMatrix(const CctwUnitCell &cell) const
 {
   double alat = cell.a();

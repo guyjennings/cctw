@@ -227,12 +227,12 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
 //                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
                                                               m_OutputSliceDataManager, this);
 
-  m_Transform        = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, this);
   m_Transformer      = new CctwqtTransformer(this,
                                              m_InputData,
                                              m_OutputData,
                                              m_Transform, 1, 1, 1, this);
-  m_SliceTransform   = new CctwqtCrystalCoordinateTransform(m_Parameters, this);
+  m_SliceTransform   = new CctwCrystalCoordinateTransform(m_Parameters, this);
   m_SliceTransformer = new CctwqtTransformer(this,
                                              m_InputData,
                                              m_OutputSliceData,
@@ -494,7 +494,7 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 void CctwqtApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
-    CctwqtCrystalCoordinateTransform transform(m_Parameters, NULL);
+    CctwCrystalCoordinateTransform transform(m_Parameters, NULL);
 
 //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
