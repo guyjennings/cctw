@@ -17,14 +17,16 @@
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
-#include "cctwtransformtest.h"
 #include "cctwqtpeingresscommand.h"
 #include "cctwdatablobs.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
+
+#ifndef NO_GUI
 class QwtPlot;
 class QwtPlotCurve;
+#endif
 
 class CctwqtApplication
 #ifdef NO_GUI
@@ -75,8 +77,11 @@ public slots:
   void reportOutputChunkCounts();
 
   void analyzePEMetaData(QString path);
-  void analyzeSpecDataFile(QString path, QwtPlot *graph);
+  void analyzeSpecDataFile(QString path);
+
+#ifndef NO_GUI
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
+#endif
 
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
@@ -147,18 +152,17 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwqtCrystalCoordinateParameters  *m_Parameters;
-  CctwInputDataFrameManager        *m_InputDataManager;
+  CctwInputDataFrameManager          *m_InputDataManager;
   CctwqtInputData                    *m_InputData;
-  CctwOutputDataFrameManager       *m_OutputDataManager;
+  CctwOutputDataFrameManager         *m_OutputDataManager;
   CctwqtOutputData                   *m_OutputData;
-  CctwOutputDataFrameManager       *m_OutputSliceDataManager;
+  CctwOutputDataFrameManager         *m_OutputSliceDataManager;
   CctwqtOutputSliceData              *m_OutputSliceData;
   CctwqtCrystalCoordinateTransform   *m_Transform;
   CctwqtTransformer                  *m_Transformer;
   CctwqtCrystalCoordinateTransform   *m_SliceTransform;
   CctwqtTransformer                  *m_SliceTransformer;
-  CctwScriptEngine                 *m_ScriptEngine;
-  CctwTransformTest                  *m_TransformTest;
+  CctwScriptEngine                   *m_ScriptEngine;
   CctwqtPEIngressCommand             *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 

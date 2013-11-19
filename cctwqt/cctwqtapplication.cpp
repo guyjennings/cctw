@@ -44,7 +44,6 @@ CctwqtApplication::CctwqtApplication(int &argc, char *argv[])
   m_SliceTransform(NULL),
   m_SliceTransformer(NULL),
   m_ScriptEngine(NULL),
-  m_TransformTest(NULL),
   m_Saver(new QcepSettingsSaver(this)),
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
@@ -239,7 +238,6 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, this);
 
-  m_TransformTest    = new CctwTransformTest(this, this);
   m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
@@ -254,7 +252,6 @@ void CctwqtApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
   m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
-  m_ScriptEngine->globalObject().setProperty("test", m_ScriptEngine->newQObject(m_TransformTest));
   m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
@@ -414,10 +411,6 @@ void CctwqtApplication::readSettings(QSettings *settings)
     m_SliceTransformer->readSettings(settings, "sliceTransformer");
   }
 
-  if (m_TransformTest) {
-    m_TransformTest->readSettings(settings, "test");
-  }
-
   if (m_PEIngressCommand) {
     m_PEIngressCommand->readSettings(settings, "peingress");
   }
@@ -489,10 +482,6 @@ void CctwqtApplication::writeSettings(QSettings *settings)
 
   if (m_SliceTransformer) {
     m_SliceTransformer->writeSettings(settings, "sliceTransformer");
-  }
-
-  if (m_TransformTest) {
-    m_TransformTest->writeSettings(settings, "test");
   }
 
   if (m_PEIngressCommand) {
@@ -1084,21 +1073,21 @@ void CctwqtApplication::analyzePEMetaData(QString path)
   QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
 }
 
-void CctwqtApplication::analyzeSpecDataFile(QString path, QwtPlot *graph)
+void CctwqtApplication::analyzeSpecDataFile(QString path)
 {
   set_SpecDataFilePath(path);
 
-  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path, graph);
+  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path);
 }
 
+#ifndef NO_GUI
 void CctwqtApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4)
 {
-#ifndef NO_GUI
   if (m_Window) {
     m_Window->plotCurves(c1, c2, c3, c4);
   }
-#endif
 }
+#endif
 
 CctwInputDataBlob*
 CctwqtApplication::input     (int chunkId, QString inputDataURL)

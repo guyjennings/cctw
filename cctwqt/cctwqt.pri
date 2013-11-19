@@ -16,7 +16,6 @@ SOURCES += \
     $${PWD}/cctwqttransformer.cpp \
     $${PWD}/cctwqtcrystalcoordinatetransform.cpp \
     $${PWD}/cctwqtchunkeddata.cpp \
-    $${PWD}/cctwtransformtest.cpp \
     $${PWD}/cctwqtcrystalcoordinateparameters.cpp \
     $${PWD}/cctwqtpeingresscommand.cpp
 
@@ -36,7 +35,6 @@ HEADERS += \
     $${PWD}/cctwqttransformer.h \
     $${PWD}/cctwqtcrystalcoordinatetransform.h \
     $${PWD}/cctwqtchunkeddata.h \
-    $${PWD}/cctwtransformtest.h \
     $${PWD}/cctwqtcrystalcoordinateparameters.h \
     $${PWD}/cctwqtpeingresscommand.h
 
