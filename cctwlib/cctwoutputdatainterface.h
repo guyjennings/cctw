@@ -1,10 +1,10 @@
 #ifndef CCTWOUTPUTDATAINTERFACE_H
 #define CCTWOUTPUTDATAINTERFACE_H
 
-#include "cctwqtchunkeddata.h"
+#include "cctwchunkeddata.h"
 #include "cctwoutputdataframemanager.h"
 
-class CctwOutputDataInterface : public CctwqtChunkedData
+class CctwOutputDataInterface : public CctwChunkedData
 {
   Q_OBJECT
 public:

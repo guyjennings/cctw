@@ -31,6 +31,7 @@ SOURCES += \
     $${PWD}/cctwoutputchunkindex.cpp \
     $${PWD}/cctwcommandline.cpp \
     $${PWD}/cctwchunkeddatainterface.cpp \
+    $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwinputchunkindex.cpp \
     $${PWD}/cctwchunkindex.cpp \
     $${PWD}/cctwunitcell.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     $${PWD}/cctwoutputchunkindex.h \
     $${PWD}/cctwcommandline.h \
     $${PWD}/cctwchunkeddatainterface.h \
+    $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwinputchunkindex.h \
     $${PWD}/cctwchunkindex.h \
     $${PWD}/cctwunitcell.h \

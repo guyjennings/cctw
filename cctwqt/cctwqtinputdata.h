@@ -1,7 +1,6 @@
 #ifndef CCTWQTINPUTDATA_H
 #define CCTWQTINPUTDATA_H
 
-#include "cctwqtchunkeddata.h"
 #include "cctwinputdatainterface.h"
 
 class CctwqtInputData : public CctwInputDataInterface

@@ -2,7 +2,7 @@
 #include <QSemaphore>
 #include "cctwthread.h"
 
-CctwqtDataChunk::CctwqtDataChunk(CctwqtChunkedData *data, CctwIntVector3D idx,
+CctwqtDataChunk::CctwqtDataChunk(CctwChunkedData *data, CctwIntVector3D idx,
                                  CctwDataFrameManager *manager,
                                  QObject *parent) :
   CctwDataChunk(data, idx, parent),

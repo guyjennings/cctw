@@ -1,10 +1,10 @@
 #ifndef CCTWINPUTDATAINTERFACE_H
 #define CCTWINPUTDATAINTERFACE_H
 
-#include "cctwqtchunkeddata.h"
+#include "cctwchunkeddata.h"
 #include "cctwinputdataframemanager.h"
 
-class CctwInputDataInterface : public CctwqtChunkedData
+class CctwInputDataInterface : public CctwChunkedData
 {
   Q_OBJECT
 public:

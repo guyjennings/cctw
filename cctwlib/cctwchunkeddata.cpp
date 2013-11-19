@@ -1,7 +1,7 @@
-#include "cctwqtchunkeddata.h"
+#include "cctwchunkeddata.h"
 #include "cctwqtdatachunk.h"
 
-CctwqtChunkedData::CctwqtChunkedData(CctwIntVector3D dim,
+CctwChunkedData::CctwChunkedData(CctwIntVector3D dim,
                                      CctwIntVector3D chunkSize,
 //                                     CctwDoubleVector3D origin,
 //                                     CctwDoubleVector3D scale,
@@ -12,7 +12,7 @@ CctwqtChunkedData::CctwqtChunkedData(CctwIntVector3D dim,
 {
 }
 
-void CctwqtChunkedData::allocateChunks()
+void CctwChunkedData::allocateChunks()
 {
 //  printMessage("Allocate chunks");
 
@@ -32,21 +32,21 @@ void CctwqtChunkedData::allocateChunks()
   }
 }
 
-void CctwqtChunkedData::setDimensions(CctwIntVector3D dim)
+void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
   CctwChunkedDataInterface::setDimensions(dim);
 
   allocateChunks();
 }
 
-void CctwqtChunkedData::setChunkSize(CctwIntVector3D cksz)
+void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 {
   CctwChunkedDataInterface::setChunkSize(cksz);
 
   allocateChunks();
 }
 
-void CctwqtChunkedData::clearDependencies()
+void CctwChunkedData::clearDependencies()
 {
   foreach(CctwqtDataChunk* p, m_DataChunks) {
     if (p) {
@@ -55,7 +55,7 @@ void CctwqtChunkedData::clearDependencies()
   }
 }
 
-void CctwqtChunkedData::addDependency(CctwIntVector3D f, CctwIntVector3D t)
+void CctwChunkedData::addDependency(CctwIntVector3D f, CctwIntVector3D t)
 {
   int n = chunkNumberFromIndex(f);
 
@@ -64,7 +64,7 @@ void CctwqtChunkedData::addDependency(CctwIntVector3D f, CctwIntVector3D t)
   }
 }
 
-CctwqtDataChunk *CctwqtChunkedData::chunk(CctwIntVector3D idx)
+CctwqtDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
 {
   int n = chunkNumberFromIndex(idx);
 
@@ -80,7 +80,7 @@ CctwqtDataChunk *CctwqtChunkedData::chunk(CctwIntVector3D idx)
   }
 }
 
-void CctwqtChunkedData::mergeChunk(CctwqtDataChunk *chunk)
+void CctwChunkedData::mergeChunk(CctwqtDataChunk *chunk)
 {
   if (chunk) {
     CctwIntVector3D idx = chunk->index();
@@ -93,7 +93,7 @@ void CctwqtChunkedData::mergeChunk(CctwqtDataChunk *chunk)
   }
 }
 
-void CctwqtChunkedData::clearMergeCounters()
+void CctwChunkedData::clearMergeCounters()
 {
   foreach (CctwqtDataChunk *dc, m_DataChunks) {
     if (dc) {

@@ -1,5 +1,5 @@
-#ifndef CCTWQTCHUNKEDDATA_H
-#define CCTWQTCHUNKEDDATA_H
+#ifndef CCTWCHUNKEDDATA_H
+#define CCTWCHUNKEDDATA_H
 
 #include <QVector>
 #include "cctwchunkeddatainterface.h"
@@ -7,11 +7,11 @@
 class CctwDataFrameManager;
 class CctwqtDataChunk;
 
-class CctwqtChunkedData : public CctwChunkedDataInterface
+class CctwChunkedData : public CctwChunkedDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwqtChunkedData(CctwIntVector3D dim,        // Data set dimension
+  explicit CctwChunkedData(CctwIntVector3D dim,        // Data set dimension
                              CctwIntVector3D chunkSize,  // Chunk size
 //                             CctwDoubleVector3D origin,
 //                             CctwDoubleVector3D scale,
@@ -38,4 +38,4 @@ protected:
   QVector< CctwqtDataChunk* >  m_DataChunks;
 };
 
-#endif // CCTWQTCHUNKEDDATA_H
+#endif // CCTWCHUNKEDDATA_H

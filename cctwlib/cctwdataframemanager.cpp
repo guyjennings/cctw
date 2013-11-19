@@ -7,7 +7,7 @@ CctwDataFrameManager::CctwDataFrameManager(QObject *parent) :
 {
 }
 
-void CctwDataFrameManager::setData(CctwqtChunkedData *data)
+void CctwDataFrameManager::setData(CctwChunkedData *data)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 

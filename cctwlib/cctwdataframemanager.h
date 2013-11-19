@@ -2,7 +2,7 @@
 #define CCTWDATAFRAMEMANAGER_H
 
 #include "cctwobject.h"
-#include "cctwqtchunkeddata.h"
+#include "cctwchunkeddata.h"
 #include <QVector>
 
 class CctwDataFrame;
@@ -16,7 +16,7 @@ public:
 signals:
 
 public slots:
-  void setData(CctwqtChunkedData *data);
+  void setData(CctwChunkedData *data);
   virtual int  loadChunk(int nx, int ny, int nz) = 0;
   virtual void releaseChunk(int chunkId) = 0;
   virtual void writeChunk(CctwqtDataChunk *chunk) = 0;
@@ -25,8 +25,8 @@ public slots:
   virtual void endTransform() = 0;
 
 protected:
-  QMutex                                 m_Mutex;
-  CctwqtChunkedData                     *m_Data;
+  QMutex                               m_Mutex;
+  CctwChunkedData                     *m_Data;
   QVector<CctwDataFrame*>              m_Frames;
 };
 
