@@ -8,7 +8,7 @@
 #include <QScriptValue>
 #include "cctwqtscriptengine.h"
 #include "qcepproperty.h"
-#include "cctwqtdebug.h"
+#include "cctwdebug.h"
 #include "qcepsettingssaver.h"
 #include <QtConcurrentRun>
 #include <QFile>

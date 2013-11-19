@@ -36,7 +36,7 @@ include("../cctwqt/qceplib-code/qwt-6.1.pri")
 include("../cctwlib/cctwlib.pri")
 include("../cctwqt/cctwqt.pri")
 
-defined(TCL) {
+defined(TCL, var) {
     message("using TCL: $${TCL}")
     INCLUDEPATH += $${TCL}/include
     LIBS += -L$${TCL}/lib -ltcl8.6

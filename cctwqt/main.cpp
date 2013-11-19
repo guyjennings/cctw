@@ -5,13 +5,13 @@
 #include "cctwtransformer.h"
 #include "cctwoutputchunkindex.h"
 
-#include "cctwqtdebug.h"
+#include "cctwdebug.h"
 #include "qcepdocumentationdictionary.h"
 #include "cctwqtapplication.h"
 
 int main(int argc, char *argv[])
 {
-  g_DebugLevel            = QSharedPointer<CctwqtDebugDictionary>(new CctwqtDebugDictionary());
+  g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
   CctwqtApplication *app = new CctwqtApplication(argc, argv);

@@ -7,6 +7,7 @@
 INCLUDEPATH += $${PWD}
 
 SOURCES += \
+    $${PWD}/cctwdebug.cpp \
     $${PWD}/cctwobject.cpp \
     $${PWD}/cctwintvector3dproperty.cpp \
     $${PWD}/cctwdoublevector3dproperty.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
     $${PWD}/cctwdatablobs.cpp
 
 HEADERS += \
+    $${PWD}/cctwdebug.h \
     $${PWD}/cctwobject.h \
     $${PWD}/cctwintvector3dproperty.h \
     $${PWD}/cctwdoublevector3dproperty.h \
