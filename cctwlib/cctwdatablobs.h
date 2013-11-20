@@ -15,6 +15,7 @@ public:
   int blobLength();
   int dataLength();
   int weightLength();
+  int offset(int x, int y, int z);
 
   double *data();
   double *weight();

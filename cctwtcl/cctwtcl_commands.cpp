@@ -382,7 +382,7 @@ int Cctwtcl_Blob_Cmd        (ClientData /*clientData*/, Tcl_Interp *interp, int 
 
     Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
     Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobLength()));
-    Tcl_ListObjAppendElement(interp, result, Tcl_NewByteArrayObj((const unsigned char*) blob, blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewByteArrayObj((unsigned char*) blob, blob->blobLength()));
 
     Tcl_SetObjResult(interp, result);
   }

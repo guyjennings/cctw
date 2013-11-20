@@ -417,11 +417,66 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   return res;
 }
 
+void CctwTransformer::generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+{
+  CctwIntVector3D start = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
+  CctwIntVector3D size  = m_InputData->chunkSize();
+
+  double *data = blob->data();
+  double *weight = blob->weight();
+  int dataLen = blob->dataLength();
+  int weightLen = blob->weightLength();
+
+  for(int z = 0; z < size.z(); z++) {
+    for (int y=0; y < size.y(); y++) {
+      for (int x=0; x < size.x(); x++) {
+        CctwIntVector3D coords = start + CctwIntVector3D(x,y,z);
+
+        int offset = blob->offset(x,y,z);
+
+        if (offset >= 0 && offset < dataLen) {
+          if (data) {
+            int val = ((start.x()+x)/16 & 1) ^ ((start.y()+y)/16 & 1) ^ ((start.z()+z)/16 & 1);
+            data[offset] = val;
+          }
+        }
+
+        if (offset >= 0 && offset < weightLen) {
+          if (weight) {
+            weight[offset] = 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+void CctwTransformer::readHDF5inputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+{
+}
+
+void CctwTransformer::readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+{
+}
+
 CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString location)
 {
   CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(blobIdx, m_InputData->chunkSize());
 
   printf("inputBlob[%d] %p\n", blobIdx, inputBlob);
+
+  QUrl loc(location);
+
+  if (loc.scheme()=="test") {
+    // Generate a test dataset:
+    generateTestData(blobIdx, loc, inputBlob);
+  } else if (loc.scheme()=="h5") {
+    readHDF5inputBlob(blobIdx, loc, inputBlob);
+  } else if (loc.scheme()=="") {
+    readArbitraryInputBlob(blobIdx, loc, inputBlob);
+  } else {
+    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
+  }
 
   return inputBlob;
 }
@@ -522,4 +577,23 @@ CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediate
 
 void                             CctwTransformer::outputBlob(QString destination, CctwOutputDataBlob* blob)
 {
+  QUrl locUrl(destination);
+
+  printf("Destination: %s\n", qPrintable(destination));
+  printf("Scheme: %s\n",      qPrintable(locUrl.scheme()));
+  printf("Authority: %s\n",   qPrintable(locUrl.authority()));
+  printf("Host: %s\n",        qPrintable(locUrl.host()));
+  printf("Port: %d\n",        locUrl.port());
+  printf("Path: %s\n",        qPrintable(locUrl.path()));
+  printf("Fragment: %s\n",    qPrintable(locUrl.fragment()));
+
+  QList< QPair <QString, QString> > query = locUrl.queryItems();
+
+  printf("Query:\n");
+
+  QPair < QString, QString > pair;
+
+  foreach (pair, query) {
+    printf("%s = %s\n", qPrintable(pair.first), qPrintable(pair.second));
+  }
 }

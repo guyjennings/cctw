@@ -7,6 +7,7 @@
 #include "cctwtransforminterface.h"
 #include "cctwinputchunkindex.h"
 #include "cctwdatablobs.h"
+#include <QUrl>
 
 class CctwApplication;
 
@@ -52,8 +53,12 @@ private:
   void transformChunkNumber(int n);
   void runTransformChunkNumber(int n);
 
+  void generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob);
+  void readHDF5inputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
+  void readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
+
 private:
-  CctwApplication       *m_Application;
+  CctwApplication         *m_Application;
   QAtomicInt               m_MergeCounter;
   CctwInputDataInterface  *m_InputData;
   CctwOutputDataInterface *m_OutputData;

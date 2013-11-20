@@ -44,6 +44,13 @@ int CctwDataBlob::blobLength()
   return sizeof(CctwDataBlob) + m_DataLength*sizeof(double) + m_WeightLength*sizeof(double);
 }
 
+int CctwDataBlob::offset(int x, int y, int z)
+{
+  int offset = (z * m_BlobDimensions.y() + y)*m_BlobDimensions.x() + x;
+
+  return offset;
+}
+
 double *CctwDataBlob::data()
 {
   if (m_DataLength) {
