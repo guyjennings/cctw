@@ -11,6 +11,7 @@ protected:
 public:
   static void deleteBlob(int blobId, CctwDataBlob *blob);
 
+  int blobType();
   int blobID();
   int blobLength();
   int dataLength();

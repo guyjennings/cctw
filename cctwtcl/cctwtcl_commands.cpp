@@ -414,6 +414,23 @@ int Cctwtcl_Blob_Info_Cmd   (ClientData /*clientData*/, Tcl_Interp *interp, int 
 
     Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("type:", -1));
+
+    switch (blob->blobType()) {
+    case 0:
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("input", -1));
+      break;
+    case 1:
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("intermediate", -1));
+      break;
+    case 2:
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("output", -1));
+      break;
+    default:
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("unknown", -1));
+      break;
+    }
+
     Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("id:", -1));
     Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
     Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("length:", -1));

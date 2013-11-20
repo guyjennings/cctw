@@ -38,6 +38,11 @@ CctwOutputDataBlob::CctwOutputDataBlob(int blobID, CctwIntVector3D blobDimension
 {
 }
 
+int CctwDataBlob::blobType()
+{
+  return m_BlobType;
+}
+
 int CctwDataBlob::blobID()
 {
   return m_BlobID;
