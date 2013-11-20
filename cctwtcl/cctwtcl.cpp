@@ -60,6 +60,9 @@ int Cctwtcl_Init(Tcl_Interp *interp)
   Tcl_CreateObjCommand(interp, "cctw_blob", (Tcl_ObjCmdProc*) Cctwtcl_Blob_Cmd,
                        (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
+  Tcl_CreateObjCommand(interp, "cctw_blob_info", (Tcl_ObjCmdProc*) Cctwtcl_Blob_Info_Cmd,
+                       (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
   Cctwtcl_Initialize();
 
   return TCL_OK;

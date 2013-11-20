@@ -481,19 +481,81 @@ CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString
   return inputBlob;
 }
 
+static bool sortBlobs(CctwIntermediateDataBlob *a, CctwIntermediateDataBlob *b)
+{
+  return a->blobID() < b->blobID();
+}
+
 QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlob *blob)
 {
-  int chunkId = blob->blobID();
+  int chunkIdx = blob->blobID();
+
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+
+  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
+  CctwIntVector3D lastBlobIndex(-1, -1, -1);
+  CctwIntermediateDataBlob* lastBlob = NULL;
+
+  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  CctwIntVector3D chSize  = m_InputData->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  QMap<CctwIntVector3D, CctwIntermediateDataBlob*> outputBlobs;
+  QcepIntList            result;
+
+  if (m_InputData->containsChunk(idx)) {
+    for (int z=0; z<chSize.z(); z++) {
+      for (int y=0; y<chSize.y(); y++) {
+        for (int x=0; x<chSize.x(); x++) {
+          int inpOffset = blob->offset(x, y, z);
+          double data = blob->data(inpOffset);
+          double wght = blob->weight(inpOffset);
+
+          if (wght) {
+            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+            CctwDoubleVector3D xfmcoord = transform.forward(coords);
+            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+
+            if (m_OutputData->containsPixel(pixels)) {
+              CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+
+              if (opchunk != lastBlobIndex) {
+                lastBlobIndex = opchunk;
+
+                if (!outputBlobs.contains(lastBlobIndex)) {
+                  outputBlobs[lastBlobIndex] =
+                      CctwIntermediateDataBlob::newIntermediateDataBlob(
+                        m_InputData->chunkNumberFromIndex(lastBlobIndex),
+                        m_InputData->chunkSize());
+                }
+
+                lastBlob = outputBlobs[lastBlobIndex];
+              }
+
+              CctwIntVector3D localPixel = pixels - opchunk*m_OutputData->chunkSize();
+
+              int offset = lastBlob->offset(localPixel);
+
+              lastBlob->data(offset)   += data;
+              lastBlob->weight(offset) += wght;
+            }
+          }
+        }
+      }
+    }
+  }
 
   QList<CctwIntermediateDataBlob*> res;
 
-  QcepIntList deps = dependencies(chunkId);
+  QMapIterator<CctwIntVector3D, CctwIntermediateDataBlob*> iter(outputBlobs);
 
-  foreach (int i, deps) {
-    CctwIntermediateDataBlob* blob = CctwIntermediateDataBlob::newIntermediateDataBlob(i, m_OutputData->chunkSize());
+  while (iter.hasNext()) {
+    iter.next();
 
-    res.append(blob);
+    res.append(iter.value());
   }
+
+  qSort(res.begin(), res.end(), sortBlobs);
 
   return res;
 }

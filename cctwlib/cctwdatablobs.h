@@ -16,9 +16,13 @@ public:
   int dataLength();
   int weightLength();
   int offset(int x, int y, int z);
+  int offset(CctwIntVector3D c);
 
   double *data();
   double *weight();
+
+  double& data(int offset);
+  double& weight(int offset);
 
 private:
   int             m_BlobType;

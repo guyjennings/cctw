@@ -7,6 +7,20 @@ CctwDataBlob::CctwDataBlob(int blobType, int blobID, CctwIntVector3D blobDimensi
     m_DataLength(dataLength),
     m_WeightLength(weightLength)
 {
+  double *d = data();
+  double *w = weight();
+
+  if (d && dataLength) {
+    for (int i = 0; i<dataLength; i++) {
+      d[i] = 0;
+    }
+  }
+
+  if (w && weightLength) {
+    for (int i = 0; i<weightLength; i++) {
+      w[i] = 0;
+    }
+  }
 }
 
 CctwInputDataBlob::CctwInputDataBlob(int blobID, CctwIntVector3D blobDimensions)
@@ -51,6 +65,11 @@ int CctwDataBlob::offset(int x, int y, int z)
   return offset;
 }
 
+int CctwDataBlob::offset(CctwIntVector3D c)
+{
+  return offset(c.x(), c.y(), c.z());
+}
+
 double *CctwDataBlob::data()
 {
   if (m_DataLength) {
@@ -66,6 +85,24 @@ double *CctwDataBlob::weight()
     return &m_Data[m_DataLength];
   } else {
     return NULL;
+  }
+}
+
+double& CctwDataBlob::data(int offset)
+{
+  if (m_DataLength) {
+    return m_Data[offset];
+  } else {
+    return m_Data[0];
+  }
+}
+
+double& CctwDataBlob::weight(int offset)
+{
+  if (m_WeightLength) {
+    return m_Data[m_DataLength+offset];
+  } else {
+    return m_Data[0];
   }
 }
 

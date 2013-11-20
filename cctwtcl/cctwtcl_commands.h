@@ -21,6 +21,7 @@ int Cctwtcl_Output_Cmd        (ClientData clientData, Tcl_Interp *interp, int ob
 
 int Cctwtcl_Delete_Cmd        (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Blob_Cmd          (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+int Cctwtcl_Blob_Info_Cmd     (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 
 /*
  *  Commands to implement a basic interface to cctw from swift/t via tcl
@@ -113,7 +114,7 @@ int Cctwtcl_Blob_Cmd          (ClientData clientData, Tcl_Interp *interp, int ob
  *             puts $d
  *         -> 128
  *
- *    The blobs have a common format - the first 7 integer values are
+ *    The blobs have a common format - the first 8 integer values are
  *      0:  blob type    0 = input, 1 = intermediate, 2 = output
  *      1:  blob id
  *      2:  blob x dimension
@@ -121,8 +122,13 @@ int Cctwtcl_Blob_Cmd          (ClientData clientData, Tcl_Interp *interp, int ob
  *      4:  blob z dimension
  *      5:  number of data elements
  *      6:  number of weight elements (or 0 for an output blob)
+ *      7:  alignment blank
  *
  *    The blob data then follows as an array of doubles
+ *
+ *  cctw_blob_info <chunkid> <blob>
+ *
+ *    Returns info about a blob as a keyed list
  *
  **/
 

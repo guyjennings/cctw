@@ -389,3 +389,111 @@ int Cctwtcl_Blob_Cmd        (ClientData /*clientData*/, Tcl_Interp *interp, int 
 
   return TCL_OK;
 }
+
+int Cctwtcl_Blob_Info_Cmd   (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  // cctw_blob_info <blobid> <blob>
+  // prints summary info about a blob
+
+  if (objc != 3) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_blob_into <blobid> <blob>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    long chunkP = 0;
+
+    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwDataBlob* blob = (CctwDataBlob*) chunkP;
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("id:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("length:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobLength()));
+
+    int nw = 0, nnw = 0;
+    int nmin, nmax;
+    double min, max, maxw;
+
+    double *d = blob->data();
+    double *w = blob->weight();
+
+    int dl = blob->dataLength();
+    int wl = blob->weightLength();
+
+    if (w && wl) {
+      for (int i=0; i<wl; i++) {
+        if (w[i]) {
+          nw  += 1;
+          nnw += w[i];
+        }
+      }
+
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("nw:", -1));
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(nw));
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("nnw:", -1));
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(nnw));
+    }
+
+    if (d && dl) {
+      min = d[0]; max = d[0]; nmin = 0; nmax = 0;
+
+      if (w && wl) {
+        maxw = w[0];
+      }
+
+      for (int i=1; i<dl; i++) {
+        if (d[i] > max) {
+          max = d[i];
+          nmax = i;
+
+          if (w && wl) {
+            maxw = w[i];
+          }
+        } else if (d[i] < min) {
+          min = d[i];
+          nmin = i;
+        }
+      }
+    }
+
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("min:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewDoubleObj(min));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("min@:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(nmin));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("max:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewDoubleObj(max));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("max@:", -1));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(nmax));
+
+    if (w && wl) {
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("maxw:", -1));
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewDoubleObj(maxw));
+    }
+
+    if (d) {
+      Tcl_Obj *maxvs = Tcl_NewListObj(0, NULL);
+
+      for (int i=nmax-5; i<nmax+5; i++) {
+        if (i >= 0 && i<dl) {
+          Tcl_ListObjAppendElement(interp, maxvs, Tcl_NewDoubleObj(d[i]));
+        }
+      }
+
+      Tcl_ListObjAppendElement(interp, result, Tcl_NewStringObj("maxv:", -1));
+      Tcl_ListObjAppendElement(interp, result, maxvs);
+    }
+
+    Tcl_SetObjResult(interp, result);
+
+    return TCL_OK;
+  }
+}
