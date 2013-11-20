@@ -416,3 +416,110 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
 
   return res;
 }
+
+CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString location)
+{
+  CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(blobIdx, m_InputData->chunkSize());
+
+  printf("inputBlob[%d] %p\n", blobIdx, inputBlob);
+
+  return inputBlob;
+}
+
+QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlob *blob)
+{
+  int chunkId = blob->blobID();
+
+  QList<CctwIntermediateDataBlob*> res;
+
+  QcepIntList deps = dependencies(chunkId);
+
+  foreach (int i, deps) {
+    CctwIntermediateDataBlob* blob = CctwIntermediateDataBlob::newIntermediateDataBlob(i, m_OutputData->chunkSize());
+
+    res.append(blob);
+  }
+
+  return res;
+}
+
+CctwIntermediateDataBlob*        CctwTransformer::mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2)
+{
+  int chunkId = blob1->blobID();
+
+  CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
+
+  double *data = res->data();
+  double *weight = res->weight();
+
+  double *data1 = blob1->data();
+  double *weight1 = blob1->weight();
+
+  double *data2 = blob2->data();
+  double *weight2 = blob2->weight();
+
+  if (data && weight && data1 && weight1 && data2 && weight2) {
+    int len = res->dataLength();
+
+    if ((res->weightLength() == len) &&
+        (blob1->dataLength() == len) &&
+        (blob1->weightLength() == len) &&
+        (blob2->dataLength() == len) &&
+        (blob2->weightLength() == len))
+    {
+      for(int i=0; i<len; i++) {
+        data[i] = 0;
+        weight[i] = 0;
+
+        if (weight1[i]) {
+          data[i] += data1[i];
+          weight[i] += weight1[i];
+        }
+
+        if (weight2[i]) {
+          data[i] += data2[i];
+          weight[i] += weight2[i];
+        }
+      }
+
+      return res;
+    } else {
+      printMessage("Bad Merge Data Lengths");
+    }
+  } else {
+    printMessage("Bad Merge Data");
+  }
+
+  return res;
+}
+
+CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediateDataBlob *blob)
+{
+  int chunkId = blob->blobID();
+
+  CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
+
+  double *out = res->data();
+  double *data = blob->data();
+  double *weight = blob->weight();
+
+  if (out && data && weight) {
+    int len = res->dataLength();
+
+    if ((blob->dataLength() == len) && (blob->weightLength() == len)) {
+      for (int i=0; i<len; i++) {
+        if (weight[i]) {
+          out[i] = data[i]/weight[i];
+        } else {
+          out[i] = 0;
+        }
+      }
+    }
+  }
+
+  return res;
+}
+
+void                             CctwTransformer::outputBlob(QString destination, CctwOutputDataBlob* blob)
+{
+}

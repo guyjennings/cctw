@@ -6,6 +6,7 @@
 #include "cctwoutputdatainterface.h"
 #include "cctwtransforminterface.h"
 #include "cctwinputchunkindex.h"
+#include "cctwdatablobs.h"
 
 class CctwApplication;
 
@@ -39,6 +40,12 @@ public slots:
 
   QcepIntList dependencies(int chunkIdx);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
+
+  CctwInputDataBlob*               inputBlob(int blobIdx, QString location);
+  QList<CctwIntermediateDataBlob*> transformBlob(CctwInputDataBlob *blob);
+  CctwIntermediateDataBlob*        mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2);
+  CctwOutputDataBlob*              normalizeBlob(CctwIntermediateDataBlob *blob);
+  void                             outputBlob(QString destination, CctwOutputDataBlob* blob);
 
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);

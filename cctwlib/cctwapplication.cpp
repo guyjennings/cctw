@@ -1054,48 +1054,31 @@ void CctwApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurv
 CctwInputDataBlob*
 CctwApplication::input     (int chunkId, QString inputDataURL)
 {
-  CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(chunkId, m_InputData->chunkSize());
-
-  printf("inputBlob[%d] %p\n", chunkId, inputBlob);
-
-  return inputBlob;
+  return m_Transformer->inputBlob(chunkId, inputDataURL);
 }
 
 QList<CctwIntermediateDataBlob*>
 CctwApplication::transform (int chunkId, CctwInputDataBlob *chunk)
 {
-  QList<CctwIntermediateDataBlob*> res;
-
-  QcepIntList deps = m_Transformer->dependencies(chunkId);
-
-  foreach (int i, deps) {
-    CctwIntermediateDataBlob* blob = CctwIntermediateDataBlob::newIntermediateDataBlob(i, m_OutputData->chunkSize());
-
-    res.append(blob);
-  }
-
-  return res;
+  return m_Transformer->transformBlob(chunk);
 }
 
 CctwIntermediateDataBlob*
 CctwApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
 {
-  CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
-
-  return res;
+  return m_Transformer->mergeBlobs(chunk1, chunk2);
 }
 
 CctwOutputDataBlob*
 CctwApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
 {
-  CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
-
-  return res;
+  return m_Transformer->normalizeBlob(chunk);
 }
 
 void
 CctwApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
 {
+  m_Transformer->outputBlob(outputDataURL, chunk);
 }
 
 void CctwApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
