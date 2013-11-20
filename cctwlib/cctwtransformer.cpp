@@ -501,7 +501,6 @@ QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlo
   CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
   QMap<CctwIntVector3D, CctwIntermediateDataBlob*> outputBlobs;
-  QcepIntList            result;
 
   if (m_InputData->containsChunk(idx)) {
     for (int z=0; z<chSize.z(); z++) {

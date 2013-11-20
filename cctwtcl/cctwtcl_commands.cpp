@@ -199,7 +199,12 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
       return TCL_ERROR;
     }
 
-    CctwInputDataBlob *blob = (CctwInputDataBlob*) chunkP;
+    CctwInputDataBlob *blob = CctwInputDataBlob::validate(chunkId,chunkP);
+
+    if (blob == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_transform", TCL_STATIC);
+      return TCL_ERROR;
+    }
 
     QList<CctwIntermediateDataBlob*> res = g_Application->transform(chunkId, blob);
 
@@ -246,12 +251,26 @@ int Cctwtcl_Merge_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, T
       return TCL_ERROR;
     }
 
-    CctwIntermediateDataBlob *blob = g_Application->merge(chunkId, (CctwIntermediateDataBlob*) blob1P, (CctwIntermediateDataBlob*) blob2P);
+    CctwIntermediateDataBlob *blob1 = CctwIntermediateDataBlob::validate(chunkId, blob1P);
+
+    if (blob1 == NULL) {
+      Tcl_SetResult(interp, "Invalid blob1 passed to cctw_merge", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    CctwIntermediateDataBlob *blob2 = CctwIntermediateDataBlob::validate(chunkId, blob2P);
+
+    if (blob2 == NULL) {
+      Tcl_SetResult(interp, "Invalid blob2 passed to cctw_merge", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    CctwIntermediateDataBlob *blob = g_Application->merge(chunkId, blob1, blob2);
 
     Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
     Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobID()));
-    Tcl_ListObjAppendElement(interp, result,  Tcl_NewIntObj(blob->blobLength()));
+    Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobLength()));
     Tcl_ListObjAppendElement(interp, result, Tcl_NewLongObj((long) blob));
 
     Tcl_SetObjResult(interp, result);
@@ -281,7 +300,14 @@ int Cctwtcl_Normalize_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
       return TCL_ERROR;
     }
 
-    CctwOutputDataBlob *blob = g_Application->normalize(chunkId, (CctwIntermediateDataBlob*) chunkP);
+    CctwIntermediateDataBlob *chunk = CctwIntermediateDataBlob::validate(chunkId, chunkP);
+
+    if (chunk == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_normalize", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    CctwOutputDataBlob *blob = g_Application->normalize(chunkId, chunk);
 
     Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
@@ -322,7 +348,14 @@ int Cctwtcl_Output_Cmd      (ClientData /*clientData*/, Tcl_Interp *interp, int 
       return TCL_ERROR;
     }
 
-    g_Application->output(chunkId, path, (CctwOutputDataBlob*) chunkP);
+    CctwOutputDataBlob *blob = CctwOutputDataBlob::validate(chunkId, chunkP);
+
+    if (blob == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_output", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    g_Application->output(chunkId, path, blob);
   }
 
   return TCL_OK;
@@ -345,6 +378,13 @@ int Cctwtcl_Delete_Cmd       (ClientData /*clientData*/, Tcl_Interp *interp, int
     }
 
     if (Tcl_GetLongFromObj(interp, objv[2], &chunkP) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    CctwDataBlob* blob = CctwDataBlob::validate(chunkId, chunkP);
+
+    if (blob == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_delete", TCL_STATIC);
       return TCL_ERROR;
     }
 
@@ -376,7 +416,12 @@ int Cctwtcl_Blob_Cmd        (ClientData /*clientData*/, Tcl_Interp *interp, int 
       return TCL_ERROR;
     }
 
-    CctwDataBlob* blob = (CctwDataBlob*) chunkP;
+    CctwDataBlob* blob = CctwDataBlob::validate(chunkId, chunkP);
+
+    if (blob == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_blob", TCL_STATIC);
+      return TCL_ERROR;
+    }
 
     Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
@@ -410,7 +455,12 @@ int Cctwtcl_Blob_Info_Cmd   (ClientData /*clientData*/, Tcl_Interp *interp, int 
       return TCL_ERROR;
     }
 
-    CctwDataBlob* blob = (CctwDataBlob*) chunkP;
+    CctwDataBlob* blob = CctwDataBlob::validate(chunkId, chunkP);
+
+    if (blob == NULL) {
+      Tcl_SetResult(interp, "Invalid blob passed to cctw_blob_info", TCL_STATIC);
+      return TCL_ERROR;
+    }
 
     Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
@@ -437,8 +487,8 @@ int Cctwtcl_Blob_Info_Cmd   (ClientData /*clientData*/, Tcl_Interp *interp, int 
     Tcl_ListObjAppendElement(interp, result, Tcl_NewIntObj(blob->blobLength()));
 
     int nw = 0, nnw = 0;
-    int nmin, nmax;
-    double min, max, maxw;
+    int nmin = 0, nmax = 0;
+    double min = 0, max = 0, maxw = 0;
 
     double *d = blob->data();
     double *w = blob->weight();

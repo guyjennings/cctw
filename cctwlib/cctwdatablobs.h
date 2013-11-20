@@ -25,6 +25,8 @@ public:
   double& data(int offset);
   double& weight(int offset);
 
+  static CctwDataBlob* validate(int blobId, long blobP);
+
 private:
   int             m_BlobType;
   int             m_BlobID;
@@ -41,6 +43,7 @@ protected:
 
 public:
   static CctwInputDataBlob*        newInputDataBlob       (int blobId, CctwIntVector3D blobDimensions);
+  static CctwInputDataBlob*        validate(int blobId, long blobP);
 };
 
 class CctwOutputDataBlob : public CctwDataBlob
@@ -50,6 +53,7 @@ protected:
 
 public:
   static CctwOutputDataBlob*       newOutputDataBlob      (int blobId, CctwIntVector3D blobDimensions);
+  static CctwOutputDataBlob*       validate(int blobId, long blobP);
 };
 
 class CctwIntermediateDataBlob : public CctwDataBlob
@@ -59,6 +63,7 @@ protected:
 
 public:
   static CctwIntermediateDataBlob* newIntermediateDataBlob(int blobId, CctwIntVector3D blobDimensions);
+  static CctwIntermediateDataBlob* validate(int blobId, long blobP);
 };
 
 
