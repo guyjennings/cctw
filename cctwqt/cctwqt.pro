@@ -8,7 +8,7 @@ TEMPLATE = app
 
 include(../cctw.pri)
 
-QT          += concurrent core gui network script opengl svg
+QT          += concurrent core gui network script opengl printsupport svg
 
 TARGET       = cctwqt
 

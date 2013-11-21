@@ -3,7 +3,7 @@
 
 TARGET = CctwTcl
 TEMPLATE = lib
-CONFIG += uitools debug
+#CONFIG += uitools debug
 
 include("../cctw.pri")
 
