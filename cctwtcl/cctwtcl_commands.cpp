@@ -143,24 +143,24 @@ int Cctwtcl_Dependencies_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int 
 
 int Cctwtcl_Input_Cmd       (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  // cctw_input <input_chunk_id> <input_data_path> --> <input_data_blob>
+  // cctw_input <input_data_path> <input_chunk_id> --> <input_data_blob>
   // Read a blob of input data from the file system, perform any masking and normalization needed
   // returns a triple { <blobid> <length> <blob> }
 
   if (objc != 3) {
-    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_input <chunkid> <input_path>", TCL_STATIC);
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_input <input_path> <chunkid>", TCL_STATIC);
     return TCL_ERROR;
   } else {
     int chunkId = -1;
     char *path  = NULL;
 
-    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+    path  = Tcl_GetString(objv[1]);
+
+    if (path==NULL) {
       return TCL_ERROR;
     }
 
-    path  = Tcl_GetString(objv[2]);
-
-    if (path==NULL) {
+    if (Tcl_GetIntFromObj(interp, objv[2], &chunkId) != TCL_OK) {
       return TCL_ERROR;
     }
 
@@ -323,24 +323,24 @@ int Cctwtcl_Normalize_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
 int Cctwtcl_Output_Cmd      (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  // cctw_output <output_chunk_id> <output_data_path> <output_blob>
+  // cctw_output <output_data_path> <output_chunk_id> <output_blob>
   // write an output blob onto the file system
 
   if (objc != 4) {
-    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_output <chunkid> <path> <blob>", TCL_STATIC);
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_output <path> <chunkid> <blob>", TCL_STATIC);
     return TCL_ERROR;
   } else {
     int chunkId = -1;
     char *path = NULL;
     long chunkP = 0;
 
-    if (Tcl_GetIntFromObj(interp, objv[1], &chunkId) != TCL_OK) {
+    path = Tcl_GetString(objv[1]);
+
+    if (path == NULL) {
       return TCL_ERROR;
     }
 
-    path = Tcl_GetString(objv[2]);
-
-    if (path == NULL) {
+    if (Tcl_GetIntFromObj(interp, objv[2], &chunkId) != TCL_OK) {
       return TCL_ERROR;
     }
 

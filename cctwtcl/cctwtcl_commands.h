@@ -39,7 +39,7 @@ int Cctwtcl_Blob_Info_Cmd     (ClientData clientData, Tcl_Interp *interp, int ob
  *    Returns a list of two integers - the number of chunks in the input and output
  *    datasets respectively
  *
- *  cctw_input <inputchunkid> <filePath>
+ *  cctw_input <filePath> <inputchunkid>
  *
  *    Reads a chunk of input data, normalizes it and performs any necessary corrections
  *    The filePath is interpreted as a URI - though the precise semantics are still to
@@ -48,9 +48,9 @@ int Cctwtcl_Blob_Info_Cmd     (ClientData clientData, Tcl_Interp *interp, int ob
  *    Returns a list of three integers - the chunkid, the chunk length in bytes and
  *    the location of the chunk
  *
- *    Example:   cctw_input 1234 h5:example.h5/ffscan
+ *    Example:   cctw_input h5:example.h5/ffscan 1234
  *          ->   1234 33554472 6721372160
- *               cctw_input 1235 h5:example.h5/ffscan
+ *               cctw_input h5:example.h5/ffscan 1235
  *          ->   1235 33554472 6889164800
  *
  *  cctw_transform <inputchunkid> <blob>
@@ -84,12 +84,12 @@ int Cctwtcl_Blob_Info_Cmd     (ClientData clientData, Tcl_Interp *interp, int ob
  *    Example:   cctw_normalize 304 7023398912
  *          -> 304 16777256 7056957440
  *
- *  cctw_output <outputchunkid> <filePath> <blob>
+ *  cctw_output <filePath> <outputchunkid> <blob>
  *
  *    Writes an output blob of data into the output file
  *    The filePath is interpreted as a URI - semantics to be determined
  *
- *    Example:  cctw_output 304 h5:example.h5/output
+ *    Example:  cctw_output h5:output.h5/ffscan 304 7056957440
  *
  *  cctw_delete <chunkid> <blob>
  *
