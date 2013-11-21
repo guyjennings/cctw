@@ -9,6 +9,10 @@
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+#include <QUrlQuery>
+#endif
+
 CctwTransformer::CctwTransformer(CctwApplication *application,
                                  CctwInputDataInterface *input,
                                  CctwOutputDataInterface *output,
@@ -648,7 +652,12 @@ void                             CctwTransformer::outputBlob(QString destination
   printf("Path: %s\n",        qPrintable(locUrl.path()));
   printf("Fragment: %s\n",    qPrintable(locUrl.fragment()));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
+  QUrlQuery urlQuery(locUrl);
+  QList< QPair <QString, QString> > query = urlQuery.queryItems();
+#else
   QList< QPair <QString, QString> > query = locUrl.queryItems();
+#endif
 
   printf("Query:\n");
 
