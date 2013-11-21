@@ -670,6 +670,49 @@ void                             CctwTransformer::outputBlob(QString destination
 
 void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
 {
+  QString filePath = location.path();
+  QString dataset  = location.fragment();
+
+  if (filePath.count() > 0) {
+    if (dataset.count() == 0) {
+      dataset = "data";
+    }
+
+    hid_t fileId = H5Fopen(qPrintable(filePath), H5F_ACC_RDONLY, H5P_DEFAULT);
+
+    if (fileId < 0) {
+      printMessage(tr("File open of %1 failed").arg(filePath));
+    } else {
+      hid_t datasetId = H5Dopen(fileId, qPrintable(dataset), H5P_DEFAULT);
+
+      if (datasetId < 0) {
+        printMessage(tr("Dataset %1 not opened").arg(dataset));
+      } else {
+        hid_t dataspaceId = H5Dget_space(datasetId);
+
+        if (dataspaceId < 0) {
+          printMessage(tr("Couldn't get data space"));
+        } else {
+          int ndims = H5Sget_simple_extent_ndims(dataspaceId);
+
+          if (ndims != 3) {
+            printMessage(tr("Data dimensionality != 3 (%1)").arg(ndims));
+          } else {
+            hsize_t dims[3], maxdims[3];
+            int n = H5Sget_simple_extent_dims(dataspaceId, dims, maxdims);
+
+            if (n != 3) {
+              printMessage("Problems getting dataset dimensions");
+            } else {
+              printMessage(tr("Dimensions [%1,%2,%3]").arg(dims[0]).arg(dims[1]).arg(dims[2]));
+            }
+          }
+        }
+      }
+
+      H5Fclose(fileId);
+    }
+  }
 }
 
 void CctwTransformer::writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
