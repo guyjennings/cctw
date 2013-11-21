@@ -455,14 +455,6 @@ void CctwTransformer::generateTestData(int blobIdx, QUrl location, CctwInputData
   }
 }
 
-void CctwTransformer::readHDF5inputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-}
-
-void CctwTransformer::readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-}
-
 CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString location)
 {
   CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(blobIdx, m_InputData->chunkSize());
@@ -475,7 +467,7 @@ CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString
     // Generate a test dataset:
     generateTestData(blobIdx, loc, inputBlob);
   } else if (loc.scheme()=="h5") {
-    readHDF5inputBlob(blobIdx, loc, inputBlob);
+    readHDF5InputBlob(blobIdx, loc, inputBlob);
   } else if (loc.scheme()=="") {
     readArbitraryInputBlob(blobIdx, loc, inputBlob);
   } else {
@@ -642,21 +634,21 @@ CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediate
 
 void                             CctwTransformer::outputBlob(QString destination, CctwOutputDataBlob* blob)
 {
-  QUrl locUrl(destination);
+  QUrl loc(destination);
 
   printf("Destination: %s\n", qPrintable(destination));
-  printf("Scheme: %s\n",      qPrintable(locUrl.scheme()));
-  printf("Authority: %s\n",   qPrintable(locUrl.authority()));
-  printf("Host: %s\n",        qPrintable(locUrl.host()));
-  printf("Port: %d\n",        locUrl.port());
-  printf("Path: %s\n",        qPrintable(locUrl.path()));
-  printf("Fragment: %s\n",    qPrintable(locUrl.fragment()));
+  printf("Scheme: %s\n",      qPrintable(loc.scheme()));
+  printf("Authority: %s\n",   qPrintable(loc.authority()));
+  printf("Host: %s\n",        qPrintable(loc.host()));
+  printf("Port: %d\n",        loc.port());
+  printf("Path: %s\n",        qPrintable(loc.path()));
+  printf("Fragment: %s\n",    qPrintable(loc.fragment()));
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-  QUrlQuery urlQuery(locUrl);
+  QUrlQuery urlQuery(loc);
   QList< QPair <QString, QString> > query = urlQuery.queryItems();
 #else
-  QList< QPair <QString, QString> > query = locUrl.queryItems();
+  QList< QPair <QString, QString> > query = loc.queryItems();
 #endif
 
   printf("Query:\n");
@@ -666,4 +658,28 @@ void                             CctwTransformer::outputBlob(QString destination
   foreach (pair, query) {
     printf("%s = %s\n", qPrintable(pair.first), qPrintable(pair.second));
   }
+
+  if (loc.scheme() == "h5") {
+    writeHDF5OutputBlob(blob->blobID(), loc, blob);
+  } else if (loc.scheme() == "") {
+    writeArbitraryOutputBlob(blob->blobID(), loc, blob);
+  } else {
+    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
+  }
+}
+
+void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+{
+}
+
+void CctwTransformer::writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
+{
+}
+
+void CctwTransformer::readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+{
+}
+
+void CctwTransformer::writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
+{
 }

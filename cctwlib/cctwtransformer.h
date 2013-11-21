@@ -54,8 +54,11 @@ private:
   void runTransformChunkNumber(int n);
 
   void generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-  void readHDF5inputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
+  void readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
   void readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
+
+  void writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
+  void writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
 
 private:
   CctwApplication         *m_Application;
