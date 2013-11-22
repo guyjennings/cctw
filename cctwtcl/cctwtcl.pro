@@ -57,3 +57,13 @@ SOURCES += \
 OTHER_FILES += \
     cctwtcltest.tcl
 
+PRE_TARGETDEPS += pkgIndex
+
+QMAKE_EXTRA_TARGETS +=pkgIndex
+
+pkgIndex.commands = ( echo "package ifneeded cctw $${VERSION} [list load [file join \\\$$dir libCctwTcl[info sharedlibextension]]]" ) > pkgIndex.tcl
+pkgIndex.depends = FORCE
+
+QMAKE_CLEAN += pkgIndex.tcl
+
+
