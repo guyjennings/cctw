@@ -11,6 +11,11 @@ import string;
   "set <<id>> [ cctw_ijk2id <<max_i>> <<max_j>> <<max_k>> <<i>> <<j>> <<k>> ]"
 ];
 
+(blob b) cctw_input(string filename, int id) "cctw" "0.1"
+[
+   "set <<b>> [ cctw::cctw_input_blob <<filename>> <<id>> ]"
+];
+
 (int result) cctw_dimension(int i)
 {
   string t = sprintf("inputData.dimensions[%i]", i);

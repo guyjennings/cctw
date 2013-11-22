@@ -2,8 +2,10 @@
 # Stub of Tcl wrapper library
 
 namespace eval cctw {
-    proc cctwswift_chunk_read { filename } {
-        cctw_chunk_read $filename pointer length
+    proc cctw_input_blob { filename id } {
+        set L [ cctw_input $filename $id ]
+        set pointer [ lindex $L 2 ]
+        set length [ lindex $L 1 ]
         return [ list $pointer $length ]
     }
 }

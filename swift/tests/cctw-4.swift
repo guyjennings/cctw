@@ -10,7 +10,7 @@ import cctw;
 
 main
 {
-  blob fragment[];
+  blob chunks[];
 
   int input_chunks_i = 2;
   int input_chunks_j = 2;
@@ -23,7 +23,8 @@ main
         int id = cctw_ijk2id(input_chunks_i,input_chunks_j,
                              input_chunks_k,i,j,k);
         printf("opening: %s for chunk id: %i", hdf_file, id);
-        // fragment[] = read_hdf_fragment(hdf_file, i,j,k);
+        chunks[id] = cctw_input(hdf_file, id);
+        printf("size(%s) = %i", hdf_file, blob_size(chunks[id]));
       }}}
 
   output_chunks_x = 16; // toint(argv("chunks_x"));
