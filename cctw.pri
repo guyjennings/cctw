@@ -11,4 +11,5 @@ OTHER_FILES += \
     ../specmacros/sbscan.dat \
     ../specmacros/sfscan.dat \
     ../specmacros/ubfscan.dat \
-    ../specmacros/ubbscan.dat
+    ../specmacros/ubbscan.dat \
+    ../specmacros/aggregatedMask.js
