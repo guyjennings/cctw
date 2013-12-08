@@ -8,7 +8,7 @@ TEMPLATE = app
 
 include(../cctw.pri)
 
-QT          += concurrent core gui network script opengl printsupport svg
+QT          += core gui network script opengl svg
 
 TARGET       = cctwqt
 
@@ -16,7 +16,9 @@ INCLUDEPATH += . ../cctwlib/
 
 DEFINES     += CCTW_VERSION=\"$$VERSION\"
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets concurrent
+greaterThan(QT_MAJOR_VERSION, 4) {
+ QT += widgets concurrent printsupport
+}
 
 MOC_DIR = moc
 UI_DIR = ui

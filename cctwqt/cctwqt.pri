@@ -25,5 +25,3 @@ FORMS += \
     $${PWD}/cctwqtsetuptransformdialog.ui \
     $${PWD}/cctwqttransformonedialog.ui \
     $${PWD}/cctwqtsetupslicedialog.ui
-
-message(INCLUDEPATH = $${INCLUDEPATH})
