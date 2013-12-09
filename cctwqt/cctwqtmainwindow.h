@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QDateTime>
 #include "cctwapplication.h"
+#include "cctwqtsetupimportdialog.h"
 #include "cctwqtsetupinputdialog.h"
 #include "cctwqtsetupoutputdialog.h"
 #include "cctwqtsetuptransformdialog.h"
@@ -34,6 +35,8 @@ public slots:
   void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void doEvaluateCommand();
+  void doSetupImport();
+  void doImport();
   void doSetupInput();
   void doSetupOutput();
   void doSetupTransform();
@@ -60,6 +63,7 @@ private:
   Ui::CctwqtMainWindow       *ui;
   CctwApplication          *m_Application;
 
+  QPointer<CctwqtSetupImportDialog>    m_SetupImportDialog;
   QPointer<CctwqtSetupInputDialog>     m_SetupInputDialog;
   QPointer<CctwqtSetupOutputDialog>    m_SetupOutputDialog;
   QPointer<CctwqtSetupTransformDialog> m_SetupTransformDialog;

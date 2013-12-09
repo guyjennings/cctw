@@ -199,6 +199,8 @@ void CctwApplication::initialize(int &argc, char *argv[])
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
 
+  m_ImportData       = new CctwImportData(this, this);
+
   m_Parameters       = new CctwCrystalCoordinateParameters(this);
 
   m_InputDataManager        = new CctwInputDataFrameManager(this);
@@ -240,6 +242,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
+  m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
   m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
@@ -254,7 +257,8 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
-//  readSettings();
+
+  readSettings();
 
   m_Saver->start();
 
@@ -370,6 +374,10 @@ void CctwApplication::readSettings(QSettings *settings)
     m_Parameters->readSettings(settings, "parameters");
   }
 
+  if (m_ImportData) {
+    m_ImportData->readSettings(settings, "importData");
+  }
+
   if (m_InputDataManager) {
     m_InputDataManager->readSettings(settings, "inputDataManager");
   }
@@ -441,6 +449,10 @@ void CctwApplication::writeSettings(QSettings *settings)
 
   if (m_Parameters) {
     m_Parameters->writeSettings(settings, "parameters");
+  }
+
+  if (m_ImportData) {
+    m_ImportData->writeSettings(settings, "importData");
   }
 
   if (m_InputDataManager) {

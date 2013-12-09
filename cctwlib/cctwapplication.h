@@ -19,6 +19,7 @@
 #include "qcepobjectnamer.h"
 #include "cctwqtpeingresscommand.h"
 #include "cctwdatablobs.h"
+#include "cctwimportdata.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
@@ -128,6 +129,7 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
+  CctwImportData                     *m_ImportData;
   CctwInputDataFrameManager          *m_InputDataManager;
   CctwInputData                      *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;

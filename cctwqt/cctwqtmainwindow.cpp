@@ -30,6 +30,8 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_CommandInput, SIGNAL(returnPressed()), this, SLOT(doEvaluateCommand()));
 
+  connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
+  connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
   connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
@@ -139,6 +141,22 @@ void CctwqtMainWindow::doEvaluateCommand()
   QString cmd = ui->m_CommandInput->text();
 
   QMetaObject::invokeMethod(m_Application, "evaluateCommand", Q_ARG(QString, cmd));
+}
+
+void CctwqtMainWindow::doSetupImport()
+{
+  if (m_SetupImportDialog == NULL) {
+    m_SetupImportDialog = new CctwqtSetupImportDialog(this);
+    m_SetupImportDialog -> show();
+  }
+
+  m_SetupImportDialog->raise();
+  m_SetupImportDialog->activateWindow();
+}
+
+void CctwqtMainWindow::doImport()
+{
+  printMessage("Data Import not implemented yet...");
 }
 
 void CctwqtMainWindow::doSetupInput()
