@@ -25,7 +25,9 @@ public slots:
   void doBrowseDirectory();
   void doBrowseDirectoryChanged(int n);
   void doBrowseDark();
+  void doClearDark();
   void doMatchImages();
+  void doBrowseOutput();
 
 private:
   QString currentDirectory();

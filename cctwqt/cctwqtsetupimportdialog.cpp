@@ -18,12 +18,15 @@ CctwqtSetupImportDialog::CctwqtSetupImportDialog(CctwqtMainWindow *parent, CctwI
   connect(ui->m_DataDirectoryBrowse, SIGNAL(clicked()), this, SLOT(doBrowseDirectory()));
   connect(ui->m_MatchImages, SIGNAL(clicked()), this, SLOT(doMatchImages()));
   connect(ui->m_DarkImageBrowse, SIGNAL(clicked()), this, SLOT(doBrowseDark()));
+  connect(ui->m_ClearDark, SIGNAL(clicked()), this, SLOT(doClearDark()));
+  connect(ui->m_OutputFileBrowse, SIGNAL(clicked()), this, SLOT(doBrowseOutput()));
 
   if (m_Data) {
     ui->m_DarkImagePath->setText(m_Data->get_DarkImagePath());
     setCurrentDirectory(m_Data->get_ImageDirectory());
     ui->m_DataImages->addItems(m_Data->get_ImagePaths());
     ui->m_DataPattern->setText(m_Data->get_ImagePattern());
+    ui->m_OutputPath->setText(m_Data->get_OutputPath());
   }
 }
 
@@ -52,6 +55,7 @@ void CctwqtSetupImportDialog::accept()
 
     m_Data->set_ImagePaths(res);
     m_Data->set_ImagePattern(ui->m_DataPattern->text());
+    m_Data->set_OutputPath(ui->m_OutputPath->text());
   }
 
   QDialog::accept();
@@ -87,6 +91,21 @@ void CctwqtSetupImportDialog::doBrowseDark()
 
   if (path.length() > 0) {
     ui->m_DarkImagePath->setText(path);
+  }
+}
+
+void CctwqtSetupImportDialog::doClearDark()
+{
+  ui->m_DarkImagePath->setText("");
+}
+
+void CctwqtSetupImportDialog::doBrowseOutput()
+{
+  QString path = QFileDialog::getSaveFileName(this, "Output File",
+                                              ui->m_OutputPath->text());
+
+  if (path.length() > 0) {
+    ui->m_OutputPath->setText(path);
   }
 }
 
