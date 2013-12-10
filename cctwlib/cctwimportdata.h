@@ -2,6 +2,8 @@
 #define CCTWIMPORTDATA_H
 
 #include "cctwobject.h"
+#include "qcepimagedata.h"
+#include <QSemaphore>
 
 class CctwApplication;
 
@@ -21,8 +23,19 @@ public slots:
   void appendInputFile(QString path);
   void appendMatchingFiles(QString pattern);
 
+private slots:
+  void importDataFrame(int num, QString path);
+
+private:
+  bool createOutputFile();
+  void closeOutputFile();
+  void writeOutputFrame(int num, QcepImageData<double> *img);
+
 private:
   CctwApplication *m_Application;
+  QMutex           m_OutputMutex;
+  QSemaphore       m_BacklogSemaphore;
+  QSemaphore       m_CompletionSemaphore;
 
 private:
   Q_PROPERTY(int dataFormat READ get_DataFormat WRITE set_DataFormat)

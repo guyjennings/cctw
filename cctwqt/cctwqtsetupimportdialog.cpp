@@ -131,7 +131,7 @@ QString CctwqtSetupImportDialog::currentDirectory()
 
 void CctwqtSetupImportDialog::appendDirectoryPaths(QString dir)
 {
-  printf("Append directory path %s\n", qPrintable(dir));
+//  printf("Append directory path %s\n", qPrintable(dir));
 
   if (dir.length() > 0) {
     QDir d(dir);

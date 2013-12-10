@@ -1,10 +1,14 @@
 #include "cctwimportdata.h"
 #include "cctwapplication.h"
 #include <QDir>
+#include <QtConcurrentRun>
+#include "qcepmutexlocker.h"
 
 CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   CctwObject(parent),
   m_Application(application),
+  m_BacklogSemaphore(8),
+  m_CompletionSemaphore(0),
   m_DataFormat(m_Application->saver(), this, "dataFormat", 0, "Imported data format (0=auto)"),
   m_DarkImagePath(m_Application->saver(), this, "darkImagePath", "", "Dark image path"),
   m_ImagePaths(m_Application->saver(), this, "imagePaths", QcepStringList(), "Imported image paths"),
@@ -50,9 +54,63 @@ void CctwImportData::appendMatchingFiles(QString pattern)
 
 void CctwImportData::importData()
 {
-  printMessage("Import data not yet implemented");
+  if (createOutputFile()) {
+    QStringList paths = get_ImagePaths();
+    int n = paths.count();
+    QVector< QFuture<void> > results(n);
 
-  foreach (QString s, get_ImagePaths()) {
-    printMessage(tr("Import %1").arg(s));
+    printMessage(tr("Importing %1 frames of data").arg(n));
+
+    for (int i=0; i<n; i++) {
+      m_BacklogSemaphore.acquire(1);
+//      printMessage("acquired backlog semaphore");
+      QtConcurrent::run(this, &CctwImportData::importDataFrame,
+                                     i, paths[i]);
+    }
+
+    // waitTillFinished();
+
+    m_CompletionSemaphore.acquire(n);
+    closeOutputFile();
+    m_CompletionSemaphore.release(n);
+
+    printMessage("Import Completed");
   }
+}
+
+bool CctwImportData::createOutputFile()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+
+  return true;
+}
+
+void CctwImportData::closeOutputFile()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+}
+
+void CctwImportData::writeOutputFrame(int num, QcepImageData<double> *img)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+
+  printMessage(tr("Writing output frame %1").arg(num));
+}
+
+void CctwImportData::importDataFrame(int num, QString path)
+{
+  m_BacklogSemaphore.release(1);
+
+  if (path.length() > 0) {
+
+    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+
+    if (m.readImage(path)) {
+      m.loadMetaData();
+
+      writeOutputFrame(num, &m);
+    }
+  }
+
+  m_CompletionSemaphore.release(1);
 }

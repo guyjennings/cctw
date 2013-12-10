@@ -11,6 +11,7 @@
 #include "qwt_plot_magnifier.h"
 #include "qwt_plot_zoomer.h"
 #include "qwt_symbol.h"
+#include "QtConcurrentRun"
 
 CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -156,7 +157,7 @@ void CctwqtMainWindow::doSetupImport()
 
 void CctwqtMainWindow::doImport()
 {
-  printMessage("Data Import not implemented yet...");
+  QtConcurrent::run(m_Application->m_ImportData, &CctwImportData::importData);
 }
 
 void CctwqtMainWindow::doSetupInput()
