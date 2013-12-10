@@ -146,7 +146,7 @@ void CctwqtMainWindow::doEvaluateCommand()
 void CctwqtMainWindow::doSetupImport()
 {
   if (m_SetupImportDialog == NULL) {
-    m_SetupImportDialog = new CctwqtSetupImportDialog(this);
+    m_SetupImportDialog = new CctwqtSetupImportDialog(this, m_Application->m_ImportData);
     m_SetupImportDialog -> show();
   }
 

@@ -15,6 +15,11 @@ public:
 signals:
 
 public slots:
+  void importData();
+  void clearInputFiles();
+  void changeDirectory(QString path);
+  void appendInputFile(QString path);
+  void appendMatchingFiles(QString pattern);
 
 private:
   CctwApplication *m_Application;
@@ -34,6 +39,9 @@ private:
 
   Q_PROPERTY(QString imagePattern READ get_ImagePattern WRITE set_ImagePattern)
   QCEP_STRING_PROPERTY(ImagePattern)
+
+  Q_PROPERTY(QString outputPath READ get_OutputPath WRITE set_OutputPath)
+  QCEP_STRING_PROPERTY(OutputPath)
 };
 
 #endif // CCTWIMPORTDATA_H
