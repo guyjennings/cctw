@@ -55,17 +55,30 @@ void CctwImportData::appendMatchingFiles(QString pattern)
 void CctwImportData::importData()
 {
   if (createOutputFile()) {
+
     QStringList paths = get_ImagePaths();
     int n = paths.count();
     QVector< QFuture<void> > results(n);
+    QDir inp(get_ImageDirectory());
+
+    if (m_Application) {
+      m_Application->waitCompleted();
+      m_Application->set_Progress(0);
+      m_Application->set_Halting(false);
+      m_Application->set_ProgressLimit(n);
+    }
 
     printMessage(tr("Importing %1 frames of data").arg(n));
 
     for (int i=0; i<n; i++) {
+      if (m_Application) {
+        m_Application->addWorkOutstanding(1);
+      }
+
       m_BacklogSemaphore.acquire(1);
 //      printMessage("acquired backlog semaphore");
       QtConcurrent::run(this, &CctwImportData::importDataFrame,
-                                     i, paths[i]);
+                                     i, inp.filePath(paths[i]));
     }
 
     // waitTillFinished();
@@ -101,16 +114,25 @@ void CctwImportData::importDataFrame(int num, QString path)
 {
   m_BacklogSemaphore.release(1);
 
-  if (path.length() > 0) {
+  if (m_Application && !m_Application->get_Halting()) {
+    if (path.length() > 0) {
 
-    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+      QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
 
-    if (m.readImage(path)) {
-      m.loadMetaData();
+      if (m.readImage(path)) {
+        m.loadMetaData();
 
-      writeOutputFrame(num, &m);
+        printMessage(tr("Imported frame %1 from %2").arg(num).arg(path));
+
+        writeOutputFrame(num, &m);
+      }
     }
   }
 
   m_CompletionSemaphore.release(1);
+
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
 }

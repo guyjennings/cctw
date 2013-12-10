@@ -14,12 +14,19 @@
 #include "cctwunitcellproperty.h"
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
+#include "qcepimagedataformatcbf.h"
+#include "qcepimagedataformatmar345.h"
+#include "qcepimagedataformattiff.h"
 
 #ifdef Q_OS_UNIX
 #include "getopt.h"
 #endif
 
 QcepSettingsSaverPtr g_Saver;
+
+QcepImageDataFormatCBF<double> cbfImg("cbf");
+QcepImageDataFormatTiff<double> tiffImg("tiff");
+QcepImageDataFormatMar345<double> mar345Img("mar345");
 
 CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
