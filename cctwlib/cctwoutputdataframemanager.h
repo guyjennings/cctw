@@ -35,7 +35,6 @@ private:
   hid_t                m_FileId;
   hid_t                m_DatasetId;
   hid_t                m_DataspaceId;
-  hid_t                m_MemspaceId;
 
 public:
   Q_PROPERTY(QString filePath READ get_FilePath WRITE set_FilePath)
