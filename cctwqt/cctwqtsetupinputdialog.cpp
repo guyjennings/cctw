@@ -4,7 +4,8 @@
 
 CctwqtSetupInputDialog::CctwqtSetupInputDialog(CctwqtMainWindow *parent) :
   QDialog(parent),
-  ui(new Ui::CctwqtSetupInputDialog)
+  ui(new Ui::CctwqtSetupInputDialog),
+  m_Window(parent)
 {
   ui->setupUi(this);
 

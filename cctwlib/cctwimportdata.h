@@ -42,7 +42,6 @@ private:
   hid_t            m_FileId;
   hid_t            m_DatasetId;
   hid_t            m_DataspaceId;
-  hid_t            m_MemspaceId;
 
 private:
   Q_PROPERTY(int dataFormat READ get_DataFormat WRITE set_DataFormat)

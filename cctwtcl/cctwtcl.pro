@@ -51,10 +51,11 @@ HEADERS += \
 SOURCES += \
     cctwtcl.cpp \
     cctwtcl_commands.cpp \
-    cctwtcltiff.cpp \
-    cctw-dummies.cpp
+    cctwtcltiff.cpp
 
 OTHER_FILES += \
+    cctw-dummies.h \
+    cctw-dummies.cpp \
     cctwtcltest.tcl
 
 PRE_TARGETDEPS += pkgIndex

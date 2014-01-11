@@ -243,10 +243,14 @@ CctwInputDataBlob* CctwInputDataBlob::validate(int blobId, long blobP)
     if (g_InputBlobs.contains(blobP)) {
       CctwInputDataBlob *b = g_InputBlobs[blobP];
 
-      if (b && (b->blobID() == blobId) && (b->blobType() == 0)) {
-        return b;
+      if (b) {
+        if ((b->blobID() == blobId) && (b->blobType() == 0)) {
+          return b;
+        } else {
+          printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 0\n", b->blobID(), blobId, b->blobType());
+        }
       } else {
-        printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 0\n", b->blobID(), blobId, b->blobType());
+        printf("Stored blob ref == NULL\n");
       }
     } else {
       printf("Not a valid input blob\n");
@@ -266,10 +270,14 @@ CctwIntermediateDataBlob* CctwIntermediateDataBlob::validate(int blobId, long bl
     if (g_IntermediateBlobs.contains(blobP)) {
       CctwIntermediateDataBlob *b = g_IntermediateBlobs[blobP];
 
-      if (b && (b->blobID() == blobId) && (b->blobType() == 1)) {
-        return b;
+      if (b) {
+        if ((b->blobID() == blobId) && (b->blobType() == 1)) {
+          return b;
+        } else {
+          printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 1\n", b->blobID(), blobId, b->blobType());
+        }
       } else {
-        printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 1\n", b->blobID(), blobId, b->blobType());
+        printf("Stored blob ref == NULL\n");
       }
     } else {
       printf("Not a valid intermediate blob\n");
@@ -289,10 +297,14 @@ CctwOutputDataBlob* CctwOutputDataBlob::validate(int blobId, long blobP)
     if (g_OutputBlobs.contains(blobP)) {
       CctwOutputDataBlob *b = g_OutputBlobs[blobP];
 
-      if (b && (b->blobID() == blobId) && (b->blobType() == 2)) {
-        return b;
+      if (b) {
+        if ((b->blobID() == blobId) && (b->blobType() == 2)) {
+          return b;
+        } else {
+          printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 2\n", b->blobID(), blobId, b->blobType());
+        }
       } else {
-        printf("Blob ID or blob type mismatch id: %d != %d, type: %d != 2\n", b->blobID(), blobId, b->blobType());
+        printf("Stored blob ref == NULL\n");
       }
     } else {
       printf("Not a valid output blob\n");

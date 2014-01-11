@@ -529,10 +529,14 @@ QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlo
 
               CctwIntVector3D localPixel = pixels - opchunk*m_OutputData->chunkSize();
 
-              int offset = lastBlob->offset(localPixel);
+              if (lastBlob) {
+                int offset = lastBlob->offset(localPixel);
 
-              lastBlob->data(offset)   += data;
-              lastBlob->weight(offset) += wght;
+                lastBlob->data(offset)   += data;
+                lastBlob->weight(offset) += wght;
+              } else {
+                printMessage(tr("lastBlob == NULL in CctwTransformer::transformBlob"));
+              }
             }
           }
         }

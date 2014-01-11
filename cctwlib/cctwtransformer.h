@@ -42,6 +42,7 @@ public slots:
   QcepIntList dependencies(int chunkIdx);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+public:
   CctwInputDataBlob*               inputBlob(int blobIdx, QString location);
   QList<CctwIntermediateDataBlob*> transformBlob(CctwInputDataBlob *blob);
   CctwIntermediateDataBlob*        mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2);

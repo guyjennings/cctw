@@ -27,8 +27,8 @@ CctwDataChunk::~CctwDataChunk()
     printf("Anomaly\n");
   }
 
-  delete [] m_ChunkData;
-  delete [] m_ChunkWeights;
+//  delete [] m_ChunkData;
+//  delete [] m_ChunkWeights;
 
   releaseBuffer(m_ChunkData);
   releaseBuffer(m_ChunkWeights);
@@ -287,9 +287,9 @@ void CctwDataChunk::releaseBuffer(double *buffer)
     int nalloc = g_Allocated.fetchAndAddOrdered(-1);
 
 //    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
-  }
 
-  delete [] buffer;
+    delete [] buffer;
+  }
 }
 
 void CctwDataChunk::waitForData()

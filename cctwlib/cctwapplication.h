@@ -80,10 +80,6 @@ public slots:
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path);
 
-#ifndef NO_GUI
-  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
-#endif
-
   int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
   CctwCrystalCoordinateParameters *parameters() const;
@@ -93,8 +89,16 @@ public slots:
   void waitCompleted();
   int  workOutstanding();
 
+  int inputChunkCount();
+  int outputChunkCount();
+
   QcepIntList dependencies(int chunkId);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
+
+public:
+#ifndef NO_GUI
+  void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
+#endif
 
   CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
   QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
@@ -103,10 +107,6 @@ public slots:
   void                              output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk);
   void                              deleteBlob(int chunkId, CctwDataBlob *blob);
 
-  int inputChunkCount();
-  int outputChunkCount();
-
-public:
   QcepSettingsSaverWPtr saver() const;
 
   QScriptValue evaluate(QString cmd);
