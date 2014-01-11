@@ -223,10 +223,14 @@ CctwDataBlob* CctwDataBlob::validate(int blobId, long blobP)
 {
   if (g_Blobs.contains(blobP)) {
     CctwDataBlob* b = g_Blobs[blobP];
-    if (b && (b->blobID() == blobId)) {
-      return b;
+    if (b) {
+      if ((b->blobID() == blobId)) {
+        return b;
+      } else {
+        printf("Blob ID mismatch %d != %d\n", b->blobID(), blobId);
+      }
     } else {
-      printf("Blob ID mismatch %d != %d\n", b->blobID(), blobId);
+      printf("Stored blob ref == NULL\n");
     }
   } else {
     printf("Not a valid blob\n");
