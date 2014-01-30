@@ -15,6 +15,7 @@ class CctwImportData : public CctwObject
 public:
   explicit CctwImportData(CctwApplication *application,
                           QObject *parent = 0);
+  virtual ~CctwImportData();
 
 signals:
 
@@ -33,6 +34,12 @@ private:
   void closeOutputFile();
   void writeOutputFrame(int num, QcepImageData<double> *img);
 
+  void initializeDataBuffer();
+  void deleteDataBuffer();
+  void allocateDataBuffer(hsize_t dimx, hsize_t dimy, hsize_t dimz);
+  void readDataFrameToBuffer(int i, int nb, QString path);
+  void outputDataFromBuffer(int i);
+
 private:
   CctwApplication *m_Application;
   QMutex           m_OutputMutex;
@@ -42,6 +49,12 @@ private:
   hid_t            m_FileId;
   hid_t            m_DatasetId;
   hid_t            m_DataspaceId;
+
+  float           *m_InputBuffer;
+  int              m_InputBufferStart;
+  int              m_InputBufferCount;
+  hsize_t          m_InputBufferSize;
+  hsize_t          m_InputBufferStride;
 
 private:
   Q_PROPERTY(int dataFormat READ get_DataFormat WRITE set_DataFormat)

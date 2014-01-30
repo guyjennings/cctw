@@ -14,10 +14,30 @@
    <string>CCTW Setup Data Import...</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="14" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
    <item row="12" column="2">
     <widget class="QSpinBox" name="m_OutputChunkY">
      <property name="toolTip">
       <string>Output HDF Chunk Size in Y</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QSpinBox" name="m_InputImageBuffering">
+     <property name="toolTip">
+      <string>Number of images to read for each write operation</string>
      </property>
      <property name="maximum">
       <number>999999</number>
@@ -140,6 +160,13 @@
      </property>
     </widget>
    </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Input Image Buffering:</string>
+     </property>
+    </widget>
+   </item>
    <item row="12" column="1">
     <widget class="QSpinBox" name="m_OutputChunkX">
      <property name="toolTip">
@@ -150,30 +177,20 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="label_8">
+   <item row="13" column="0">
+    <widget class="QLabel" name="label_9">
      <property name="text">
-      <string>Input Image Buffering:</string>
+      <string>Output Compression: (0=none)</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="1">
-    <widget class="QSpinBox" name="m_InputImageBuffering">
+   <item row="13" column="1">
+    <widget class="QSpinBox" name="m_OutputCompression">
      <property name="toolTip">
-      <string>Number of images to read for each write operation</string>
+      <string>Output HDF Chunk Size in X</string>
      </property>
      <property name="maximum">
       <number>999999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

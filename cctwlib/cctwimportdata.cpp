@@ -12,6 +12,8 @@ CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   m_FileId(-1),
   m_DatasetId(-1),
   m_DataspaceId(-1),
+  m_InputBuffer(NULL),
+  m_InputBufferCount(0),
   m_DataFormat(m_Application->saver(), this, "dataFormat", 0, "Imported data format (0=auto)"),
   m_DarkImagePath(m_Application->saver(), this, "darkImagePath", "", "Dark image path"),
   m_ImagePaths(m_Application->saver(), this, "imagePaths", QcepStringList(), "Imported image paths"),
@@ -25,6 +27,11 @@ CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   m_ZDimension(QcepSettingsSaverWPtr(), this, "zDimension", 0, "Z Dimension of output"),
   m_InputDataBuffering(m_Application->saver(), this, "inputDataBuffering", 0, "Input Data Buffering")
 {
+}
+
+CctwImportData::~CctwImportData()
+{
+  deleteDataBuffer();
 }
 
 void CctwImportData::clearInputFiles()
@@ -63,6 +70,9 @@ void CctwImportData::appendMatchingFiles(QString pattern)
 
 void CctwImportData::importData()
 {
+  QTime startAt;
+  startAt.start();
+
   QStringList paths = get_ImagePaths();
   int n = paths.count();
   QVector< QFuture<void> > results(n);
@@ -79,24 +89,45 @@ void CctwImportData::importData()
 
   set_ZDimension(n);
 
-  for (int i=0; i<n; i++) {
-    if (m_Application) {
-      m_Application->addWorkOutstanding(1);
+  if (get_InputDataBuffering() <= 1) {
+    for (int i=0; i<n; i++) {
+      if (m_Application) {
+        m_Application->addWorkOutstanding(1);
+      }
+
+      m_BacklogSemaphore.acquire(1);
+      //      printMessage("acquired backlog semaphore");
+      QtConcurrent::run(this, &CctwImportData::importDataFrame,
+                        i, inp.filePath(paths[i]));
+    }
+  } else {
+    int nb = get_InputDataBuffering();
+
+    initializeDataBuffer();
+
+    for (int i=0; i<n; i++) {
+      if (m_Application) {
+        m_Application->addWorkOutstanding(1);
+      }
+
+      readDataFrameToBuffer(i, nb, inp.filePath(paths[i]));
     }
 
-    m_BacklogSemaphore.acquire(1);
-    //      printMessage("acquired backlog semaphore");
-    QtConcurrent::run(this, &CctwImportData::importDataFrame,
-                      i, inp.filePath(paths[i]));
+    outputDataFromBuffer(0);
   }
 
   // waitTillFinished();
 
   m_CompletionSemaphore.acquire(n);
   closeOutputFile();
+  deleteDataBuffer();
   m_CompletionSemaphore.release(n);
 
-  printMessage("Import Completed");
+  if (m_Application->get_Halting()) {
+    printMessage(tr("Import Cancelled after %1 sec").arg(startAt.elapsed()/1000.0));
+  } else {
+    printMessage(tr("Import Completed after %1 sec").arg(startAt.elapsed()/1000.0));
+  }
 }
 
 bool CctwImportData::createOutputFile()
@@ -305,4 +336,127 @@ void CctwImportData::importDataFrame(int num, QString path)
     m_Application->prop_Progress()->incValue(1);
     m_Application->workCompleted(1);
   }
+}
+
+void CctwImportData::initializeDataBuffer()
+{
+  deleteDataBuffer();
+}
+
+void CctwImportData::allocateDataBuffer(hsize_t dimx, hsize_t dimy, hsize_t dimz)
+{
+  m_InputBufferStride = dimx*dimy;
+  m_InputBufferSize   = dimx*dimy*dimz;
+
+  m_InputBuffer       = new float[m_InputBufferSize];
+  m_InputBufferStart  = 0;
+  m_InputBufferCount  = 0;
+}
+
+void CctwImportData::deleteDataBuffer()
+{
+  if (m_InputBuffer) {
+    delete [] m_InputBuffer;
+
+    m_InputBuffer       = 0;
+    m_InputBufferStart  = 0;
+    m_InputBufferCount  = 0;
+    m_InputBufferSize   = 0;
+    m_InputBufferStride = 0;
+  }
+}
+
+void CctwImportData::readDataFrameToBuffer(int i, int nb, QString path)
+{
+  if (m_Application && !m_Application->get_Halting()) {
+    if (path.length() > 0) {
+
+      QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+
+      if (m.readImage(path)) {
+        m.loadMetaData();
+
+        printMessage(tr("Imported frame %1 from %2").arg(i).arg(path));
+
+        if (m_InputBuffer == NULL) {
+          set_XDimension(m.get_Width());
+          set_YDimension(m.get_Height());
+
+          allocateDataBuffer(get_XDimension(), get_YDimension(), nb);
+
+          if (!createOutputFile()) {
+            m_Application->set_Halting(true);
+          }
+        }
+
+        hsize_t ibuf = i % nb;
+
+        if (ibuf == 0) {
+          outputDataFromBuffer(i);
+        }
+
+        double *frame = m.data();
+        float *dest  = m_InputBuffer + ibuf*m_InputBufferStride;
+
+        for (hsize_t i=0; i<m_InputBufferStride; i++) {
+          *dest++ = *frame++;
+        }
+
+        m_InputBufferCount = ibuf+1;
+      }
+    }
+  }
+
+  m_CompletionSemaphore.release(1);
+
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
+}
+
+void CctwImportData::outputDataFromBuffer(int i)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+
+  printMessage(tr("Writing output from frames %1 to %2")
+               .arg(m_InputBufferStart)
+               .arg(m_InputBufferStart+m_InputBufferCount-1));
+
+  if (m_FileId >= 0) {
+    hid_t memspace_id;
+    hsize_t offset[3], count[3], stride[3], block[3];
+
+    count[0] = m_InputBufferCount;
+    count[1] = get_YDimension();
+    count[2] = get_XDimension();
+
+    stride[0] = 1;
+    stride[1] = 1;
+    stride[2] = 1;
+
+    block[0] = 1;
+    block[1] = 1;
+    block[2] = 1;
+
+    offset[0] = m_InputBufferStart;
+    offset[1] = 0;
+    offset[2] = 0;
+
+    memspace_id = H5Screate_simple(3, count, NULL);
+
+    herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+    herr_t wrterr = H5Dwrite(m_DatasetId, H5T_NATIVE_FLOAT, memspace_id, m_DataspaceId, H5P_DEFAULT, m_InputBuffer);
+
+    if (selerr || wrterr) {
+      printMessage(tr("Error writing frames %1 to %2, selerr = %3, wrterr = %4")
+                   .arg(m_InputBufferStart)
+                   .arg(m_InputBufferStart+m_InputBufferCount-1)
+                   .arg(selerr)
+                   .arg(wrterr));
+    }
+  }
+
+  m_InputBufferStart = i;
+  m_InputBufferCount = 0;
 }

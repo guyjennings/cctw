@@ -32,6 +32,7 @@ CctwqtSetupImportDialog::CctwqtSetupImportDialog(CctwqtMainWindow *parent, CctwI
     ui->m_OutputChunkX->setValue(m_Data->get_ChunkSize().x());
     ui->m_OutputChunkY->setValue(m_Data->get_ChunkSize().y());
     ui->m_OutputChunkZ->setValue(m_Data->get_ChunkSize().z());
+    ui->m_OutputCompression->setValue(m_Data->get_Compression());
   }
 }
 
@@ -66,6 +67,8 @@ void CctwqtSetupImportDialog::accept()
     m_Data->set_ChunkSize(CctwIntVector3D(ui->m_OutputChunkX->value(),
                                           ui->m_OutputChunkY->value(),
                                           ui->m_OutputChunkZ->value()));
+
+    m_Data->set_Compression(ui->m_OutputCompression->value());
   }
 
   QDialog::accept();
