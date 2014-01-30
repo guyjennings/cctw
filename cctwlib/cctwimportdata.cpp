@@ -114,14 +114,14 @@ void CctwImportData::importData()
     }
 
     outputDataFromBuffer(0);
+
+    deleteDataBuffer();
   }
 
   // waitTillFinished();
 
   m_CompletionSemaphore.acquire(n);
   closeOutputFile();
-  deleteDataBuffer();
-  m_CompletionSemaphore.release(n);
 
   if (m_Application->get_Halting()) {
     printMessage(tr("Import Cancelled after %1 sec").arg(startAt.elapsed()/1000.0));
