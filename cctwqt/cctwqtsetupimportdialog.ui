@@ -6,15 +6,42 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>716</height>
+    <width>894</width>
+    <height>702</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>CCTW Setup Data Import...</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="9" column="0">
+   <item row="12" column="2">
+    <widget class="QSpinBox" name="m_OutputChunkY">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in Y</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Output Chunk Size (X,Y,Z)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="3">
+    <widget class="QSpinBox" name="m_OutputChunkZ">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in Z</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Output File:</string>
@@ -59,16 +86,6 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1" colspan="3">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="8" column="0" colspan="3">
     <widget class="QLineEdit" name="m_DataPattern"/>
    </item>
@@ -106,10 +123,10 @@
    <item row="1" column="0" colspan="4">
     <widget class="QLineEdit" name="m_DarkImagePath"/>
    </item>
-   <item row="10" column="0" colspan="3">
+   <item row="11" column="0" colspan="3">
     <widget class="QLineEdit" name="m_OutputPath"/>
    </item>
-   <item row="10" column="3">
+   <item row="11" column="3">
     <widget class="QPushButton" name="m_OutputFileBrowse">
      <property name="text">
       <string>Select Output...</string>
@@ -120,6 +137,43 @@
     <widget class="QPushButton" name="m_ClearDark">
      <property name="text">
       <string>Clear Dark</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1">
+    <widget class="QSpinBox" name="m_OutputChunkX">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in X</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Input Image Buffering:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QSpinBox" name="m_InputImageBuffering">
+     <property name="toolTip">
+      <string>Number of images to read for each write operation</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

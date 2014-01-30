@@ -76,6 +76,9 @@ private:
 
   Q_PROPERTY(int zDimension READ get_ZDimension WRITE set_ZDimension STORED false)
   QCEP_INTEGER_PROPERTY(ZDimension)
+
+  Q_PROPERTY(int inputDataBuffering READ get_InputDataBuffering WRITE set_InputDataBuffering)
+  QCEP_INTEGER_PROPERTY(InputDataBuffering)
 };
 
 #endif // CCTWIMPORTDATA_H

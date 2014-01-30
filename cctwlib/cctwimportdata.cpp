@@ -22,7 +22,8 @@ CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   m_Compression(m_Application->saver(), this, "compression", 0, "output compression type"),
   m_XDimension(QcepSettingsSaverWPtr(), this, "xDimension", 0, "X Dimension of output"),
   m_YDimension(QcepSettingsSaverWPtr(), this, "yDimension", 0, "Y Dimension of output"),
-  m_ZDimension(QcepSettingsSaverWPtr(), this, "zDimension", 0, "Z Dimension of output")
+  m_ZDimension(QcepSettingsSaverWPtr(), this, "zDimension", 0, "Z Dimension of output"),
+  m_InputDataBuffering(m_Application->saver(), this, "inputDataBuffering", 0, "Input Data Buffering")
 {
 }
 
