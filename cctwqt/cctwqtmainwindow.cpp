@@ -347,7 +347,7 @@ void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCur
 void CctwqtMainWindow::doCompareHDF5()
 {
   if (m_SetupCompareDialog == NULL) {
-    m_SetupCompareDialog = new CctwqtSetupCompareDialog(this);
+    m_SetupCompareDialog = new CctwqtSetupCompareDialog(this, m_Application->m_CompareData);
     m_SetupCompareDialog -> show();
   }
 

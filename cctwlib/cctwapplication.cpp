@@ -210,6 +210,8 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   m_ImportData       = new CctwImportData(this, this);
 
+  m_CompareData      = new CctwCompareData(this, this);
+
   m_Parameters       = new CctwCrystalCoordinateParameters(this);
 
   m_InputDataManager        = new CctwInputDataFrameManager(this);
@@ -252,6 +254,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
+  m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
   m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
   m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));

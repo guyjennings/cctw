@@ -3,6 +3,9 @@
 
 #include <QDialog>
 
+class CctwCompareData;
+class CctwqtMainWindow;
+
 namespace Ui {
 class CctwqtSetupCompareDialog;
 }
@@ -12,11 +15,16 @@ class CctwqtSetupCompareDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit CctwqtSetupCompareDialog(QWidget *parent = 0);
+  explicit CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwCompareData *data);
   ~CctwqtSetupCompareDialog();
+
+public slots:
+  void accept();
 
 private:
   Ui::CctwqtSetupCompareDialog *ui;
+  CctwqtMainWindow   *m_Window;
+  CctwCompareData    *m_Data;
 };
 
 #endif // CCTWQTSETUPCOMPAREDIALOG_H

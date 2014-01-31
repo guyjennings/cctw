@@ -43,7 +43,8 @@ SOURCES += \
     $${PWD}/cctwlinearfitter.cpp \
     $${PWD}/cctwdatablobs.cpp \
     $${PWD}/cctwapplication.cpp \
-    ../cctwlib/cctwimportdata.cpp
+    ../cctwlib/cctwimportdata.cpp \
+    ../cctwlib/cctwcomparedata.cpp
 
 HEADERS += \
     $${PWD}/cctwdebug.h \
@@ -82,4 +83,5 @@ HEADERS += \
     $${PWD}/cctwlinearfitter.h \
     $${PWD}/cctwdatablobs.h \
     $${PWD}/cctwapplication.h \
-    ../cctwlib/cctwimportdata.h
+    ../cctwlib/cctwimportdata.h \
+    ../cctwlib/cctwcomparedata.h

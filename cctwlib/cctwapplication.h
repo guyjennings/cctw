@@ -20,6 +20,7 @@
 #include "cctwqtpeingresscommand.h"
 #include "cctwdatablobs.h"
 #include "cctwimportdata.h"
+#include "cctwcomparedata.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
@@ -130,6 +131,7 @@ public:
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
   CctwImportData                     *m_ImportData;
+  CctwCompareData                    *m_CompareData;
   CctwInputDataFrameManager          *m_InputDataManager;
   CctwInputData                      *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;
