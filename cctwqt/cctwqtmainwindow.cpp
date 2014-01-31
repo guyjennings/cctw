@@ -32,7 +32,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_CommandInput, SIGNAL(returnPressed()), this, SLOT(doEvaluateCommand()));
 
   connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
+  connect(ui->m_ActionSetupDataImport, SIGNAL(triggered()), this, SLOT(doSetupImport()));
+
   connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
+  connect(ui->m_ActionImportData, SIGNAL(triggered()), this, SLOT(doImport()));
+
   connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
@@ -53,6 +57,9 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), m_Application, SLOT(reportDependencies()));
   connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
   connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
+
+  connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
+  connect(ui->m_ActionCheckImportedData, SIGNAL(triggered()), this, SLOT(doCheckImportedData()));
 
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
@@ -335,4 +342,26 @@ void CctwqtMainWindow::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCur
 
     m_Zoomer->setZoomBase();
   }
+}
+
+void CctwqtMainWindow::doCompareHDF5()
+{
+  if (m_SetupCompareDialog == NULL) {
+    m_SetupCompareDialog = new CctwqtSetupCompareDialog(this);
+    m_SetupCompareDialog -> show();
+  }
+
+  m_SetupCompareDialog->raise();
+  m_SetupCompareDialog->activateWindow();
+}
+
+void CctwqtMainWindow::doCheckImportedData()
+{
+  if (m_SetupCheckImportDialog == NULL) {
+    m_SetupCheckImportDialog = new CctwqtSetupCheckImportDialog(this, m_Application->m_ImportData);
+    m_SetupCheckImportDialog ->show();
+  }
+
+  m_SetupCheckImportDialog->raise();
+  m_SetupCheckImportDialog->activateWindow();
 }

@@ -2,6 +2,7 @@
 #include "ui_cctwqtsetupimportdialog.h"
 #include "cctwqtmainwindow.h"
 #include <QFileDialog>
+#include "cctwimportdata.h"
 
 CctwqtSetupImportDialog::CctwqtSetupImportDialog(CctwqtMainWindow *parent, CctwImportData *data) :
   QDialog(parent),

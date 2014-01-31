@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>913</width>
+    <width>917</width>
     <height>734</height>
    </rect>
   </property>
@@ -260,7 +260,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>913</width>
+     <width>917</width>
      <height>22</height>
     </rect>
    </property>
@@ -270,6 +270,9 @@
     </property>
     <addaction name="m_ActionLoadSettings"/>
     <addaction name="m_ActionSaveSettings"/>
+    <addaction name="separator"/>
+    <addaction name="m_ActionSetupDataImport"/>
+    <addaction name="m_ActionImportData"/>
     <addaction name="separator"/>
     <addaction name="m_ActionQuit"/>
    </widget>
@@ -298,6 +301,10 @@
      <string>Analysis</string>
     </property>
     <addaction name="m_ActionAnalyseSpecDataFile"/>
+    <addaction name="m_ActionSetupDataImport"/>
+    <addaction name="m_ActionImportData"/>
+    <addaction name="m_ActionCheckImportedData"/>
+    <addaction name="m_ActionCompareTwoHDF5"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTransform"/>
@@ -373,6 +380,38 @@
   <action name="m_ActionAnalyseSpecDataFile">
    <property name="text">
     <string>Analyze spec data file...</string>
+   </property>
+  </action>
+  <action name="m_ActionCompareTwoHDF5">
+   <property name="text">
+    <string>Compare two HDF5 Datasets...</string>
+   </property>
+   <property name="toolTip">
+    <string>Compare two HDF5 datasets</string>
+   </property>
+  </action>
+  <action name="m_ActionCheckImportedData">
+   <property name="text">
+    <string>Check Imported Data...</string>
+   </property>
+   <property name="toolTip">
+    <string>Check recently imported data</string>
+   </property>
+  </action>
+  <action name="m_ActionSetupDataImport">
+   <property name="text">
+    <string>Importing Data...</string>
+   </property>
+   <property name="toolTip">
+    <string>Setup data import options...</string>
+   </property>
+  </action>
+  <action name="m_ActionImportData">
+   <property name="text">
+    <string>Import Data...</string>
+   </property>
+   <property name="toolTip">
+    <string>Import data from detctor images</string>
    </property>
   </action>
  </widget>

@@ -25,7 +25,9 @@ CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   m_XDimension(QcepSettingsSaverWPtr(), this, "xDimension", 0, "X Dimension of output"),
   m_YDimension(QcepSettingsSaverWPtr(), this, "yDimension", 0, "Y Dimension of output"),
   m_ZDimension(QcepSettingsSaverWPtr(), this, "zDimension", 0, "Z Dimension of output"),
-  m_InputDataBuffering(m_Application->saver(), this, "inputDataBuffering", 0, "Input Data Buffering")
+  m_InputDataBuffering(m_Application->saver(), this, "inputDataBuffering", 0, "Input Data Buffering"),
+  m_CheckRigorously(m_Application->saver(), this, "checkRigorously", false, "Perform rigorous check (every element) of imported data"),
+  m_CheckApproximately(m_Application->saver(), this, "checkApproximately", true, "Perform approximate check (about 30 seconds) of imported data")
 {
 }
 
@@ -459,4 +461,27 @@ void CctwImportData::outputDataFromBuffer(int i)
 
   m_InputBufferStart = i;
   m_InputBufferCount = 0;
+}
+
+void CctwImportData::checkImportedData()
+{
+  printMessage("Checking imported data...");
+
+  if (get_CheckRigorously()) {
+    checkImportedDataRigorously();
+  }
+
+  if (get_CheckApproximately()) {
+    checkImportedDataApproximately();
+  }
+}
+
+void CctwImportData::checkImportedDataRigorously()
+{
+  printMessage("Checking imported data rigorously...");
+}
+
+void CctwImportData::checkImportedDataApproximately()
+{
+  printMessage("Checking imported data approximately...");
 }

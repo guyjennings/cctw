@@ -11,6 +11,8 @@
 #include "cctwqtsetuptransformdialog.h"
 #include "cctwqtsetupslicedialog.h"
 #include "cctwqttransformonedialog.h"
+#include "cctwqtsetupcomparedialog.h"
+#include "cctwqtsetupcheckimportdialog.h"
 
 namespace Ui {
 class CctwqtMainWindow;
@@ -55,6 +57,9 @@ public slots:
   void possiblyClose();
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 
+  void doCompareHDF5();
+  void doCheckImportedData();
+
 private:
   bool wantToClose();
   void closeEvent (QCloseEvent * event);
@@ -63,12 +68,15 @@ private:
   Ui::CctwqtMainWindow       *ui;
   CctwApplication          *m_Application;
 
-  QPointer<CctwqtSetupImportDialog>    m_SetupImportDialog;
-  QPointer<CctwqtSetupInputDialog>     m_SetupInputDialog;
-  QPointer<CctwqtSetupOutputDialog>    m_SetupOutputDialog;
-  QPointer<CctwqtSetupTransformDialog> m_SetupTransformDialog;
-  QPointer<CctwqtSetupSliceDialog>     m_SetupSliceDialog;
-  QPointer<CctwqtTransformOneDialog>   m_TransformOneDialog;
+  QPointer<CctwqtSetupImportDialog>      m_SetupImportDialog;
+  QPointer<CctwqtSetupInputDialog>       m_SetupInputDialog;
+  QPointer<CctwqtSetupOutputDialog>      m_SetupOutputDialog;
+  QPointer<CctwqtSetupTransformDialog>   m_SetupTransformDialog;
+  QPointer<CctwqtSetupSliceDialog>       m_SetupSliceDialog;
+  QPointer<CctwqtTransformOneDialog>     m_TransformOneDialog;
+  QPointer<CctwqtSetupCheckImportDialog> m_SetupCheckImportDialog;
+  QPointer<CctwqtSetupCompareDialog>     m_SetupCompareDialog;
+
 //  CctwqtSetupInputDialog      *m_SetupInputDialog;
 //  CctwqtSetupOutputDialog     *m_SetupOutputDialog;
 //  CctwqtSetupTransformDialog  *m_SetupTransformDialog;

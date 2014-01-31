@@ -2,13 +2,13 @@
 #define CCTWQTSETUPIMPORTDIALOG_H
 
 #include <QDialog>
-#include "cctwimportdata.h"
+
+class CctwImportData;
+class CctwqtMainWindow;
 
 namespace Ui {
 class CctwqtSetupImportDialog;
 }
-
-class CctwqtMainWindow;
 
 class CctwqtSetupImportDialog : public QDialog
 {

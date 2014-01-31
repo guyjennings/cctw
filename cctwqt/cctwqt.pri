@@ -8,7 +8,9 @@ SOURCES += \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
     $${PWD}/cctwqttransformonedialog.cpp \
     $${PWD}/cctwqtsetupslicedialog.cpp \
-    $${PWD}/cctwqtpeingresscommand.cpp
+    $${PWD}/cctwqtpeingresscommand.cpp \
+    $${PWD}/cctwqtsetupcomparedialog.cpp \
+    $${PWD}/cctwqtsetupcheckimportdialog.cpp
 
 HEADERS += \
     $${PWD}/cctwqtmainwindow.h \
@@ -18,7 +20,9 @@ HEADERS += \
     $${PWD}/cctwqtsetuptransformdialog.h \
     $${PWD}/cctwqttransformonedialog.h \
     $${PWD}/cctwqtsetupslicedialog.h \
-    $${PWD}/cctwqtpeingresscommand.h
+    $${PWD}/cctwqtpeingresscommand.h \
+    $${PWD}/cctwqtsetupcomparedialog.h \
+    $${PWD}/cctwqtsetupcheckimportdialog.h
 
 FORMS += \
     $${PWD}/cctwqtmainwindow.ui \
@@ -27,4 +31,6 @@ FORMS += \
     $${PWD}/cctwqtsetupoutputdialog.ui \
     $${PWD}/cctwqtsetuptransformdialog.ui \
     $${PWD}/cctwqttransformonedialog.ui \
-    $${PWD}/cctwqtsetupslicedialog.ui
+    $${PWD}/cctwqtsetupslicedialog.ui \
+    $${PWD}/cctwqtsetupcomparedialog.ui \
+    $${PWD}/cctwqtsetupcheckimportdialog.ui

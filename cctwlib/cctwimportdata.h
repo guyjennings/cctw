@@ -25,6 +25,9 @@ public slots:
   void changeDirectory(QString path);
   void appendInputFile(QString path);
   void appendMatchingFiles(QString pattern);
+  void checkImportedData();
+  void checkImportedDataRigorously();
+  void checkImportedDataApproximately();
 
 private slots:
   void importDataFrame(int num, QString path);
@@ -92,6 +95,12 @@ private:
 
   Q_PROPERTY(int inputDataBuffering READ get_InputDataBuffering WRITE set_InputDataBuffering)
   QCEP_INTEGER_PROPERTY(InputDataBuffering)
+
+  Q_PROPERTY(bool checkRigorously READ get_CheckRigorously WRITE set_CheckRigorously)
+  QCEP_BOOLEAN_PROPERTY(CheckRigorously)
+
+  Q_PROPERTY(bool checkApproximately READ get_CheckApproximately WRITE set_CheckApproximately)
+  QCEP_BOOLEAN_PROPERTY(CheckApproximately)
 };
 
 #endif // CCTWIMPORTDATA_H
