@@ -14,6 +14,7 @@ CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   m_DataspaceId(-1),
   m_InputBuffer(NULL),
   m_InputBufferCount(0),
+  m_DarkImage(new QcepImageData<double>(QcepSettingsSaverWPtr(),0,0)),
   m_DataFormat(m_Application->saver(), this, "dataFormat", 0, "Imported data format (0=auto)"),
   m_DarkImagePath(m_Application->saver(), this, "darkImagePath", "", "Dark image path"),
   m_ImagePaths(m_Application->saver(), this, "imagePaths", QcepStringList(), "Imported image paths"),
@@ -85,6 +86,20 @@ void CctwImportData::importData()
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
     m_Application->set_ProgressLimit(n);
+  }
+
+
+  QString dkPath = get_DarkImagePath();
+
+  if (dkPath.length() > 0) {
+    if (m_DarkImage->readImage(get_DarkImagePath())) {
+      printMessage(tr("Reading dark image from %1").arg(dkPath));
+      m_DarkImage->loadMetaData();
+    } else {
+      printMessage(tr("Failed to read dark image from %1").arg(dkPath));
+    }
+  } else {
+    printMessage(tr("No dark image specified"));
   }
 
   printMessage(tr("Importing %1 frames of data").arg(n));
@@ -320,6 +335,8 @@ void CctwImportData::importDataFrame(int num, QString path)
 
         printMessage(tr("Imported frame %1 from %2").arg(num).arg(path));
 
+        m.subtractDark(m_DarkImage);
+
         set_XDimension(m.get_Width());
         set_YDimension(m.get_Height());
 
@@ -379,6 +396,8 @@ void CctwImportData::readDataFrameToBuffer(int i, int nb, QString path)
         m.loadMetaData();
 
         printMessage(tr("Imported frame %1 from %2").arg(i).arg(path));
+
+        m.subtractDark(m_DarkImage);
 
         if (m_InputBuffer == NULL) {
           set_XDimension(m.get_Width());

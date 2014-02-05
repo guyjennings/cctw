@@ -59,6 +59,8 @@ private:
   hsize_t          m_InputBufferSize;
   hsize_t          m_InputBufferStride;
 
+  QSharedPointer< QcepImageData<double> > m_DarkImage;
+
 private:
   Q_PROPERTY(int dataFormat READ get_DataFormat WRITE set_DataFormat)
   QCEP_INTEGER_PROPERTY(DataFormat)
