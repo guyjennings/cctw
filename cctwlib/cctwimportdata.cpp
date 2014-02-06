@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QtConcurrentRun>
 #include "qcepmutexlocker.h"
+#include "cctwinputdatah5.h"
 
 CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
   CctwObject(parent),
@@ -71,6 +72,22 @@ void CctwImportData::appendMatchingFiles(QString pattern)
   set_ImagePaths(l);
 }
 
+void CctwImportData::loadDarkImage()
+{
+  QString dkPath = get_DarkImagePath();
+
+  if (dkPath.length() > 0) {
+    if (m_DarkImage->readImage(get_DarkImagePath())) {
+      printMessage(tr("Reading dark image from %1").arg(dkPath));
+      m_DarkImage->loadMetaData();
+    } else {
+      printMessage(tr("Failed to read dark image from %1").arg(dkPath));
+    }
+  } else {
+    printMessage(tr("No dark image specified"));
+  }
+}
+
 void CctwImportData::importData()
 {
   QTime startAt;
@@ -88,19 +105,7 @@ void CctwImportData::importData()
     m_Application->set_ProgressLimit(n);
   }
 
-
-  QString dkPath = get_DarkImagePath();
-
-  if (dkPath.length() > 0) {
-    if (m_DarkImage->readImage(get_DarkImagePath())) {
-      printMessage(tr("Reading dark image from %1").arg(dkPath));
-      m_DarkImage->loadMetaData();
-    } else {
-      printMessage(tr("Failed to read dark image from %1").arg(dkPath));
-    }
-  } else {
-    printMessage(tr("No dark image specified"));
-  }
+  loadDarkImage();
 
   printMessage(tr("Importing %1 frames of data").arg(n));
 
@@ -184,7 +189,7 @@ bool CctwImportData::createOutputFile()
         m_DataspaceId = H5Dget_space(m_DatasetId);
 
         if (m_DataspaceId < 0) {
-          printMessage("Couldnt get dataspace of existing dataset");
+          printMessage("Couldn't get dataspace of existing dataset");
           return false;
         }
 
@@ -203,9 +208,9 @@ bool CctwImportData::createOutputFile()
           return false;
         }
 
-        if (dims[0] != get_ZDimension() ||
-            dims[1] != get_YDimension() ||
-            dims[2] != get_XDimension()) {
+        if (dims[0] != (hsize_t) get_ZDimension() ||
+            dims[1] != (hsize_t) get_YDimension() ||
+            dims[2] != (hsize_t) get_XDimension()) {
           printMessage("Dataspace dimensions do not match imported data");
           return false;
         }
@@ -486,6 +491,8 @@ void CctwImportData::checkImportedData()
 {
   printMessage("Checking imported data...");
 
+  loadDarkImage();
+
   if (get_CheckRigorously()) {
     checkImportedDataRigorously();
   }
@@ -497,10 +504,60 @@ void CctwImportData::checkImportedData()
 
 void CctwImportData::checkImportedDataRigorously()
 {
+  CctwInputDataH5 data(get_OutputPath(), "data", this);
+
   printMessage("Checking imported data rigorously...");
+}
+
+static int randomIndex(int n)
+{
+  return qrand()%n;
 }
 
 void CctwImportData::checkImportedDataApproximately()
 {
+  CctwInputDataH5 data(get_OutputPath(), "data", this);
+
   printMessage("Checking imported data approximately...");
+
+  QTime startAt;
+  startAt.start();
+
+  QStringList paths = get_ImagePaths();
+  QDir        inp(get_ImageDirectory());
+  int n=0;
+
+  while (startAt.elapsed() < 60*1000 && !m_Application->get_Halting() && n < 100) {
+    int nz = randomIndex(data.dimensions().z());
+
+    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+
+    if (m.readImage(inp.filePath(paths[nz]))) {
+      m.loadMetaData();
+
+      m.subtractDark(m_DarkImage);
+
+      for (int i=0; i<100 && !m_Application->get_Halting() && n < 100; i++) {
+        int nx = randomIndex(data.dimensions().x());
+        int ny = randomIndex(data.dimensions().y());
+
+        double fromTiff = m.getImageData(nx, ny);
+        double fromHDF  = data.readData(nx, ny, nz);
+
+        if (fromTiff != fromHDF) {
+          n++;
+          printMessage(tr("Mismatch at [%1,%2,%3]: %4 <=> %5")
+                       .arg(nx).arg(ny).arg(nz)
+                       .arg(fromTiff).arg(fromHDF));
+        }
+      }
+    } else {
+      printMessage(tr("Failed to load image %1 [%2]")
+                   .arg(nz).arg(paths[nz]));
+    }
+  }
+
+  if (m_Application->get_Halting()) {
+    printMessage("Testing interrupted");
+  }
 }

@@ -44,7 +44,8 @@ SOURCES += \
     $${PWD}/cctwdatablobs.cpp \
     $${PWD}/cctwapplication.cpp \
     ../cctwlib/cctwimportdata.cpp \
-    ../cctwlib/cctwcomparedata.cpp
+    ../cctwlib/cctwcomparedata.cpp \
+    ../cctwlib/cctwinputdatah5.cpp
 
 HEADERS += \
     $${PWD}/cctwdebug.h \
@@ -84,4 +85,5 @@ HEADERS += \
     $${PWD}/cctwdatablobs.h \
     $${PWD}/cctwapplication.h \
     ../cctwlib/cctwimportdata.h \
-    ../cctwlib/cctwcomparedata.h
+    ../cctwlib/cctwcomparedata.h \
+    ../cctwlib/cctwinputdatah5.h

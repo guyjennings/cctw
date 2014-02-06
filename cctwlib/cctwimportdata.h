@@ -21,6 +21,7 @@ signals:
 
 public slots:
   void importData();
+  void loadDarkImage();
   void clearInputFiles();
   void changeDirectory(QString path);
   void appendInputFile(QString path);
