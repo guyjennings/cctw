@@ -20,6 +20,8 @@ public:
 
 public slots:
   void accept();
+  void browse1();
+  void browse2();
 
 private:
   Ui::CctwqtSetupCompareDialog *ui;

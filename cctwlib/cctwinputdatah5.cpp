@@ -126,6 +126,45 @@ double CctwInputDataH5::readData(int dx, int dy, int dz)
   return 0;
 }
 
+QVector<double> CctwInputDataH5::readChunk(int ix, int iy, int iz, int nx, int ny, int nz)
+{
+  QVector<double> data(nx*ny*nz);
+
+  if (m_FileId >= 0) {
+    hid_t memspace_id;
+    hsize_t offset[3], count[3], stride[3], block[3];
+
+    count[0] = nz;
+    count[1] = ny;
+    count[2] = nx;
+
+    stride[0] = 1;
+    stride[1] = 1;
+    stride[2] = 1;
+
+    block[0] = 1;
+    block[1] = 1;
+    block[2] = 1;
+
+    offset[0] = iz;
+    offset[1] = iy;
+    offset[2] = ix;
+
+
+    memspace_id = H5Screate_simple(3, count, NULL);
+
+    herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+    herr_t rderr  = H5Dread(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, data.data());
+
+    if (selerr || rderr) {
+      printMessage(tr("Error reading x:%, y:%2, z:%3, selerr = %4, wrterr = %5")
+                   .arg(ix).arg(iy).arg(iz).arg(selerr).arg(rderr));
+    }
+  }
+
+  return data;
+}
+
 void CctwInputDataH5::setDimensions(CctwIntVector3D dims)
 {
   m_Dimensions = dims;

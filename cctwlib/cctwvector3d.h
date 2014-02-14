@@ -60,6 +60,8 @@ public:
   void setSettingsValue(QSettings *settings, QString name);
   static void customSaver(const QVariant &val, QSettings *settings, QString name);
 
+  QString toString();
+
 protected:
   T m_Vector[3];
 };

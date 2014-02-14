@@ -2,6 +2,8 @@
 #include "ui_cctwqtsetupcomparedialog.h"
 #include "cctwqtmainwindow.h"
 #include "cctwimportdata.h"
+#include <QFileDialog>
+#include <QtConcurrentRun>
 
 CctwqtSetupCompareDialog::CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwCompareData *data) :
   QDialog(parent),
@@ -23,6 +25,9 @@ CctwqtSetupCompareDialog::CctwqtSetupCompareDialog(CctwqtMainWindow *parent, Cct
     ui->m_CompareRigorously->setChecked(m_Data->get_CompareRigorously());
     ui->m_CompareApproximately->setChecked(m_Data->get_CompareApproximately());
   }
+
+  connect(ui->m_BrowseFile1, SIGNAL(clicked()), this, SLOT(browse1()));
+  connect(ui->m_BrowseFile2, SIGNAL(clicked()), this, SLOT(browse2()));
 }
 
 CctwqtSetupCompareDialog::~CctwqtSetupCompareDialog()
@@ -43,7 +48,26 @@ void CctwqtSetupCompareDialog::accept()
     m_Data->set_CompareApproximately(ui->m_CompareApproximately->isChecked());
   }
 
-  QMetaObject::invokeMethod(m_Data, "compareDatasets");
+  QtConcurrent::run(m_Data, &CctwCompareData::compareDatasets);
+//  QMetaObject::invokeMethod(m_Data, "compareDatasets");
 
   QDialog::accept();
+}
+
+void CctwqtSetupCompareDialog::browse1()
+{
+  QString path = QFileDialog::getOpenFileName(this, "File 1", ui->m_FileName1->text());
+
+  if (path.length() > 0) {
+    ui->m_FileName1->setText(path);
+  }
+}
+
+void CctwqtSetupCompareDialog::browse2()
+{
+  QString path = QFileDialog::getOpenFileName(this, "File 2", ui->m_FileName2->text());
+
+  if (path.length() > 0) {
+    ui->m_FileName2->setText(path);
+  }
 }

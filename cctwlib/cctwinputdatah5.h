@@ -15,6 +15,8 @@ signals:
 
 public slots:
   virtual double readData(int dx, int dy, int dz);
+  QVector<double> readChunk(int ix, int iy, int iz,
+                            int nx, int ny, int nz);
 
 public:
   CctwIntVector3D dimensions() const;

@@ -390,6 +390,10 @@ void CctwApplication::readSettings(QSettings *settings)
     m_ImportData->readSettings(settings, "importData");
   }
 
+  if (m_CompareData) {
+    m_CompareData->readSettings(settings, "compareData");
+  }
+
   if (m_InputDataManager) {
     m_InputDataManager->readSettings(settings, "inputDataManager");
   }
@@ -465,6 +469,10 @@ void CctwApplication::writeSettings(QSettings *settings)
 
   if (m_ImportData) {
     m_ImportData->writeSettings(settings, "importData");
+  }
+
+  if (m_CompareData) {
+    m_CompareData->writeSettings(settings, "compareData");
   }
 
   if (m_InputDataManager) {
