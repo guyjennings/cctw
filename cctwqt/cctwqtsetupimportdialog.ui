@@ -196,6 +196,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_ClearDark</tabstop>
+  <tabstop>m_DarkImageBrowse</tabstop>
+  <tabstop>m_DarkImagePath</tabstop>
+  <tabstop>m_DataDirectoryBrowse</tabstop>
+  <tabstop>m_DataDirectory</tabstop>
+  <tabstop>m_ClearImages</tabstop>
+  <tabstop>m_AppendImages</tabstop>
+  <tabstop>m_DataImages</tabstop>
+  <tabstop>m_DataPattern</tabstop>
+  <tabstop>m_MatchImages</tabstop>
+  <tabstop>m_InputImageBuffering</tabstop>
+  <tabstop>m_OutputPath</tabstop>
+  <tabstop>m_OutputFileBrowse</tabstop>
+  <tabstop>m_OutputChunkX</tabstop>
+  <tabstop>m_OutputChunkY</tabstop>
+  <tabstop>m_OutputChunkZ</tabstop>
+  <tabstop>m_OutputCompression</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

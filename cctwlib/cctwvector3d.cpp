@@ -289,5 +289,11 @@ void CctwVector3D<double>::customSaver(const QVariant &val, QSettings *settings,
   vec.setSettingsValue(settings, name);
 }
 
+template <typename T>
+QString CctwVector3D<T>::toString()
+{
+  return QString("[%1,%2,%3]").arg(x()).arg(y()).arg(z());
+}
+
 template class CctwVector3D<int>;
 template class CctwVector3D<double>;

@@ -92,6 +92,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_DarkImagePath</tabstop>
+  <tabstop>m_DataDirectory</tabstop>
+  <tabstop>m_DataImages</tabstop>
+  <tabstop>m_OutputPath</tabstop>
+  <tabstop>m_CheckRigorously</tabstop>
+  <tabstop>m_CheckApproximately</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

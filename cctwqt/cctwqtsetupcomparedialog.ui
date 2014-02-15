@@ -135,6 +135,19 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_FileName1</tabstop>
+  <tabstop>m_BrowseFile1</tabstop>
+  <tabstop>m_DatasetName1</tabstop>
+  <tabstop>m_BrowseDataset1</tabstop>
+  <tabstop>m_FileName2</tabstop>
+  <tabstop>m_BrowseFile2</tabstop>
+  <tabstop>m_DatasetName2</tabstop>
+  <tabstop>m_BrowseDataset2</tabstop>
+  <tabstop>m_CompareRigorously</tabstop>
+  <tabstop>m_CompareApproximately</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

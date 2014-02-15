@@ -527,6 +527,25 @@ void CctwImportData::checkImportedDataApproximately()
   QDir        inp(get_ImageDirectory());
   int n=0;
 
+  for (int nz = 0; nz<5; nz++) {
+    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+
+    if (m.readImage(inp.filePath(paths[nz]))) {
+      m.loadMetaData();
+      m.subtractDark(m_DarkImage);
+
+      for  (int nx = 0; nx<5; nx++) {
+        for (int ny = 0; ny<5; ny++) {
+          double fromTiff = m.getImageData(nx, ny);
+          double fromHDF  = data.readData(nx, ny, nz);
+
+          printLine(tr("[%1,%2,%3] TF: %4, H5 %5")
+                    .arg(nx).arg(ny).arg(nz).arg(fromTiff).arg(fromHDF));
+        }
+      }
+    }
+  }
+
   while (startAt.elapsed() < 60*1000 && !m_Application->get_Halting() && n < 100) {
     int nz = randomIndex(data.dimensions().z());
 
