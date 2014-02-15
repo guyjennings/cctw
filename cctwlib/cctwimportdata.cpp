@@ -543,12 +543,13 @@ void CctwImportData::checkImportedDataApproximately()
 
         double fromTiff = m.getImageData(nx, ny);
         double fromHDF  = data.readData(nx, ny, nz);
+        double fromHDFt = data.readData(nx, data.dimensions().y() - ny, nz);
 
         if (fromTiff != fromHDF) {
           n++;
-          printMessage(tr("Mismatch at [%1,%2,%3]: %4 <=> %5")
+          printMessage(tr("Mismatch at [%1,%2,%3]: %4 <=> %5, %6")
                        .arg(nx).arg(ny).arg(nz)
-                       .arg(fromTiff).arg(fromHDF));
+                       .arg(fromTiff).arg(fromHDF).arg(fromHDFt));
         }
       }
     } else {
