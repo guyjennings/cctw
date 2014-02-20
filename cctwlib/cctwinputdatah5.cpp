@@ -116,7 +116,7 @@ double CctwInputDataH5::readData(int dx, int dy, int dz)
     herr_t rderr  = H5Dread(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, data);
 
     if (selerr || rderr) {
-      printMessage(tr("Error reading x:%, y:%2, z:%3, selerr = %4, wrterr = %5")
+      printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
                    .arg(dx).arg(dy).arg(dz).arg(selerr).arg(rderr));
     }
 
@@ -157,7 +157,7 @@ QVector<double> CctwInputDataH5::readChunk(int ix, int iy, int iz, int nx, int n
     herr_t rderr  = H5Dread(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, data.data());
 
     if (selerr || rderr) {
-      printMessage(tr("Error reading x:%, y:%2, z:%3, selerr = %4, wrterr = %5")
+      printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
                    .arg(ix).arg(iy).arg(iz).arg(selerr).arg(rderr));
     }
   }

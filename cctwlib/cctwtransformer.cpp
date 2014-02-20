@@ -746,7 +746,7 @@ void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDat
               herr_t rderr  = H5Dread(datasetId, H5T_NATIVE_DOUBLE, memspace_id, dataspaceId, H5P_DEFAULT, blob->data());
 
               if (selerr || rderr) {
-                printMessage(tr("Error reading x:%, y:%2, z:%3, selerr = %4, wrterr = %5")
+                printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
                              .arg(ckoffset.x()).arg(ckoffset.y()).arg(ckoffset.z()).arg(selerr).arg(rderr));
                 printf("Failed to read data\n");
               }
