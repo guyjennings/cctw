@@ -1,16 +1,16 @@
-#ifndef CCTWQTPEINGRESSCOMMAND_H
-#define CCTWQTPEINGRESSCOMMAND_H
+#ifndef CCTWPEINGRESSCOMMAND_H
+#define CCTWPEINGRESSCOMMAND_H
 
 #include "cctwobject.h"
 
 class CctwApplication;
 class QwtPlot;
 
-class CctwqtPEIngressCommand : public CctwObject
+class CctwPEIngressCommand : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtPEIngressCommand(CctwApplication *app, QObject *parent);
+  explicit CctwPEIngressCommand(CctwApplication *app, QObject *parent);
 
 public slots:
   void testSlot();
@@ -24,4 +24,4 @@ private:
   CctwApplication *m_Application;
 };
 
-#endif // CCTWQTPEINGRESSCOMMAND_H
+#endif // CCTWPEINGRESSCOMMAND_H

@@ -8,13 +8,13 @@ greaterThan(QT_MAJOR_VERSION, 4) {
   cache()
 }
 
-include(cctw.pri)
+include(cctw-version.pri)
 
 TEMPLATE = subdirs
-SUBDIRS  = cctwqt
+SUBDIRS  = cctwlib cctwqt
 
 unix {
-SUBDIRS += cctwtcl
+SUBDIRS += cctwtcl cctwcli
 }
 
 OTHER_FILES += Doxyfile \
@@ -28,12 +28,27 @@ OTHER_FILES += Doxyfile \
     doc/pznpt4_march2007.out.txt \
     tests/testTransformScaling.js
 
+OTHER_FILES += \
+    ../specmacros/dummyscan.mac \
+    ../specmacros/osborn.fits \
+    ../specmacros/spotIntegrator.js \
+    ../specmacros/ff1scan.dat \
+    ../specmacros/fb1scan.dat \
+    ../specmacros/ff2scan.dat \
+    ../specmacros/fb2scan.dat \
+    ../specmacros/sbscan.dat \
+    ../specmacros/sfscan.dat \
+    ../specmacros/ubfscan.dat \
+    ../specmacros/ubbscan.dat \
+    ../specmacros/aggregatedMask.js
+
 QMAKE_EXTRA_TARGETS += dox
 
 dox.commands =  ( cat $${PWD}/Doxyfile ; \
                   echo "PROJECT_NAME=\"$${TARGET}\"" ; \
                   echo "PROJECT_NUMBER=$${VERSION}" ; \
                   echo "INPUT=\"$${PWD}\"/cctwlib/" ; \
+                  echo "INPUT=\"$${PWD}\"/cctwcli/" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwqt/" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwtcl/" ; \
                   echo "ALIASES=\"projectnumber=$${VERSION}\"" \

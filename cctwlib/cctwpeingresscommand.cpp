@@ -1,4 +1,4 @@
-#include "cctwqtpeingresscommand.h"
+#include "cctwpeingresscommand.h"
 #include "cctwapplication.h"
 #include "cctwlinearfitter.h"
 
@@ -10,21 +10,21 @@
 #include <QFile>
 #include <math.h>
 
-CctwqtPEIngressCommand::CctwqtPEIngressCommand(CctwApplication *app, QObject *parent) :
+CctwPEIngressCommand::CctwPEIngressCommand(CctwApplication *app, QObject *parent) :
   CctwObject(parent),
   m_Application(app)
 {
 }
 
-void CctwqtPEIngressCommand::testSlot()
+void CctwPEIngressCommand::testSlot()
 {
 }
 
-void CctwqtPEIngressCommand::analyzePEMetaData(QString path)
+void CctwPEIngressCommand::analyzePEMetaData(QString path)
 {
 }
 
-void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path)
+void CctwPEIngressCommand::analyzeSpecDataFile(QString path)
 {
   m_Application->set_Halting(false);
 
@@ -169,7 +169,7 @@ void CctwqtPEIngressCommand::analyzeSpecDataFile(QString path)
 #endif
 }
 
-double CctwqtPEIngressCommand::normalizedValue(double v)
+double CctwPEIngressCommand::normalizedValue(double v)
 {
   double r = fabs(v);
 

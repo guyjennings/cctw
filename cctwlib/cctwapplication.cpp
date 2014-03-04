@@ -250,7 +250,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
                                              m_OutputSliceData,
                                              m_SliceTransform, 1, 1, 1, 0, this);
 
-  m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
+  m_PEIngressCommand = new CctwPEIngressCommand(this, this);
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
@@ -1064,14 +1064,14 @@ void CctwApplication::analyzePEMetaData(QString path)
 {
   set_SpecDataFilePath(path);
 
-  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
+  QtConcurrent::run(m_PEIngressCommand, &CctwPEIngressCommand::analyzePEMetaData, path);
 }
 
 void CctwApplication::analyzeSpecDataFile(QString path)
 {
   set_SpecDataFilePath(path);
 
-  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path);
+  QtConcurrent::run(m_PEIngressCommand, &CctwPEIngressCommand::analyzeSpecDataFile, path);
 }
 
 #ifndef NO_GUI

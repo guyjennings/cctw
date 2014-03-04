@@ -8,7 +8,6 @@ SOURCES += \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
     $${PWD}/cctwqttransformonedialog.cpp \
     $${PWD}/cctwqtsetupslicedialog.cpp \
-    $${PWD}/cctwqtpeingresscommand.cpp \
     $${PWD}/cctwqtsetupcomparedialog.cpp \
     $${PWD}/cctwqtsetupcheckimportdialog.cpp
 
@@ -20,7 +19,6 @@ HEADERS += \
     $${PWD}/cctwqtsetuptransformdialog.h \
     $${PWD}/cctwqttransformonedialog.h \
     $${PWD}/cctwqtsetupslicedialog.h \
-    $${PWD}/cctwqtpeingresscommand.h \
     $${PWD}/cctwqtsetupcomparedialog.h \
     $${PWD}/cctwqtsetupcheckimportdialog.h
 

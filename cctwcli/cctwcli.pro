@@ -1,23 +1,18 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-07-02T11:18:12
-#
-#-------------------------------------------------
-
 TEMPLATE = app
 
-include(../cctw-version.pri)
+include(../cctw_version.pri)
 
-QT          += core gui network script opengl svg
+QT += core script
 
-TARGET       = cctwqt
+TARGET = cctwcli
 
-DESTDIR      = ../bin/
+DESTDIR = ../bin/
 
 DEFINES     += CCTW_VERSION=\"$$VERSION\"
+DEFINES     += NO_GUI
 
 greaterThan(QT_MAJOR_VERSION, 4) {
- QT += widgets concurrent printsupport
+ QT += concurrent
 }
 
 MOC_DIR = moc
@@ -35,9 +30,4 @@ include(../submodules/qceplib/qceplib-qwt.pri)
 include(../cctwlib/cctwlib.pri)
 include(cctwqt.pri)
 
-SOURCES += main.cpp
-
-OTHER_FILES += \
-    cctwqt.pri
-
-
+SOURCES += cctwcli.cpp

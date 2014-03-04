@@ -17,7 +17,7 @@
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
-#include "cctwqtpeingresscommand.h"
+#include "cctwpeingresscommand.h"
 #include "cctwdatablobs.h"
 #include "cctwimportdata.h"
 #include "cctwcomparedata.h"
@@ -143,7 +143,7 @@ public:
   CctwCrystalCoordinateTransform     *m_SliceTransform;
   CctwTransformer                    *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
-  CctwqtPEIngressCommand             *m_PEIngressCommand;
+  CctwPEIngressCommand             *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
 private:

@@ -29,12 +29,15 @@ release {
   QMAKE_CXXFLAGS       += -O2
 }
 
-include("../cctwqt/qceplib-code/qceplib.pri")
-include("../cctwqt/qceplib-code/qt-hdf5.pri")
-include("../cctwqt/qceplib-code/qwt-6.1.pri")
-#include("../cctwqt/qceplib-code/qt-nexus.pri")
-include("../cctwlib/cctwlib.pri")
-include("../cctwqt/cctwqt.pri")
+include(../submodules/qceplib/qceplib-base.pri)
+include(../submodules/qceplib/qceplib-hdf5.pri)
+include(../submodules/qceplib/qceplib-tiff.pri)
+include(../submodules/qceplib/qceplib-cbf.pri)
+include(../submodules/qceplib/qceplib-mar345.pri)
+include(../submodules/qceplib/qceplib-qwt.pri)
+#include(../submodules/qceplib/qceplib-nexus.pri)
+include(../cctwlib/cctwlib.pri)
+#include("../cctwqt/cctwqt.pri")
 
 defined(TCL, var) {
     message("using TCL: $${TCL}")
