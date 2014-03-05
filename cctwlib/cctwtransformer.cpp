@@ -463,6 +463,10 @@ CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString
 
   QUrl loc(location);
 
+  printf("scheme:   %s\n", qPrintable(loc.scheme()));
+  printf("path:     %s\n", qPrintable(loc.path()));
+  printf("fragment: %s\n", qPrintable(loc.fragment()));
+
   if (loc.scheme()=="test") {
     // Generate a test dataset:
     generateTestData(blobIdx, loc, inputBlob);
@@ -677,6 +681,8 @@ void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDat
   QString filePath = location.path();
   QString dataset  = location.fragment();
 
+  printf("CctwTransformer::readHDF5InputBlob\n");
+
   if (filePath.count() > 0) {
     if (dataset.count() == 0) {
       dataset = "data";
@@ -709,6 +715,41 @@ void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDat
               printMessage("Problems getting dataset dimensions");
             } else {
               printMessage(tr("Dimensions [%1,%2,%3]").arg(dims[0]).arg(dims[1]).arg(dims[2]));
+
+              printf("About to read data\n");
+
+              hid_t memspace_id;
+              hsize_t offset[3], count[3], stride[3], block[3];
+
+              CctwIntVector3D ckoffset = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
+              CctwIntVector3D cksize   = m_InputData->chunkSize();
+
+              count[0] = cksize.z();
+              count[1] = cksize.y();
+              count[2] = cksize.x();
+
+              stride[0] = 1;
+              stride[1] = 1;
+              stride[2] = 1;
+
+              block[0] = 1;
+              block[1] = 1;
+              block[2] = 1;
+
+              offset[0] = ckoffset.z();
+              offset[1] = ckoffset.y();
+              offset[2] = ckoffset.x();
+
+              memspace_id = H5Screate_simple(3, count, NULL);
+
+              herr_t selerr = H5Sselect_hyperslab(dataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+              herr_t rderr  = H5Dread(datasetId, H5T_NATIVE_DOUBLE, memspace_id, dataspaceId, H5P_DEFAULT, blob->data());
+
+              if (selerr || rderr) {
+                printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
+                             .arg(ckoffset.x()).arg(ckoffset.y()).arg(ckoffset.z()).arg(selerr).arg(rderr));
+                printf("Failed to read data\n");
+              }
             }
           }
         }
