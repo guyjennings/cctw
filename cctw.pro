@@ -42,6 +42,97 @@ OTHER_FILES += \
     ../specmacros/ubbscan.dat \
     ../specmacros/aggregatedMask.js
 
+win32 { # Copy QT Libraries into app directory
+#  PRE_TARGETDEPS += app
+#  QMAKE_EXTRA_TARGETS += app
+  LIBDIR = $$[QT_INSTALL_BINS]
+  LIBDIR_WIN = $${replace(LIBDIR, /, \\)}
+
+  QMAKE_EXTRA_TARGETS += qtlibs
+
+  isEqual(QT_MAJOR_VERSION, 5) {
+    CONFIG(debug, debug|release) {
+      libs =  Qt5Cored \
+              Qt5Networkd \
+              Qt5Guid \
+              Qt5Scriptd \
+              Qt5Widgetsd \
+              Qt5Svgd \
+              Qt5OpenGLd \
+              Qt5PrintSupportd \
+              icudt51 \
+              icuin51 \
+              icuuc51 \
+              libEGLd \
+              libGLESv2d
+      platform = qwindowsd
+    } else {
+      libs =  Qt5Core \
+              Qt5Network \
+              Qt5Gui \
+              Qt5Script \
+              Qt5Widgets \
+              Qt5Svg \
+              Qt5OpenGL \
+              Qt5PrintSupport \
+              icudt51 \
+              icuin51 \
+              icuuc51 \
+              libEGL \
+              libGLESv2
+      platform = qwindows
+    }
+
+    QMAKE_EXTRA_TARGETS += qtplatformdir
+    qtplatformdir.target = bin/platforms
+    qtplatformdir.commands = $(MKDIR) ..\\platforms
+
+    QMAKE_EXTRA_TARGETS += qtplatform
+    qtplatform.target   = bin/platforms/$${platform}.dll
+    qtplatform.depends  = qtplatformdir $${LIBDIR_WIN}/../plugins/platforms/$${platform}.dll
+    qtplatform.commands +=
+    qtplatform.commands += $(COPY_FILE) $${LIBDIR_WIN}\\..\\plugins\\platforms\\$${platform}.dll bin\\platforms\\$${platform}.dll
+
+    qtlibs.depends += qtplatform
+
+    for(lib, libs) {
+      !build_pass:message(Target $${lib})
+      QMAKE_EXTRA_TARGETS += $${lib}
+      $${lib}.target      = bin/$${lib}.dll
+      $${lib}.depends    += $${LIBDIR}/$${lib}.dll
+      $${lib}.commands   += $(COPY_FILE) $${LIBDIR_WIN}\\$${lib}.dll bin\\$${lib}.dll &
+
+      qtlibs.depends     += $${lib}
+    }
+
+    QMAKE_CLEAN += bin/platforms/*
+    QMAKE_CLEAN += bin/platforms
+  }
+
+  isEqual(QT_MAJOR_VERSION, 4) {
+    CONFIG(debug, debug|release) {
+      libs = QtCored4 QtNetworkd4 QtGuid4 QtScriptd4 QtOpenGLd4 QtSvgd4
+    } else {
+      libs = QtCore4 QtNetwork4 QtGui4 QtScript4 QtOpenGL4 QtSvg4
+    }
+
+    for(lib, libs) {
+      !build_pass:message(Target $${lib})
+
+      qtlibs.depends     += $${LIBDIR}/$${lib}.dll
+      qtlibs.commands    += $(COPY_FILE) $${LIBDIR_WIN}\\$${lib}.dll bin\\$${lib}.dll &
+    }
+  }
+
+  QMAKE_CLEAN += ../*.dll
+  QMAKE_CLEAN += ../plugins/*
+  QMAKE_CLEAN += ../plugins
+
+  PRE_TARGETDEPS  += qtlibs
+}
+
+TARGET.depends += qtlibs
+
 QMAKE_EXTRA_TARGETS += dox
 
 dox.commands =  ( cat $${PWD}/Doxyfile ; \
