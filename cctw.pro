@@ -47,8 +47,9 @@ QMAKE_EXTRA_TARGETS += dox
 dox.commands =  ( cat $${PWD}/Doxyfile ; \
                   echo "PROJECT_NAME=\"$${TARGET}\"" ; \
                   echo "PROJECT_NUMBER=$${VERSION}" ; \
-                  echo "INPUT=\"$${PWD}\"/cctwlib/" ; \
-                  echo "INPUT=\"$${PWD}\"/cctwcli/" ; \
+                  echo "INPUT+=\"$${PWD}\"/cctw.dox" ; \
+                  echo "INPUT+=\"$${PWD}\"/cctwlib/" ; \
+                  echo "INPUT+=\"$${PWD}\"/cctwcli/" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwqt/" ; \
                   echo "INPUT+=\"$${PWD}\"/cctwtcl/" ; \
                   echo "ALIASES=\"projectnumber=$${VERSION}\"" \
