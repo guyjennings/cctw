@@ -24,29 +24,8 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QPushButton" name="m_TransformOneButton">
-        <property name="text">
-         <string>Transform One...</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1" colspan="4">
        <widget class="QLineEdit" name="m_InputData"/>
-      </item>
-      <item row="4" column="5">
-       <widget class="QPushButton" name="m_HaltButton">
-        <property name="text">
-         <string>Halt</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QPushButton" name="m_TransformSliceButton">
-        <property name="text">
-         <string>Slice</string>
-        </property>
-       </widget>
       </item>
       <item row="1" column="5">
        <widget class="QPushButton" name="m_SetupInputButton">
@@ -55,87 +34,10 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="3">
-       <widget class="QPushButton" name="m_PEMetaDataButton">
-        <property name="text">
-         <string>PE MetaData...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QPushButton" name="m_DependenciesButton">
-        <property name="text">
-         <string>Dependencies</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QPushButton" name="m_LoadDepsButton">
-        <property name="text">
-         <string>Load Deps...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QPushButton" name="m_SaveDepsButton">
-        <property name="text">
-         <string>Save Deps...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QPushButton" name="m_TransformAllButton">
-        <property name="text">
-         <string>Transform All</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
-        <property name="text">
-         <string>Analyze Spec Data...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QPushButton" name="m_SetupTransformButton">
-        <property name="text">
-         <string>Setup Transform...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="5">
-       <widget class="QCheckBox" name="m_Halting">
-        <property name="text">
-         <string>Halting?</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Output Data:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="5">
-       <widget class="QCheckBox" name="m_InverseAvailable">
-        <property name="text">
-         <string>Inverse Available?</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Output Data:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QPushButton" name="m_SetupSliceButton">
-        <property name="text">
-         <string>Setup Slice...</string>
         </property>
        </widget>
       </item>
@@ -148,9 +50,6 @@
          <string>Input Data:</string>
         </property>
        </widget>
-      </item>
-      <item row="3" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_OutputSliceData"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
@@ -177,6 +76,83 @@
        <widget class="QLabel" name="m_ImportData">
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="m_SetupTransformButton">
+        <property name="text">
+         <string>Setup Transform...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="m_TransformOneButton">
+        <property name="text">
+         <string>Transform One...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="m_TransformAllButton">
+        <property name="text">
+         <string>Transform All</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QCheckBox" name="m_InverseAvailable">
+        <property name="text">
+         <string>Inverse Available?</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="m_HaltButton">
+        <property name="text">
+         <string>Halt</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="m_DependenciesButton">
+        <property name="text">
+         <string>Dependencies</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QPushButton" name="m_SaveDepsButton">
+        <property name="text">
+         <string>Save Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QPushButton" name="m_LoadDepsButton">
+        <property name="text">
+         <string>Load Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QPushButton" name="m_PEMetaDataButton">
+        <property name="text">
+         <string>PE MetaData...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="4">
+       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
+        <property name="text">
+         <string>Analyze Spec Data...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="5">
+       <widget class="QCheckBox" name="m_Halting">
+        <property name="text">
+         <string>Halting?</string>
         </property>
        </widget>
       </item>
@@ -430,20 +406,6 @@
   <tabstop>m_SetupInputButton</tabstop>
   <tabstop>m_OutputData</tabstop>
   <tabstop>m_SetupOutputButton</tabstop>
-  <tabstop>m_OutputSliceData</tabstop>
-  <tabstop>m_InverseAvailable</tabstop>
-  <tabstop>m_SetupTransformButton</tabstop>
-  <tabstop>m_TransformOneButton</tabstop>
-  <tabstop>m_TransformAllButton</tabstop>
-  <tabstop>m_SetupSliceButton</tabstop>
-  <tabstop>m_TransformSliceButton</tabstop>
-  <tabstop>m_HaltButton</tabstop>
-  <tabstop>m_DependenciesButton</tabstop>
-  <tabstop>m_SaveDepsButton</tabstop>
-  <tabstop>m_LoadDepsButton</tabstop>
-  <tabstop>m_PEMetaDataButton</tabstop>
-  <tabstop>m_AnalyzeSpecDataButton</tabstop>
-  <tabstop>m_Halting</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>m_OutputMessages</tabstop>
   <tabstop>m_CommandInput</tabstop>

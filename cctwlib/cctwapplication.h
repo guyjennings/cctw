@@ -8,7 +8,6 @@
 #endif
 #include "cctwinputdata.h"
 #include "cctwoutputdata.h"
-#include "cctwoutputslicedata.h"
 #include "cctwinputdataframemanager.h"
 #include "cctwoutputdataframemanager.h"
 #include "cctwtransformer.h"
@@ -136,14 +135,10 @@ public:
   CctwInputData                      *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;
   CctwOutputData                     *m_OutputData;
-  CctwOutputDataFrameManager         *m_OutputSliceDataManager;
-  CctwOutputSliceData                *m_OutputSliceData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
-  CctwCrystalCoordinateTransform     *m_SliceTransform;
-  CctwTransformer                    *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
-  CctwPEIngressCommand             *m_PEIngressCommand;
+  CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
 private:
@@ -166,9 +161,6 @@ public:
 
   Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
   QCEP_STRING_PROPERTY(OutputDataDescriptor)
-
-  Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
-  QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
 
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)

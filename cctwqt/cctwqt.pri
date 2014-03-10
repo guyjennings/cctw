@@ -7,7 +7,6 @@ SOURCES += \
     $${PWD}/cctwqtsetupoutputdialog.cpp \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
     $${PWD}/cctwqttransformonedialog.cpp \
-    $${PWD}/cctwqtsetupslicedialog.cpp \
     $${PWD}/cctwqtsetupcomparedialog.cpp \
     $${PWD}/cctwqtsetupcheckimportdialog.cpp
 
@@ -18,7 +17,6 @@ HEADERS += \
     $${PWD}/cctwqtsetupoutputdialog.h \
     $${PWD}/cctwqtsetuptransformdialog.h \
     $${PWD}/cctwqttransformonedialog.h \
-    $${PWD}/cctwqtsetupslicedialog.h \
     $${PWD}/cctwqtsetupcomparedialog.h \
     $${PWD}/cctwqtsetupcheckimportdialog.h
 
@@ -29,6 +27,5 @@ FORMS += \
     $${PWD}/cctwqtsetupoutputdialog.ui \
     $${PWD}/cctwqtsetuptransformdialog.ui \
     $${PWD}/cctwqttransformonedialog.ui \
-    $${PWD}/cctwqtsetupslicedialog.ui \
     $${PWD}/cctwqtsetupcomparedialog.ui \
     $${PWD}/cctwqtsetupcheckimportdialog.ui

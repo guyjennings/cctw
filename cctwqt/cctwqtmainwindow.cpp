@@ -20,7 +20,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   m_SetupInputDialog(NULL),
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
-  m_SetupSliceDialog(NULL),
   m_TransformOneDialog(NULL),
   m_Legend(NULL),
   m_Panner(NULL),
@@ -40,10 +39,8 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
-  connect(ui->m_SetupSliceButton, SIGNAL(clicked()), this, SLOT(doSetupSlice()));
   connect(ui->m_TransformAllButton, SIGNAL(clicked()), this, SLOT(doTransformAll()));
   connect(ui->m_TransformOneButton, SIGNAL(clicked()), this, SLOT(doTransformOne()));
-  connect(ui->m_TransformSliceButton, SIGNAL(clicked()), this, SLOT(doTransformSlice()));
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
   connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
   connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
@@ -68,7 +65,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   app->prop_Halting()->linkTo(ui->m_Halting);
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
   app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
-  app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
   app->prop_InverseAvailable()->linkTo(ui->m_InverseAvailable);
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
@@ -200,17 +196,6 @@ void CctwqtMainWindow::doSetupTransform()
   m_SetupTransformDialog->activateWindow();
 }
 
-void CctwqtMainWindow::doSetupSlice()
-{
-  if (m_SetupSliceDialog == NULL) {
-    m_SetupSliceDialog = new CctwqtSetupSliceDialog(this);
-    m_SetupSliceDialog -> show();
-  }
-
-  m_SetupSliceDialog->raise();
-  m_SetupSliceDialog->activateWindow();
-}
-
 void CctwqtMainWindow::doTransformAll()
 {
 }
@@ -224,11 +209,6 @@ void CctwqtMainWindow::doTransformOne()
 
   m_TransformOneDialog->raise();
   m_TransformOneDialog->activateWindow();
-}
-
-void CctwqtMainWindow::doTransformSlice()
-{
-
 }
 
 void CctwqtMainWindow::doHalt()

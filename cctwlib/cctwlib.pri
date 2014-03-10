@@ -33,7 +33,6 @@ SOURCES += \
     $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwinputdata.cpp \
     $${PWD}/cctwoutputdata.cpp \
-    $${PWD}/cctwoutputslicedata.cpp \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
     $${PWD}/cctwdatachunk.cpp \
@@ -72,7 +71,6 @@ HEADERS += \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwinputdata.h \
     $${PWD}/cctwoutputdata.h \
-    $${PWD}/cctwoutputslicedata.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
     $${PWD}/cctwdatachunk.h \
