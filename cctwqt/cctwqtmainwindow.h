@@ -9,8 +9,6 @@
 #include "cctwqtsetupinputdialog.h"
 #include "cctwqtsetupoutputdialog.h"
 #include "cctwqtsetuptransformdialog.h"
-#include "cctwqtsetupslicedialog.h"
-#include "cctwqttransformonedialog.h"
 #include "cctwqtsetupcomparedialog.h"
 #include "cctwqtsetupcheckimportdialog.h"
 
@@ -42,10 +40,7 @@ public slots:
   void doSetupInput();
   void doSetupOutput();
   void doSetupTransform();
-  void doSetupSlice();
-  void doTransformAll();
-  void doTransformOne();
-  void doTransformSlice();
+  void doTransform();
   void doHalt();
   void doLoadSettings();
   void doSaveSettings();
@@ -72,16 +67,9 @@ private:
   QPointer<CctwqtSetupInputDialog>       m_SetupInputDialog;
   QPointer<CctwqtSetupOutputDialog>      m_SetupOutputDialog;
   QPointer<CctwqtSetupTransformDialog>   m_SetupTransformDialog;
-  QPointer<CctwqtSetupSliceDialog>       m_SetupSliceDialog;
-  QPointer<CctwqtTransformOneDialog>     m_TransformOneDialog;
   QPointer<CctwqtSetupCheckImportDialog> m_SetupCheckImportDialog;
   QPointer<CctwqtSetupCompareDialog>     m_SetupCompareDialog;
 
-//  CctwqtSetupInputDialog      *m_SetupInputDialog;
-//  CctwqtSetupOutputDialog     *m_SetupOutputDialog;
-//  CctwqtSetupTransformDialog  *m_SetupTransformDialog;
-//  CctwqtSetupSliceDialog      *m_SetupSliceDialog;
-//  CctwqtTransformOneDialog    *m_TransformOneDialog;
   QwtLegend                     *m_Legend;
   QwtPlotPanner                 *m_Panner;
   QwtPlotMagnifier              *m_Magnifier;

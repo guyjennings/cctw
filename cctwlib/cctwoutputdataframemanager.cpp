@@ -1,6 +1,5 @@
 #include "cctwoutputdataframemanager.h"
 #include "cctwdataframe.h"
-#include "cctwchunkindex.h"
 #include "cctwdatachunk.h"
 
 CctwOutputDataFrameManager::CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :

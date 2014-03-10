@@ -28,6 +28,5 @@ include(../submodules/qceplib/qceplib-mar345.pri)
 include(../submodules/qceplib/qceplib-qwt.pri)
 #include(../submodules/qceplib/qceplib-nexus.pri)
 include(../cctwlib/cctwlib.pri)
-include(cctwqt.pri)
 
-SOURCES += cctwcli.cpp
+include(cctwcli.pri)

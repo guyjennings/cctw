@@ -8,7 +8,6 @@
 #endif
 #include "cctwinputdata.h"
 #include "cctwoutputdata.h"
-#include "cctwoutputslicedata.h"
 #include "cctwinputdataframemanager.h"
 #include "cctwoutputdataframemanager.h"
 #include "cctwtransformer.h"
@@ -18,7 +17,6 @@
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwpeingresscommand.h"
-#include "cctwdatablobs.h"
 #include "cctwimportdata.h"
 #include "cctwcomparedata.h"
 
@@ -101,13 +99,6 @@ public:
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 #endif
 
-  CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
-  QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
-  CctwIntermediateDataBlob*         merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2);
-  CctwOutputDataBlob*               normalize (int chunkId, CctwIntermediateDataBlob *chunk);
-  void                              output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk);
-  void                              deleteBlob(int chunkId, CctwDataBlob *blob);
-
   QcepSettingsSaverWPtr saver() const;
 
   QScriptValue evaluate(QString cmd);
@@ -136,14 +127,10 @@ public:
   CctwInputData                      *m_InputData;
   CctwOutputDataFrameManager         *m_OutputDataManager;
   CctwOutputData                     *m_OutputData;
-  CctwOutputDataFrameManager         *m_OutputSliceDataManager;
-  CctwOutputSliceData                *m_OutputSliceData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
-  CctwCrystalCoordinateTransform     *m_SliceTransform;
-  CctwTransformer                    *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
-  CctwPEIngressCommand             *m_PEIngressCommand;
+  CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
 private:
@@ -167,14 +154,8 @@ public:
   Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
   QCEP_STRING_PROPERTY(OutputDataDescriptor)
 
-  Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
-  QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
-
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)
-
-  Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
-  QCEP_BOOLEAN_PROPERTY(InverseAvailable)
 
   Q_PROPERTY(int progress READ get_Progress WRITE set_Progress STORED false)
   QCEP_INTEGER_PROPERTY(Progress)

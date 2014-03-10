@@ -1,3 +1,12 @@
 CCTW_VERSION = 0.1.1
 
 VERSION = $${CCTW_VERSION}
+
+DESTDIR      = ../bin/
+
+MOC_DIR = moc
+UI_DIR = ui
+OBJECTS_DIR = obj
+RCC_DIR = rcc
+
+DEFINES += CCTW_VERSION=\"$$VERSION\"

@@ -42,14 +42,10 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_InputData(NULL),
   m_OutputDataManager(NULL),
   m_OutputData(NULL),
-  m_OutputSliceDataManager(NULL),
-  m_OutputSliceData(NULL),
   m_Parameters(NULL),
   m_ImportData(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
-  m_SliceTransform(NULL),
-  m_SliceTransformer(NULL),
   m_ScriptEngine(NULL),
   m_PEIngressCommand(NULL),
   m_Saver(new QcepSettingsSaver(this)),
@@ -58,9 +54,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
   m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
-  m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceDataDescriptor", "", "Output Slice Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
-  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
@@ -232,23 +226,11 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
-  m_OutputSliceDataManager        = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputSliceData               = new CctwOutputSliceData(CctwIntVector3D(2048,2048,1),
-                                                              CctwIntVector3D(128, 128, 1),
-//                                                              CctwDoubleVector3D(-5,-5, 0),
-//                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
-                                                              m_OutputSliceDataManager, this);
-
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, this);
   m_Transformer      = new CctwTransformer(this,
                                              m_InputData,
                                              m_OutputData,
                                              m_Transform, 1, 1, 1, 0, this);
-  m_SliceTransform   = new CctwCrystalCoordinateTransform(m_Parameters, this);
-  m_SliceTransformer = new CctwTransformer(this,
-                                             m_InputData,
-                                             m_OutputSliceData,
-                                             m_SliceTransform, 1, 1, 1, 0, this);
 
   m_PEIngressCommand = new CctwPEIngressCommand(this, this);
   m_ScriptEngine     = new CctwScriptEngine(this, this);
@@ -259,13 +241,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
   m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
-  m_ScriptEngine->globalObject().setProperty("outputSliceDataManager", m_ScriptEngine->newQObject(m_OutputSliceDataManager));
-  m_ScriptEngine->globalObject().setProperty("outputSliceData", m_ScriptEngine->newQObject(m_OutputSliceData));
   m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
-  m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
-  m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
   m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
@@ -410,28 +388,12 @@ void CctwApplication::readSettings(QSettings *settings)
     m_OutputData->readSettings(settings, "outputData");
   }
 
-  if (m_OutputSliceDataManager) {
-    m_OutputSliceDataManager->readSettings(settings, "outputSliceDataManager");
-  }
-
-  if (m_OutputSliceData) {
-    m_OutputSliceData->readSettings(settings, "outputSliceData");
-  }
-
   if (m_Transform) {
     m_Transform->readSettings(settings, "transform");
   }
 
   if (m_Transformer) {
     m_Transformer->readSettings(settings, "transformer");
-  }
-
-  if (m_SliceTransform) {
-    m_SliceTransform->readSettings(settings, "sliceTransform");
-  }
-
-  if (m_SliceTransformer) {
-    m_SliceTransformer->readSettings(settings, "sliceTransformer");
   }
 
   if (m_PEIngressCommand) {
@@ -491,28 +453,12 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_OutputData->writeSettings(settings, "outputData");
   }
 
-  if (m_OutputSliceDataManager) {
-    m_OutputSliceDataManager->writeSettings(settings, "outputSliceDataManager");
-  }
-
-  if (m_OutputSliceData) {
-    m_OutputSliceData->writeSettings(settings, "outputSliceData");
-  }
-
   if (m_Transform) {
     m_Transform->writeSettings(settings, "transform");
   }
 
   if (m_Transformer) {
     m_Transformer->writeSettings(settings, "transformer");
-  }
-
-  if (m_SliceTransform) {
-    m_SliceTransform->writeSettings(settings, "sliceTransform");
-  }
-
-  if (m_SliceTransformer) {
-    m_SliceTransformer->writeSettings(settings, "sliceTransformer");
   }
 
   if (m_PEIngressCommand) {
@@ -1082,41 +1028,6 @@ void CctwApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurv
   }
 }
 #endif
-
-CctwInputDataBlob*
-CctwApplication::input     (int chunkId, QString inputDataURL)
-{
-  return m_Transformer->inputBlob(chunkId, inputDataURL);
-}
-
-QList<CctwIntermediateDataBlob*>
-CctwApplication::transform (int chunkId, CctwInputDataBlob *chunk)
-{
-  return m_Transformer->transformBlob(chunk);
-}
-
-CctwIntermediateDataBlob*
-CctwApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
-{
-  return m_Transformer->mergeBlobs(chunk1, chunk2);
-}
-
-CctwOutputDataBlob*
-CctwApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
-{
-  return m_Transformer->normalizeBlob(chunk);
-}
-
-void
-CctwApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
-{
-  m_Transformer->outputBlob(outputDataURL, chunk);
-}
-
-void CctwApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
-{
-  CctwDataBlob::deleteBlob(chunkId, blob);
-}
 
 int CctwApplication::inputChunkCount()
 {

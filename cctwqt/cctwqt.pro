@@ -10,20 +10,11 @@ include(../cctw-version.pri)
 
 QT          += core gui network script opengl svg
 
-TARGET       = cctwqt
-
-DESTDIR      = ../bin/
-
-DEFINES     += CCTW_VERSION=\"$$VERSION\"
-
 greaterThan(QT_MAJOR_VERSION, 4) {
  QT += widgets concurrent printsupport
 }
 
-MOC_DIR = moc
-UI_DIR = ui
-OBJECTS_DIR = obj
-RCC_DIR = rcc
+TARGET       = cctwqt
 
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-hdf5.pri)

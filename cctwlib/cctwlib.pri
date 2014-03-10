@@ -28,20 +28,15 @@ SOURCES += \
     $${PWD}/cctwcrystalcoordinatetransform.cpp \
     $${PWD}/cctwrotationtransform.cpp \
     $${PWD}/cctwcompoundtransform.cpp \
-    $${PWD}/cctwoutputchunkindex.cpp \
     $${PWD}/cctwcommandline.cpp \
     $${PWD}/cctwchunkeddatainterface.cpp \
     $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwinputdata.cpp \
     $${PWD}/cctwoutputdata.cpp \
-    $${PWD}/cctwoutputslicedata.cpp \
-    $${PWD}/cctwinputchunkindex.cpp \
-    $${PWD}/cctwchunkindex.cpp \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
     $${PWD}/cctwdatachunk.cpp \
     $${PWD}/cctwlinearfitter.cpp \
-    $${PWD}/cctwdatablobs.cpp \
     $${PWD}/cctwpeingresscommand.cpp \
     $${PWD}/cctwapplication.cpp \
     $${PWD}/cctwimportdata.cpp \
@@ -70,20 +65,15 @@ HEADERS += \
     $${PWD}/cctwcrystalcoordinatetransform.h \
     $${PWD}/cctwrotationtransform.h \
     $${PWD}/cctwcompoundtransform.h \
-    $${PWD}/cctwoutputchunkindex.h \
     $${PWD}/cctwcommandline.h \
     $${PWD}/cctwchunkeddatainterface.h \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwinputdata.h \
     $${PWD}/cctwoutputdata.h \
-    $${PWD}/cctwoutputslicedata.h \
-    $${PWD}/cctwinputchunkindex.h \
-    $${PWD}/cctwchunkindex.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
     $${PWD}/cctwdatachunk.h \
     $${PWD}/cctwlinearfitter.h \
-    $${PWD}/cctwdatablobs.h \
     $${PWD}/cctwpeingresscommand.h \
     $${PWD}/cctwapplication.h \
     $${PWD}/cctwimportdata.h \
