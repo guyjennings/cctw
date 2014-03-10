@@ -165,9 +165,6 @@ public:
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)
 
-  Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
-  QCEP_BOOLEAN_PROPERTY(InverseAvailable)
-
   Q_PROPERTY(int progress READ get_Progress WRITE set_Progress STORED false)
   QCEP_INTEGER_PROPERTY(Progress)
 

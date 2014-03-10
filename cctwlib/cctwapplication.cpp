@@ -55,7 +55,6 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
   m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
-  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),

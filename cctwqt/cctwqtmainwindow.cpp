@@ -63,7 +63,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   app->prop_Halting()->linkTo(ui->m_Halting);
   app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
   app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
-  app->prop_InverseAvailable()->linkTo(ui->m_InverseAvailable);
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));

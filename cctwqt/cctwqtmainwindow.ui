@@ -86,13 +86,6 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="4">
-       <widget class="QCheckBox" name="m_InverseAvailable">
-        <property name="text">
-         <string>Inverse Available?</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="5">
        <widget class="QPushButton" name="m_HaltButton">
         <property name="text">
