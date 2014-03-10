@@ -20,7 +20,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   m_SetupInputDialog(NULL),
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
-  m_TransformOneDialog(NULL),
   m_Legend(NULL),
   m_Panner(NULL),
   m_Magnifier(NULL),
@@ -39,8 +38,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
-  connect(ui->m_TransformAllButton, SIGNAL(clicked()), this, SLOT(doTransformAll()));
-  connect(ui->m_TransformOneButton, SIGNAL(clicked()), this, SLOT(doTransformOne()));
+  connect(ui->m_TransformButton, SIGNAL(clicked()), this, SLOT(doTransform()));
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
   connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
   connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
@@ -196,19 +194,9 @@ void CctwqtMainWindow::doSetupTransform()
   m_SetupTransformDialog->activateWindow();
 }
 
-void CctwqtMainWindow::doTransformAll()
+void CctwqtMainWindow::doTransform()
 {
-}
-
-void CctwqtMainWindow::doTransformOne()
-{
-  if (m_TransformOneDialog == NULL) {
-    m_TransformOneDialog = new CctwqtTransformOneDialog(this);
-    m_TransformOneDialog -> show();
-  }
-
-  m_TransformOneDialog->raise();
-  m_TransformOneDialog->activateWindow();
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform);
 }
 
 void CctwqtMainWindow::doHalt()
