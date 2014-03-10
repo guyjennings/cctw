@@ -30,12 +30,6 @@ int Cctwtcl_Init(Tcl_Interp *interp)
   Tcl_CreateObjCommand(interp, "cctw", (Tcl_ObjCmdProc *) Cctwtcl_Cmd,
           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
-//  Tcl_CreateObjCommand(interp, "cctw_count", (Tcl_ObjCmdProc*) Cctwtcl_Count_Cmd,
-//                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-//  Tcl_CreateObjCommand(interp, "cctw_ijk2id", (Tcl_ObjCmdProc*) Cctwtcl_ijk2id_Cmd,
-//                      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
   Tcl_CreateObjCommand(interp, "cctw_dependencies", (Tcl_ObjCmdProc*) Cctwtcl_Dependencies_Cmd,
                     (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 

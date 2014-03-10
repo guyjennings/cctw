@@ -34,10 +34,6 @@ int Cctwtcl_Blob_Info_Cmd     (ClientData clientData, Tcl_Interp *interp, int ob
  *
  *    Example:   cctw inputData.chunkSize
  *          -> 128,128,128
- *  cctw_count
- *
- *    Returns a list of two integers - the number of chunks in the input and output
- *    datasets respectively
  *
  *  cctw_input <filePath> <inputchunkid>
  *
