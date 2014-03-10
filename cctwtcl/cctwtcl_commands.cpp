@@ -9,7 +9,7 @@
 #include "cctwtclutils.h"
 
 static CctwApplication *g_Application = NULL;
-static CctwCrystalCoordinateParameters *g_Parameters = NULL;
+//static CctwCrystalCoordinateParameters *g_Parameters = NULL;
 
 #define UNUSED __attribute__((unused))
 
@@ -24,7 +24,7 @@ int Cctwtcl_Initialize()
   g_Application = new CctwApplication(nargs, args);
   g_Application -> initialize(nargs, args);
 
-  g_Parameters  = new CctwCrystalCoordinateParameters(g_Application);
+//  g_Parameters  = new CctwCrystalCoordinateParameters(g_Application);
 
   return TCL_OK;
 }
@@ -50,47 +50,47 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
   return TCL_OK;
 }
 
-int Cctwtcl_Count_Cmd  (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj *const /*objv*/[])
-{
-  if (objc != 1) {
-    Tcl_SetResult(interp, "No parameters expected: usage: cctw_count", TCL_STATIC);
-    return TCL_ERROR;
-  } else {
-    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
+//int Cctwtcl_Count_Cmd  (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj *const /*objv*/[])
+//{
+//  if (objc != 1) {
+//    Tcl_SetResult(interp, "No parameters expected: usage: cctw_count", TCL_STATIC);
+//    return TCL_ERROR;
+//  } else {
+//    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
 
-    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->inputChunkCount()));
-    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->outputChunkCount()));
+//    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->inputChunkCount()));
+//    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(g_Application->outputChunkCount()));
 
-    Tcl_SetObjResult(interp, res);
-  }
+//    Tcl_SetObjResult(interp, res);
+//  }
 
-  return TCL_OK;
-}
+//  return TCL_OK;
+//}
 
-int Cctwtcl_ijk2id_Cmd (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
-  TCL_ARGS(7);
+//int Cctwtcl_ijk2id_Cmd (ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[]) {
+//  TCL_ARGS(7);
 
-  int max_x, max_y, max_z, x, y, z;
-  int rc;
-  rc = Tcl_GetIntFromObj(interp, objv[1], &max_x);
-  TCL_CHECK(rc);
-  rc = Tcl_GetIntFromObj(interp, objv[2], &max_y);
-  TCL_CHECK(rc);
-  rc = Tcl_GetIntFromObj(interp, objv[3], &max_z);
-  TCL_CHECK(rc);
-  rc = Tcl_GetIntFromObj(interp, objv[4], &x);
-  TCL_CHECK(rc);
-  rc = Tcl_GetIntFromObj(interp, objv[5], &y);
-  TCL_CHECK(rc);
-  rc = Tcl_GetIntFromObj(interp, objv[6], &z);
-  TCL_CHECK(rc);
+//  int max_x, max_y, max_z, x, y, z;
+//  int rc;
+//  rc = Tcl_GetIntFromObj(interp, objv[1], &max_x);
+//  TCL_CHECK(rc);
+//  rc = Tcl_GetIntFromObj(interp, objv[2], &max_y);
+//  TCL_CHECK(rc);
+//  rc = Tcl_GetIntFromObj(interp, objv[3], &max_z);
+//  TCL_CHECK(rc);
+//  rc = Tcl_GetIntFromObj(interp, objv[4], &x);
+//  TCL_CHECK(rc);
+//  rc = Tcl_GetIntFromObj(interp, objv[5], &y);
+//  TCL_CHECK(rc);
+//  rc = Tcl_GetIntFromObj(interp, objv[6], &z);
+//  TCL_CHECK(rc);
 
-  int result = CctwTransformer::XYZtoID(max_x, max_y, max_z,
-                                        x, y, z);
+//  int result = CctwTransformer::XYZtoID(max_x, max_y, max_z,
+//                                        x, y, z);
 
-  Tcl_SetObjResult(interp, Tcl_NewIntObj(result));
-  return TCL_OK;
-}
+//  Tcl_SetObjResult(interp, Tcl_NewIntObj(result));
+//  return TCL_OK;
+//}
 
 int Cctwtcl_Dependencies_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {

@@ -44,45 +44,45 @@ CctwTransformer::~CctwTransformer()
   delete [] m_ChunksUsed;
 }
 
-void CctwTransformer::markInputChunkNeeded(CctwIntVector3D idx)
-{
-  static int errCount = 0;
-  static int chnkCount = 0;
+//void CctwTransformer::markInputChunkNeeded(CctwIntVector3D idx)
+//{
+//  static int errCount = 0;
+//  static int chnkCount = 0;
 
-  if (idx.x() >= 0 && idx.x() < m_ChunkCount.x() &&
-      idx.y() >= 0 && idx.y() < m_ChunkCount.y() &&
-      idx.z() >= 0 && idx.z() < m_ChunkCount.z()) {
-    int n = XYZtoID(m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(),
-                    idx.x(), idx.y(), idx.z());
+//  if (idx.x() >= 0 && idx.x() < m_ChunkCount.x() &&
+//      idx.y() >= 0 && idx.y() < m_ChunkCount.y() &&
+//      idx.z() >= 0 && idx.z() < m_ChunkCount.z()) {
+//    int n = XYZtoID(m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(),
+//                    idx.x(), idx.y(), idx.z());
 
-    if (n >= 0 && n < m_ChunksTotal) {
-      if (m_ChunksUsed) {
-        if (m_ChunksUsed[n] == false) {
-          m_ChunksUsed[n] = true;
+//    if (n >= 0 && n < m_ChunksTotal) {
+//      if (m_ChunksUsed) {
+//        if (m_ChunksUsed[n] == false) {
+//          m_ChunksUsed[n] = true;
 
-          if (chnkCount++ < 100) {
-            printf("Chunk %d used\n", n);
-          }
-        }
-      }
-    } else {
-      if (errCount++ < 100) {
-        printf("n (%d) out of range [0..%d)\n", n, m_ChunksTotal);
-      }
-    }
-  } else {
-    if (errCount++ < 100) {
-      printf("idx (%d,%d,%d) out of range [[0,0,0]..[%d,%d,%d])\n",
-             idx.x(), idx.y(), idx.z(), m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z());
-    }
-  }
-}
+//          if (chnkCount++ < 100) {
+//            printf("Chunk %d used\n", n);
+//          }
+//        }
+//      }
+//    } else {
+//      if (errCount++ < 100) {
+//        printf("n (%d) out of range [0..%d)\n", n, m_ChunksTotal);
+//      }
+//    }
+//  } else {
+//    if (errCount++ < 100) {
+//      printf("idx (%d,%d,%d) out of range [[0,0,0]..[%d,%d,%d])\n",
+//             idx.x(), idx.y(), idx.z(), m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z());
+//    }
+//  }
+//}
 
-int CctwTransformer::XYZtoID(int max_x, int max_y, int max_z,
-                             int x, int y, int z)
-{
-  return x*max_y*max_z + y*max_z + z;
-}
+//int CctwTransformer::XYZtoID(int max_x, int max_y, int max_z,
+//                             int x, int y, int z)
+//{
+//  return x*max_y*max_z + y*max_z + z;
+//}
 
 void CctwTransformer::performTests()
 {

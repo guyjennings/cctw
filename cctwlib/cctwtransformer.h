@@ -24,14 +24,14 @@ public:
 
   virtual ~CctwTransformer();
 
-  static const int MAX_CHUNK = 8*1024*1024; // Maximal size of a disk-resident chunk
+//  static const int MAX_CHUNK = 8*1024*1024; // Maximal size of a disk-resident chunk
 
-  static const int MAX_REQUISITES = 128; // Maximal number of chunks required to produce an output chunk
+//  static const int MAX_REQUISITES = 128; // Maximal number of chunks required to produce an output chunk
 
 public slots:
 
-  static int XYZtoID(int max_x, int max_y, int max_z,
-                     int x, int y, int z);
+//  static int XYZtoID(int max_x, int max_y, int max_z,
+//                     int x, int y, int z);
 
   void performTests();
 
