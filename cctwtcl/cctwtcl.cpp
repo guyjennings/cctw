@@ -30,33 +30,6 @@ int Cctwtcl_Init(Tcl_Interp *interp)
   Tcl_CreateObjCommand(interp, "cctw", (Tcl_ObjCmdProc *) Cctwtcl_Cmd,
           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
-  Tcl_CreateObjCommand(interp, "cctw_dependencies", (Tcl_ObjCmdProc*) Cctwtcl_Dependencies_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_input", (Tcl_ObjCmdProc*) Cctwtcl_Input_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_transform", (Tcl_ObjCmdProc*) Cctwtcl_Transform_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_merge", (Tcl_ObjCmdProc*) Cctwtcl_Merge_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_normalize", (Tcl_ObjCmdProc*) Cctwtcl_Normalize_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_output", (Tcl_ObjCmdProc*) Cctwtcl_Output_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_delete", (Tcl_ObjCmdProc*) Cctwtcl_Delete_Cmd,
-                    (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_blob", (Tcl_ObjCmdProc*) Cctwtcl_Blob_Cmd,
-                       (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
-  Tcl_CreateObjCommand(interp, "cctw_blob_info", (Tcl_ObjCmdProc*) Cctwtcl_Blob_Info_Cmd,
-                       (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
-
   Cctwtcl_Initialize();
 
   return TCL_OK;

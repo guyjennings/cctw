@@ -1029,41 +1029,6 @@ void CctwApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurv
 }
 #endif
 
-CctwInputDataBlob*
-CctwApplication::input     (int chunkId, QString inputDataURL)
-{
-  return m_Transformer->inputBlob(chunkId, inputDataURL);
-}
-
-QList<CctwIntermediateDataBlob*>
-CctwApplication::transform (int chunkId, CctwInputDataBlob *chunk)
-{
-  return m_Transformer->transformBlob(chunk);
-}
-
-CctwIntermediateDataBlob*
-CctwApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
-{
-  return m_Transformer->mergeBlobs(chunk1, chunk2);
-}
-
-CctwOutputDataBlob*
-CctwApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
-{
-  return m_Transformer->normalizeBlob(chunk);
-}
-
-void
-CctwApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
-{
-  m_Transformer->outputBlob(outputDataURL, chunk);
-}
-
-void CctwApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
-{
-  CctwDataBlob::deleteBlob(chunkId, blob);
-}
-
 int CctwApplication::inputChunkCount()
 {
   return m_InputData->chunkCount().volume();

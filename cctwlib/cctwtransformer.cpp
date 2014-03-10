@@ -381,353 +381,163 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   return res;
 }
 
-void CctwTransformer::generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-  CctwIntVector3D start = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
-  CctwIntVector3D size  = m_InputData->chunkSize();
-
-  double *data = blob->data();
-  double *weight = blob->weight();
-  int dataLen = blob->dataLength();
-  int weightLen = blob->weightLength();
-
-  for(int z = 0; z < size.z(); z++) {
-    for (int y=0; y < size.y(); y++) {
-      for (int x=0; x < size.x(); x++) {
-        CctwIntVector3D coords = start + CctwIntVector3D(x,y,z);
-
-        int offset = blob->offset(x,y,z);
-
-        if (offset >= 0 && offset < dataLen) {
-          if (data) {
-            int val = ((start.x()+x)/16 & 1) ^ ((start.y()+y)/16 & 1) ^ ((start.z()+z)/16 & 1);
-            data[offset] = val;
-          }
-        }
-
-        if (offset >= 0 && offset < weightLen) {
-          if (weight) {
-            weight[offset] = 1;
-          }
-        }
-      }
-    }
-  }
-}
-
-CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString location)
-{
-  CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(blobIdx, m_InputData->chunkSize());
-
-  printf("inputBlob[%d] %p\n", blobIdx, inputBlob);
-
-  QUrl loc(location);
-
-  printf("scheme:   %s\n", qPrintable(loc.scheme()));
-  printf("path:     %s\n", qPrintable(loc.path()));
-  printf("fragment: %s\n", qPrintable(loc.fragment()));
-
-  if (loc.scheme()=="test") {
-    // Generate a test dataset:
-    generateTestData(blobIdx, loc, inputBlob);
-  } else if (loc.scheme()=="h5") {
-    readHDF5InputBlob(blobIdx, loc, inputBlob);
-  } else if (loc.scheme()=="") {
-    readArbitraryInputBlob(blobIdx, loc, inputBlob);
-  } else {
-    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
-  }
-
-  return inputBlob;
-}
-
-static bool sortBlobs(CctwIntermediateDataBlob *a, CctwIntermediateDataBlob *b)
-{
-  return a->blobID() < b->blobID();
-}
-
-QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlob *blob)
-{
-  int chunkIdx = blob->blobID();
-
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
-
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
-  CctwIntVector3D lastBlobIndex(-1, -1, -1);
-  CctwIntermediateDataBlob* lastBlob = NULL;
-
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-
-  QMap<CctwIntVector3D, CctwIntermediateDataBlob*> outputBlobs;
-
-  if (m_InputData->containsChunk(idx)) {
-    for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          int inpOffset = blob->offset(x, y, z);
-          double data = blob->data(inpOffset);
-          double wght = blob->weight(inpOffset);
-
-          if (wght) {
-            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-            CctwDoubleVector3D xfmcoord = transform.forward(coords);
-            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-            if (m_OutputData->containsPixel(pixels)) {
-              CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
-
-              if (opchunk != lastBlobIndex) {
-                lastBlobIndex = opchunk;
-
-                if (!outputBlobs.contains(lastBlobIndex)) {
-                  outputBlobs[lastBlobIndex] =
-                      CctwIntermediateDataBlob::newIntermediateDataBlob(
-                        m_InputData->chunkNumberFromIndex(lastBlobIndex),
-                        m_InputData->chunkSize());
-                }
-
-                lastBlob = outputBlobs[lastBlobIndex];
-              }
-
-              CctwIntVector3D localPixel = pixels - opchunk*m_OutputData->chunkSize();
-
-              if (lastBlob) {
-                int offset = lastBlob->offset(localPixel);
-
-                lastBlob->data(offset)   += data;
-                lastBlob->weight(offset) += wght;
-              } else {
-                printMessage(tr("lastBlob == NULL in CctwTransformer::transformBlob"));
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  QList<CctwIntermediateDataBlob*> res;
-
-  QMapIterator<CctwIntVector3D, CctwIntermediateDataBlob*> iter(outputBlobs);
-
-  while (iter.hasNext()) {
-    iter.next();
-
-    res.append(iter.value());
-  }
-
-  qSort(res.begin(), res.end(), sortBlobs);
-
-  return res;
-}
-
-CctwIntermediateDataBlob*        CctwTransformer::mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2)
-{
-  int chunkId = blob1->blobID();
-
-  CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
-
-  double *data = res->data();
-  double *weight = res->weight();
-
-  double *data1 = blob1->data();
-  double *weight1 = blob1->weight();
-
-  double *data2 = blob2->data();
-  double *weight2 = blob2->weight();
-
-  if (data && weight && data1 && weight1 && data2 && weight2) {
-    int len = res->dataLength();
-
-    if ((res->weightLength() == len) &&
-        (blob1->dataLength() == len) &&
-        (blob1->weightLength() == len) &&
-        (blob2->dataLength() == len) &&
-        (blob2->weightLength() == len))
-    {
-      for(int i=0; i<len; i++) {
-        data[i] = 0;
-        weight[i] = 0;
-
-        if (weight1[i]) {
-          data[i] += data1[i];
-          weight[i] += weight1[i];
-        }
-
-        if (weight2[i]) {
-          data[i] += data2[i];
-          weight[i] += weight2[i];
-        }
-      }
-
-      return res;
-    } else {
-      printMessage("Bad Merge Data Lengths");
-    }
-  } else {
-    printMessage("Bad Merge Data");
-  }
-
-  return res;
-}
-
-CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediateDataBlob *blob)
-{
-  int chunkId = blob->blobID();
-
-  CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
-
-  double *out = res->data();
-  double *data = blob->data();
-  double *weight = blob->weight();
-
-  if (out && data && weight) {
-    int len = res->dataLength();
-
-    if ((blob->dataLength() == len) && (blob->weightLength() == len)) {
-      for (int i=0; i<len; i++) {
-        if (weight[i]) {
-          out[i] = data[i]/weight[i];
-        } else {
-          out[i] = 0;
-        }
-      }
-    }
-  }
-
-  return res;
-}
-
-void                             CctwTransformer::outputBlob(QString destination, CctwOutputDataBlob* blob)
-{
-  QUrl loc(destination);
-
-  printf("Destination: %s\n", qPrintable(destination));
-  printf("Scheme: %s\n",      qPrintable(loc.scheme()));
-  printf("Authority: %s\n",   qPrintable(loc.authority()));
-  printf("Host: %s\n",        qPrintable(loc.host()));
-  printf("Port: %d\n",        loc.port());
-  printf("Path: %s\n",        qPrintable(loc.path()));
-  printf("Fragment: %s\n",    qPrintable(loc.fragment()));
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-  QUrlQuery urlQuery(loc);
-  QList< QPair <QString, QString> > query = urlQuery.queryItems();
-#else
-  QList< QPair <QString, QString> > query = loc.queryItems();
-#endif
-
-  printf("Query:\n");
-
-  QPair < QString, QString > pair;
-
-  foreach (pair, query) {
-    printf("%s = %s\n", qPrintable(pair.first), qPrintable(pair.second));
-  }
-
-  if (loc.scheme() == "h5") {
-    writeHDF5OutputBlob(blob->blobID(), loc, blob);
-  } else if (loc.scheme() == "") {
-    writeArbitraryOutputBlob(blob->blobID(), loc, blob);
-  } else {
-    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
-  }
-}
-
-void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-  QString filePath = location.path();
-  QString dataset  = location.fragment();
-
-  printf("CctwTransformer::readHDF5InputBlob\n");
-
-  if (filePath.count() > 0) {
-    if (dataset.count() == 0) {
-      dataset = "data";
-    }
-
-    hid_t fileId = H5Fopen(qPrintable(filePath), H5F_ACC_RDONLY, H5P_DEFAULT);
-
-    if (fileId < 0) {
-      printMessage(tr("File open of %1 failed").arg(filePath));
-    } else {
-      hid_t datasetId = H5Dopen(fileId, qPrintable(dataset), H5P_DEFAULT);
-
-      if (datasetId < 0) {
-        printMessage(tr("Dataset %1 not opened").arg(dataset));
-      } else {
-        hid_t dataspaceId = H5Dget_space(datasetId);
-
-        if (dataspaceId < 0) {
-          printMessage(tr("Couldn't get data space"));
-        } else {
-          int ndims = H5Sget_simple_extent_ndims(dataspaceId);
-
-          if (ndims != 3) {
-            printMessage(tr("Data dimensionality != 3 (%1)").arg(ndims));
-          } else {
-            hsize_t dims[3], maxdims[3];
-            int n = H5Sget_simple_extent_dims(dataspaceId, dims, maxdims);
-
-            if (n != 3) {
-              printMessage("Problems getting dataset dimensions");
-            } else {
-              printMessage(tr("Dimensions [%1,%2,%3]").arg(dims[0]).arg(dims[1]).arg(dims[2]));
-
-              printf("About to read data\n");
-
-              hid_t memspace_id;
-              hsize_t offset[3], count[3], stride[3], block[3];
-
-              CctwIntVector3D ckoffset = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
-              CctwIntVector3D cksize   = m_InputData->chunkSize();
-
-              count[0] = cksize.z();
-              count[1] = cksize.y();
-              count[2] = cksize.x();
-
-              stride[0] = 1;
-              stride[1] = 1;
-              stride[2] = 1;
-
-              block[0] = 1;
-              block[1] = 1;
-              block[2] = 1;
-
-              offset[0] = ckoffset.z();
-              offset[1] = ckoffset.y();
-              offset[2] = ckoffset.x();
-
-              memspace_id = H5Screate_simple(3, count, NULL);
-
-              herr_t selerr = H5Sselect_hyperslab(dataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-              herr_t rderr  = H5Dread(datasetId, H5T_NATIVE_DOUBLE, memspace_id, dataspaceId, H5P_DEFAULT, blob->data());
-
-              if (selerr || rderr) {
-                printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
-                             .arg(ckoffset.x()).arg(ckoffset.y()).arg(ckoffset.z()).arg(selerr).arg(rderr));
-                printf("Failed to read data\n");
-              }
-            }
-          }
-        }
-      }
-
-      H5Fclose(fileId);
-    }
-  }
-}
-
-void CctwTransformer::writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
-{
-}
-
-void CctwTransformer::readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-}
-
-void CctwTransformer::writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
-{
-}
+//CctwIntermediateDataBlob*        CctwTransformer::mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2)
+//{
+//  int chunkId = blob1->blobID();
+
+//  CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
+
+//  double *data = res->data();
+//  double *weight = res->weight();
+
+//  double *data1 = blob1->data();
+//  double *weight1 = blob1->weight();
+
+//  double *data2 = blob2->data();
+//  double *weight2 = blob2->weight();
+
+//  if (data && weight && data1 && weight1 && data2 && weight2) {
+//    int len = res->dataLength();
+
+//    if ((res->weightLength() == len) &&
+//        (blob1->dataLength() == len) &&
+//        (blob1->weightLength() == len) &&
+//        (blob2->dataLength() == len) &&
+//        (blob2->weightLength() == len))
+//    {
+//      for(int i=0; i<len; i++) {
+//        data[i] = 0;
+//        weight[i] = 0;
+
+//        if (weight1[i]) {
+//          data[i] += data1[i];
+//          weight[i] += weight1[i];
+//        }
+
+//        if (weight2[i]) {
+//          data[i] += data2[i];
+//          weight[i] += weight2[i];
+//        }
+//      }
+
+//      return res;
+//    } else {
+//      printMessage("Bad Merge Data Lengths");
+//    }
+//  } else {
+//    printMessage("Bad Merge Data");
+//  }
+
+//  return res;
+//}
+
+//CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediateDataBlob *blob)
+//{
+//  int chunkId = blob->blobID();
+
+//  CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
+
+//  double *out = res->data();
+//  double *data = blob->data();
+//  double *weight = blob->weight();
+
+//  if (out && data && weight) {
+//    int len = res->dataLength();
+
+//    if ((blob->dataLength() == len) && (blob->weightLength() == len)) {
+//      for (int i=0; i<len; i++) {
+//        if (weight[i]) {
+//          out[i] = data[i]/weight[i];
+//        } else {
+//          out[i] = 0;
+//        }
+//      }
+//    }
+//  }
+
+//  return res;
+//}
+
+//void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+//{
+//  QString filePath = location.path();
+//  QString dataset  = location.fragment();
+
+//  printf("CctwTransformer::readHDF5InputBlob\n");
+
+//  if (filePath.count() > 0) {
+//    if (dataset.count() == 0) {
+//      dataset = "data";
+//    }
+
+//    hid_t fileId = H5Fopen(qPrintable(filePath), H5F_ACC_RDONLY, H5P_DEFAULT);
+
+//    if (fileId < 0) {
+//      printMessage(tr("File open of %1 failed").arg(filePath));
+//    } else {
+//      hid_t datasetId = H5Dopen(fileId, qPrintable(dataset), H5P_DEFAULT);
+
+//      if (datasetId < 0) {
+//        printMessage(tr("Dataset %1 not opened").arg(dataset));
+//      } else {
+//        hid_t dataspaceId = H5Dget_space(datasetId);
+
+//        if (dataspaceId < 0) {
+//          printMessage(tr("Couldn't get data space"));
+//        } else {
+//          int ndims = H5Sget_simple_extent_ndims(dataspaceId);
+
+//          if (ndims != 3) {
+//            printMessage(tr("Data dimensionality != 3 (%1)").arg(ndims));
+//          } else {
+//            hsize_t dims[3], maxdims[3];
+//            int n = H5Sget_simple_extent_dims(dataspaceId, dims, maxdims);
+
+//            if (n != 3) {
+//              printMessage("Problems getting dataset dimensions");
+//            } else {
+//              printMessage(tr("Dimensions [%1,%2,%3]").arg(dims[0]).arg(dims[1]).arg(dims[2]));
+
+//              printf("About to read data\n");
+
+//              hid_t memspace_id;
+//              hsize_t offset[3], count[3], stride[3], block[3];
+
+//              CctwIntVector3D ckoffset = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
+//              CctwIntVector3D cksize   = m_InputData->chunkSize();
+
+//              count[0] = cksize.z();
+//              count[1] = cksize.y();
+//              count[2] = cksize.x();
+
+//              stride[0] = 1;
+//              stride[1] = 1;
+//              stride[2] = 1;
+
+//              block[0] = 1;
+//              block[1] = 1;
+//              block[2] = 1;
+
+//              offset[0] = ckoffset.z();
+//              offset[1] = ckoffset.y();
+//              offset[2] = ckoffset.x();
+
+//              memspace_id = H5Screate_simple(3, count, NULL);
+
+//              herr_t selerr = H5Sselect_hyperslab(dataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+//              herr_t rderr  = H5Dread(datasetId, H5T_NATIVE_DOUBLE, memspace_id, dataspaceId, H5P_DEFAULT, blob->data());
+
+//              if (selerr || rderr) {
+//                printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
+//                             .arg(ckoffset.x()).arg(ckoffset.y()).arg(ckoffset.z()).arg(selerr).arg(rderr));
+//                printf("Failed to read data\n");
+//              }
+//            }
+//          }
+//        }
+//      }
+
+//      H5Fclose(fileId);
+//    }
+//  }
+//}

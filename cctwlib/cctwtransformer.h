@@ -5,7 +5,6 @@
 #include "cctwinputdatainterface.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwtransforminterface.h"
-#include "cctwdatablobs.h"
 #include <QUrl>
 
 class CctwApplication;
@@ -33,24 +32,10 @@ public slots:
   QcepIntList dependencies(int chunkIdx);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
-public:
-  CctwInputDataBlob*               inputBlob(int blobIdx, QString location);
-  QList<CctwIntermediateDataBlob*> transformBlob(CctwInputDataBlob *blob);
-  CctwIntermediateDataBlob*        mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2);
-  CctwOutputDataBlob*              normalizeBlob(CctwIntermediateDataBlob *blob);
-  void                             outputBlob(QString destination, CctwOutputDataBlob* blob);
-
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
   void transformChunkNumber(int n);
   void runTransformChunkNumber(int n);
-
-  void generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-  void readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-  void readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-
-  void writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
-  void writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
 
 private:
   CctwApplication         *m_Application;

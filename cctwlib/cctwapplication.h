@@ -17,7 +17,6 @@
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwpeingresscommand.h"
-#include "cctwdatablobs.h"
 #include "cctwimportdata.h"
 #include "cctwcomparedata.h"
 
@@ -99,13 +98,6 @@ public:
 #ifndef NO_GUI
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 #endif
-
-  CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
-  QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
-  CctwIntermediateDataBlob*         merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2);
-  CctwOutputDataBlob*               normalize (int chunkId, CctwIntermediateDataBlob *chunk);
-  void                              output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk);
-  void                              deleteBlob(int chunkId, CctwDataBlob *blob);
 
   QcepSettingsSaverWPtr saver() const;
 

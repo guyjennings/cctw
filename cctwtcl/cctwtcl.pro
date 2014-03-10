@@ -5,9 +5,13 @@ TARGET = CctwTcl
 TEMPLATE = lib
 #CONFIG += uitools debug
 
-include("../cctw.pri")
+include(../cctw-version.pri)
 
-QT += concurrent core gui network script widgets opengl printsupport svg
+QT += core script
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+ QT += concurrent
+}
 
 target.path=$$prefix/lib
 INSTALLS += target
@@ -16,12 +20,6 @@ INSTALLS += target
 #ldconf.path=/etc/ls.so.conf.d
 #INSTALLS +=ldconf
 
-MOC_DIR = moc
-UI_DIR = ui
-OBJECTS_DIR = obj
-RCC_DIR = rcc
-
-DEFINES += CCTW_VERSION=\"$$VERSION\"
 DEFINES += NO_GUI
 
 release {
@@ -37,7 +35,7 @@ include(../submodules/qceplib/qceplib-mar345.pri)
 include(../submodules/qceplib/qceplib-qwt.pri)
 #include(../submodules/qceplib/qceplib-nexus.pri)
 include(../cctwlib/cctwlib.pri)
-#include("../cctwqt/cctwqt.pri")
+include(cctwtcl.pri)
 
 defined(TCL, var) {
     message("using TCL: $${TCL}")
@@ -47,27 +45,13 @@ defined(TCL, var) {
     LIBS += -ltcl
 }
 
-HEADERS += \
-    cctwtcl_commands.h \
-    cctwtcltiff.h
-
-SOURCES += \
-    cctwtcl.cpp \
-    cctwtcl_commands.cpp \
-    cctwtcltiff.cpp
-
-OTHER_FILES += \
-    cctw-dummies.h \
-    cctw-dummies.cpp \
-    cctwtcltest.tcl
-
 PRE_TARGETDEPS += pkgIndex
 
 QMAKE_EXTRA_TARGETS +=pkgIndex
 
-pkgIndex.commands = ( echo "package ifneeded cctw $${VERSION} [list load [file join \\\$$dir libCctwTcl[info sharedlibextension]]]" ) > pkgIndex.tcl
+pkgIndex.commands = ( echo "package ifneeded cctw $${VERSION} [list load [file join \\\$$dir libCctwTcl[info sharedlibextension]]]" ) > $${DESTDIR}/pkgIndex.tcl
 pkgIndex.depends = FORCE
 
-QMAKE_CLEAN += pkgIndex.tcl
+QMAKE_CLEAN += $${DESTDIR}/pkgIndex.tcl
 
 
