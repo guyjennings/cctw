@@ -5,7 +5,6 @@
 #include "cctwinputdatainterface.h"
 #include "cctwoutputdatainterface.h"
 #include "cctwtransforminterface.h"
-#include "cctwinputchunkindex.h"
 #include "cctwdatablobs.h"
 #include <QUrl>
 

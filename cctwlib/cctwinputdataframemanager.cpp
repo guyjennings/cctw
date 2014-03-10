@@ -1,7 +1,6 @@
 #include "cctwinputdataframemanager.h"
 #include <QThread>
 #include "cctwdataframe.h"
-#include "cctwchunkindex.h"
 #include "qcepmutexlocker.h"
 
 CctwInputDataFrameManager::CctwInputDataFrameManager(QObject *parent) :
