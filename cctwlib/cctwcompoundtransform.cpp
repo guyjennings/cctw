@@ -1,7 +1,7 @@
 #include "cctwcompoundtransform.h"
 
-CctwCompoundTransform::CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QObject *parent)
-  : CctwTransformInterface(parent),
+CctwCompoundTransform::CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QString name, QObject *parent)
+  : CctwTransformInterface(name, parent),
     m_Transform1(t1),
     m_Transform2(t2)
 {

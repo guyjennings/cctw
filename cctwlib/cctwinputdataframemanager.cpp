@@ -3,8 +3,8 @@
 #include "cctwdataframe.h"
 #include "qcepmutexlocker.h"
 
-CctwInputDataFrameManager::CctwInputDataFrameManager(QObject *parent) :
-  CctwDataFrameManager(parent),
+CctwInputDataFrameManager::CctwInputDataFrameManager(QString name, QObject *parent) :
+  CctwDataFrameManager(name, parent),
   m_NLoadedFrames(0),
   m_NLoadedFramesLimit(256)
 {
@@ -25,6 +25,7 @@ int CctwInputDataFrameManager::loadChunk(int ckx, int cky, int ckz)
 
       m_Frames[nz] = new CctwDataFrame(m_Data->dimensions().x(),
                                        m_Data->dimensions().y(),
+                                       tr("frame-%1").arg(nz),
                                        NULL);
 
       m_NLoadedFrames++;

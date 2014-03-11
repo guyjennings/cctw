@@ -7,7 +7,7 @@ class CctwCompoundTransform : public CctwTransformInterface
 {
   Q_OBJECT
 public:
-  CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QObject *parent);
+  CctwCompoundTransform(CctwTransformInterface *t1, CctwTransformInterface *t2, QString name, QObject *parent);
 
 public:
   virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);

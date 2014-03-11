@@ -1,8 +1,8 @@
 #include "cctwdataframemanager.h"
 #include "qcepmutexlocker.h"
 
-CctwDataFrameManager::CctwDataFrameManager(QObject *parent) :
-  CctwObject(parent),
+CctwDataFrameManager::CctwDataFrameManager(QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Data(NULL)
 {
 }

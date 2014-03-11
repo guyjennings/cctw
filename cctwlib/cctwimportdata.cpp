@@ -5,8 +5,8 @@
 #include "qcepmutexlocker.h"
 #include "cctwinputdatah5.h"
 
-CctwImportData::CctwImportData(CctwApplication *application, QObject *parent) :
-  CctwObject(parent),
+CctwImportData::CctwImportData(CctwApplication *application, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Application(application),
   m_BacklogSemaphore(8),
   m_CompletionSemaphore(0),
@@ -504,7 +504,7 @@ void CctwImportData::checkImportedData()
 
 void CctwImportData::checkImportedDataRigorously()
 {
-  CctwInputDataH5 data(get_OutputPath(), "data", this);
+  CctwInputDataH5 data(get_OutputPath(), "data", "h5import", this);
 
   printMessage("Checking imported data rigorously...");
 }
@@ -516,7 +516,7 @@ static int randomIndex(int n)
 
 void CctwImportData::checkImportedDataApproximately()
 {
-  CctwInputDataH5 data(get_OutputPath(), "data", this);
+  CctwInputDataH5 data(get_OutputPath(), "data", "h5import", this);
 
   printMessage("Checking imported data approximately...");
 

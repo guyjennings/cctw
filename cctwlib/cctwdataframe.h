@@ -9,7 +9,7 @@ class CctwDataFrame : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwDataFrame(int dimx, int dimy, QObject *parent);
+  explicit CctwDataFrame(int dimx, int dimy, QString name, QObject *parent);
   virtual ~CctwDataFrame();
 
 signals:

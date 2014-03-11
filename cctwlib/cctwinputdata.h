@@ -7,12 +7,13 @@ class CctwInputData : public CctwInputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwInputData(CctwIntVector3D dim,        // Data set dimension
-                           CctwIntVector3D chunkSize,  // Chunk size
-//                           CctwDoubleVector3D origin,
-//                           CctwDoubleVector3D scale,
-                           CctwInputDataFrameManager *manager,
-                           QObject *parent);
+  explicit CctwInputData(
+      CctwApplication *application,
+      CctwIntVector3D dim,        // Data set dimension
+      CctwIntVector3D chunkSize,  // Chunk size
+      CctwInputDataFrameManager *manager,
+      QString name,
+      QObject *parent);
   
 signals:
   

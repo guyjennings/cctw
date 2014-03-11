@@ -1,9 +1,9 @@
 #include "cctwoutputdatainterface.h"
 
-CctwOutputDataInterface::CctwOutputDataInterface(CctwIntVector3D dim,
+CctwOutputDataInterface::CctwOutputDataInterface(CctwApplication *application, CctwIntVector3D dim,
                                                  CctwIntVector3D chunkSize,
-                                                 CctwOutputDataFrameManager *manager,
+                                                 CctwOutputDataFrameManager *manager, QString name,
                                                  QObject *parent)
-  : CctwChunkedData(dim, chunkSize, manager, parent)
+  : CctwChunkedData(application, dim, chunkSize, manager, name, parent)
 {
 }

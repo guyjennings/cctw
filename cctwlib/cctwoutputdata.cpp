@@ -1,12 +1,12 @@
 #include "cctwoutputdata.h"
 
-CctwOutputData::CctwOutputData(CctwIntVector3D dim,        // Data set dimension
+CctwOutputData::CctwOutputData(CctwApplication *application, CctwIntVector3D dim,        // Data set dimension
                                    CctwIntVector3D chunkSize,  // Chunk size
 //                                   CctwDoubleVector3D origin,
 //                                   CctwDoubleVector3D scale,
-                                   CctwOutputDataFrameManager *manager,
+                                   CctwOutputDataFrameManager *manager, QString name,
                                    QObject *parent) :
-  CctwOutputDataInterface(dim, chunkSize, /*origin, scale,*/ manager, parent)
+  CctwOutputDataInterface(application, dim, chunkSize, /*origin, scale,*/ manager, name, parent)
 {
 }
 

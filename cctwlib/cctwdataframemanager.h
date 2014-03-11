@@ -11,7 +11,7 @@ class CctwDataFrameManager : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwDataFrameManager(QObject *parent);
+  explicit CctwDataFrameManager(QString name, QObject *parent);
 
 signals:
 

@@ -1,8 +1,8 @@
 #include "cctwdataframe.h"
 #include "qcepmutexlocker.h"
 
-CctwDataFrame::CctwDataFrame(int dimx, int dimy, QObject *parent) :
-  CctwObject(parent),
+CctwDataFrame::CctwDataFrame(int dimx, int dimy, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Counter(0),
   m_DimX(dimx),
   m_DimY(dimy),

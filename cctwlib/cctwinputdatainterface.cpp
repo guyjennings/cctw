@@ -1,9 +1,10 @@
 #include "cctwinputdatainterface.h"
 
-CctwInputDataInterface::CctwInputDataInterface(CctwIntVector3D dim,
+CctwInputDataInterface::CctwInputDataInterface(CctwApplication *application,
+                                               CctwIntVector3D dim,
                                                CctwIntVector3D chunkSize,
-                                               CctwInputDataFrameManager *manager,
+                                               CctwInputDataFrameManager *manager, QString name,
                                                QObject *parent)
-  : CctwChunkedData(dim, chunkSize, manager, parent)
+  : CctwChunkedData(application, dim, chunkSize, manager, name, parent)
 {
 }

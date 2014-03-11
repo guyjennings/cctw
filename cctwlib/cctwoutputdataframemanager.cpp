@@ -2,8 +2,8 @@
 #include "cctwdataframe.h"
 #include "cctwdatachunk.h"
 
-CctwOutputDataFrameManager::CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent) :
-  CctwDataFrameManager(parent),
+CctwOutputDataFrameManager::CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QString name, QObject *parent) :
+  CctwDataFrameManager(name, parent),
   m_ObjectNamer(this, "outputDataManager"),
   m_Saver(saver),
   m_FileId(-1),

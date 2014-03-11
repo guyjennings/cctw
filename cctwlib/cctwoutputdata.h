@@ -7,11 +7,13 @@ class CctwOutputData : public CctwOutputDataInterface
 {
   Q_OBJECT
 public:
-  explicit CctwOutputData(CctwIntVector3D dim,        // Data set dimension
+  explicit CctwOutputData(CctwApplication *application,
+                          CctwIntVector3D dim,        // Data set dimension
                             CctwIntVector3D chunkSize,  // Chunk size
 //                            CctwDoubleVector3D origin,
 //                            CctwDoubleVector3D scale,
                             CctwOutputDataFrameManager *manager,
+                          QString name,
                             QObject *parent);
   
 signals:

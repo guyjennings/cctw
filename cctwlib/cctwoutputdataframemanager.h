@@ -12,7 +12,7 @@ class CctwOutputDataFrameManager : public CctwDataFrameManager
 {
   Q_OBJECT
 public:
-  explicit CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QObject *parent);
+  explicit CctwOutputDataFrameManager(QcepSettingsSaverPtr saver, QString name, QObject *parent);
 
 signals:
 

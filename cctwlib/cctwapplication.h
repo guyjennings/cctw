@@ -79,7 +79,7 @@ public slots:
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path);
 
-  int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
+//  int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
   CctwCrystalCoordinateParameters *parameters() const;
 
@@ -148,11 +148,11 @@ public:
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
 
-  Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
-  QCEP_STRING_PROPERTY(InputDataDescriptor)
+//  Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
+//  QCEP_STRING_PROPERTY(InputDataDescriptor)
 
-  Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
-  QCEP_STRING_PROPERTY(OutputDataDescriptor)
+//  Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
+//  QCEP_STRING_PROPERTY(OutputDataDescriptor)
 
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)

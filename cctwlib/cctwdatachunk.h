@@ -16,6 +16,7 @@ public:
   CctwDataChunk(CctwChunkedData *data,
                 CctwIntVector3D index,
                 CctwDataFrameManager *manager,
+                QString name,
                 QObject *parent);
 
   virtual ~CctwDataChunk();
