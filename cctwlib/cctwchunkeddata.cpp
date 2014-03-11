@@ -1,13 +1,13 @@
 #include "cctwchunkeddata.h"
 #include "cctwdatachunk.h"
 
-CctwChunkedData::CctwChunkedData(CctwIntVector3D dim,
+CctwChunkedData::CctwChunkedData(CctwApplication *application, CctwIntVector3D dim,
                                      CctwIntVector3D chunkSize,
 //                                     CctwDoubleVector3D origin,
 //                                     CctwDoubleVector3D scale,
-                                     CctwDataFrameManager *manager,
+                                     CctwDataFrameManager *manager, QString name,
                                      QObject *parent) :
-  CctwChunkedDataInterface(dim, chunkSize, /*origin, scale,*/ parent),
+  CctwChunkedDataInterface(application, dim, chunkSize, /*origin, scale,*/ name, parent),
   m_Manager(manager)
 {
 }
@@ -28,7 +28,7 @@ void CctwChunkedData::allocateChunks()
   for (int i=0; i<n; i++) {
     m_DataChunks[i] = new CctwDataChunk(this,
                                           chunkIndexFromNumber(i),
-                                          m_Manager, parent());
+                                          m_Manager, tr("chunk-%1").arg(i), parent());
   }
 }
 

@@ -8,9 +8,11 @@ class CctwOutputDataInterface : public CctwChunkedData
 {
   Q_OBJECT
 public:
-  CctwOutputDataInterface(CctwIntVector3D dim,        // Data set dimension
+  CctwOutputDataInterface(CctwApplication *application,
+                          CctwIntVector3D dim,        // Data set dimension
                           CctwIntVector3D chunkSize,  // Chunk size
                           CctwOutputDataFrameManager *manager,
+                          QString name,
                           QObject *parent);
 
 public slots:

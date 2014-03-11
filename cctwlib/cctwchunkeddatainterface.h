@@ -3,25 +3,28 @@
 
 #include "cctwobject.h"
 #include "cctwvector3d.h"
+#include "cctwintvector3dproperty.h"
+
+class CctwApplication;
 
 class CctwChunkedDataInterface : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwChunkedDataInterface(CctwIntVector3D dim,        // Data set dimension
+  CctwChunkedDataInterface(CctwApplication *application,
+                           CctwIntVector3D dim,        // Data set dimension
                            CctwIntVector3D chunkSize,  // Chunk size
 //                           CctwDoubleVector3D origin,
 //                           CctwDoubleVector3D scale,
+                           QString name,
                            QObject *parent);
-
-  CctwChunkedDataInterface(QObject *parent);
 
 public:
 
   void                initialize(void *buffer); // Initialize from byte buffer
 
-  CctwIntVector3D     dimensions() const   { return m_Dimensions; }
-  CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
+  CctwIntVector3D     dimensions() const   { return get_Dimensions(); }
+  CctwIntVector3D     chunkSize() const    { return get_ChunkSize(); }
 
   virtual void setDimensions(CctwIntVector3D dim);
   virtual void setChunkSize(CctwIntVector3D cksz);
@@ -42,13 +45,27 @@ public slots:
   virtual void        clearMergeCounters() = 0;
 
 private:
-  CctwIntVector3D     m_Dimensions;
-  CctwIntVector3D     m_ChunkSize;
-  CctwIntVector3D     m_ChunkCount;
+//  CctwIntVector3D     m_Dimensions;
+//  CctwIntVector3D     m_ChunkSize;
+//  CctwIntVector3D     m_ChunkCount;
 
-  Q_PROPERTY(CctwIntVector3D dimensions READ dimensions WRITE setDimensions)
-  Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
-  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount STORED false)
+  Q_PROPERTY(QString dataFileName READ get_DataFileName WRITE set_DataFileName)
+  QCEP_STRING_PROPERTY(DataFileName)
+
+  Q_PROPERTY(QString dataSetName READ get_DataSetName WRITE set_DataSetName)
+  QCEP_STRING_PROPERTY(DataSetName)
+
+  Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
+  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
+
+  Q_PROPERTY(CctwIntVector3D chunkSize READ get_ChunkSize WRITE set_ChunkSize)
+  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
+
+  Q_PROPERTY(CctwIntVector3D chunkCount READ get_ChunkCount STORED false)
+  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
+
+  Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
+  QCEP_INTEGER_PROPERTY(Compression)
 };
 
 #endif // CCTWCHUNKEDDATAINTERFACE_H

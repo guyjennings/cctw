@@ -2,8 +2,8 @@
 #include "cctwapplication.h"
 #include "cctwinputdatah5.h"
 
-CctwCompareData::CctwCompareData(CctwApplication *application, QObject *parent) :
-  CctwObject(parent),
+CctwCompareData::CctwCompareData(CctwApplication *application, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Application(application),
   m_FilePath1(m_Application->saver(), this, "filePath1", "", "Path to 1st file"),
   m_Dataset1(m_Application->saver(), this, "dataset1", "data", "Name of dataset within 1st file"),
@@ -45,8 +45,8 @@ void CctwCompareData::compareDatasetsApproximately()
 {
   printMessage("Compare datasets approximately");
 
-  CctwInputDataH5 d1(get_FilePath1(), get_Dataset1(), this);
-  CctwInputDataH5 d2(get_FilePath2(), get_Dataset2(), this);
+  CctwInputDataH5 d1(get_FilePath1(), get_Dataset1(), "d1", this);
+  CctwInputDataH5 d2(get_FilePath2(), get_Dataset2(), "d2", this);
 
   CctwIntVector3D dim1 = d1.dimensions();
   CctwIntVector3D dim2 = d2.dimensions();

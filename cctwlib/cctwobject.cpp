@@ -2,9 +2,10 @@
 #include "qcepproperty.h"
 #include "cctwapplication.h"
 
-CctwObject::CctwObject(QObject *parent) :
+CctwObject::CctwObject(QString name, QObject *parent) :
   QObject(parent),
-  m_Name(g_Saver, this, "name", "", "Object Name")
+  m_ObjectNamer(this, name),
+  m_Name(g_Saver, this, "name", name, "Object Name")
 {
 }
 

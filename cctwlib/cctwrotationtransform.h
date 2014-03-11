@@ -7,7 +7,7 @@ class CctwRotationTransform : public CctwTransformInterface
 {
   Q_OBJECT
 public:
-  CctwRotationTransform(QObject *parent);
+  CctwRotationTransform(QString name, QObject *parent);
 
 public:
 

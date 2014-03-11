@@ -52,8 +52,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
-  m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
-  m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
+//  m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
+//  m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
@@ -191,48 +191,48 @@ void CctwApplication::initialize(int &argc, char *argv[])
 {
   decodeCommandLineArgs(argc, argv);
 
-#ifdef NO_GUI
-  set_GuiWanted(false);
-#else
-  if (get_GuiWanted()) {
-    m_Window                  = new CctwqtMainWindow(this);
-  }
-#endif
-
 //  QMainWindow *win = new QMainWindow();
 //  win -> show();
 
-  m_ImportData       = new CctwImportData(this, this);
+  m_ImportData       = new CctwImportData(this, "importData", this);
 
-  m_CompareData      = new CctwCompareData(this, this);
+  m_CompareData      = new CctwCompareData(this, "compareData", this);
 
-  m_Parameters       = new CctwCrystalCoordinateParameters(this);
+  m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
 
-  m_InputDataManager        = new CctwInputDataFrameManager(this);
-  m_InputData               = new CctwInputData(CctwIntVector3D(2048,2048,2048),
-                                                  CctwIntVector3D(128, 128, 128),
-//                                                  CctwDoubleVector3D(-5,-5,-5),
-//                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
-                                                  m_InputDataManager, this);
-  m_InputDataManager        -> setData(m_InputData);
-  m_InputData               -> allocateChunks();
+  m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
 
-  m_OutputDataManager       = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputData              = new CctwOutputData(CctwIntVector3D(2048,2048,2048),
-                                                   CctwIntVector3D(128, 128, 128),
-//                                                   CctwDoubleVector3D(-5,-5,-5),
-//                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
-                                                   m_OutputDataManager, this);
+  m_InputData        = new CctwInputData(this,
+                                         CctwIntVector3D(2048,2048,2048),
+                                         CctwIntVector3D(32, 32, 32),
+                                         m_InputDataManager,
+                                         "inputData",
+                                         this);
+  m_InputDataManager -> setData(m_InputData);
+  m_InputData        -> allocateChunks();
+
+  m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
+
+  m_OutputData       = new CctwOutputData(this,
+                                          CctwIntVector3D(2048,2048,2048),
+                                          CctwIntVector3D(128, 128, 128),
+                                          m_OutputDataManager,
+                                          "outputData",
+                                          this);
   m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
-  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, this);
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
+
   m_Transformer      = new CctwTransformer(this,
                                              m_InputData,
                                              m_OutputData,
-                                             m_Transform, 1, 1, 1, 0, this);
+                                             m_Transform, 1, 1, 1, 0,
+                                           "transformer",
+                                           this);
 
-  m_PEIngressCommand = new CctwPEIngressCommand(this, this);
+  m_PEIngressCommand = new CctwPEIngressCommand(this, "peingress", this);
+
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
@@ -251,6 +251,14 @@ void CctwApplication::initialize(int &argc, char *argv[])
   readSettings();
 
   m_Saver->start();
+
+#ifdef NO_GUI
+  set_GuiWanted(false);
+#else
+  if (get_GuiWanted()) {
+    m_Window                  = new CctwqtMainWindow(this);
+  }
+#endif
 
 #ifndef NO_GUI
   if (m_Window) {
@@ -471,7 +479,7 @@ void CctwApplication::writeSettings(QSettings *settings)
 void CctwApplication::calculateChunkDependencies(CctwIntVector3D idx)
 {
   if (!get_Halting()) {
-    CctwCrystalCoordinateTransform transform(m_Parameters, NULL);
+    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(idx.toString()), NULL);
 
 //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
@@ -955,18 +963,18 @@ void CctwApplication::reportOutputChunkCounts()
   }
 }
 
-int CctwApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
-{
-  CctwIntVector3D idx(index.x(), index.y(), index.z());
+//int CctwApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
+//{
+//  CctwIntVector3D idx(index.x(), index.y(), index.z());
 
-  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, NULL, this);
+//  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, NULL, this);
 
-  int offset = chunk->pixelOffset(localcoords);
+//  int offset = chunk->pixelOffset(localcoords);
 
-  delete chunk;
+//  delete chunk;
 
-  return offset;
-}
+//  return offset;
+//}
 
 CctwCrystalCoordinateParameters *CctwApplication::parameters() const
 {

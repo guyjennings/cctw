@@ -14,6 +14,7 @@ class CctwImportData : public CctwObject
   Q_OBJECT
 public:
   explicit CctwImportData(CctwApplication *application,
+                          QString name,
                           QObject *parent = 0);
   virtual ~CctwImportData();
 

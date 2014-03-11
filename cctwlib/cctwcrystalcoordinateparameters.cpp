@@ -1,7 +1,7 @@
 #include "cctwcrystalcoordinateparameters.h"
 
-CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QObject *parent) :
-  CctwObject(parent)
+CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QString name, QObject *parent) :
+  CctwObject(name, parent)
 {
   setDefaults();
 }

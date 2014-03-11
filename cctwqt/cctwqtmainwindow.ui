@@ -17,16 +17,6 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="2" column="5">
-       <widget class="QPushButton" name="m_SetupOutputButton">
-        <property name="text">
-         <string>Setup Output...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_InputData"/>
-      </item>
       <item row="1" column="5">
        <widget class="QPushButton" name="m_SetupInputButton">
         <property name="text">
@@ -34,27 +24,13 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Output Data:</string>
-        </property>
-       </widget>
+      <item row="1" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_InputDataFileName"/>
       </item>
-      <item row="2" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_OutputData"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
+      <item row="0" column="1" colspan="3">
+       <widget class="QLabel" name="m_ImportData">
         <property name="text">
-         <string>Input Data:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Import Data:</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -65,6 +41,68 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="m_SetupOutputButton">
+        <property name="text">
+         <string>Setup Output...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="3">
+       <widget class="QPushButton" name="m_PEMetaDataButton">
+        <property name="text">
+         <string>PE MetaData...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_InputDataSetName"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QPushButton" name="m_SaveDepsButton">
+        <property name="text">
+         <string>Save Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_OutputDataFileName"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Input Data File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Import Data:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="5">
+       <widget class="QCheckBox" name="m_Halting">
+        <property name="text">
+         <string>Halting?</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QPushButton" name="m_LoadDepsButton">
+        <property name="text">
+         <string>Load Deps...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="4">
+       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
+        <property name="text">
+         <string>Analyze Spec Data...</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="4">
        <widget class="QPushButton" name="m_SetupImportButton">
         <property name="text">
@@ -72,75 +110,57 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QLabel" name="m_ImportData">
+      <item row="5" column="1">
+       <widget class="QPushButton" name="m_TransformButton">
         <property name="text">
-         <string/>
+         <string>Transform...</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="5" column="0">
        <widget class="QPushButton" name="m_SetupTransformButton">
         <property name="text">
          <string>Setup Transform...</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="5">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Output Data File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="5">
        <widget class="QPushButton" name="m_HaltButton">
         <property name="text">
          <string>Halt</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="6" column="0">
        <widget class="QPushButton" name="m_DependenciesButton">
         <property name="text">
          <string>Dependencies</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QPushButton" name="m_SaveDepsButton">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Save Deps...</string>
+         <string>Input Dataset Name:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
-       <widget class="QPushButton" name="m_LoadDepsButton">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Load Deps...</string>
+         <string>Output Dataset Name:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="3">
-       <widget class="QPushButton" name="m_PEMetaDataButton">
-        <property name="text">
-         <string>PE MetaData...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
-        <property name="text">
-         <string>Analyze Spec Data...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QCheckBox" name="m_Halting">
-        <property name="text">
-         <string>Halting?</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="m_TransformButton">
-        <property name="text">
-         <string>Transform...</string>
-        </property>
-       </widget>
+      <item row="4" column="1" colspan="4">
+       <widget class="QLineEdit" name="m_OutputDataSetName"/>
       </item>
      </layout>
     </item>
@@ -388,9 +408,9 @@
  <tabstops>
   <tabstop>m_SetupImportButton</tabstop>
   <tabstop>m_ImportButton</tabstop>
-  <tabstop>m_InputData</tabstop>
+  <tabstop>m_InputDataFileName</tabstop>
   <tabstop>m_SetupInputButton</tabstop>
-  <tabstop>m_OutputData</tabstop>
+  <tabstop>m_OutputDataFileName</tabstop>
   <tabstop>m_SetupOutputButton</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>m_OutputMessages</tabstop>

@@ -1,8 +1,8 @@
 #include "cctwinputdata.h"
 #include "cctwinputdataframemanager.h"
 
-CctwInputData::CctwInputData(CctwIntVector3D dim, CctwIntVector3D chunkSize, /*CctwDoubleVector3D origin, CctwDoubleVector3D scale,*/ CctwInputDataFrameManager *manager, QObject *parent) :
-  CctwInputDataInterface(dim, chunkSize, /*origin, scale,*/ manager, parent)
+CctwInputData::CctwInputData(CctwApplication *application, CctwIntVector3D dim, CctwIntVector3D chunkSize, /*CctwDoubleVector3D origin, CctwDoubleVector3D scale,*/ CctwInputDataFrameManager *manager, QString name, QObject *parent) :
+  CctwInputDataInterface(application, dim, chunkSize, /*origin, scale,*/ manager, name, parent)
 {
 }
 

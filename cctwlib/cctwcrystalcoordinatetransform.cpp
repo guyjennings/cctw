@@ -1,8 +1,8 @@
 #include "cctwcrystalcoordinatetransform.h"
 #include <cmath>
 
-CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent) :
-  CctwTransformInterface(parent),
+CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, QObject *parent) :
+  CctwTransformInterface(name, parent),
   m_Parms(parms),
   m_CurrentFrame(-1),
   m_CurrentFrameChangeCount(0)

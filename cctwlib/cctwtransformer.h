@@ -19,6 +19,7 @@ public:
                   CctwTransformInterface *xform,    // The transform
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests,
+                  QString name,
                   QObject *parent);
 
   virtual ~CctwTransformer();

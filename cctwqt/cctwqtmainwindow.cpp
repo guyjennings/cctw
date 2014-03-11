@@ -61,8 +61,10 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
-  app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
-  app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
+  app->m_InputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
+  app->m_InputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
+  app->m_OutputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
+  app->m_OutputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));

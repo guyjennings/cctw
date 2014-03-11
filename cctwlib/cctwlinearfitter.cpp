@@ -1,7 +1,7 @@
 #include "cctwlinearfitter.h"
 
-CctwLinearFitter::CctwLinearFitter(QObject *parent) :
-  CctwObject(parent)
+CctwLinearFitter::CctwLinearFitter(QString name, QObject *parent) :
+  CctwObject(name, parent)
 {
   startNewFit();
 }

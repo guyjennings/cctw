@@ -9,7 +9,7 @@ class CctwInputDataFrameManager : public CctwDataFrameManager
 {
   Q_OBJECT
 public:
-  explicit CctwInputDataFrameManager(QObject *parent);
+  explicit CctwInputDataFrameManager(QString name, QObject *parent);
   
 signals:
   

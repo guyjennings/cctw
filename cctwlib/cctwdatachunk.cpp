@@ -4,8 +4,8 @@
 #include <QSemaphore>
 #include "cctwthread.h"
 
-CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, CctwDataFrameManager *manager, QObject *parent) :
-  CctwObject(parent),
+CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, CctwDataFrameManager *manager, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Data(data),
   m_Manager(manager),
   m_ChunkIndex(index),

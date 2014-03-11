@@ -1,7 +1,7 @@
 #include "cctwrotationtransform.h"
 
-CctwRotationTransform::CctwRotationTransform(QObject *parent) :
-  CctwTransformInterface(parent)
+CctwRotationTransform::CctwRotationTransform(QString name, QObject *parent) :
+  CctwTransformInterface(name, parent)
 {
 }
 

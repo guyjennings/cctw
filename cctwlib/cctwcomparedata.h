@@ -9,7 +9,7 @@ class CctwCompareData : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwCompareData(CctwApplication *application, QObject *parent = 0);
+  explicit CctwCompareData(CctwApplication *application, QString name, QObject *parent = 0);
   virtual ~CctwCompareData();
 
 signals:

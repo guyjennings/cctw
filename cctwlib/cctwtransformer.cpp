@@ -17,8 +17,8 @@ CctwTransformer::CctwTransformer(CctwApplication *application,
                                  CctwInputDataInterface *input,
                                  CctwOutputDataInterface *output,
                                  CctwTransformInterface *xform,
-                                 int osx, int osy, int osz, int nTests, QObject *parent) :
-  CctwObject(parent),
+                                 int osx, int osy, int osz, int nTests, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Application(application),
   m_InputData(input),
   m_OutputData(output),
@@ -129,7 +129,7 @@ void CctwTransformer::runTransformChunkNumber(int n)
 
 void CctwTransformer::transformChunkNumber(int n)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);
@@ -170,7 +170,7 @@ void CctwTransformer::transformChunkNumber(int n)
 //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
 
                 CctwDataChunk *chunk =
-                    new CctwDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
+                    new CctwDataChunk(m_OutputData, lastChunkIndex, NULL, tr("chunk-%1").arg(lastChunkIndex.toString()), NULL);
 
                 if (chunk) {
                   chunk->allocateData();
@@ -323,7 +323,7 @@ void CctwTransformer::checkTransform()
 
 QcepIntList CctwTransformer::dependencies(int chunkIdx)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(chunkIdx), NULL);
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);

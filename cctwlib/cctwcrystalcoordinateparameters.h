@@ -10,7 +10,7 @@ class CctwCrystalCoordinateParameters : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwCrystalCoordinateParameters(QObject *parent);
+  CctwCrystalCoordinateParameters(QString name, QObject *parent);
 
 public slots:
   void setDefaults();

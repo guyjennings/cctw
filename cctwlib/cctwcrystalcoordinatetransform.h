@@ -9,7 +9,7 @@ class CctwCrystalCoordinateTransform : public CctwTransformInterface
 {
   Q_OBJECT
 public:
-  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent);
+  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, QObject *parent);
 
 public slots:
 
