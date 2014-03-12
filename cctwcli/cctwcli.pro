@@ -1,24 +1,16 @@
 TEMPLATE = app
 
-include(../cctw_version.pri)
+include(../cctw-version.pri)
 
 QT += core script
 
 TARGET = cctwcli
 
-DESTDIR = ../bin/
-
-DEFINES     += CCTW_VERSION=\"$$VERSION\"
 DEFINES     += NO_GUI
 
 greaterThan(QT_MAJOR_VERSION, 4) {
  QT += concurrent
 }
-
-MOC_DIR = moc
-UI_DIR = ui
-OBJECTS_DIR = obj
-RCC_DIR = rcc
 
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-hdf5.pri)
