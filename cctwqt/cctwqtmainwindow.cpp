@@ -165,7 +165,7 @@ void CctwqtMainWindow::doImport()
 void CctwqtMainWindow::doSetupInput()
 {
   if (m_SetupInputDialog == NULL) {
-    m_SetupInputDialog = new CctwqtSetupInputDialog(this);
+    m_SetupInputDialog = new CctwqtSetupInputDialog(this, m_Application->m_InputData);
     m_SetupInputDialog -> show();
   }
 
@@ -176,7 +176,7 @@ void CctwqtMainWindow::doSetupInput()
 void CctwqtMainWindow::doSetupOutput()
 {
   if (m_SetupOutputDialog == NULL) {
-    m_SetupOutputDialog = new CctwqtSetupOutputDialog(this);
+    m_SetupOutputDialog = new CctwqtSetupOutputDialog(this, m_Application->m_OutputData);
     m_SetupOutputDialog -> show();
   }
 

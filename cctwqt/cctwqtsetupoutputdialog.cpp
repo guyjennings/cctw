@@ -2,9 +2,11 @@
 #include "ui_cctwqtsetupoutputdialog.h"
 #include "cctwqtmainwindow.h"
 
-CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent) :
+CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwChunkedData *data) :
   QDialog(parent),
-  ui(new Ui::CctwqtSetupOutputDialog)
+  ui(new Ui::CctwqtSetupOutputDialog),
+  m_Window(parent),
+  m_Data(data)
 {
   ui->setupUi(this);
 
