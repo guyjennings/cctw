@@ -81,11 +81,21 @@ static herr_t dataset(hid_t loc_id, const char *name, void *opdata)
   default:
        printf(" Unable to identify an object ");
   }
+
   return 0;
 }
 
 static QStringList iterateHDF5datasets(QString path)
 {
+  /* Save old error handler */
+  H5E_auto2_t  old_func;
+  void *old_client_data;
+
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
   QStringList paths;
 
   hid_t file = H5Fopen(qPrintable(path), H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -94,6 +104,9 @@ static QStringList iterateHDF5datasets(QString path)
 
   /* Close file */
   herr_t ret = H5Fclose(file);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
 
   return paths;
 }

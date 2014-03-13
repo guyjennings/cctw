@@ -49,10 +49,19 @@ public slots:
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 
+  void showHelp(QString about);
+  void setThreads(QString desc);
+
   void writeSettings();
   void readSettings();
   void writeSettings(QString path);
   void readSettings(QString path);
+
+  void setInputData(QString data);
+  void setOutputData(QString data);
+
+  void partialTransform(QString desc);
+  void partialDependencies(QString desc);
 
   void calculateDependencies();
   void calculateChunkDependencies(CctwIntVector3D idx);
@@ -102,18 +111,23 @@ public:
   QcepSettingsSaverWPtr saver() const;
 
   QScriptValue evaluate(QString cmd);
+  void printHDF5errors();
 
 private slots:
   void onDebugChanged(int dbg);
   void onProgress(int prg);
 
 private:
+  void startupCommand(QString cmd);
+
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
 
   void decodeCommandLineArgs(int &argc, char *argv[]);
   void decodeCommandLineArgsForUnix(int &argc, char *argv[]);
   void decodeCommandLineArgsForWindows(int &argc, char *argv[]);
+
+  void installHDF5ErrorHandler();
 
 public:
   QcepObjectNamer                     m_ObjectNamer;

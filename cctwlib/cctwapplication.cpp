@@ -18,6 +18,8 @@
 #include "qcepimagedataformatmar345.h"
 #include "qcepimagedataformattiff.h"
 
+#include <hdf5.h>
+
 #ifdef Q_OS_UNIX
 #include "getopt.h"
 #endif
@@ -115,6 +117,11 @@ void CctwApplication::decodeCommandLineArgs(int &argc, char *argv[])
 #endif
 }
 
+void CctwApplication::startupCommand(QString cmd)
+{
+  prop_StartupCommands()->appendValue(cmd);
+}
+
 void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
@@ -122,7 +129,13 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
   while (1) {
     static struct option long_options[] = {
-      {"debug", required_argument, 0, 'd'},
+      {"help", no_argument, 0, 'h'},
+      {"threads", required_argument, 0, 'j'},
+      {"input", required_argument, 0, 'i'},
+      {"output", required_argument, 0, 'o'},
+      {"transform", optional_argument, 0, 't'},
+      {"depends", optional_argument, 0, 'd'},
+      {"debug", required_argument, 0, 'v'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
@@ -134,13 +147,37 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "d:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hj:i:o:t::d::v:p:gnc:w:s:", long_options, &option_index);
 
     if (c == -1) {
       break;
     }
 
     switch (c) {
+    case 'h':
+      startupCommand("showHelp();");
+      break;
+
+    case 'j':
+      startupCommand(tr("setThreads(\"%1\");").arg(optarg));
+      break;
+
+    case 'i':
+      startupCommand(tr("setInputData(\"%1\");").arg(optarg));
+      break;
+
+    case 'o':
+      startupCommand(tr("setOutputData(\"%1\");").arg(optarg));
+      break;
+
+    case 't':
+      startupCommand(tr("partialTransform(\"%1\");").arg(optarg));
+      break;
+
+    case 'd':
+      startupCommand(tr("partialDependencies(\"%1\");").arg(optarg));
+      break;
+
     case 'g': /* want gui */
       set_GuiWanted(true);
       break;
@@ -150,22 +187,22 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'c': /* command line command */
-      prop_StartupCommands()->appendValue(tr("%1;").arg(optarg));
+      startupCommand(tr("%1;").arg(optarg));
       break;
 
     case 'w': /* wait */
-      prop_StartupCommands()->appendValue(tr("wait(\"%1\");").arg(optarg));
+      startupCommand(tr("wait(\"%1\");").arg(optarg));
       break;
 
     case 's': /* script file */
-      prop_StartupCommands()->appendValue(tr("executeScriptFile(\"%1\");").arg(optarg));
+      startupCommand(tr("executeScriptFile(\"%1\");").arg(optarg));
       break;
 
     case 'p': /* preferences file */
-      prop_StartupCommands()->appendValue(tr("loadPreferences(\"%1\");").arg(optarg));
+      startupCommand(tr("loadPreferences(\"%1\");").arg(optarg));
       break;
 
-    case 'd': /* change debug level */
+    case 'v': /* change debug level */
       {
         char *a = optarg;
         int lvl = atoi(a);
@@ -187,8 +224,40 @@ void CctwApplication::decodeCommandLineArgsForWindows(int &argc, char *argv[])
 {
 }
 
+static herr_t cctwH5print(unsigned n, const H5E_error2_t *eptr, void *data)
+{
+  CctwApplication *app = (CctwApplication*) data;
+
+  if (app) {
+    app->printMessage(QObject::tr("%1:%2 : %3").arg(eptr->file_name).arg(eptr->line).arg(eptr->desc));
+  }
+}
+
+void CctwApplication::printHDF5errors()
+{
+  printMessage("HDF5 Error occurred");
+
+  H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, &cctwH5print, this);
+}
+
+static herr_t cctwH5error(hid_t h, void *data)
+{
+  CctwApplication *app = (CctwApplication*) data;
+
+  if (app) {
+    app->printHDF5errors();
+  }
+}
+
+void CctwApplication::installHDF5ErrorHandler()
+{
+  H5Eset_auto(H5E_DEFAULT, &cctwH5error, (void*) this);
+}
+
 void CctwApplication::initialize(int &argc, char *argv[])
 {
+  installHDF5ErrorHandler();
+
   decodeCommandLineArgs(argc, argv);
 
 //  QMainWindow *win = new QMainWindow();
@@ -344,6 +413,36 @@ void CctwApplication::executeScriptFile(QString path)
       printMessage(tr("Result -> %1").arg(val.toString()));
     }
   }
+}
+
+void CctwApplication::showHelp(QString about)
+{
+  printMessage(tr("Showing help about %1").arg(about));
+}
+
+void CctwApplication::setThreads(QString desc)
+{
+  printMessage(tr("Set threads to %1").arg(desc));
+}
+
+void CctwApplication::setInputData(QString data)
+{
+  printMessage(tr("Set input data to %1").arg(data));
+}
+
+void CctwApplication::setOutputData(QString data)
+{
+  printMessage(tr("Set output data to %1").arg(data));
+}
+
+void CctwApplication::partialTransform(QString desc)
+{
+  printMessage(tr("Partial transform of %1").arg(desc));
+}
+
+void CctwApplication::partialDependencies(QString desc)
+{
+  printMessage(tr("Partial dependencies of %1").arg(desc));
 }
 
 void CctwApplication::readSettings()

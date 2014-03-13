@@ -22,6 +22,12 @@ private:
   static QScriptValue waitFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue showHelpFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setThreadsFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setInputDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
 
 private:
   CctwApplication *m_Application;
