@@ -122,7 +122,7 @@ void CctwApplication::startupCommand(QString cmd)
   prop_StartupCommands()->appendValue(cmd);
 }
 
-static QString addSlashes(QString str)
+QString CctwApplication::addSlashes(QString str)
 {
 
   QString newStr;
@@ -453,12 +453,20 @@ void CctwApplication::setThreads(QString desc)
 
 void CctwApplication::setInputData(QString data)
 {
-  printMessage(tr("Set input data to %1").arg(data));
+  if (m_InputData) {
+    printMessage(tr("Set input data to %1").arg(data));
+
+    m_InputData->setDataSource(data);
+  }
 }
 
 void CctwApplication::setOutputData(QString data)
 {
-  printMessage(tr("Set output data to %1").arg(data));
+  if (m_OutputData) {
+    printMessage(tr("Set output data to %1").arg(data));
+
+    m_OutputData->setDataSource(data);
+  }
 }
 
 void CctwApplication::partialTransform(QString desc)

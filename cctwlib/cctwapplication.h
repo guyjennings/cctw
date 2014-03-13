@@ -113,6 +113,8 @@ public:
   QScriptValue evaluate(QString cmd);
   void printHDF5errors();
 
+  static QString addSlashes(QString str);
+
 private slots:
   void onDebugChanged(int dbg);
   void onProgress(int prg);

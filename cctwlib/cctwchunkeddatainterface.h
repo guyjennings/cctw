@@ -30,7 +30,7 @@ public:
   virtual void setChunkSize(CctwIntVector3D cksz);
 
 public slots:
-
+  virtual void        setDataSource(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(CctwIntVector3D chunkIdx);
 

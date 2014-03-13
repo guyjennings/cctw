@@ -23,6 +23,11 @@ void                CctwChunkedDataInterface::initialize(void *buffer)
 {
 }
 
+void                CctwChunkedDataInterface::setDataSource(QString desc)
+{
+  printMessage(tr("%1:setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+}
+
 bool                CctwChunkedDataInterface::containsPixel(CctwIntVector3D pixelCoord)
 {
   return pixelCoord.x() >= 0 &&
