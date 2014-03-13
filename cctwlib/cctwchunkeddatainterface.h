@@ -23,8 +23,8 @@ public:
 
   void                initialize(void *buffer); // Initialize from byte buffer
 
-  CctwIntVector3D     dimensions() const   { return get_Dimensions(); }
-  CctwIntVector3D     chunkSize() const    { return get_ChunkSize(); }
+  CctwIntVector3D     dimensions() const   { return m_Dimensions; }
+  CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
 
   virtual void setDimensions(CctwIntVector3D dim);
   virtual void setChunkSize(CctwIntVector3D cksz);
@@ -45,9 +45,9 @@ public slots:
   virtual void        clearMergeCounters() = 0;
 
 private:
-//  CctwIntVector3D     m_Dimensions;
-//  CctwIntVector3D     m_ChunkSize;
-//  CctwIntVector3D     m_ChunkCount;
+  CctwIntVector3D     m_Dimensions;
+  CctwIntVector3D     m_ChunkSize;
+  CctwIntVector3D     m_ChunkCount;
 
   Q_PROPERTY(QString dataFileName READ get_DataFileName WRITE set_DataFileName)
   QCEP_STRING_PROPERTY(DataFileName)
@@ -55,14 +55,14 @@ private:
   Q_PROPERTY(QString dataSetName READ get_DataSetName WRITE set_DataSetName)
   QCEP_STRING_PROPERTY(DataSetName)
 
-  Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
-  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
+  Q_PROPERTY(CctwIntVector3D dimensions READ dimensions WRITE setDimensions)
+//  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
 
-  Q_PROPERTY(CctwIntVector3D chunkSize READ get_ChunkSize WRITE set_ChunkSize)
-  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
+  Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
+//  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
 
-  Q_PROPERTY(CctwIntVector3D chunkCount READ get_ChunkCount STORED false)
-  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
+  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount STORED false)
+//  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
 
   Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
   QCEP_INTEGER_PROPERTY(Compression)
