@@ -122,6 +122,32 @@ void CctwApplication::startupCommand(QString cmd)
   prop_StartupCommands()->appendValue(cmd);
 }
 
+static QString addSlashes(QString str)
+{
+
+  QString newStr;
+
+  for(int i=0;i<str.length();i++) {
+    if(str[i] == '\0') {
+      newStr.append('\\');
+      newStr.append('0');
+    } else if(str[i] == '\'') {
+      newStr.append('\\');
+      newStr.append('\'');
+    } else if(str[i] == '\"') {
+      newStr.append('\\');
+      newStr.append('\"');
+    } else if(str[i] == '\\') {
+      newStr.append('\\');
+      newStr.append('\\');
+    } else {
+      newStr.append(str[i]);
+    }
+  }
+
+  return newStr;
+}
+
 void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
@@ -159,23 +185,23 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'j':
-      startupCommand(tr("setThreads(\"%1\");").arg(optarg));
+      startupCommand(tr("setThreads(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'i':
-      startupCommand(tr("setInputData(\"%1\");").arg(optarg));
+      startupCommand(tr("setInputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'o':
-      startupCommand(tr("setOutputData(\"%1\");").arg(optarg));
+      startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 't':
-      startupCommand(tr("partialTransform(\"%1\");").arg(optarg));
+      startupCommand(tr("partialTransform(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'd':
-      startupCommand(tr("partialDependencies(\"%1\");").arg(optarg));
+      startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'g': /* want gui */
@@ -191,15 +217,15 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'w': /* wait */
-      startupCommand(tr("wait(\"%1\");").arg(optarg));
+      startupCommand(tr("wait(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 's': /* script file */
-      startupCommand(tr("executeScriptFile(\"%1\");").arg(optarg));
+      startupCommand(tr("executeScriptFile(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'p': /* preferences file */
-      startupCommand(tr("loadPreferences(\"%1\");").arg(optarg));
+      startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'v': /* change debug level */
@@ -272,7 +298,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
 
   m_InputData        = new CctwInputData(this,
-                                         CctwIntVector3D(2048,2048,2048),
+                                         CctwIntVector3D(256,256,256),
                                          CctwIntVector3D(32, 32, 32),
                                          m_InputDataManager,
                                          "inputData",
@@ -283,8 +309,8 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
 
   m_OutputData       = new CctwOutputData(this,
-                                          CctwIntVector3D(2048,2048,2048),
-                                          CctwIntVector3D(128, 128, 128),
+                                          CctwIntVector3D(256,256,256),
+                                          CctwIntVector3D(32, 32, 32),
                                           m_OutputDataManager,
                                           "outputData",
                                           this);
