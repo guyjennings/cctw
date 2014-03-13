@@ -156,12 +156,13 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
   while (1) {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
+      {"version", no_argument, 0, 'v'},
       {"threads", required_argument, 0, 'j'},
       {"input", required_argument, 0, 'i'},
       {"output", required_argument, 0, 'o'},
       {"transform", optional_argument, 0, 't'},
       {"depends", optional_argument, 0, 'd'},
-      {"debug", required_argument, 0, 'v'},
+      {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
@@ -173,7 +174,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hj:i:o:t::d::v:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:o:t::d::D:p:gnc:w:s:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -182,6 +183,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     switch (c) {
     case 'h':
       startupCommand("showHelp();");
+      break;
+
+    case 'v':
+      startupCommand("showVersion();");
       break;
 
     case 'j':
@@ -228,7 +233,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
       break;
 
-    case 'v': /* change debug level */
+    case 'D': /* change debug level */
       {
         char *a = optarg;
         int lvl = atoi(a);
@@ -443,7 +448,37 @@ void CctwApplication::executeScriptFile(QString path)
 
 void CctwApplication::showHelp(QString about)
 {
-  printMessage(tr("Showing help about %1").arg(about));
+  printLine(tr(
+              "\n"
+              "usage: cctw <options>\n"
+              "\n"
+              "where options are:\n"
+              "\n"
+              "--help, -h                       display this text\n"
+              "--version, -v                    display version info\n"
+              "--threads <n>, -j <n>            set number of worker threads\n"
+              "--input <f>, -i <f>              specify input data (url format)\n"
+              "--output <f>, -o <f>             specify output data (url format)\n"
+              "--transform {<n/m>}, -t {<n/m>}  transform all or part of the data\n"
+              "--depends {<n/m>}, -d {<n/m>}    calculate dependencies for all or part of the data\n"
+              "--debug <n>, -D <n>              set debug level\n"
+              "--preferences <f>, -p <f>        read settings from file <f>\n"
+              "--gui, -g                        use GUI interface if available\n"
+              "--nogui, -n                      no GUI interface\n"
+              "--command <cmd>, -c <cmd>        execute command <cmd>\n"
+              "--wait <msg>, -w                 wait for previous commands to finish\n"
+              "--script <f>, -s <f>             run script in file <f>\n"
+              ));
+}
+
+void CctwApplication::showVersion()
+{
+  printLine(tr("cctw   version " STR(CCTW_VERSION)));
+  printLine(tr("ceplib version " STR(QCEPLIB_VERSION)));
+  printLine(tr("hdf5   version " STR(QCEPLIB_HDF5_VERSION)));
+  printLine(tr("qwt    version " STR(QCEPLIB_QWT_VERSION)));
+  printLine(tr("tiff   version " STR(QCEPLIB_TIFF_VERSION)));
+  printLine(tr("cbf    version " STR(QCEPLIB_CBF_VERSION)));
 }
 
 void CctwApplication::setThreads(QString desc)

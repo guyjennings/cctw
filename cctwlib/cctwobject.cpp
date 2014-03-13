@@ -5,7 +5,7 @@
 CctwObject::CctwObject(QString name, QObject *parent) :
   QObject(parent),
   m_ObjectNamer(this, name),
-  m_Name(g_Saver, this, "name", name, "Object Name")
+  m_Name(QcepSettingsSaverWPtr(), this, "name", name, "Object Name")
 {
 }
 
@@ -31,6 +31,8 @@ void CctwObject::writeSettings(QSettings *set, QString section)
     QcepProperty::writeSettings(this, meta, section, set);
 
     meta = meta->superClass();
+
+    if (meta == &QObject::staticMetaObject) break;
   }
 }
 

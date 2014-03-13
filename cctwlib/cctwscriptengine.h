@@ -23,6 +23,7 @@ private:
   static QScriptValue loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue showHelpFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue showVersionFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setThreadsFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setInputDataFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);

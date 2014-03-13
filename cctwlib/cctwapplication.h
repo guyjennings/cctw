@@ -50,6 +50,8 @@ public slots:
   void executeScriptFile(QString path);
 
   void showHelp(QString about);
+  void showVersion();
+
   void setThreads(QString desc);
 
   void writeSettings();

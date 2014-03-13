@@ -15,6 +15,7 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("loadPreferences",  newFunction(loadPreferencesFunc));
   globalObject().setProperty("executeScriptFile",  newFunction(executeScriptFileFunc));
   globalObject().setProperty("showHelp",  newFunction(showHelpFunc));
+  globalObject().setProperty("showVersion",  newFunction(showVersionFunc));
   globalObject().setProperty("setThreads",  newFunction(setThreadsFunc));
   globalObject().setProperty("setInputData",  newFunction(setInputDataFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
@@ -182,6 +183,32 @@ QScriptValue CctwScriptEngine::showHelpFunc(QScriptContext *context, QScriptEngi
 
     if (app) {
       app->showHelp(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::showVersionFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->showVersion();
     }
   }
 

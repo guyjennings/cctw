@@ -26,7 +26,7 @@ private:
   QcepObjectNamer                     m_ObjectNamer;
 
 public:
-  Q_PROPERTY(QString name READ get_Name WRITE set_Name)
+  Q_PROPERTY(QString name READ get_Name WRITE set_Name STORED false)
   QCEP_STRING_PROPERTY(Name)
 };
 
