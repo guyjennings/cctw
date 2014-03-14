@@ -21,8 +21,9 @@ CctwImportData::CctwImportData(CctwApplication *application, QString name, QObje
   m_ImagePaths(m_Application->saver(), this, "imagePaths", QcepStringList(), "Imported image paths"),
   m_ImageDirectory(m_Application->saver(), this, "imageDirectory", "", "Image directory"),
   m_ImagePattern(m_Application->saver(), this, "imagePattern", "", "Image pattern"),
-  m_OutputPath(m_Application->saver(), this, "outputPath", "", "Destination for imported data"),
-  m_ChunkSize(m_Application->saver(), this, "chunkSize", CctwIntVector3D(128,128,128), "output chunk size"),
+  m_OutputPath(m_Application->saver(), this, "outputPath", "./output.h5", "Destination for imported data"),
+  m_OutputDataset(m_Application->saver(), this, "outputDataset", "/data", "Destination Dataset for imported data"),
+  m_ChunkSize(m_Application->saver(), this, "chunkSize", CctwIntVector3D(32,32,32), "output chunk size"),
   m_Compression(m_Application->saver(), this, "compression", 0, "output compression type"),
   m_XDimension(QcepSettingsSaverWPtr(), this, "xDimension", 0, "X Dimension of output"),
   m_YDimension(QcepSettingsSaverWPtr(), this, "yDimension", 0, "Y Dimension of output"),
@@ -183,7 +184,7 @@ bool CctwImportData::createOutputFile()
 
       // File exists and is hdf5 - does the dataset exist
 
-      m_DatasetId = H5Dopen1(m_FileId, "data");
+      m_DatasetId = H5Dopen1(m_FileId, qPrintable(get_OutputDataset()));
 
       if (m_DatasetId >= 0) {
         m_DataspaceId = H5Dget_space(m_DatasetId);
@@ -247,7 +248,7 @@ bool CctwImportData::createOutputFile()
           }
         }
 
-        m_DatasetId = H5Dcreate(m_FileId, "data", H5T_NATIVE_FLOAT, m_DataspaceId, H5P_DEFAULT, plist, H5P_DEFAULT);
+        m_DatasetId = H5Dcreate(m_FileId, qPrintable(get_OutputDataset()), H5T_NATIVE_FLOAT, m_DataspaceId, H5P_DEFAULT, plist, H5P_DEFAULT);
 
         H5Pclose(plist);
       }
@@ -504,7 +505,7 @@ void CctwImportData::checkImportedData()
 
 void CctwImportData::checkImportedDataRigorously()
 {
-  CctwInputDataH5 data(get_OutputPath(), "data", "h5import", this);
+  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
 
   printMessage("Checking imported data rigorously...");
 }
@@ -516,7 +517,7 @@ static int randomIndex(int n)
 
 void CctwImportData::checkImportedDataApproximately()
 {
-  CctwInputDataH5 data(get_OutputPath(), "data", "h5import", this);
+  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
 
   printMessage("Checking imported data approximately...");
 

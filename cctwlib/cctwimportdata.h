@@ -82,6 +82,9 @@ private:
   Q_PROPERTY(QString outputPath READ get_OutputPath WRITE set_OutputPath)
   QCEP_STRING_PROPERTY(OutputPath)
 
+  Q_PROPERTY(QString outputDataset READ get_OutputDataset WRITE set_OutputDataset)
+  QCEP_STRING_PROPERTY(OutputDataset)
+
   Q_PROPERTY(CctwIntVector3D chunkSize READ get_ChunkSize WRITE set_ChunkSize)
   CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
 

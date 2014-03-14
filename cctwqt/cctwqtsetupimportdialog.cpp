@@ -28,6 +28,7 @@ CctwqtSetupImportDialog::CctwqtSetupImportDialog(CctwqtMainWindow *parent, CctwI
     ui->m_DataImages->addItems(m_Data->get_ImagePaths());
     ui->m_DataPattern->setText(m_Data->get_ImagePattern());
     ui->m_OutputPath->setText(m_Data->get_OutputPath());
+    ui->m_OutputDataset->setText(m_Data->get_OutputDataset());
 
     ui->m_InputImageBuffering->setValue(m_Data->get_InputDataBuffering());
     ui->m_OutputChunkX->setValue(m_Data->get_ChunkSize().x());
@@ -63,6 +64,7 @@ void CctwqtSetupImportDialog::accept()
     m_Data->set_ImagePaths(res);
     m_Data->set_ImagePattern(ui->m_DataPattern->text());
     m_Data->set_OutputPath(ui->m_OutputPath->text());
+    m_Data->set_OutputDataset(ui->m_OutputDataset->text());
 
     m_Data->set_InputDataBuffering(ui->m_InputImageBuffering->value());
     m_Data->set_ChunkSize(CctwIntVector3D(ui->m_OutputChunkX->value(),
