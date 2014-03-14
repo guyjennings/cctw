@@ -8,6 +8,9 @@ CctwInputData::CctwInputData(CctwApplication *application, CctwIntVector3D dim, 
 int CctwInputData::useChunk(int nx, int ny, int nz)
 {
 //  return m_Manager->loadChunk(nx, ny, nz);
+  printMessage(tr("CctwInputData::useChunk(%1,%2,%3)").arg(nx).arg(ny).arg(nz));
+
+  return 0;
 }
 
 double CctwInputData::readData(int chunkId, int dx, int dy, int dz)

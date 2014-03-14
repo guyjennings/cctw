@@ -14,6 +14,7 @@ int CctwOutputData::useChunk(int nx, int ny, int nz)
 
 void CctwOutputData::writeData(int chunkId, int dx, int dy, int dz, double value)
 {
+  printMessage(tr("CctwOutputData::writeData(%1)").arg(chunkId));
 }
 
 void CctwOutputData::releaseChunk(int chunkId)
