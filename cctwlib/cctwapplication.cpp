@@ -40,9 +40,9 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifndef NO_GUI
   m_Window(NULL),
 #endif
-  m_InputDataManager(NULL),
+//  m_InputDataManager(NULL),
   m_InputData(NULL),
-  m_OutputDataManager(NULL),
+//  m_OutputDataManager(NULL),
   m_OutputData(NULL),
   m_Parameters(NULL),
   m_ImportData(NULL),
@@ -300,26 +300,26 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
 
-  m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
+//  m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
 
   m_InputData        = new CctwInputData(this,
                                          CctwIntVector3D(256,256,256),
                                          CctwIntVector3D(32, 32, 32),
-                                         m_InputDataManager,
+//                                         m_InputDataManager,
                                          "inputData",
                                          this);
-  m_InputDataManager -> setData(m_InputData);
+//  m_InputDataManager -> setData(m_InputData);
   m_InputData        -> allocateChunks();
 
-  m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
+//  m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
 
   m_OutputData       = new CctwOutputData(this,
                                           CctwIntVector3D(256,256,256),
                                           CctwIntVector3D(32, 32, 32),
-                                          m_OutputDataManager,
+//                                          m_OutputDataManager,
                                           "outputData",
                                           this);
-  m_OutputDataManager       -> setData(m_OutputData);
+//  m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
@@ -337,9 +337,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
   m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
-  m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
+//  m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
-  m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
+//  m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
   m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
@@ -548,17 +548,17 @@ void CctwApplication::readSettings(QSettings *settings)
     m_CompareData->readSettings(settings, "compareData");
   }
 
-  if (m_InputDataManager) {
-    m_InputDataManager->readSettings(settings, "inputDataManager");
-  }
+//  if (m_InputDataManager) {
+//    m_InputDataManager->readSettings(settings, "inputDataManager");
+//  }
 
   if (m_InputData) {
     m_InputData->readSettings(settings, "inputData");
   }
 
-  if (m_OutputDataManager) {
-    m_OutputDataManager->readSettings(settings, "outputDataManager");
-  }
+//  if (m_OutputDataManager) {
+//    m_OutputDataManager->readSettings(settings, "outputDataManager");
+//  }
 
   if (m_OutputData) {
     m_OutputData->readSettings(settings, "outputData");
@@ -613,17 +613,17 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_CompareData->writeSettings(settings, "compareData");
   }
 
-  if (m_InputDataManager) {
-    m_InputDataManager->writeSettings(settings, "inputDataManager");
-  }
+//  if (m_InputDataManager) {
+//    m_InputDataManager->writeSettings(settings, "inputDataManager");
+//  }
 
   if (m_InputData) {
     m_InputData->writeSettings(settings, "inputData");
   }
 
-  if (m_OutputDataManager) {
-    m_OutputDataManager->writeSettings(settings, "outputDataManager");
-  }
+//  if (m_OutputDataManager) {
+//    m_OutputDataManager->writeSettings(settings, "outputDataManager");
+//  }
 
   if (m_OutputData) {
     m_OutputData->writeSettings(settings, "outputData");

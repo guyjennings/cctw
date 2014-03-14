@@ -1,12 +1,9 @@
 #include "cctwoutputdata.h"
 
 CctwOutputData::CctwOutputData(CctwApplication *application, CctwIntVector3D dim,        // Data set dimension
-                                   CctwIntVector3D chunkSize,  // Chunk size
-//                                   CctwDoubleVector3D origin,
-//                                   CctwDoubleVector3D scale,
-                                   CctwOutputDataFrameManager *manager, QString name,
+                                   CctwIntVector3D chunkSize, QString name,
                                    QObject *parent) :
-  CctwOutputDataInterface(application, dim, chunkSize, /*origin, scale,*/ manager, name, parent)
+  CctwChunkedData(application, dim, chunkSize, name, parent)
 {
 }
 
@@ -25,10 +22,10 @@ void CctwOutputData::releaseChunk(int chunkId)
 
 void CctwOutputData::beginTransform()
 {
-  m_Manager -> beginTransform();
+//  m_Manager -> beginTransform();
 }
 
 void CctwOutputData::endTransform()
 {
-  m_Manager -> endTransform();
+//  m_Manager -> endTransform();
 }

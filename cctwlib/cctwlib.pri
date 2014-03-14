@@ -15,12 +15,6 @@ SOURCES += \
     $${PWD}/cctwdoublevector3dproperty.cpp \
     $${PWD}/cctwdoublematrix3x3property.cpp \
     $${PWD}/cctwunitcellproperty.cpp \
-    $${PWD}/cctwinputdatainterface.cpp \
-    $${PWD}/cctwoutputdatainterface.cpp \
-    $${PWD}/cctwdataframe.cpp \
-    $${PWD}/cctwdataframemanager.cpp \
-    $${PWD}/cctwinputdataframemanager.cpp \
-    $${PWD}/cctwoutputdataframemanager.cpp \
     $${PWD}/cctwtransforminterface.cpp \
     $${PWD}/cctwtransformer.cpp \
     $${PWD}/cctwvector3d.cpp \
@@ -29,7 +23,6 @@ SOURCES += \
     $${PWD}/cctwrotationtransform.cpp \
     $${PWD}/cctwcompoundtransform.cpp \
     $${PWD}/cctwcommandline.cpp \
-    $${PWD}/cctwchunkeddatainterface.cpp \
     $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwinputdata.cpp \
     $${PWD}/cctwoutputdata.cpp \
@@ -52,12 +45,6 @@ HEADERS += \
     $${PWD}/cctwdoublevector3dproperty.h \
     $${PWD}/cctwdoublematrix3x3property.h \
     $${PWD}/cctwunitcellproperty.h \
-    $${PWD}/cctwinputdatainterface.h \
-    $${PWD}/cctwoutputdatainterface.h \
-    $${PWD}/cctwdataframe.h \
-    $${PWD}/cctwdataframemanager.h \
-    $${PWD}/cctwinputdataframemanager.h \
-    $${PWD}/cctwoutputdataframemanager.h \
     $${PWD}/cctwtransforminterface.h \
     $${PWD}/cctwtransformer.h \
     $${PWD}/cctwvector3d.h \
@@ -66,7 +53,6 @@ HEADERS += \
     $${PWD}/cctwrotationtransform.h \
     $${PWD}/cctwcompoundtransform.h \
     $${PWD}/cctwcommandline.h \
-    $${PWD}/cctwchunkeddatainterface.h \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwinputdata.h \
     $${PWD}/cctwoutputdata.h \

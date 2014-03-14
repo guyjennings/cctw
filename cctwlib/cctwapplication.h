@@ -8,8 +8,6 @@
 #endif
 #include "cctwinputdata.h"
 #include "cctwoutputdata.h"
-#include "cctwinputdataframemanager.h"
-#include "cctwoutputdataframemanager.h"
 #include "cctwtransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwcrystalcoordinatetransform.h"
@@ -141,9 +139,9 @@ public:
   CctwCrystalCoordinateParameters    *m_Parameters;
   CctwImportData                     *m_ImportData;
   CctwCompareData                    *m_CompareData;
-  CctwInputDataFrameManager          *m_InputDataManager;
+//  CctwInputDataFrameManager          *m_InputDataManager;
   CctwInputData                      *m_InputData;
-  CctwOutputDataFrameManager         *m_OutputDataManager;
+//  CctwOutputDataFrameManager         *m_OutputDataManager;
   CctwOutputData                     *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;

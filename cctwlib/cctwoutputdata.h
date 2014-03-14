@@ -1,20 +1,17 @@
 #ifndef CCTWOUTPUTDATA_H
 #define CCTWOUTPUTDATA_H
 
-#include "cctwoutputdatainterface.h"
+#include "cctwchunkeddata.h"
 
-class CctwOutputData : public CctwOutputDataInterface
+class CctwOutputData : public CctwChunkedData
 {
   Q_OBJECT
 public:
   explicit CctwOutputData(CctwApplication *application,
                           CctwIntVector3D dim,        // Data set dimension
-                            CctwIntVector3D chunkSize,  // Chunk size
-//                            CctwDoubleVector3D origin,
-//                            CctwDoubleVector3D scale,
-                            CctwOutputDataFrameManager *manager,
+                          CctwIntVector3D chunkSize,  // Chunk size
                           QString name,
-                            QObject *parent);
+                          QObject *parent);
   
 signals:
   

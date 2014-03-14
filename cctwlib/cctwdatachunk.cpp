@@ -1,13 +1,11 @@
 #include "cctwdatachunk.h"
-#include "cctwchunkeddatainterface.h"
 #include <stdio.h>
 #include <QSemaphore>
 #include "cctwthread.h"
 
-CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, CctwDataFrameManager *manager, QString name, QObject *parent) :
+CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, QString name, QObject *parent) :
   CctwObject(name, parent),
   m_Data(data),
-  m_Manager(manager),
   m_ChunkIndex(index),
   m_ChunkData(NULL),
   m_ChunkWeights(NULL),
@@ -16,9 +14,6 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, CctwD
   m_WeightsWritten(0),
   m_MergeCounter(0)
 {
-  int n = m_Data->chunkCount().z();
-
-  m_DataFrames.resize(n);
 }
 
 CctwDataChunk::~CctwDataChunk()
@@ -133,9 +128,9 @@ int CctwDataChunk::writeData()
 {
   normalize();
 
-  if (m_Manager) {
-    m_Manager->writeChunk(this);
-  }
+//  if (m_Manager) {
+//    m_Manager->writeChunk(this);
+//  }
 
   return chunkSize().volume()*sizeof(double);
 }

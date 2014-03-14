@@ -2,42 +2,81 @@
 #define CCTWCHUNKEDDATA_H
 
 #include <QVector>
-#include "cctwchunkeddatainterface.h"
+#include "cctwobject.h"
+#include "cctwvector3d.h"
+#include "cctwintvector3dproperty.h"
+#include "qcepproperty.h"
 
-class CctwDataFrameManager;
 class CctwDataChunk;
+class CctwApplication;
 
-class CctwChunkedData : public CctwChunkedDataInterface
+class CctwChunkedData : public CctwObject
 {
   Q_OBJECT
 public:
   explicit CctwChunkedData(CctwApplication *application,
                            CctwIntVector3D dim,        // Data set dimension
-                             CctwIntVector3D chunkSize,  // Chunk size
-//                             CctwDoubleVector3D origin,
-//                             CctwDoubleVector3D scale,
-                             CctwDataFrameManager *manager,
+                           CctwIntVector3D chunkSize,  // Chunk size
                            QString name,
-                             QObject *parent);
+                           QObject *parent);
   void allocateChunks();
 
 signals:
   
+public:
+  CctwIntVector3D     dimensions() const   { return m_Dimensions; }
+  CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
+
+  void                setDimensions(CctwIntVector3D dim);
+  void                setChunkSize(CctwIntVector3D cksz);
+
 public slots:
-  void clearDependencies();
-  void addDependency(CctwIntVector3D f, CctwIntVector3D t);
+  virtual void        setDataSource(QString desc);
+  bool                containsPixel(CctwIntVector3D pixelCoord);
+  bool                containsChunk(CctwIntVector3D chunkIdx);
 
-  void setDimensions(CctwIntVector3D dim);
-  void setChunkSize(CctwIntVector3D cksz);
+  CctwIntVector3D     chunkStart(CctwIntVector3D chunkIdx);    // Return pixel coords of start of chunk chunkIdx
+  CctwIntVector3D     chunkIndex(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
+  CctwIntVector3D     chunkIndex(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
+  CctwIntVector3D     chunkCount() const;
 
-  CctwDataChunk *chunk(CctwIntVector3D idx);
+  CctwIntVector3D     chunkIndexFromNumber(int n);
+  int                 chunkNumberFromIndex(CctwIntVector3D chunkIdx);
 
-  void mergeChunk(CctwDataChunk *chunk);
-  void clearMergeCounters();
+  void                clearDependencies();
+  void                addDependency(CctwIntVector3D f, CctwIntVector3D t);
+
+  CctwDataChunk      *chunk(int n);
+  CctwDataChunk      *chunk(CctwIntVector3D idx);
+
+  void                mergeChunk(CctwDataChunk *chunk);
+  void                clearMergeCounters();
 
 protected:
-  CctwDataFrameManager      *m_Manager;
   QVector< CctwDataChunk* >  m_DataChunks;
+
+private:
+  CctwIntVector3D     m_Dimensions;
+  CctwIntVector3D     m_ChunkSize;
+  CctwIntVector3D     m_ChunkCount;
+
+  Q_PROPERTY(QString dataFileName READ get_DataFileName WRITE set_DataFileName)
+  QCEP_STRING_PROPERTY(DataFileName)
+
+  Q_PROPERTY(QString dataSetName READ get_DataSetName WRITE set_DataSetName)
+  QCEP_STRING_PROPERTY(DataSetName)
+
+  Q_PROPERTY(CctwIntVector3D dimensions READ dimensions WRITE setDimensions)
+//  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
+
+  Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
+//  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
+
+  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount STORED false)
+//  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
+
+  Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
+  QCEP_INTEGER_PROPERTY(Compression)
 };
 
 #endif // CCTWCHUNKEDDATA_H

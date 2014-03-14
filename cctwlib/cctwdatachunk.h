@@ -7,7 +7,6 @@
 #include <QVector>
 #include <QList>
 #include "cctwchunkeddata.h"
-#include "cctwdataframemanager.h"
 
 class CctwDataChunk : public CctwObject
 {
@@ -15,7 +14,6 @@ class CctwDataChunk : public CctwObject
 public:
   CctwDataChunk(CctwChunkedData *data,
                 CctwIntVector3D index,
-                CctwDataFrameManager *manager,
                 QString name,
                 QObject *parent);
 
@@ -77,14 +75,12 @@ private:
 
 private:
   CctwChunkedData                           *m_Data;
-  CctwDataFrameManager                      *m_Manager;
   CctwIntVector3D                            m_ChunkIndex;
   double                                    *m_ChunkData;
   double                                    *m_ChunkWeights;
   int                                        m_Normalized;
   int                                        m_DataWritten;
   int                                        m_WeightsWritten;
-  QVector< QSharedPointer <CctwDataFrame> >  m_DataFrames;
   QVector< CctwIntVector3D >                 m_Dependencies;
   QMutex                                     m_DependenciesLock;
   QMutex                                     m_MergeLock;

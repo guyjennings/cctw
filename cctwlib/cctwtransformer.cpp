@@ -13,9 +13,9 @@
 #include <QUrlQuery>
 #endif
 
-CctwTransformer::CctwTransformer(CctwApplication *application,
-                                 CctwInputDataInterface *input,
-                                 CctwOutputDataInterface *output,
+CctwTransformer::CctwTransformer(CctwApplication        *application,
+                                 CctwInputData          *input,
+                                 CctwOutputData         *output,
                                  CctwTransformInterface *xform,
                                  int osx, int osy, int osz, int nTests, QString name, QObject *parent) :
   CctwObject(name, parent),
@@ -133,7 +133,7 @@ void CctwTransformer::transformChunkNumber(int n)
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
   CctwIntVector3D lastChunkIndex(-1, -1, -1);
-  CctwDataChunk *inputChunk = m_InputData->chunk(idx);
+  CctwDataChunk *inputChunk = m_InputData->chunk(n);
   CctwDataChunk *lastChunk = NULL;
 
   CctwIntVector3D chStart = m_InputData->chunkStart(idx);
@@ -170,7 +170,8 @@ void CctwTransformer::transformChunkNumber(int n)
 //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
 
                 CctwDataChunk *chunk =
-                    new CctwDataChunk(m_OutputData, lastChunkIndex, NULL, tr("chunk-%1").arg(lastChunkIndex.toString()), NULL);
+                    new CctwDataChunk(m_OutputData, lastChunkIndex,
+                                      tr("chunk-%1").arg(lastChunkIndex.toString()), NULL);
 
                 if (chunk) {
                   chunk->allocateData();

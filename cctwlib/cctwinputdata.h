@@ -1,17 +1,16 @@
 #ifndef CCTWINPUTDATA_H
 #define CCTWINPUTDATA_H
 
-#include "cctwinputdatainterface.h"
+#include "cctwchunkeddata.h"
 
-class CctwInputData : public CctwInputDataInterface
+class CctwInputData : public CctwChunkedData
 {
   Q_OBJECT
 public:
-  explicit CctwInputData(
+  CctwInputData(
       CctwApplication *application,
       CctwIntVector3D dim,        // Data set dimension
       CctwIntVector3D chunkSize,  // Chunk size
-      CctwInputDataFrameManager *manager,
       QString name,
       QObject *parent);
   

@@ -2,8 +2,8 @@
 #define CCTWTRANSFORMER_H
 
 #include "cctwobject.h"
-#include "cctwinputdatainterface.h"
-#include "cctwoutputdatainterface.h"
+#include "cctwinputdata.h"
+#include "cctwoutputdata.h"
 #include "cctwtransforminterface.h"
 #include <QUrl>
 
@@ -13,9 +13,9 @@ class CctwTransformer : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwTransformer(CctwApplication *application,
-                  CctwInputDataInterface *input,    // The input data
-                  CctwOutputDataInterface *output,  // The output data
+  CctwTransformer(CctwApplication        *application,
+                  CctwInputData          *input,    // The input data
+                  CctwOutputData         *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
                   int osx, int osy, int osz,        // Oversampling factors
                   int nTests,
@@ -41,8 +41,8 @@ private:
 private:
   CctwApplication         *m_Application;
   QAtomicInt               m_MergeCounter;
-  CctwInputDataInterface  *m_InputData;
-  CctwOutputDataInterface *m_OutputData;
+  CctwInputData           *m_InputData;
+  CctwOutputData          *m_OutputData;
   CctwTransformInterface  *m_Transform;
   int                      m_OversampleX;
   int                      m_OversampleY;
