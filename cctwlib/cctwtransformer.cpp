@@ -1,5 +1,4 @@
 #include "cctwtransformer.h"
-#include "cctwcommandline.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

@@ -22,7 +22,6 @@ SOURCES += \
     $${PWD}/cctwcrystalcoordinatetransform.cpp \
     $${PWD}/cctwrotationtransform.cpp \
     $${PWD}/cctwcompoundtransform.cpp \
-    $${PWD}/cctwcommandline.cpp \
     $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwinputdata.cpp \
     $${PWD}/cctwoutputdata.cpp \
@@ -52,7 +51,6 @@ HEADERS += \
     $${PWD}/cctwcrystalcoordinatetransform.h \
     $${PWD}/cctwrotationtransform.h \
     $${PWD}/cctwcompoundtransform.h \
-    $${PWD}/cctwcommandline.h \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwinputdata.h \
     $${PWD}/cctwoutputdata.h \
