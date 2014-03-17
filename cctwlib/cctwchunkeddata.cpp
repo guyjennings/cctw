@@ -1,6 +1,8 @@
 #include "cctwchunkeddata.h"
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
+#include <QUrlQuery>
+#include "cctwdebug.h"
 
 CctwChunkedData::CctwChunkedData
   (CctwApplication *application,
@@ -62,6 +64,31 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 void                CctwChunkedData::setDataSource(QString desc)
 {
   printMessage(tr("%1:setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+  QUrl url(desc);
+
+//  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("scheme:   %1").arg(url.scheme()));
+    printMessage(tr("host:     %1").arg(url.host()));
+    printMessage(tr("path:     %1").arg(url.path()));
+    printMessage(tr("filename: %1").arg(url.fileName()));
+    printMessage(tr("query:    %1").arg(url.query()));
+    printMessage(tr("fragment: %1").arg(url.fragment()));
+//  }
+
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+//      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+//      }
+    }
+  }
 }
 
 bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
