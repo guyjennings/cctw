@@ -20,6 +20,7 @@ public:
   
 public slots:
   void accept();
+  void doBrowseOutputFile();
 
 private:
   Ui::CctwqtSetupOutputDialog *ui;
