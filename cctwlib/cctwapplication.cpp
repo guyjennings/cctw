@@ -40,9 +40,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifndef NO_GUI
   m_Window(NULL),
 #endif
-//  m_InputDataManager(NULL),
   m_InputData(NULL),
-//  m_OutputDataManager(NULL),
   m_OutputData(NULL),
   m_Parameters(NULL),
   m_ImportData(NULL),
@@ -54,8 +52,6 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
-//  m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
-//  m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
@@ -291,35 +287,24 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   decodeCommandLineArgs(argc, argv);
 
-//  QMainWindow *win = new QMainWindow();
-//  win -> show();
-
   m_ImportData       = new CctwImportData(this, "importData", this);
 
   m_CompareData      = new CctwCompareData(this, "compareData", this);
 
   m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
 
-//  m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
-
   m_InputData        = new CctwChunkedData(this,
                                          CctwIntVector3D(256,256,256),
                                          CctwIntVector3D(32, 32, 32),
-//                                         m_InputDataManager,
                                          "inputData",
                                          this);
-//  m_InputDataManager -> setData(m_InputData);
   m_InputData        -> allocateChunks();
-
-//  m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
 
   m_OutputData       = new CctwChunkedData(this,
                                           CctwIntVector3D(256,256,256),
                                           CctwIntVector3D(32, 32, 32),
-//                                          m_OutputDataManager,
                                           "outputData",
                                           this);
-//  m_OutputDataManager       -> setData(m_OutputData);
   m_OutputData              -> allocateChunks();
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
@@ -337,9 +322,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
   m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
-//  m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
-//  m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
   m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
@@ -548,17 +531,9 @@ void CctwApplication::readSettings(QSettings *settings)
     m_CompareData->readSettings(settings, "compareData");
   }
 
-//  if (m_InputDataManager) {
-//    m_InputDataManager->readSettings(settings, "inputDataManager");
-//  }
-
   if (m_InputData) {
     m_InputData->readSettings(settings, "inputData");
   }
-
-//  if (m_OutputDataManager) {
-//    m_OutputDataManager->readSettings(settings, "outputDataManager");
-//  }
 
   if (m_OutputData) {
     m_OutputData->readSettings(settings, "outputData");
@@ -613,17 +588,9 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_CompareData->writeSettings(settings, "compareData");
   }
 
-//  if (m_InputDataManager) {
-//    m_InputDataManager->writeSettings(settings, "inputDataManager");
-//  }
-
   if (m_InputData) {
     m_InputData->writeSettings(settings, "inputData");
   }
-
-//  if (m_OutputDataManager) {
-//    m_OutputDataManager->writeSettings(settings, "outputDataManager");
-//  }
 
   if (m_OutputData) {
     m_OutputData->writeSettings(settings, "outputData");
@@ -642,8 +609,6 @@ void CctwApplication::writeSettings(QSettings *settings)
   }
 }
 
-//QAtomicInt dependencyCounter;
-
 void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {
@@ -661,9 +626,6 @@ void CctwApplication::calculateChunkDependencies(int n)
       for (int y=0; y<chSize.y(); y++) {
         for (int x=0; x<chSize.x(); x++) {
           CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-
-//          CctwDoubleVector3D coords = /*m_InputData->origin()+index*m_InputData->scale();*/
-//              CctwDoubleVector3D(index.x(), index.y(), index.z());
 
           CctwDoubleVector3D xfmcoord = transform.forward(coords);
 
@@ -889,46 +851,6 @@ void CctwApplication::reportDependencies()
     }
   }
 
-//  printMessage(tr("Example transformations"));
-
-//  for (int z=0; z<chunks.z(); z++) {
-//    for (int y=0; y<chunks.y(); y++) {
-//      for (int x=0; x<chunks.x(); x++) {
-//        if (get_Halting()) {
-//          break;
-//        } else {
-//          CctwIntVector3D idx(x,y,z);
-//          CctwIntVector3D start = m_InputData->chunkStart(idx);
-//          CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
-
-//          CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
-//          CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
-
-//          CctwIntVector3D crdpixel = m_InputData->toPixel(coords);
-//          CctwIntVector3D xfmpixel = m_OutputData->toPixel(xfmcoord);
-
-//          bool ok = m_OutputData->containsPixel(xfmpixel);
-
-//          CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
-//          CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
-
-//          int inchnk = m_InputData->chunkNumberFromIndex(ipchunk);
-//          int opchnk = m_OutputData->chunkNumberFromIndex(opchunk);
-
-//          printMessage(tr("Chunk:[%1](%2,%3,%4) => [%5](%6,%7,%8)")
-//                       .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
-//                       .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
-//                       );
-
-//          printMessage(tr("Pixel:[%1,%2,%3] => [%4,%5,%6], ok:%7")
-//                       .arg(crdpixel.x()).arg(crdpixel.y()).arg(crdpixel.z())
-//                       .arg(xfmpixel.x()).arg(xfmpixel.y()).arg(xfmpixel.z()).arg(ok)
-//                       );
-//        }
-//      }
-//    }
-//  }
-
   printMessage(tr("Input Data Dependencies"));
 
   for (int z=0; z<chunks.z(); z++) {
@@ -949,42 +871,6 @@ void CctwApplication::reportDependencies()
     }
   }
 }
-
-//void CctwApplication::dummyInputRun()
-//{
-//  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-//  set_Halting(false);
-//  set_Progress(0);
-//  set_ProgressLimit(chunks.volume());
-
-//  for (int z=0; z<chunks.z(); z++) {
-//    for (int y=0; y<chunks.y(); y++) {
-//      for (int x=0; x<chunks.x(); x++) {
-//        if (get_Halting()) {
-//          break;
-//        } else {
-//          CctwIntVector3D idx(x,y,z);
-
-//          QtConcurrent::run(this, &CctwApplication::dummyInputRunChunk, idx);
-////          calculateChunkDependencies(idx);
-//        }
-//      }
-//    }
-//  }
-//}
-
-//void CctwApplication::dummyInputRunChunk(CctwIntVector3D idx)
-//{
-//  if (!get_Halting()) {
-//    int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
-//    printMessage(tr("Loaded chunk [%1,%2,%3] = %4").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(chunkId));
-
-//    m_InputData->releaseChunk(chunkId);
-
-//    prop_Progress()->incValue(1);
-//  }
-//}
 
 void CctwApplication::reportOutputDependencies()
 {
@@ -1135,19 +1021,6 @@ void CctwApplication::reportOutputChunkCounts()
     printMessage("");
   }
 }
-
-//int CctwApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
-//{
-//  CctwIntVector3D idx(index.x(), index.y(), index.z());
-
-//  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, NULL, this);
-
-//  int offset = chunk->pixelOffset(localcoords);
-
-//  delete chunk;
-
-//  return offset;
-//}
 
 CctwCrystalCoordinateParameters *CctwApplication::parameters() const
 {

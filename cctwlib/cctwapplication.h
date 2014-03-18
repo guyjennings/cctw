@@ -72,9 +72,6 @@ public slots:
 
   void doAboutToQuit();
 
-//  void dummyInputRun();
-//  void dummyInputRunChunk(CctwIntVector3D idx);
-
   void reportInputDependencies();
   void reportInputDependencies(CctwIntVector3D idx);
 
@@ -86,8 +83,6 @@ public slots:
 
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path);
-
-//  int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
   CctwCrystalCoordinateParameters *parameters() const;
 
@@ -138,9 +133,7 @@ public:
   CctwCrystalCoordinateParameters    *m_Parameters;
   CctwImportData                     *m_ImportData;
   CctwCompareData                    *m_CompareData;
-//  CctwInputDataFrameManager          *m_InputDataManager;
   CctwChunkedData                    *m_InputData;
-//  CctwOutputDataFrameManager         *m_OutputDataManager;
   CctwChunkedData                    *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
@@ -162,12 +155,6 @@ public:
 
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
-
-//  Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
-//  QCEP_STRING_PROPERTY(InputDataDescriptor)
-
-//  Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
-//  QCEP_STRING_PROPERTY(OutputDataDescriptor)
 
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)
