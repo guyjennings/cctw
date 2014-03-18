@@ -390,3 +390,13 @@ void CctwChunkedData::releaseChunk(int n)
 {
   printMessage(tr("CctwChunkedData::releaseChunk(%1)").arg(n));
 }
+
+void CctwChunkedData::beginTransform()
+{
+  printMessage("CctwChunkedData::beginTransform()");
+}
+
+void CctwChunkedData::endTransform()
+{
+  printMessage("CctwChunkedData::endTransform()");
+}

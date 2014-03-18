@@ -6,8 +6,7 @@
 #ifndef NO_GUI
 #include "cctwqtmainwindow.h"
 #endif
-#include "cctwinputdata.h"
-#include "cctwoutputdata.h"
+#include "cctwchunkeddata.h"
 #include "cctwtransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwcrystalcoordinatetransform.h"
@@ -73,8 +72,8 @@ public slots:
 
   void doAboutToQuit();
 
-  void dummyInputRun();
-  void dummyInputRunChunk(CctwIntVector3D idx);
+//  void dummyInputRun();
+//  void dummyInputRunChunk(CctwIntVector3D idx);
 
   void reportInputDependencies();
   void reportInputDependencies(CctwIntVector3D idx);
@@ -140,9 +139,9 @@ public:
   CctwImportData                     *m_ImportData;
   CctwCompareData                    *m_CompareData;
 //  CctwInputDataFrameManager          *m_InputDataManager;
-  CctwInputData                      *m_InputData;
+  CctwChunkedData                    *m_InputData;
 //  CctwOutputDataFrameManager         *m_OutputDataManager;
-  CctwOutputData                     *m_OutputData;
+  CctwChunkedData                    *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
   CctwScriptEngine                   *m_ScriptEngine;

@@ -13,8 +13,8 @@
 #endif
 
 CctwTransformer::CctwTransformer(CctwApplication        *application,
-                                 CctwInputData          *input,
-                                 CctwOutputData         *output,
+                                 CctwChunkedData *input,
+                                 CctwChunkedData *output,
                                  CctwTransformInterface *xform,
                                  int osx, int osy, int osz, int nTests, QString name, QObject *parent) :
   CctwObject(name, parent),

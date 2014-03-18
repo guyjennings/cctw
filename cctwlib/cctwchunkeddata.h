@@ -56,6 +56,9 @@ public slots:
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();
 
+  void                beginTransform();
+  void                endTransform();
+
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
 

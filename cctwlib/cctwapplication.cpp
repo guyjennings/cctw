@@ -302,7 +302,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
 //  m_InputDataManager = new CctwInputDataFrameManager("inputDataManager", this);
 
-  m_InputData        = new CctwInputData(this,
+  m_InputData        = new CctwChunkedData(this,
                                          CctwIntVector3D(256,256,256),
                                          CctwIntVector3D(32, 32, 32),
 //                                         m_InputDataManager,
@@ -313,7 +313,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
 //  m_OutputDataManager = new CctwOutputDataFrameManager(m_Saver, "outputDataManager", this);
 
-  m_OutputData       = new CctwOutputData(this,
+  m_OutputData       = new CctwChunkedData(this,
                                           CctwIntVector3D(256,256,256),
                                           CctwIntVector3D(32, 32, 32),
 //                                          m_OutputDataManager,
@@ -950,41 +950,41 @@ void CctwApplication::reportDependencies()
   }
 }
 
-void CctwApplication::dummyInputRun()
-{
-  CctwIntVector3D chunks = m_InputData->chunkCount();
+//void CctwApplication::dummyInputRun()
+//{
+//  CctwIntVector3D chunks = m_InputData->chunkCount();
 
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
+//  set_Halting(false);
+//  set_Progress(0);
+//  set_ProgressLimit(chunks.volume());
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+//  for (int z=0; z<chunks.z(); z++) {
+//    for (int y=0; y<chunks.y(); y++) {
+//      for (int x=0; x<chunks.x(); x++) {
+//        if (get_Halting()) {
+//          break;
+//        } else {
+//          CctwIntVector3D idx(x,y,z);
 
-          QtConcurrent::run(this, &CctwApplication::dummyInputRunChunk, idx);
-//          calculateChunkDependencies(idx);
-        }
-      }
-    }
-  }
-}
+//          QtConcurrent::run(this, &CctwApplication::dummyInputRunChunk, idx);
+////          calculateChunkDependencies(idx);
+//        }
+//      }
+//    }
+//  }
+//}
 
-void CctwApplication::dummyInputRunChunk(CctwIntVector3D idx)
-{
-  if (!get_Halting()) {
-    int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
-    printMessage(tr("Loaded chunk [%1,%2,%3] = %4").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(chunkId));
+//void CctwApplication::dummyInputRunChunk(CctwIntVector3D idx)
+//{
+//  if (!get_Halting()) {
+//    int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
+//    printMessage(tr("Loaded chunk [%1,%2,%3] = %4").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(chunkId));
 
-    m_InputData->releaseChunk(chunkId);
+//    m_InputData->releaseChunk(chunkId);
 
-    prop_Progress()->incValue(1);
-  }
-}
+//    prop_Progress()->incValue(1);
+//  }
+//}
 
 void CctwApplication::reportOutputDependencies()
 {
