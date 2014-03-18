@@ -13,7 +13,7 @@ class CctwDataChunk : public CctwObject
   Q_OBJECT
 public:
   CctwDataChunk(CctwChunkedData *data,
-                CctwIntVector3D index,
+                int index,
                 QString name,
                 QObject *parent);
 
@@ -21,11 +21,11 @@ public:
 
 public slots:
 
-  virtual int readData();
-  virtual int readWeights();
-  virtual int normalize();
-  virtual int writeData();
-  virtual int writeWeights();
+//  virtual int readData();
+//  virtual int readWeights();
+//  virtual int normalize();
+//  virtual int writeData();
+//  virtual int writeWeights();
 
   int allocateData();
   int allocateWeights();
@@ -35,11 +35,11 @@ public slots:
   bool dataAllocated() const;
   bool weightsAllocated() const;
 
-  double data(CctwIntVector3D localcoords);
-  double weight(CctwIntVector3D localcoords);
-  void setData(CctwIntVector3D localcoords, double val);
-  void setWeight(CctwIntVector3D localcoords, double val);
-  int pixelOffset(CctwIntVector3D localcoords);
+  double data(int lx, int ly, int lz);
+  double weight(int lx, int ly, int lz);
+  void setData(int lx, int ly, int lz, double val);
+  void setWeight(int lx, int ly, int lz, double val);
+  int pixelOffset(int lx, int ly, int lz);
 
   double *dataPointer();
   double *weightsPointer();
@@ -47,14 +47,14 @@ public slots:
   CctwIntVector3D chunkSize();
 
   void clearDependencies();
-  void addDependency(CctwIntVector3D dep);
+  void addDependency(int dep);
   void sortDependencies();
-  int  dependencyCount() const;
-  CctwIntVector3D dependency(int n) const;
+  int dependencyCount() const;
+  int dependency(int n) const;
 
   void reportDependencies();
 
-  CctwIntVector3D index() const;
+  int index() const;
   void mergeChunk(CctwDataChunk *c);
   void clearMergeCounters();
   void incMergeCounters();
@@ -63,8 +63,8 @@ public slots:
   bool popMergeData(double **data, double **weights);
   void pushMergeData(double *data, double *weights);
 
-  void waitForData();
-  void finishedWithData();
+//  void waitForData();
+//  void finishedWithData();
 
   static void resetAllocationLimits(int nmax);
   static int maxAllocated();
@@ -75,13 +75,13 @@ private:
 
 private:
   CctwChunkedData                           *m_Data;
-  CctwIntVector3D                            m_ChunkIndex;
+  int                                        m_ChunkIndex;
   double                                    *m_ChunkData;
   double                                    *m_ChunkWeights;
   int                                        m_Normalized;
   int                                        m_DataWritten;
   int                                        m_WeightsWritten;
-  QVector< CctwIntVector3D >                 m_Dependencies;
+  QVector< int >                             m_Dependencies;
   QMutex                                     m_DependenciesLock;
   QMutex                                     m_MergeLock;
   int                                        m_MergeCounter;

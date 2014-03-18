@@ -37,9 +37,7 @@ void CctwChunkedData::allocateChunks()
   m_DataChunks.resize(n);
 
   for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwDataChunk(this,
-                                          chunkIndexFromNumber(i),
-                                          tr("chunk-%1").arg(i), parent());
+    m_DataChunks[i] = new CctwDataChunk(this, i, tr("chunk-%1").arg(i), parent());
   }
 }
 
@@ -101,25 +99,29 @@ bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
       pixelCoord.z() < m_Dimensions.z();
 }
 
-CctwIntVector3D     CctwChunkedData::chunkStart(CctwIntVector3D chunkIdx)
+CctwIntVector3D     CctwChunkedData::chunkStart(int n)
 {
   // Return pixel coords of start of chunk chunkIdx
+
+  CctwIntVector3D chunkIdx = chunkIndexFromNumber(n);
 
   return m_ChunkSize*chunkIdx;
 }
 
-CctwIntVector3D     CctwChunkedData::chunkIndex(CctwIntVector3D pixelCoord)
+int     CctwChunkedData::chunkContaining(CctwIntVector3D pixelCoord)
 {
   // Return index of chunk containing given pixel
 
-  return pixelCoord / m_ChunkSize;
+  CctwIntVector3D res = pixelCoord / m_ChunkSize;
+
+  return chunkNumberFromIndex(res);
 }
 
-CctwIntVector3D     CctwChunkedData::chunkIndex(CctwDoubleVector3D fracPixelCoord)
+int     CctwChunkedData::chunkContaining(CctwDoubleVector3D fracPixelCoord)
 {
   CctwDoubleVector3D fchk = fracPixelCoord / CctwDoubleVector3D(m_ChunkSize.x(), m_ChunkSize.y(), m_ChunkSize.z());
 
-  return CctwIntVector3D(fchk.x(), fchk.y(), fchk.z());
+  return chunkNumberFromIndex(CctwIntVector3D(fchk.x(), fchk.y(), fchk.z()));
 }
 
 CctwIntVector3D     CctwChunkedData::chunkCount() const
@@ -127,16 +129,16 @@ CctwIntVector3D     CctwChunkedData::chunkCount() const
   return m_ChunkCount;
 }
 
-bool CctwChunkedData::containsChunk(CctwIntVector3D chunkIdx)
+bool CctwChunkedData::containsChunk(int ix, int iy, int iz)
 {
-  return chunkIdx.x()>=0 && chunkIdx.x()<m_ChunkCount.x() &&
-         chunkIdx.y()>=0 && chunkIdx.y()<m_ChunkCount.y() &&
-         chunkIdx.z()>=0 && chunkIdx.z()<m_ChunkCount.z();
+  return ix>=0 && ix<m_ChunkCount.x() &&
+         iy>=0 && iy<m_ChunkCount.y() &&
+         iz>=0 && iz<m_ChunkCount.z();
 }
 
 int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
 {
-  if (containsChunk(chunkIdx)) {
+  if (containsChunk(chunkIdx.x(), chunkIdx.y(), chunkIdx.z())) {
     int xstride = 1;
     int ystride = m_ChunkCount.x();
     int zstride = m_ChunkCount.x()*m_ChunkCount.y();
@@ -179,12 +181,10 @@ void CctwChunkedData::clearDependencies()
   }
 }
 
-void CctwChunkedData::addDependency(CctwIntVector3D f, CctwIntVector3D t)
+void CctwChunkedData::addDependency(int f, int t)
 {
-  int n = chunkNumberFromIndex(f);
-
-  if (n >= 0 && n < m_DataChunks.count()) {
-    m_DataChunks[n] ->addDependency(t);
+  if (f >= 0 && f < m_DataChunks.count()) {
+    m_DataChunks[f] ->addDependency(t);
   }
 }
 
@@ -193,7 +193,7 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
   if (n >= 0 && n < m_DataChunks.count()) {
     CctwDataChunk *chunk = m_DataChunks[n];
 
-    if (chunk && chunkNumberFromIndex(chunk->index()) != n) {
+    if (chunk && chunk->index() != n) {
       printMessage(tr("Chunk anomaly"));
     }
     return chunk;
@@ -210,7 +210,7 @@ CctwDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
 void CctwChunkedData::mergeChunk(CctwDataChunk *chunk)
 {
   if (chunk) {
-    CctwIntVector3D idx = chunk->index();
+    int idx = chunk->index();
 
     CctwDataChunk *outchunk = this->chunk(idx);
 
@@ -227,4 +227,166 @@ void CctwChunkedData::clearMergeCounters()
       dc -> clearMergeCounters();
     }
   }
+}
+
+//CctwDataChunk *CctwChunkedData::readChunk(int n)
+//{
+//  CctwDataChunk *chk = chunk(n);
+
+//  if (chk) {
+//    int res = chk->allocateData();
+
+//    CctwIntVector3D size = chunkSize();
+//    CctwIntVector3D start = chunkStart(n);
+
+//    for (int k=0; k<size.z(); k++) {
+//      for (int j=0; j<size.y(); j++) {
+//        for (int i=0; i<size.x(); i++) {
+//          CctwIntVector3D coords(i,j,k);
+
+//          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
+
+//          setData(coords, val+0.75);
+//        }
+//      }
+//    }
+//  }
+
+//  return chk;
+//}
+
+//int CctwChunkedData::readWeights()
+//{
+//  int res = allocateWeights();
+
+//  CctwIntVector3D size = m_Data->chunkSize();
+
+//  for (int k=0; k<size.z(); k++) {
+//    for (int j=0; j<size.y(); j++) {
+//      for (int i=0; i<size.x(); i++) {
+//        CctwIntVector3D coords(i,j,k);
+
+//        int val = 1;
+
+//        setWeight(coords, val);
+//      }
+//    }
+//  }
+
+//  return res;
+//}
+
+//int CctwDataChunk::normalize()
+//{
+//  if (m_Normalized) {
+//    printf("Already normalized\n");
+//  } else if (m_ChunkData && m_ChunkWeights) {
+//    int cksz = m_Data->chunkSize().volume();
+
+//    for (int i=0; i<cksz; i++) {
+//      if (m_ChunkWeights[i] != 0) {
+//        m_ChunkData[i] /= m_ChunkWeights[i];
+//      }
+//    }
+//  }
+
+//  m_Normalized = true;
+
+//  return 0;
+//}
+
+//int CctwDataChunk::writeData()
+//{
+//  normalize();
+
+////  if (m_Manager) {
+////    m_Manager->writeChunk(this);
+////  }
+
+//  return chunkSize().volume()*sizeof(double);
+//}
+
+//int CctwDataChunk::writeWeights()
+//{
+//  return chunkSize().volume()*sizeof(double);
+//}
+
+
+//void CctwDataChunk::waitForData()
+//{
+//  int nbuff = dependencyCount();
+
+//  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
+//    printMessage(tr("Trying to allocate too many blocks - will sleep 5 secs then proceed anyway"));
+
+//    CctwThread::sleep(5);
+//  } else {
+////    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+
+//    if (!g_Available.tryAcquire(nbuff)) {
+//      printMessage(tr("Failed to acquire %1 blocks").arg(nbuff));
+
+//      g_Available.acquire(nbuff);
+//    }
+//  }
+//}
+
+//void CctwDataChunk::finishedWithData()
+//{
+//  int nbuff = dependencyCount();
+
+//  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
+//    printMessage(tr("Skipped release"));
+//  } else {
+//    g_Available.release(nbuff);
+
+////    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
+//  }
+//}
+
+void CctwChunkedData::writeChunk(int n)
+{
+  CctwDataChunk *chk = chunk(n);
+
+  if (chk) {
+    chk->deallocateData();
+    chk->deallocateWeights();
+  }
+
+  printMessage(tr("CctwChunkedData::writeChunk(%1)").arg(n));
+}
+
+CctwDataChunk *CctwChunkedData::readChunk(int n)
+{
+  CctwDataChunk *chk = chunk(n);
+
+  if (chk) {
+    chk->allocateData();
+    chk->allocateWeights();
+
+    CctwIntVector3D size = chunkSize();
+    CctwIntVector3D start = chunkStart(n);
+
+    for (int k=0; k<size.z(); k++) {
+      for (int j=0; j<size.y(); j++) {
+        for (int i=0; i<size.x(); i++) {
+          CctwIntVector3D coords(i,j,k);
+
+          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
+
+          chk -> setData(i, j, k, val+0.75);
+          chk -> setWeight(i, j, k, 1.0);
+        }
+      }
+    }
+  }
+
+  printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
+
+  return chk;
+}
+
+void CctwChunkedData::releaseChunk(int n)
+{
+  printMessage(tr("CctwChunkedData::releaseChunk(%1)").arg(n));
 }

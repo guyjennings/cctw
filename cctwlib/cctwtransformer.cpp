@@ -130,22 +130,17 @@ void CctwTransformer::transformChunkNumber(int n)
 {
   CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
 
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
-  CctwIntVector3D lastChunkIndex(-1, -1, -1);
-  CctwDataChunk *inputChunk = m_InputData->chunk(n);
+  int lastChunkIndex = -1;
+
+  CctwDataChunk *inputChunk = m_InputData->readChunk(n);
   CctwDataChunk *lastChunk = NULL;
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  CctwIntVector3D chStart = m_InputData->chunkStart(n);
   CctwIntVector3D chSize  = m_InputData->chunkSize();
   CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
   if (inputChunk) {
-    inputChunk->waitForData();
-
-    QMap<CctwIntVector3D, CctwDataChunk*> outputChunks;
-
-    inputChunk->readData();
-    inputChunk->readWeights();
+    QMap<int, CctwDataChunk*> outputChunks;
 
     for (int z=0; z<chSize.z(); z++) {
       for (int y=0; y<chSize.y(); y++) {
@@ -156,7 +151,7 @@ void CctwTransformer::transformChunkNumber(int n)
           CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
           if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+            int opchunk = m_OutputData->chunkContaining(pixels);
             CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
 
             if (opchunk != lastChunkIndex) {
@@ -170,7 +165,7 @@ void CctwTransformer::transformChunkNumber(int n)
 
                 CctwDataChunk *chunk =
                     new CctwDataChunk(m_OutputData, lastChunkIndex,
-                                      tr("chunk-%1").arg(lastChunkIndex.toString()), NULL);
+                                      tr("chunk-%1").arg(lastChunkIndex), NULL);
 
                 if (chunk) {
                   chunk->allocateData();
@@ -184,14 +179,17 @@ void CctwTransformer::transformChunkNumber(int n)
             }
 
             if (lastChunk) {
-              double oval = lastChunk->data(oprelat);
-              double owgt = lastChunk->weight(oprelat);
-              double ival = inputChunk->data(iprelat);
-              double iwgt = inputChunk->weight(iprelat);
+              int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
+              int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
+
+              double oval = lastChunk->data(ox, oy, oz);
+              double owgt = lastChunk->weight(ox, oy, oz);
+              double ival = inputChunk->data(ix, iy, iz);
+              double iwgt = inputChunk->weight(ix, iy, iz);
 
               if (iwgt != 0) {
-                lastChunk->setData(oprelat, oval+ival);
-                lastChunk->setWeight(oprelat, owgt+iwgt);
+                lastChunk->setData(ox, oy, oz, oval+ival);
+                lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
               }
             }
           }
@@ -217,7 +215,7 @@ void CctwTransformer::transformChunkNumber(int n)
       delete outputChunk;
     }
 
-    inputChunk->finishedWithData();
+    m_InputData->releaseChunk(n);
   }
 }
 
@@ -257,7 +255,7 @@ void CctwTransformer::transform()
           int n = chunk->dependencyCount();
 
           for (int i=0; i<n; i++) {
-            int ckidx = m_InputData->chunkNumberFromIndex(chunk->dependency(i));
+            int ckidx = chunk->dependency(i);
 
             if (!inputChunks.contains(ckidx)) {
               inputChunks.append(ckidx);
@@ -321,21 +319,22 @@ void CctwTransformer::checkTransform()
   }
 }
 
-QcepIntList CctwTransformer::dependencies(int chunkIdx)
+QcepIntList CctwTransformer::dependencies(int n)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(chunkIdx), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
 
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
-  CctwIntVector3D lastChunkIndex(-1, -1, -1);
+  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+  int lastChunkIndex = -1;
+
+  CctwIntVector3D chStart = m_InputData->chunkStart(n);
   CctwIntVector3D chSize  = m_InputData->chunkSize();
   CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
-  QList<CctwIntVector3D> outputChunks;
-  QcepIntList            result;
+  QList<int>      outputChunks;
+  QcepIntList     result;
 
-  if (m_InputData->containsChunk(idx)) {
+  if (m_InputData->containsChunk(idx.x(), idx.y(), idx.z())) {
     for (int z=0; z<chSize.z(); z++) {
       for (int y=0; y<chSize.y(); y++) {
         for (int x=0; x<chSize.x(); x++) {
@@ -344,7 +343,7 @@ QcepIntList CctwTransformer::dependencies(int chunkIdx)
           CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
           if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+            int opchunk = m_OutputData->chunkContaining(pixels);
 
             if (opchunk != lastChunkIndex) {
               lastChunkIndex = opchunk;
@@ -359,8 +358,8 @@ QcepIntList CctwTransformer::dependencies(int chunkIdx)
     }
   }
 
-  foreach(CctwIntVector3D chk, outputChunks) {
-    result.append(m_OutputData->chunkNumberFromIndex(chk));
+  foreach(int chk, outputChunks) {
+    result.append(chk);
   }
 
   qSort(result);

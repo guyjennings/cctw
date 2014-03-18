@@ -644,17 +644,17 @@ void CctwApplication::writeSettings(QSettings *settings)
 
 //QAtomicInt dependencyCounter;
 
-void CctwApplication::calculateChunkDependencies(CctwIntVector3D idx)
+void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {
-    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(idx.toString()), NULL);
+    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), NULL);
 
 //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
-    CctwIntVector3D chStart = m_InputData->chunkStart(idx);
+    CctwIntVector3D chStart = m_InputData->chunkStart(n);
     CctwIntVector3D chSize  = m_InputData->chunkSize();
     CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-    CctwIntVector3D lastChunk(-1,-1,-1);
+    int lastChunk = -1;
 
     for (int z=0; z<chSize.z(); z++) {
 
@@ -671,12 +671,12 @@ void CctwApplication::calculateChunkDependencies(CctwIntVector3D idx)
               CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
           if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D    opchunk  = m_OutputData->chunkIndex(pixels);
+            int opchunk  = m_OutputData->chunkContaining(pixels);
 
             if (opchunk != lastChunk) {
               lastChunk = opchunk;
-              m_InputData->addDependency(idx, opchunk);
-              m_OutputData->addDependency(opchunk, idx);
+              m_InputData->addDependency(n, opchunk);
+              m_OutputData->addDependency(opchunk, n);
             }
           }
         }
@@ -730,12 +730,13 @@ void CctwApplication::calculateDependencies()
           goto abort;
         } else {
           CctwIntVector3D idx(x,y,z);
+          int n = m_InputData->chunkNumberFromIndex(idx);
 
           m_DependencyCounter.fetchAndAddOrdered(1);
 
           addWorkOutstanding(1);
 //          futures.append(
-                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, idx)/*)*/;
+                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n)/*)*/;
 //          calculateChunkDependencies(idx);
         }
       }
@@ -779,6 +780,7 @@ void CctwApplication::saveDependencies(QString path)
 
         if (nDeps > 0) {
           settings.setArrayIndex(n++);
+          settings.setValue("n", m_InputData->chunkNumberFromIndex(idx));
           settings.setValue("x", x);
           settings.setValue("y", y);
           settings.setValue("z", z);
@@ -787,8 +789,9 @@ void CctwApplication::saveDependencies(QString path)
 
           for (int i=0; i<nDeps; i++) {
             settings.setArrayIndex(i);
-            CctwIntVector3D dep = chunk->dependency(i);
-
+            int dn = chunk->dependency(i);
+            CctwIntVector3D dep = m_OutputData->chunkIndexFromNumber(dn);
+            settings.setValue("n", dn);
             settings.setValue("x", dep.x());
             settings.setValue("y", dep.y());
             settings.setValue("z", dep.z());
@@ -815,6 +818,7 @@ void CctwApplication::loadDependencies(QString path)
   for (int i=0; i<n; i++) {
     settings.setArrayIndex(i);
 
+    int in = settings.value("n").toInt();
     int ix = settings.value("x").toInt();
     int iy = settings.value("y").toInt();
     int iz = settings.value("z").toInt();
@@ -826,14 +830,15 @@ void CctwApplication::loadDependencies(QString path)
     for (int j=0; j<nd; j++) {
       settings.setArrayIndex(j);
 
+      int idn = settings.value("n").toInt();
       int idx = settings.value("x").toInt();
       int idy = settings.value("y").toInt();
       int idz = settings.value("z").toInt();
 
       CctwIntVector3D ochnk(idx, idy, idz);
 
-      m_InputData->addDependency(ichnk, ochnk);
-      m_OutputData->addDependency(ochnk, ichnk);
+      m_InputData->addDependency(in, idn);
+      m_OutputData->addDependency(idn, in);
     }
 
     settings.endArray();

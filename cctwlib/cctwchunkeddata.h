@@ -33,21 +33,25 @@ public:
 public slots:
   virtual void        setDataSource(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
-  bool                containsChunk(CctwIntVector3D chunkIdx);
+  bool                containsChunk(int ix, int iy, int iz);
 
-  CctwIntVector3D     chunkStart(CctwIntVector3D chunkIdx);    // Return pixel coords of start of chunk chunkIdx
-  CctwIntVector3D     chunkIndex(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
-  CctwIntVector3D     chunkIndex(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
+  CctwIntVector3D     chunkStart(int n);    // Return pixel coords of start of chunk chunkIdx
+  int                 chunkContaining(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
+  int                 chunkContaining(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
   CctwIntVector3D     chunkCount() const;
 
   CctwIntVector3D     chunkIndexFromNumber(int n);
   int                 chunkNumberFromIndex(CctwIntVector3D chunkIdx);
 
   void                clearDependencies();
-  void                addDependency(CctwIntVector3D f, CctwIntVector3D t);
+  void                addDependency(int f, int t);
 
   CctwDataChunk      *chunk(int n);
   CctwDataChunk      *chunk(CctwIntVector3D idx);
+
+  CctwDataChunk      *readChunk(int n);
+  void                writeChunk(int n);
+  void                releaseChunk(int n);
 
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();

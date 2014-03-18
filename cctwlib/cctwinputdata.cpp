@@ -18,7 +18,7 @@ double CctwInputData::readData(int chunkId, int dx, int dy, int dz)
   return 0;
 }
 
-void CctwInputData::releaseChunk(int chunkId)
-{
-//  return m_Manager->releaseChunk(chunkId);
-}
+//void CctwInputData::releaseChunk(int chunkId)
+//{
+////  return m_Manager->releaseChunk(chunkId);
+//}

@@ -30,7 +30,7 @@ public slots:
   void transform();
   void checkTransform();
 
-  QcepIntList dependencies(int chunkIdx);
+  QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
 private:

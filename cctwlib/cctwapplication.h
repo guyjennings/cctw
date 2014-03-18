@@ -64,7 +64,7 @@ public slots:
   void partialDependencies(QString desc);
 
   void calculateDependencies();
-  void calculateChunkDependencies(CctwIntVector3D idx);
+  void calculateChunkDependencies(int n);
 
   void saveDependencies(QString path);
   void loadDependencies(QString path);

@@ -29,10 +29,10 @@ public:
                                               // the lowest indexed corner of the chunk. chunkId will be an id returned by a call to useChunk
                                               // The routine should throw an exception or abort if any parameters are invalid
 
-  virtual void releaseChunk(int chunkId);
-                                              // Indicate that we've finished with a chunk of input data - chunkId is an identifier returned
-                                              // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
-                                              // is invalid.
+//  virtual void releaseChunk(int chunkId);
+//                                              // Indicate that we've finished with a chunk of input data - chunkId is an identifier returned
+//                                              // by a previous call to useChunk.  The routine should throw an exception or abort if its parameter
+//                                              // is invalid.
 };
 
 #endif // CCTWINPUTDATA_H
