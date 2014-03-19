@@ -1,5 +1,5 @@
-#ifndef CCTWIMPORTDATA_H
-#define CCTWIMPORTDATA_H
+#ifndef CCTWIMPORTER_H
+#define CCTWIMPORTER_H
 
 #include "cctwobject.h"
 #include "qcepimagedata.h"
@@ -9,14 +9,14 @@
 
 class CctwApplication;
 
-class CctwImportData : public CctwObject
+class CctwImporter : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwImportData(CctwApplication *application,
+  explicit CctwImporter(CctwApplication *application,
                           QString name,
                           QObject *parent = 0);
-  virtual ~CctwImportData();
+  virtual ~CctwImporter();
 
 signals:
 
@@ -110,4 +110,4 @@ private:
   QCEP_BOOLEAN_PROPERTY(CheckApproximately)
 };
 
-#endif // CCTWIMPORTDATA_H
+#endif // CCTWIMPORTER_H

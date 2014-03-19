@@ -1,16 +1,16 @@
-#ifndef CCTWCOMPAREDATA_H
-#define CCTWCOMPAREDATA_H
+#ifndef CCTWCOMPARER_H
+#define CCTWCOMPARER_H
 
 #include "cctwobject.h"
 
 class CctwApplication;
 
-class CctwCompareData : public CctwObject
+class CctwComparer : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwCompareData(CctwApplication *application, QString name, QObject *parent = 0);
-  virtual ~CctwCompareData();
+  explicit CctwComparer(CctwApplication *application, QString name, QObject *parent = 0);
+  virtual ~CctwComparer();
 
 signals:
 
@@ -42,4 +42,4 @@ private:
   QCEP_BOOLEAN_PROPERTY(CompareApproximately)
 };
 
-#endif // CCTWCOMPAREDATA_H
+#endif // CCTWCOMPARER_H

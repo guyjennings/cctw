@@ -159,7 +159,7 @@ void CctwqtMainWindow::doSetupImport()
 
 void CctwqtMainWindow::doImport()
 {
-  QtConcurrent::run(m_Application->m_ImportData, &CctwImportData::importData);
+  QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
 
 void CctwqtMainWindow::doSetupInput()

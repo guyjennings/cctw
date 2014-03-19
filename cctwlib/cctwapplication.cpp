@@ -287,9 +287,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   decodeCommandLineArgs(argc, argv);
 
-  m_ImportData       = new CctwImportData(this, "importData", this);
+  m_ImportData       = new CctwImporter(this, "importData", this);
 
-  m_CompareData      = new CctwCompareData(this, "compareData", this);
+  m_CompareData      = new CctwComparer(this, "compareData", this);
 
   m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
 

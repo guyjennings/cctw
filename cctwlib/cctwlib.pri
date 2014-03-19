@@ -29,8 +29,8 @@ SOURCES += \
     $${PWD}/cctwlinearfitter.cpp \
     $${PWD}/cctwpeingresscommand.cpp \
     $${PWD}/cctwapplication.cpp \
-    $${PWD}/cctwimportdata.cpp \
-    $${PWD}/cctwcomparedata.cpp \
+    $${PWD}/cctwimporter.cpp \
+    $${PWD}/cctwcomparer.cpp \
     $${PWD}/cctwinputdatah5.cpp
 
 HEADERS += \
@@ -56,6 +56,6 @@ HEADERS += \
     $${PWD}/cctwlinearfitter.h \
     $${PWD}/cctwpeingresscommand.h \
     $${PWD}/cctwapplication.h \
-    $${PWD}/cctwimportdata.h \
-    $${PWD}/cctwcomparedata.h \
+    $${PWD}/cctwimporter.h \
+    $${PWD}/cctwcomparer.h \
     $${PWD}/cctwinputdatah5.h

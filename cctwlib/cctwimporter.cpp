@@ -1,11 +1,11 @@
-#include "cctwimportdata.h"
+#include "cctwimporter.h"
 #include "cctwapplication.h"
 #include <QDir>
 #include <QtConcurrentRun>
 #include "qcepmutexlocker.h"
 #include "cctwinputdatah5.h"
 
-CctwImportData::CctwImportData(CctwApplication *application, QString name, QObject *parent) :
+CctwImporter::CctwImporter(CctwApplication *application, QString name, QObject *parent) :
   CctwObject(name, parent),
   m_Application(application),
   m_BacklogSemaphore(8),
@@ -34,27 +34,27 @@ CctwImportData::CctwImportData(CctwApplication *application, QString name, QObje
 {
 }
 
-CctwImportData::~CctwImportData()
+CctwImporter::~CctwImporter()
 {
   deleteDataBuffer();
 }
 
-void CctwImportData::clearInputFiles()
+void CctwImporter::clearInputFiles()
 {
   prop_ImagePaths()->clear();
 }
 
-void CctwImportData::changeDirectory(QString path)
+void CctwImporter::changeDirectory(QString path)
 {
   set_ImageDirectory(path);
 }
 
-void CctwImportData::appendInputFile(QString path)
+void CctwImporter::appendInputFile(QString path)
 {
   prop_ImagePaths()->appendValue(path);
 }
 
-void CctwImportData::appendMatchingFiles(QString pattern)
+void CctwImporter::appendMatchingFiles(QString pattern)
 {
   set_ImagePattern(pattern);
 
@@ -73,7 +73,7 @@ void CctwImportData::appendMatchingFiles(QString pattern)
   set_ImagePaths(l);
 }
 
-void CctwImportData::loadDarkImage()
+void CctwImporter::loadDarkImage()
 {
   QString dkPath = get_DarkImagePath();
 
@@ -89,7 +89,7 @@ void CctwImportData::loadDarkImage()
   }
 }
 
-void CctwImportData::importData()
+void CctwImporter::importData()
 {
   QTime startAt;
   startAt.start();
@@ -120,7 +120,7 @@ void CctwImportData::importData()
 
       m_BacklogSemaphore.acquire(1);
       //      printMessage("acquired backlog semaphore");
-      QtConcurrent::run(this, &CctwImportData::importDataFrame,
+      QtConcurrent::run(this, &CctwImporter::importDataFrame,
                         i, inp.filePath(paths[i]));
     }
   } else {
@@ -153,7 +153,7 @@ void CctwImportData::importData()
   }
 }
 
-bool CctwImportData::createOutputFile()
+bool CctwImporter::createOutputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
 
@@ -267,7 +267,7 @@ bool CctwImportData::createOutputFile()
   }
 }
 
-void CctwImportData::closeOutputFile()
+void CctwImporter::closeOutputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
 
@@ -290,7 +290,7 @@ void CctwImportData::closeOutputFile()
   }
 }
 
-void CctwImportData::writeOutputFrame(int num, QcepImageData<double> *img)
+void CctwImporter::writeOutputFrame(int num, QcepImageData<double> *img)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
 
@@ -327,7 +327,7 @@ void CctwImportData::writeOutputFrame(int num, QcepImageData<double> *img)
   }
 }
 
-void CctwImportData::importDataFrame(int num, QString path)
+void CctwImporter::importDataFrame(int num, QString path)
 {
   m_BacklogSemaphore.release(1);
 
@@ -363,12 +363,12 @@ void CctwImportData::importDataFrame(int num, QString path)
   }
 }
 
-void CctwImportData::initializeDataBuffer()
+void CctwImporter::initializeDataBuffer()
 {
   deleteDataBuffer();
 }
 
-void CctwImportData::allocateDataBuffer(hsize_t dimx, hsize_t dimy, hsize_t dimz)
+void CctwImporter::allocateDataBuffer(hsize_t dimx, hsize_t dimy, hsize_t dimz)
 {
   m_InputBufferStride = dimx*dimy;
   m_InputBufferSize   = dimx*dimy*dimz;
@@ -378,7 +378,7 @@ void CctwImportData::allocateDataBuffer(hsize_t dimx, hsize_t dimy, hsize_t dimz
   m_InputBufferCount  = 0;
 }
 
-void CctwImportData::deleteDataBuffer()
+void CctwImporter::deleteDataBuffer()
 {
   if (m_InputBuffer) {
     delete [] m_InputBuffer;
@@ -391,7 +391,7 @@ void CctwImportData::deleteDataBuffer()
   }
 }
 
-void CctwImportData::readDataFrameToBuffer(int i, int nb, QString path)
+void CctwImporter::readDataFrameToBuffer(int i, int nb, QString path)
 {
   if (m_Application && !m_Application->get_Halting()) {
     if (path.length() > 0) {
@@ -442,7 +442,7 @@ void CctwImportData::readDataFrameToBuffer(int i, int nb, QString path)
   }
 }
 
-void CctwImportData::outputDataFromBuffer(int i)
+void CctwImporter::outputDataFromBuffer(int i)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
 
@@ -488,7 +488,7 @@ void CctwImportData::outputDataFromBuffer(int i)
   m_InputBufferCount = 0;
 }
 
-void CctwImportData::checkImportedData()
+void CctwImporter::checkImportedData()
 {
   printMessage("Checking imported data...");
 
@@ -503,7 +503,7 @@ void CctwImportData::checkImportedData()
   }
 }
 
-void CctwImportData::checkImportedDataRigorously()
+void CctwImporter::checkImportedDataRigorously()
 {
   CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
 
@@ -515,7 +515,7 @@ static int randomIndex(int n)
   return qrand()%n;
 }
 
-void CctwImportData::checkImportedDataApproximately()
+void CctwImporter::checkImportedDataApproximately()
 {
   CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
 

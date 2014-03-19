@@ -14,8 +14,8 @@
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwpeingresscommand.h"
-#include "cctwimportdata.h"
-#include "cctwcomparedata.h"
+#include "cctwimporter.h"
+#include "cctwcomparer.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
@@ -131,8 +131,8 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
-  CctwImportData                     *m_ImportData;
-  CctwCompareData                    *m_CompareData;
+  CctwImporter                     *m_ImportData;
+  CctwComparer                    *m_CompareData;
   CctwChunkedData                    *m_InputData;
   CctwChunkedData                    *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;

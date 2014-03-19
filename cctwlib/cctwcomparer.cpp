@@ -1,8 +1,8 @@
-#include "cctwcomparedata.h"
+#include "cctwcomparer.h"
 #include "cctwapplication.h"
 #include "cctwinputdatah5.h"
 
-CctwCompareData::CctwCompareData(CctwApplication *application, QString name, QObject *parent) :
+CctwComparer::CctwComparer(CctwApplication *application, QString name, QObject *parent) :
   CctwObject(name, parent),
   m_Application(application),
   m_FilePath1(m_Application->saver(), this, "filePath1", "", "Path to 1st file"),
@@ -14,11 +14,11 @@ CctwCompareData::CctwCompareData(CctwApplication *application, QString name, QOb
 {
 }
 
-CctwCompareData::~CctwCompareData()
+CctwComparer::~CctwComparer()
 {
 }
 
-void CctwCompareData::compareDatasets()
+void CctwComparer::compareDatasets()
 {
   printMessage("Compare datasets");
 
@@ -31,7 +31,7 @@ void CctwCompareData::compareDatasets()
   }
 }
 
-void CctwCompareData::compareDatasetsRigorously()
+void CctwComparer::compareDatasetsRigorously()
 {
   printMessage("Compare datasets rigorously");
 }
@@ -41,7 +41,7 @@ static int randomIndex(int n)
   return qrand()%n;
 }
 
-void CctwCompareData::compareDatasetsApproximately()
+void CctwComparer::compareDatasetsApproximately()
 {
   printMessage("Compare datasets approximately");
 
