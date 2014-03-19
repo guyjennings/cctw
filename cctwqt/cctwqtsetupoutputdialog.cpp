@@ -25,6 +25,12 @@ CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwC
     ui->m_OutputChunkX->setValue(cksz.x());
     ui->m_OutputChunkY->setValue(cksz.y());
     ui->m_OutputChunkZ->setValue(cksz.z());
+
+    CctwIntVector3D hcksz = m_Data->get_HDFChunkSize();
+
+    ui->m_HDFOutputChunkX->setValue(hcksz.x());
+    ui->m_HDFOutputChunkY->setValue(hcksz.y());
+    ui->m_HDFOutputChunkZ->setValue(hcksz.z());
   }
 }
 
@@ -45,6 +51,12 @@ void CctwqtSetupOutputDialog::accept()
 
     m_Data->set_DataFileName(ui->m_OutputFileName->text());
     m_Data->set_DataSetName(ui->m_OutputDatasetName->text());
+
+    CctwIntVector3D hcksz(ui->m_HDFOutputChunkX->value(),
+                          ui->m_HDFOutputChunkY->value(),
+                          ui->m_HDFOutputChunkZ->value());
+
+    m_Data->set_HDFChunkSize(hcksz);
   }
 
   QDialog::accept();

@@ -294,25 +294,27 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
 
   m_InputData        = new CctwChunkedData(this,
-                                         CctwIntVector3D(256,256,256),
-                                         CctwIntVector3D(32, 32, 32),
-                                         "inputData",
-                                         this);
+                                           CctwIntVector3D(256,256,256),
+                                           CctwIntVector3D(32, 32, 32),
+                                            true,
+                                           "inputData",
+                                           this);
   m_InputData        -> allocateChunks();
 
   m_OutputData       = new CctwChunkedData(this,
-                                          CctwIntVector3D(256,256,256),
-                                          CctwIntVector3D(32, 32, 32),
-                                          "outputData",
-                                          this);
+                                           CctwIntVector3D(256,256,256),
+                                           CctwIntVector3D(32, 32, 32),
+                                           false,
+                                           "outputData",
+                                           this);
   m_OutputData              -> allocateChunks();
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
 
   m_Transformer      = new CctwTransformer(this,
-                                             m_InputData,
-                                             m_OutputData,
-                                             m_Transform, 1, 1, 1, 0,
+                                           m_InputData,
+                                           m_OutputData,
+                                           m_Transform, 1, 1, 1, 0,
                                            "transformer",
                                            this);
 

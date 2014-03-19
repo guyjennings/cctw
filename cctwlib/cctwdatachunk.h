@@ -63,6 +63,8 @@ public slots:
   bool popMergeData(double **data, double **weights);
   void pushMergeData(double *data, double *weights);
 
+  void normalizeChunk();
+
 //  void waitForData();
 //  void finishedWithData();
 

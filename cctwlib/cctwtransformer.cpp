@@ -233,12 +233,13 @@ void CctwTransformer::transform()
 
   printMessage("Starting Transform");
 
-  m_OutputData->beginTransform();
+  m_InputData  -> beginTransform(true);
+  m_OutputData -> beginTransform(false);
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 
-  m_InputData->clearMergeCounters();
-  m_OutputData->clearMergeCounters();
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
 
   CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
@@ -292,6 +293,7 @@ void CctwTransformer::transform()
   set_WallTime(startAt.elapsed()/1000.0);
   set_BlocksMax(CctwDataChunk::maxAllocated());
 
+  m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
   printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));

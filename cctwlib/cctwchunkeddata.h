@@ -6,6 +6,7 @@
 #include "cctwvector3d.h"
 #include "cctwintvector3dproperty.h"
 #include "qcepproperty.h"
+#include "hdf5.h"
 
 class CctwDataChunk;
 class CctwApplication;
@@ -15,8 +16,9 @@ class CctwChunkedData : public CctwObject
   Q_OBJECT
 public:
   explicit CctwChunkedData(CctwApplication *application,
-                           CctwIntVector3D dim,        // Data set dimension
-                           CctwIntVector3D chunkSize,  // Chunk size
+                           CctwIntVector3D dim,          // Data set dimension
+                           CctwIntVector3D chunkSize,    // Chunk size
+                           bool isInput,                 // is it an input
                            QString name,
                            QObject *parent);
   void allocateChunks();
@@ -52,12 +54,17 @@ public slots:
   CctwDataChunk      *readChunk(int n);
   void                writeChunk(int n);
   void                releaseChunk(int n);
-
+  void                normalizeChunk(int n);
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();
 
-  void                beginTransform();
+  void                beginTransform(bool isInput);
   void                endTransform();
+
+  bool                openOutputFile();
+  bool                openInputFile();
+  void                closeOutputFile();
+  void                closeInputFile();
 
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
@@ -84,6 +91,16 @@ private:
 
   Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
   QCEP_INTEGER_PROPERTY(Compression)
+
+  Q_PROPERTY(CctwIntVector3D hdfChunkSize READ get_HDFChunkSize WRITE set_HDFChunkSize)
+  CCTW_INTVECTOR3D_PROPERTY(HDFChunkSize)
+
+  bool                m_IsInput;
+  hid_t               m_FileId;
+  hid_t               m_DatasetId;
+  hid_t               m_DataspaceId;
+
+  QMutex              m_OutputMutex;
 };
 
 #endif // CCTWCHUNKEDDATA_H

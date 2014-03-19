@@ -19,7 +19,7 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
 CctwDataChunk::~CctwDataChunk()
 {
   if (m_ChunkData || m_ChunkWeights) {
-    printf("Anomaly\n");
+    printMessage("Anomaly in CctwDataChunk::~CctwDataChunk");
   }
 
 //  delete [] m_ChunkData;
@@ -395,4 +395,23 @@ void CctwDataChunk::pushMergeData(double *data, double *weights)
   } else {
     m_MergeWeights.push_back(weights);
   }
+}
+
+void CctwDataChunk::normalizeChunk()
+{
+  if (m_Normalized) {
+    printMessage(tr("Chunk %1 - Already normalized").arg(index()));
+  } else if (m_ChunkData && m_ChunkWeights) {
+    int cksz = m_Data->chunkSize().volume();
+
+    for (int i=0; i<cksz; i++) {
+      if (m_ChunkWeights[i] != 0.0) {
+        m_ChunkData[i] /= m_ChunkWeights[i];
+      }
+    }
+
+    deallocateWeights();
+  }
+
+  m_Normalized = true;
 }
