@@ -100,7 +100,7 @@ private:
   hid_t               m_DatasetId;
   hid_t               m_DataspaceId;
 
-  QMutex              m_OutputMutex;
+  QMutex              m_FileAccessMutex;
 };
 
 #endif // CCTWCHUNKEDDATA_H

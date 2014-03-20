@@ -320,16 +320,104 @@ void CctwChunkedData::normalizeChunk(int n)
 
 bool CctwChunkedData::openInputFile()
 {
-  printMessage(tr("CctwChunkedData::openInputFile"));
-
   if (m_FileId >= 0) {
     return true;
   }
+
+  printMessage(tr("About to open input file"));
+
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  int res = true;
+
+  QString fileName = get_DataFileName();
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+
+  if (!f.exists()) {
+    printMessage(tr("File %1 does not exist").arg(fileName));
+    res = false;
+  } else if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
+    printMessage(tr("File %1 exists but is not an hdf file").arg(fileName));
+    res = false;
+  } else {
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+
+    if (fileId < 0) {
+      printMessage(tr("File %1 could not be opened").arg(fileName));
+      res = false;
+    } else {
+      dsetId = H5Dopen(fileId, qPrintable(get_DataSetName()), H5P_DEFAULT);
+
+      if (dsetId >= 0) {
+        dspcId = H5Dget_space(dsetId);
+
+        if (dspcId < 0) {
+          printMessage("Could not get dataspace of existing dataset");
+          res = false;
+        } else {
+          hsize_t dims[3];
+          int ndims = H5Sget_simple_extent_ndims(dspcId);
+
+          if (ndims != 3) {
+            printMessage("Dataspace is not 3-dimensional");
+            res = false;
+          } else {
+            int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+
+            if (ndims2 != 3) {
+              printMessage("Could not get dataspace dimensions");
+              res = false;
+            } else {
+              setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (res == false) {
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+  } else {
+    if (fileId < 0 || dsetId < 0 || dspcId < 0) {
+      printMessage(tr("Anomaly in CctwChunkedData::openInputFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+    }
+
+    m_FileId      = fileId;
+    m_DatasetId   = dsetId;
+    m_DataspaceId = dspcId;
+  }
+
+  return res;
 }
 
 void CctwChunkedData::closeInputFile()
 {
-  printMessage(tr("CctwChunkedData::closeInputFile"));
+  printMessage("About to close input file");
+
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_DataspaceId >= 0) {
+    H5Sclose(m_DataspaceId);
+    m_DataspaceId = -1;
+  }
+
+  if (m_DatasetId >= 0) {
+    H5Dclose(m_DatasetId);
+    m_DatasetId = -1;
+  }
+
+  if (m_FileId >= 0) {
+    H5Fclose(m_FileId);
+    m_FileId = -1;
+  }
 }
 
 bool CctwChunkedData::openOutputFile()
@@ -340,7 +428,7 @@ bool CctwChunkedData::openOutputFile()
 
   printMessage("About to open output file");
 
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
   int res = true;
 
@@ -456,6 +544,11 @@ bool CctwChunkedData::openOutputFile()
     if (dsetId >= 0) H5Dclose(dsetId);
     if (fileId >= 0) H5Fclose(fileId);
   } else {
+    if (fileId < 0 || dsetId < 0 || dspcId < 0) {
+      printMessage(tr("Anomaly in CctwChunkedData::openOutputFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+    }
+
     m_FileId      = fileId;
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
@@ -468,7 +561,7 @@ void CctwChunkedData::closeOutputFile()
 {
   printMessage("About to close output file");
 
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);
@@ -486,6 +579,36 @@ void CctwChunkedData::closeOutputFile()
   }
 }
 
+//CctwDataChunk *CctwChunkedData::readChunk(int n)
+//{
+//  CctwDataChunk *chk = chunk(n);
+
+//  if (chk) {
+//    chk->allocateData();
+//    chk->allocateWeights();
+
+//    CctwIntVector3D size = chunkSize();
+//    CctwIntVector3D start = chunkStart(n);
+
+//    for (int k=0; k<size.z(); k++) {
+//      for (int j=0; j<size.y(); j++) {
+//        for (int i=0; i<size.x(); i++) {
+//          CctwIntVector3D coords(i,j,k);
+
+//          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
+
+//          chk -> setData(i, j, k, val+0.75);
+//          chk -> setWeight(i, j, k, 1.0);
+//        }
+//      }
+//    }
+//  }
+
+//  printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
+
+//  return chk;
+//}
+
 CctwDataChunk *CctwChunkedData::readChunk(int n)
 {
   CctwDataChunk *chk = chunk(n);
@@ -494,21 +617,87 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
     chk->allocateData();
     chk->allocateWeights();
 
-    CctwIntVector3D size = chunkSize();
-    CctwIntVector3D start = chunkStart(n);
+    if (openInputFile()) {
+      printMessage(tr("About to read chunk %1").arg(n));
 
-    for (int k=0; k<size.z(); k++) {
-      for (int j=0; j<size.y(); j++) {
-        for (int i=0; i<size.x(); i++) {
-          CctwIntVector3D coords(i,j,k);
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
+      if (m_FileId >= 0) {
+        hid_t memspace_id = -1;
+        hsize_t offset[3], count[3], stride[3], block[3];
+        CctwIntVector3D st = chunkStart(n);
+        CctwIntVector3D sz = chunkSize();
 
-          chk -> setData(i, j, k, val+0.75);
-          chk -> setWeight(i, j, k, 1.0);
+        printMessage(tr("Reading chunk %1 [%2..%3, %4..%5, %6..%7]")
+                     .arg(n)
+                     .arg(st.x())
+                     .arg(st.x()+sz.x()-1)
+                     .arg(st.y())
+                     .arg(st.y()+sz.y()-1)
+                     .arg(st.z())
+                     .arg(st.z()+sz.z()-1)
+                     );
+
+        count[0] = sz.z();
+        count[1] = sz.y();
+        count[2] = sz.x();
+
+        stride[0] = 1;
+        stride[1] = 1;
+        stride[2] = 1;
+
+        block[0] = 1;
+        block[1] = 1;
+        block[2] = 1;
+
+        offset[0] = st.z();
+        offset[1] = st.y();
+        offset[2] = st.x();
+
+        double *chunkData = chk->dataPointer();
+        double *weightData = chk->weightsPointer();
+
+        if (chunkData == NULL) {
+          printMessage(tr("Anomaly reading chunk %1, data == NULL").arg(n));
+        } else {
+          memspace_id   = H5Screate_simple(3, count, NULL);
+          herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+          herr_t rderr  = H5Dread(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
+
+          if (selerr || rderr) {
+            printMessage(tr("Error reading chunk %1, selerr = %2, rderr = %3")
+                         .arg(n)
+                         .arg(selerr)
+                         .arg(rderr));
+          }
+
+          H5Sclose(memspace_id);
+        }
+
+        if (weightData) {
+          int s = sz.volume();
+
+          for (int i=0; i<s; i++) {
+            weightData[i] = 1;
+          }
         }
       }
     }
+//    CctwIntVector3D size = chunkSize();
+//    CctwIntVector3D start = chunkStart(n);
+
+//    for (int k=0; k<size.z(); k++) {
+//      for (int j=0; j<size.y(); j++) {
+//        for (int i=0; i<size.x(); i++) {
+//          CctwIntVector3D coords(i,j,k);
+
+//          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
+
+//          chk -> setData(i, j, k, val+0.75);
+//          chk -> setWeight(i, j, k, 1.0);
+//        }
+//      }
+//    }
   }
 
   printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
@@ -526,11 +715,11 @@ void CctwChunkedData::writeChunk(int n)
     if (openOutputFile()) {
       printMessage(tr("About to write chunk %1").arg(n));
 
-      QcepMutexLocker lock(__FILE__, __LINE__, &m_OutputMutex);
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
       if (m_FileId >= 0) {
 
-        hid_t memspace_id;
+        hid_t memspace_id = -1;
         hsize_t offset[3], count[3], stride[3], block[3];
 
         CctwIntVector3D st = chunkStart(n);
@@ -564,18 +753,22 @@ void CctwChunkedData::writeChunk(int n)
 
         double *chunkData = chk->dataPointer();
 
-        memspace_id   = H5Screate_simple(3, count, NULL);
-        herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-        herr_t wrterr = H5Dwrite(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
+        if (chunkData == NULL) {
+          printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
+        } else {
+          memspace_id   = H5Screate_simple(3, count, NULL);
+          herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+          herr_t wrterr = H5Dwrite(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
 
-        if (selerr || wrterr) {
-          printMessage(tr("Error writing chunk %1, selerr = %2, wrterr = %3")
-                       .arg(n)
-                       .arg(selerr)
-                       .arg(wrterr));
+          if (selerr || wrterr) {
+            printMessage(tr("Error writing chunk %1, selerr = %2, wrterr = %3")
+                         .arg(n)
+                         .arg(selerr)
+                         .arg(wrterr));
+          }
+
+          H5Sclose(memspace_id);
         }
-
-        H5Sclose(memspace_id);
       }
     }
 

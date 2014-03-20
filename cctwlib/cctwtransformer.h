@@ -32,9 +32,10 @@ public slots:
   QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void transformChunkNumber(int n);
+
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
-  void transformChunkNumber(int n);
   void runTransformChunkNumber(int n);
 
 private:

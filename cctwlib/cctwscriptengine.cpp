@@ -26,6 +26,7 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   qScriptRegisterMetaType(this, CctwIntVector3DProperty::toScriptValue, CctwIntVector3DProperty::fromScriptValue);
   qScriptRegisterMetaType(this, CctwDoubleMatrix3x3Property::toScriptValue, CctwDoubleMatrix3x3Property::fromScriptValue);
   qScriptRegisterMetaType(this, CctwUnitCellProperty::toScriptValue, CctwUnitCellProperty::fromScriptValue);
+//  qScriptRegisterMetaType(this, CctwScriptEngine::QObjectToScriptValue, CctwScriptEngine::QObjectFromScriptValue);
 }
 
 CctwApplication* CctwScriptEngine::application() const
@@ -318,3 +319,13 @@ QScriptValue CctwScriptEngine::partialDependenciesFunc(QScriptContext *context, 
 
   return QScriptValue(engine, "");
 }
+
+//QScriptValue CctwScriptEngine::QObjectToScriptValue(QScriptEngine *engine, const QObjectP &object)
+//{
+//  return engine->newQObject(object);
+//}
+
+//void         CctwScriptEngine::QObjectFromScriptValue(const QScriptValue& value, QObjectP &object)
+//{
+//  object = value.toQObject();
+//}

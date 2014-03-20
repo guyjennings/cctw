@@ -30,6 +30,11 @@ private:
   static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
 
+//  typedef QObject *QObjectP;
+
+//  static QScriptValue QObjectToScriptValue(QScriptEngine *engine, const QObjectP &object);
+//  static void         QObjectFromScriptValue(const QScriptValue& value, QObjectP &object);
+
 private:
   CctwApplication *m_Application;
 };
