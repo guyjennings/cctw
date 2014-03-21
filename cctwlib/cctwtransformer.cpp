@@ -33,7 +33,9 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
   //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used")
+  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used"),
+  m_InputDependencies(m_Application->saver(), this, "inputDependencies", QcepIntVector(), "Input dependencies"),
+  m_OutputDependencies(m_Application->saver(), this, "outputDependencies", QcepIntVector(), "Output dependencies")
 {
   m_ChunksUsed = new int[m_ChunksTotal];
 }
