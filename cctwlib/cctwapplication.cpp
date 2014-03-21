@@ -639,8 +639,9 @@ void CctwApplication::calculateChunkDependencies(int n)
 
             if (opchunk != lastChunk) {
               lastChunk = opchunk;
-              m_InputData->addDependency(n, opchunk);
-              m_OutputData->addDependency(opchunk, n);
+//              m_InputData->addDependency(n, opchunk);
+//              m_OutputData->addDependency(opchunk, n);
+              m_Transformer->addDependency(n, opchunk);
             }
           }
         }
@@ -664,8 +665,10 @@ void CctwApplication::calculateDependencies()
 //  QVector < QFuture < void > > futures;
   waitCompleted();
 
-  m_InputData->clearDependencies();
-  m_OutputData->clearDependencies();
+//  m_InputData->clearDependencies();
+//  m_OutputData->clearDependencies();
+
+  m_Transformer->clearDependencies();
 
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -716,6 +719,8 @@ abort:
 //  foreach (QFuture<void> f, futures) {
 //    f.waitForFinished();
 //  }
+
+  m_Transformer -> completedDependencies();
 
   int msec = startAt.elapsed();
 
@@ -772,8 +777,10 @@ void CctwApplication::saveDependencies(QString path)
 
 void CctwApplication::loadDependencies(QString path)
 {
-  m_InputData -> clearDependencies();
-  m_OutputData -> clearDependencies();
+//  m_InputData -> clearDependencies();
+//  m_OutputData -> clearDependencies();
+
+  m_Transformer -> clearDependencies();
 
   QSettings settings(path, QSettings::IniFormat);
 
@@ -801,14 +808,18 @@ void CctwApplication::loadDependencies(QString path)
 
       CctwIntVector3D ochnk(idx, idy, idz);
 
-      m_InputData->addDependency(in, idn);
-      m_OutputData->addDependency(idn, in);
+//      m_InputData->addDependency(in, idn);
+//      m_OutputData->addDependency(idn, in);
+
+      m_Transformer->addDependency(in, idn);
     }
 
     settings.endArray();
   }
 
   settings.endArray();
+
+  m_Transformer->completedDependencies();
 }
 
 void CctwApplication::reportDependencies()

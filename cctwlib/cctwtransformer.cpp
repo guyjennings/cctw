@@ -7,6 +7,7 @@
 #include <QtConcurrentRun>
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
+#include "qcepmutexlocker.h"
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
 #include <QUrlQuery>
@@ -33,16 +34,34 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
   //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used"),
-  m_InputDependencies(m_Application->saver(), this, "inputDependencies", QcepIntVector(), "Input dependencies"),
-  m_OutputDependencies(m_Application->saver(), this, "outputDependencies", QcepIntVector(), "Output dependencies")
+  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used")
 {
   m_ChunksUsed = new int[m_ChunksTotal];
+
+  qRegisterMetaType< CctwDependencies >("CctwDependencies");
+  qRegisterMetaTypeStreamOperators< CctwDependencies >("CctwDependencies");
 }
 
 CctwTransformer::~CctwTransformer()
 {
   delete [] m_ChunksUsed;
+}
+
+void CctwTransformer::writeSettings(QSettings *set, QString section)
+{
+  CctwObject::writeSettings(set, section);
+
+  set->beginGroup(section+"/dependencies");
+//  set->setValue("dependencies", m_Dependencies);
+  set->endGroup();
+}
+
+void CctwTransformer::readSettings(QSettings *set, QString section)
+{
+  CctwObject::readSettings(set, section);
+
+  set->beginGroup(section+"/dependencies");
+  set->endGroup();
 }
 
 void CctwTransformer::performTests()
@@ -382,4 +401,33 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   }
 
   return res;
+}
+
+void CctwTransformer::clearDependencies()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
+
+  m_Dependencies.clear();
+}
+
+void CctwTransformer::addDependency(int f, int t)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
+
+  m_Dependencies.append(QPair<int,int>(f,t));
+}
+
+void CctwTransformer::completedDependencies()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
+
+//  set_InputDependencies(m_InputDependenciesTemp);
+//  set_OutputDependencies(m_OutputDependenciesTemp);
+}
+
+int CctwTransformer::countDependencies()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
+
+  return m_Dependencies.count();
 }

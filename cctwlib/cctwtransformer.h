@@ -8,6 +8,10 @@
 
 class CctwApplication;
 
+typedef QVector < QPair <int,int> > CctwDependencies;
+
+Q_DECLARE_METATYPE(CctwDependencies)
+
 class CctwTransformer : public CctwObject
 {
   Q_OBJECT
@@ -34,6 +38,15 @@ public slots:
 
   void transformChunkNumber(int n);
 
+  void clearDependencies();
+  void addDependency(int f, int t);
+  void completedDependencies();
+  int  countDependencies();
+
+public:
+  virtual void writeSettings(QSettings *set, QString section);
+  virtual void readSettings(QSettings *set, QString section);
+
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
   void runTransformChunkNumber(int n);
@@ -51,6 +64,8 @@ private:
   CctwIntVector3D          m_ChunkCount;
   int                      m_ChunksTotal;
   int                     *m_ChunksUsed;
+  QMutex                   m_DependencyMutex;
+  CctwDependencies         m_Dependencies;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)
@@ -67,12 +82,6 @@ public:
 
   Q_PROPERTY(int blocksMax READ get_BlocksMax WRITE set_BlocksMax STORED false)
   QCEP_INTEGER_PROPERTY(BlocksMax)
-
-  Q_PROPERTY(QcepIntVector inputDependencies READ get_InputDependencies WRITE set_InputDependencies)
-  QCEP_INTEGER_VECTOR_PROPERTY(InputDependencies)
-
-  Q_PROPERTY(QcepIntVector outputDependencies READ get_OutputDependencies WRITE set_OutputDependencies)
-  QCEP_INTEGER_VECTOR_PROPERTY(OutputDependencies)
 };
 
 #endif // CCTWTRANSFORMER_H
