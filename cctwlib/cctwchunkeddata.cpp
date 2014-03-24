@@ -71,20 +71,21 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
   }
 }
 
-void                CctwChunkedData::setDataSource(QString desc)
+void CctwChunkedData::setDataSource(QString desc)
 {
   printMessage(tr("%1:setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
 
   QUrl url(desc);
 
-//  if (qcepDebug(DEBUG_APP)) {
-    printMessage(tr("scheme:   %1").arg(url.scheme()));
-    printMessage(tr("host:     %1").arg(url.host()));
-    printMessage(tr("path:     %1").arg(url.path()));
-    printMessage(tr("filename: %1").arg(url.fileName()));
-    printMessage(tr("query:    %1").arg(url.query()));
-    printMessage(tr("fragment: %1").arg(url.fragment()));
-//  }
+  printMessage(tr("scheme:   %1").arg(url.scheme()));
+  printMessage(tr("host:     %1").arg(url.host()));
+  printMessage(tr("path:     %1").arg(url.path()));
+  printMessage(tr("filename: %1").arg(url.fileName()));
+  printMessage(tr("query:    %1").arg(url.query()));
+  printMessage(tr("fragment: %1").arg(url.fragment()));
+
+  set_DataFileName(url.fileName());
+  set_DataSetName(url.fragment());
 
   if (url.hasQuery()) {
     QUrlQuery qry(url);
@@ -98,7 +99,75 @@ void                CctwChunkedData::setDataSource(QString desc)
         printMessage(tr(" val:     %1").arg(v.second));
 //      }
     }
+
+    if (qry.hasQueryItem("size")) {
+      QString chunkSize = qry.queryItemValue("size");
+      setChunks(chunkSize);
+    }
+
+    if (qry.hasQueryItem("dim")) {
+      QString dims      = qry.queryItemValue("dim");
+      setDims(dims);
+    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      setDataset(dset);
+    }
   }
+}
+
+void CctwChunkedData::setDims(QString desc)
+{
+  QRegExp r("(\\d+)[Xx,](\\d+)[Xx,](\\d+)", Qt::CaseInsensitive);
+
+  if (r.exactMatch(desc)) {
+    CctwIntVector3D d(r.cap(1).toInt(), r.cap(2).toInt(), r.cap(3).toInt());
+
+    setDimensions(d);
+
+    printMessage(tr("Dataset dimensions set to [%1,%2,%3]").arg(d.x()).arg(d.y()).arg(d.z()));
+  } else {
+    bool ok;
+    int n = desc.toInt(&ok);
+
+    if (ok) {
+      CctwIntVector3D d(n,n,n);
+
+      setDimensions(d);
+
+      printMessage(tr("Dataset dimensions set to [%1,%2,%3]").arg(d.x()).arg(d.y()).arg(d.z()));
+    }
+  }
+}
+
+void CctwChunkedData::setChunks(QString desc)
+{
+  QRegExp r("(\\d+)[Xx,](\\d+)[Xx,](\\d+)", Qt::CaseInsensitive);
+
+  if (r.exactMatch(desc)) {
+    CctwIntVector3D cksz(r.cap(1).toInt(), r.cap(2).toInt(), r.cap(3).toInt());
+
+    setChunkSize(cksz);
+
+    printMessage(tr("Chunk size set to [%1,%2,%3]").arg(cksz.x()).arg(cksz.y()).arg(cksz.z()));
+  } else {
+    bool ok;
+    int n = desc.toInt(&ok);
+
+    if (ok) {
+      CctwIntVector3D cksz(n,n,n);
+
+      setChunkSize(cksz);
+
+      printMessage(tr("Chunk size set to [%1,%2,%3]").arg(cksz.x()).arg(cksz.y()).arg(cksz.z()));
+    }
+  }
+}
+
+void CctwChunkedData::setDataset(QString desc)
+{
+  set_DataSetName(desc);
 }
 
 bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)

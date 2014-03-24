@@ -18,7 +18,11 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("showVersion",  newFunction(showVersionFunc));
   globalObject().setProperty("setThreads",  newFunction(setThreadsFunc));
   globalObject().setProperty("setInputData",  newFunction(setInputDataFunc));
+  globalObject().setProperty("setInputChunks",  newFunction(setInputChunksFunc));
+  globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
+  globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
+  globalObject().setProperty("setOutputDataset",  newFunction(setOutputDatasetFunc));
   globalObject().setProperty("partialTransform",  newFunction(partialTransformFunc));
   globalObject().setProperty("partialDependencies",  newFunction(partialDependenciesFunc));
 
@@ -242,6 +246,58 @@ QScriptValue CctwScriptEngine::setInputDataFunc(QScriptContext *context, QScript
   return QScriptValue(engine, "");
 }
 
+QScriptValue CctwScriptEngine::setInputChunksFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setInputChunks(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setInputDataset(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
 QScriptValue CctwScriptEngine::setOutputDataFunc(QScriptContext *context, QScriptEngine *engine)
 {
   CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
@@ -262,6 +318,84 @@ QScriptValue CctwScriptEngine::setOutputDataFunc(QScriptContext *context, QScrip
 
     if (app) {
       app->setOutputData(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setOutputDimsFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setOutputDims(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setOutputChunksFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setOutputChunks(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setOutputDataset(msg);
     }
   }
 

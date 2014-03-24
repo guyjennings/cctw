@@ -34,6 +34,9 @@ public:
 
 public slots:
   virtual void        setDataSource(QString desc);
+  virtual void        setDims(QString desc);
+  virtual void        setChunks(QString desc);
+  virtual void        setDataset(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
 

@@ -57,7 +57,12 @@ public slots:
   void readSettings(QString path);
 
   void setInputData(QString data);
+  void setInputChunks(QString data);
+  void setInputDataset(QString data);
   void setOutputData(QString data);
+  void setOutputDims(QString data);
+  void setOutputChunks(QString data);
+  void setOutputDataset(QString data);
 
   void partialTransform(QString desc);
   void partialDependencies(QString desc);

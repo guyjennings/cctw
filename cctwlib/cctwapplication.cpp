@@ -149,13 +149,26 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 #ifdef Q_OS_UNIX
   int c;
 
+  typedef enum {
+    argInputChunks = 10,
+    argInputDataset,
+    argOutputDims,
+    argOutputChunks,
+    argOutputDataset
+  };
+
   while (1) {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
       {"version", no_argument, 0, 'v'},
       {"threads", required_argument, 0, 'j'},
       {"input", required_argument, 0, 'i'},
+      {"inputchunks", required_argument, 0, argInputChunks},
+      {"inputdataset", required_argument, 0, argInputDataset},
       {"output", required_argument, 0, 'o'},
+      {"outputdims", required_argument, 0, argOutputDims},
+      {"outputchunks", required_argument, 0, argOutputChunks},
+      {"outputdataset", required_argument, 0, argOutputDataset},
       {"transform", optional_argument, 0, 't'},
       {"depends", optional_argument, 0, 'd'},
       {"debug", required_argument, 0, 'D'},
@@ -193,8 +206,24 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("setInputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case argInputChunks:
+      startupCommand(tr("setInputChunks(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argInputDataset:
+      startupCommand(tr("setInputDataset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case 'o':
       startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOutputChunks:
+      startupCommand(tr("setOutputChunks(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOutputDataset:
+      startupCommand(tr("setOutputDataset(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 't':
@@ -443,7 +472,12 @@ void CctwApplication::showHelp(QString about)
               "--version, -v                    display version info\n"
               "--threads <n>, -j <n>            set number of worker threads\n"
               "--input <f>, -i <f>              specify input data (url format)\n"
+              "--inputchunks <cks>              specify input chunk size (e.g. 32x32x32 or 32)\n"
+              "--inputdataset <dsn>             specify input dataset path\n"
               "--output <f>, -o <f>             specify output data (url format)\n"
+              "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
+              "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
+              "--outputdataset <dsn>            specify output dataset path\n"
               "--transform {<n/m>}, -t {<n/m>}  transform all or part of the data\n"
               "--depends {<n/m>}, -d {<n/m>}    calculate dependencies for all or part of the data\n"
               "--debug <n>, -D <n>              set debug level\n"
@@ -468,7 +502,19 @@ void CctwApplication::showVersion()
 
 void CctwApplication::setThreads(QString desc)
 {
-  printMessage(tr("Set threads to %1").arg(desc));
+  printMessage(tr("Set number of pool threads to %1").arg(desc));
+
+  bool ok;
+
+  int n = desc.toInt(&ok);
+
+  if (ok) {
+    if (n == 0) {
+      QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount());
+    } else {
+      QThreadPool::globalInstance()->setMaxThreadCount(n);
+    }
+  }
 }
 
 void CctwApplication::setInputData(QString data)
@@ -480,12 +526,57 @@ void CctwApplication::setInputData(QString data)
   }
 }
 
+void CctwApplication::setInputChunks(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set input chunk size to %1").arg(data));
+
+    m_InputData->setChunks(data);
+  }
+}
+
+void CctwApplication::setInputDataset(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set input data set name to %1").arg(data));
+
+    m_InputData->setDataset(data);
+  }
+}
+
 void CctwApplication::setOutputData(QString data)
 {
   if (m_OutputData) {
     printMessage(tr("Set output data to %1").arg(data));
 
     m_OutputData->setDataSource(data);
+  }
+}
+
+void CctwApplication::setOutputDims(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output dataset dimensions to %1").arg(data));
+
+    m_OutputData->setDims(data);
+  }
+}
+
+void CctwApplication::setOutputChunks(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output chunk size to %1").arg(data));
+
+    m_OutputData->setChunks(data);
+  }
+}
+
+void CctwApplication::setOutputDataset(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output data set name to %1").arg(data));
+
+    m_OutputData->setDataset(data);
   }
 }
 
