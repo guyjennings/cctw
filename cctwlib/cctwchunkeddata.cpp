@@ -625,8 +625,8 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
       if (m_FileId >= 0) {
         hid_t memspace_id = -1;
         hsize_t offset[3], count[3], stride[3], block[3];
-        CctwIntVector3D st = chunkStart(n);
-        CctwIntVector3D sz = chunkSize();
+        CctwIntVector3D st = chk -> chunkStart();
+        CctwIntVector3D sz = chk -> chunkSize();
 
         printMessage(tr("Reading chunk %1 [%2..%3, %4..%5, %6..%7]")
                      .arg(n)
@@ -722,8 +722,8 @@ void CctwChunkedData::writeChunk(int n)
         hid_t memspace_id = -1;
         hsize_t offset[3], count[3], stride[3], block[3];
 
-        CctwIntVector3D st = chunkStart(n);
-        CctwIntVector3D sz = chunkSize();
+        CctwIntVector3D st = chk -> chunkStart();
+        CctwIntVector3D sz = chk -> chunkSize();
 
         printMessage(tr("Writing chunk %1 [%2..%3, %4..%5, %6..%7]")
                      .arg(n)

@@ -156,8 +156,8 @@ void CctwTransformer::transformChunkNumber(int n)
   CctwDataChunk *inputChunk = m_InputData->readChunk(n);
   CctwDataChunk *lastChunk = NULL;
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(n);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
+  CctwIntVector3D chStart = inputChunk->chunkStart();
+  CctwIntVector3D chSize  = inputChunk->chunkSize();
   CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
   if (inputChunk) {
@@ -350,29 +350,33 @@ QcepIntList CctwTransformer::dependencies(int n)
 
   int lastChunkIndex = -1;
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(n);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+  CctwDataChunk   *chunk = m_InputData->chunk(n);
 
   QList<int>      outputChunks;
   QcepIntList     result;
 
-  if (m_InputData->containsChunk(idx.x(), idx.y(), idx.z())) {
-    for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
-          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+  if (chunk) {
+    CctwIntVector3D chStart = chunk->chunkStart();
+    CctwIntVector3D chSize  = chunk->chunkSize();
+    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
-          if (m_OutputData->containsPixel(pixels)) {
-            int opchunk = m_OutputData->chunkContaining(pixels);
+    if (m_InputData->containsChunk(idx.x(), idx.y(), idx.z())) {
+      for (int z=0; z<chSize.z(); z++) {
+        for (int y=0; y<chSize.y(); y++) {
+          for (int x=0; x<chSize.x(); x++) {
+            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+            CctwDoubleVector3D xfmcoord = transform.forward(coords);
+            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
-            if (opchunk != lastChunkIndex) {
-              lastChunkIndex = opchunk;
+            if (m_OutputData->containsPixel(pixels)) {
+              int opchunk = m_OutputData->chunkContaining(pixels);
 
-              if (!outputChunks.contains(lastChunkIndex)) {
-                outputChunks.append(opchunk);
+              if (opchunk != lastChunkIndex) {
+                lastChunkIndex = opchunk;
+
+                if (!outputChunks.contains(lastChunkIndex)) {
+                  outputChunks.append(opchunk);
+                }
               }
             }
           }

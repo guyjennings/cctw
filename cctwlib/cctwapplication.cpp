@@ -616,32 +616,36 @@ void CctwApplication::calculateChunkDependencies(int n)
   if (!get_Halting()) {
     CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), NULL);
 
-//    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+    //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
-    CctwIntVector3D chStart = m_InputData->chunkStart(n);
-    CctwIntVector3D chSize  = m_InputData->chunkSize();
-    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-    int lastChunk = -1;
+    CctwDataChunk  *chunk   = m_InputData->chunk(n);
 
-    for (int z=0; z<chSize.z(); z++) {
+    if (chunk) {
+      CctwIntVector3D chStart = chunk->chunkStart();
+      CctwIntVector3D chSize  = chunk->chunkSize();
+      CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+      int lastChunk = -1;
 
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+      for (int z=0; z<chSize.z(); z++) {
 
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
+        for (int y=0; y<chSize.y(); y++) {
+          for (int x=0; x<chSize.x(); x++) {
+            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
 
-          CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
-              CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+            CctwDoubleVector3D xfmcoord = transform.forward(coords);
 
-          if (m_OutputData->containsPixel(pixels)) {
-            int opchunk  = m_OutputData->chunkContaining(pixels);
+            CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
+                CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
-            if (opchunk != lastChunk) {
-              lastChunk = opchunk;
-//              m_InputData->addDependency(n, opchunk);
-//              m_OutputData->addDependency(opchunk, n);
-              m_Transformer->addDependency(n, opchunk);
+            if (m_OutputData->containsPixel(pixels)) {
+              int opchunk  = m_OutputData->chunkContaining(pixels);
+
+              if (opchunk != lastChunk) {
+                lastChunk = opchunk;
+                //              m_InputData->addDependency(n, opchunk);
+                //              m_OutputData->addDependency(opchunk, n);
+                m_Transformer->addDependency(n, opchunk);
+              }
             }
           }
         }

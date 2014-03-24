@@ -7,6 +7,8 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
   CctwObject(name, parent),
   m_Data(data),
   m_ChunkIndex(index),
+  m_ChunkStart(calculateChunkStart()),
+  m_ChunkSize(calculateChunkSize()),
   m_ChunkData(NULL),
   m_ChunkWeights(NULL),
   m_Normalized(0),
@@ -14,6 +16,42 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
   m_WeightsWritten(0),
   m_MergeCounter(0)
 {
+}
+
+CctwIntVector3D CctwDataChunk::calculateChunkStart()
+{
+  if (m_Data) {
+    return m_Data -> chunkStart(m_ChunkIndex);
+  } else {
+    printMessage(tr("Chunk %1, m_Data == NULL").arg(m_ChunkIndex));
+    return CctwIntVector3D(0,0,0);
+  }
+}
+
+CctwIntVector3D CctwDataChunk::calculateChunkSize()
+{
+  if (m_Data) {
+    CctwIntVector3D chksize = m_Data->chunkSize();
+    CctwIntVector3D chkend = m_ChunkStart + chksize;
+    CctwIntVector3D dim    = m_Data->dimensions();
+
+    if (chkend.x() > dim.x()) {
+      chksize.x() = dim.x() - m_ChunkStart.x();
+    }
+
+    if (chkend.y() > dim.y()) {
+      chksize.y() = dim.y() - m_ChunkStart.y();
+    }
+
+    if (chkend.z() > dim.z()) {
+      chksize.z() = dim.z() - m_ChunkStart.z();
+    }
+
+    return chksize;
+  } else {
+    printMessage(tr("Chunk %1, m_Data == NULL").arg(m_ChunkIndex));
+    return CctwIntVector3D(0,0,0);
+  }
 }
 
 CctwDataChunk::~CctwDataChunk()
@@ -57,14 +95,19 @@ bool CctwDataChunk::weightsAllocated() const
   return m_ChunkWeights;
 }
 
+CctwIntVector3D CctwDataChunk::chunkStart()
+{
+  return m_ChunkStart;
+}
+
 CctwIntVector3D CctwDataChunk::chunkSize()
 {
-  return m_Data->chunkSize();
+  return m_ChunkSize;
 }
 
 int CctwDataChunk::allocateData()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
   double *newData = allocateBuffer();
 
@@ -77,7 +120,7 @@ int CctwDataChunk::allocateData()
 
 int CctwDataChunk::allocateWeights()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
   double *newWeights = allocateBuffer();
 
@@ -90,7 +133,7 @@ int CctwDataChunk::allocateWeights()
 
 int CctwDataChunk::deallocateData()
 {
-  int res = m_ChunkData ? m_Data->chunkSize().volume()*sizeof(double) : 0;
+  int res = m_ChunkData ? m_ChunkSize.volume()*sizeof(double) : 0;
 
   releaseBuffer(m_ChunkData);
 
@@ -101,7 +144,7 @@ int CctwDataChunk::deallocateData()
 
 int CctwDataChunk::deallocateWeights()
 {
-  int res = m_ChunkWeights ? m_Data->chunkSize().volume()*sizeof(double) : 0;
+  int res = m_ChunkWeights ? m_ChunkSize.volume()*sizeof(double) : 0;
 
   releaseBuffer(m_ChunkWeights);
 
@@ -112,16 +155,14 @@ int CctwDataChunk::deallocateWeights()
 
 int CctwDataChunk::pixelOffset(int lx, int ly, int lz)
 {
-  CctwIntVector3D cksz = m_Data->chunkSize();
-
-  if (lx < 0 || lx >= cksz.x()) {
+  if (lx < 0 || lx >= m_ChunkSize.x()) {
     return -1;
-  } else if (ly < 0 || ly >= cksz.y()) {
+  } else if (ly < 0 || ly >= m_ChunkSize.y()) {
     return -1;
-  } else if (lz < 0 || lz >= cksz.z()) {
+  } else if (lz < 0 || lz >= m_ChunkSize.z()) {
     return -1;
   } else {
-    int offset = (lz * cksz.y() + ly)*cksz.x() + lx;
+    int offset = (lz * m_ChunkSize.y() + ly)*m_ChunkSize.x() + lx;
     return offset;
   }
 }
@@ -182,7 +223,7 @@ int CctwDataChunk::maxAllocated()
 
 double *CctwDataChunk::allocateBuffer()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
   int nalloc = g_Allocated.fetchAndAddOrdered(1);
 
@@ -310,6 +351,8 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
           iw = w;
           w = NULL;
         }
+      } else {
+        printMessage(tr("Anomaly merging data chunk %1").arg(m_ChunkIndex));
       }
 
       releaseBuffer(d);
@@ -402,7 +445,7 @@ void CctwDataChunk::normalizeChunk()
   if (m_Normalized) {
     printMessage(tr("Chunk %1 - Already normalized").arg(index()));
   } else if (m_ChunkData && m_ChunkWeights) {
-    int cksz = m_Data->chunkSize().volume();
+    int cksz = m_ChunkSize.volume();
 
     for (int i=0; i<cksz; i++) {
       if (m_ChunkWeights[i] != 0.0) {

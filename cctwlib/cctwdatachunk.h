@@ -44,6 +44,7 @@ public slots:
   double *dataPointer();
   double *weightsPointer();
 
+  CctwIntVector3D chunkStart();
   CctwIntVector3D chunkSize();
 
   void clearDependencies();
@@ -74,10 +75,14 @@ public slots:
 private:
   double *allocateBuffer();
   void releaseBuffer(double *);
+  CctwIntVector3D calculateChunkStart();
+  CctwIntVector3D calculateChunkSize();
 
 private:
   CctwChunkedData                           *m_Data;
   int                                        m_ChunkIndex;
+  CctwIntVector3D                            m_ChunkStart;
+  CctwIntVector3D                            m_ChunkSize;
   double                                    *m_ChunkData;
   double                                    *m_ChunkWeights;
   int                                        m_Normalized;
