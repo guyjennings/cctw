@@ -660,6 +660,15 @@ void CctwApplication::writeSettings()
 
   printMessage(tr("Writing default settings"));
 
+  writeSettings(&settings);
+}
+
+void CctwApplication::clearWriteSettings()
+{
+  QSettings settings("xray.aps.anl.gov", "cctw");
+
+  printMessage(tr("Writing default settings"));
+
   settings.clear();
 
   writeSettings(&settings);
@@ -672,8 +681,6 @@ void CctwApplication::writeSettings(QString path)
   printMessage(tr("Writing settings to %1").arg(path));
 
   set_SettingsPath(path);
-
-  settings.clear();
 
   writeSettings(&settings);
 }

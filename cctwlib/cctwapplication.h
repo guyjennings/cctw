@@ -51,6 +51,7 @@ public slots:
 
   void setThreads(QString desc);
 
+  void clearWriteSettings();
   void writeSettings();
   void readSettings();
   void writeSettings(QString path);
