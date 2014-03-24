@@ -218,6 +218,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case argOutputDims:
+      startupCommand(tr("setOutputDims(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case argOutputChunks:
       startupCommand(tr("setOutputChunks(\"%1\");").arg(addSlashes(optarg)));
       break;
