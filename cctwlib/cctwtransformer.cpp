@@ -423,6 +423,14 @@ void CctwTransformer::completedDependencies()
 
 //  set_InputDependencies(m_InputDependenciesTemp);
 //  set_OutputDependencies(m_OutputDependenciesTemp);
+
+  m_InputData->clearDependencies();
+  m_OutputData->clearDependencies();
+
+  foreach (CctwDependency p, m_Dependencies) {
+    m_InputData->addDependency(p.first, p.second);
+    m_OutputData->addDependency(p.second, p.first);
+  }
 }
 
 int CctwTransformer::countDependencies()

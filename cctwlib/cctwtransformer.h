@@ -8,7 +8,8 @@
 
 class CctwApplication;
 
-typedef QVector < QPair <int,int> > CctwDependencies;
+typedef QPair<int,int>             CctwDependency;
+typedef QVector < CctwDependency > CctwDependencies;
 
 Q_DECLARE_METATYPE(CctwDependencies)
 
