@@ -136,8 +136,8 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
-  CctwImporter                     *m_ImportData;
-  CctwComparer                    *m_CompareData;
+  CctwImporter                       *m_ImportData;
+  CctwComparer                       *m_CompareData;
   CctwChunkedData                    *m_InputData;
   CctwChunkedData                    *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;

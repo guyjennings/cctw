@@ -21,6 +21,7 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputChunks",  newFunction(setInputChunksFunc));
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
+  globalObject().setProperty("setOutputDims",  newFunction(setOutputDimsFunc));
   globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
   globalObject().setProperty("setOutputDataset",  newFunction(setOutputDatasetFunc));
   globalObject().setProperty("partialTransform",  newFunction(partialTransformFunc));
