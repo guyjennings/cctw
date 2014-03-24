@@ -40,10 +40,11 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifndef NO_GUI
   m_Window(NULL),
 #endif
-  m_InputData(NULL),
-  m_OutputData(NULL),
   m_Parameters(NULL),
   m_ImportData(NULL),
+  m_CompareData(NULL),
+  m_InputData(NULL),
+  m_OutputData(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
   m_ScriptEngine(NULL),
@@ -149,7 +150,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 #ifdef Q_OS_UNIX
   int c;
 
-  typedef enum {
+  enum {
     argInputChunks = 10,
     argInputDataset,
     argOutputDims,
@@ -291,6 +292,8 @@ static herr_t cctwH5print(unsigned n, const H5E_error2_t *eptr, void *data)
   if (app) {
     app->printMessage(QObject::tr("%1:%2 : %3").arg(eptr->file_name).arg(eptr->line).arg(eptr->desc));
   }
+
+  return 0;
 }
 
 void CctwApplication::printHDF5errors()
@@ -307,6 +310,8 @@ static herr_t cctwH5error(hid_t h, void *data)
   if (app) {
     app->printHDF5errors();
   }
+
+  return 0;
 }
 
 void CctwApplication::installHDF5ErrorHandler()
@@ -468,7 +473,7 @@ void CctwApplication::showHelp(QString about)
 {
   printLine(tr(
               "\n"
-              "usage: cctw <options>\n"
+              "usage: %1 <options>\n"
               "\n"
               "where options are:\n"
               "\n"
@@ -491,7 +496,7 @@ void CctwApplication::showHelp(QString about)
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
               "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
-              ));
+              ).arg(arguments().at(0)));
 }
 
 void CctwApplication::showVersion()
