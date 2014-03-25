@@ -11,6 +11,7 @@
 #include "cctwqtsetuptransformdialog.h"
 #include "cctwqtsetupcomparedialog.h"
 #include "cctwqtsetupcheckimportdialog.h"
+#include "cctwvector3d.h"
 
 namespace Ui {
 class CctwqtMainWindow;
@@ -54,6 +55,11 @@ public slots:
 
   void doCompareHDF5();
   void doCheckImportedData();
+
+  void updateImportImagePaths(QStringList p);
+  void updateImportChunkSize(CctwIntVector3D sz);
+  void updateInputHDF5ChunkSize(CctwIntVector3D sz);
+  void updateOutputHDF5ChunkSize(CctwIntVector3D sz);
 
 private:
   bool wantToClose();

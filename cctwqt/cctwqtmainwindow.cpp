@@ -61,10 +61,48 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
-  app->m_InputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
-  app->m_InputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
-  app->m_OutputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
-  app->m_OutputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
+
+  CctwImporter *import = app->m_ImportData;
+
+  if (import) {
+    import->prop_DarkImagePath()->linkTo(ui->m_ImportDarkImagePath);
+    import->prop_ImageDirectory()->linkTo(ui->m_ImportDataDirectory);
+    import->prop_OutputPath()->linkTo(ui->m_ImportOutputPath);
+    import->prop_OutputDataset()->linkTo(ui->m_ImportOutputDataset);
+    import->prop_Compression()->linkTo(ui->m_ImportOutputCompression);
+
+    connect(import->prop_ImagePaths(), SIGNAL(valueChanged(QStringList,int)), this, SLOT(updateImportImagePaths(QStringList)));
+    connect(import->prop_ChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateImportChunkSize(CctwIntVector3D)));
+
+    updateImportImagePaths(import->get_ImagePaths());
+    updateImportChunkSize(import->get_ChunkSize());
+  }
+
+  CctwChunkedData *inputData = app->m_InputData;
+
+  if (inputData) {
+    inputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
+    inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
+
+    connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
+
+    inputData->prop_Compression()->linkTo(ui->m_InputCompression);
+
+    updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
+  }
+
+  CctwChunkedData *outputData = app->m_OutputData;
+
+  if (outputData) {
+    outputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
+    outputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
+
+    connect(outputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateOutputHDF5ChunkSize(CctwIntVector3D)));
+
+    outputData->prop_Compression()->linkTo(ui->m_OutputCompression);
+
+    updateOutputHDF5ChunkSize(outputData->get_HDFChunkSize());
+  }
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
@@ -146,6 +184,19 @@ void CctwqtMainWindow::doEvaluateCommand()
   QMetaObject::invokeMethod(m_Application, "evaluateCommand", Q_ARG(QString, cmd));
 }
 
+void CctwqtMainWindow::updateImportImagePaths(QStringList p)
+{
+  ui->m_ImportDataImages->clear();
+  ui->m_ImportDataImages->addItems(p);
+}
+
+void CctwqtMainWindow::updateImportChunkSize(CctwIntVector3D sz)
+{
+  ui->m_ImportOutputChunkX->setValue(sz.x());
+  ui->m_ImportOutputChunkY->setValue(sz.y());
+  ui->m_ImportOutputChunkZ->setValue(sz.z());
+}
+
 void CctwqtMainWindow::doSetupImport()
 {
   if (m_SetupImportDialog == NULL) {
@@ -162,6 +213,13 @@ void CctwqtMainWindow::doImport()
   QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
 
+void CctwqtMainWindow::updateInputHDF5ChunkSize(CctwIntVector3D sz)
+{
+  ui->m_InputChunkX->setValue(sz.x());
+  ui->m_InputChunkY->setValue(sz.y());
+  ui->m_InputChunkZ->setValue(sz.z());
+}
+
 void CctwqtMainWindow::doSetupInput()
 {
   if (m_SetupInputDialog == NULL) {
@@ -171,6 +229,13 @@ void CctwqtMainWindow::doSetupInput()
 
   m_SetupInputDialog->raise();
   m_SetupInputDialog->activateWindow();
+}
+
+void CctwqtMainWindow::updateOutputHDF5ChunkSize(CctwIntVector3D sz)
+{
+  ui->m_OutputChunkX->setValue(sz.x());
+  ui->m_OutputChunkY->setValue(sz.y());
+  ui->m_OutputChunkZ->setValue(sz.z());
 }
 
 void CctwqtMainWindow::doSetupOutput()
