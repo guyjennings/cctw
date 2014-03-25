@@ -85,10 +85,15 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
 
     connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
+    connect(inputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
+    connect(inputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
+    connect(inputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
 
     inputData->prop_Compression()->linkTo(ui->m_InputCompression);
 
     updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
+
+    updateInputDimensions();
   }
 
   CctwChunkedData *outputData = app->m_OutputData;
@@ -98,10 +103,15 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     outputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
 
     connect(outputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateOutputHDF5ChunkSize(CctwIntVector3D)));
+    connect(outputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
+    connect(outputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
+    connect(outputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
 
     outputData->prop_Compression()->linkTo(ui->m_OutputCompression);
 
     updateOutputHDF5ChunkSize(outputData->get_HDFChunkSize());
+
+    updateOutputDimensions();
   }
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
@@ -213,11 +223,32 @@ void CctwqtMainWindow::doImport()
   QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
 
+void CctwqtMainWindow::updateInputDimensions()
+{
+  if (m_Application) {
+    CctwChunkedData *inputData = m_Application->m_InputData;
+
+    if (inputData) {
+      ui->m_InputDimensionsX->setValue(inputData->dimensions().x());
+      ui->m_InputDimensionsY->setValue(inputData->dimensions().y());
+      ui->m_InputDimensionsZ->setValue(inputData->dimensions().z());
+
+      ui->m_InputCountX->setValue(inputData->chunkCount().x());
+      ui->m_InputCountY->setValue(inputData->chunkCount().y());
+      ui->m_InputCountZ->setValue(inputData->chunkCount().z());
+
+      ui->m_InputChunkX->setValue(inputData->chunkSize().x());
+      ui->m_InputChunkY->setValue(inputData->chunkSize().y());
+      ui->m_InputChunkZ->setValue(inputData->chunkSize().z());
+    }
+  }
+}
+
 void CctwqtMainWindow::updateInputHDF5ChunkSize(CctwIntVector3D sz)
 {
-  ui->m_InputChunkX->setValue(sz.x());
-  ui->m_InputChunkY->setValue(sz.y());
-  ui->m_InputChunkZ->setValue(sz.z());
+  ui->m_InputHDFChunkX->setValue(sz.x());
+  ui->m_InputHDFChunkY->setValue(sz.y());
+  ui->m_InputHDFChunkZ->setValue(sz.z());
 }
 
 void CctwqtMainWindow::doSetupInput()
@@ -231,11 +262,32 @@ void CctwqtMainWindow::doSetupInput()
   m_SetupInputDialog->activateWindow();
 }
 
+void CctwqtMainWindow::updateOutputDimensions()
+{
+  if (m_Application) {
+    CctwChunkedData *outputData = m_Application->m_OutputData;
+
+    if (outputData) {
+      ui->m_OutputDimensionsX->setValue(outputData->dimensions().x());
+      ui->m_OutputDimensionsY->setValue(outputData->dimensions().y());
+      ui->m_OutputDimensionsZ->setValue(outputData->dimensions().z());
+
+      ui->m_OutputCountX->setValue(outputData->chunkCount().x());
+      ui->m_OutputCountY->setValue(outputData->chunkCount().y());
+      ui->m_OutputCountZ->setValue(outputData->chunkCount().z());
+
+      ui->m_OutputChunkX->setValue(outputData->chunkSize().x());
+      ui->m_OutputChunkY->setValue(outputData->chunkSize().y());
+      ui->m_OutputChunkZ->setValue(outputData->chunkSize().z());
+    }
+  }
+}
+
 void CctwqtMainWindow::updateOutputHDF5ChunkSize(CctwIntVector3D sz)
 {
-  ui->m_OutputChunkX->setValue(sz.x());
-  ui->m_OutputChunkY->setValue(sz.y());
-  ui->m_OutputChunkZ->setValue(sz.z());
+  ui->m_OutputHDFChunkX->setValue(sz.x());
+  ui->m_OutputHDFChunkY->setValue(sz.y());
+  ui->m_OutputHDFChunkZ->setValue(sz.z());
 }
 
 void CctwqtMainWindow::doSetupOutput()

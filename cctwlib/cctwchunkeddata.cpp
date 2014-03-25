@@ -57,6 +57,9 @@ void CctwChunkedData::setDimensions(CctwIntVector3D dim)
     m_ChunkCount = ((m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1));
 
     allocateChunks();
+
+    emit dimensionsChanged(m_Dimensions);
+    emit chunkCountChanged(m_ChunkCount);
   }
 }
 
@@ -68,6 +71,9 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
     m_ChunkCount = ((m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1));
 
     allocateChunks();
+
+    emit chunkSizeChanged(m_ChunkSize);
+    emit chunkCountChanged(m_ChunkCount);
   }
 }
 

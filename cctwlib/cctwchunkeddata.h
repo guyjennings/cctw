@@ -24,7 +24,10 @@ public:
   void allocateChunks();
 
 signals:
-  
+  void chunkSizeChanged(CctwIntVector3D sz);
+  void dimensionsChanged(CctwIntVector3D dm);
+  void chunkCountChanged(CctwIntVector3D ct);
+
 public:
   CctwIntVector3D     dimensions() const   { return m_Dimensions; }
   CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
