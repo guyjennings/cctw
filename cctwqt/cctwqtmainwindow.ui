@@ -6,217 +6,386 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
-    <height>841</height>
+    <width>1315</width>
+    <height>790</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>CCTW - Crystal Coordinate Transformation Workflow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="5">
-       <widget class="QPushButton" name="m_SetupInputButton">
-        <property name="text">
-         <string>Setup Input...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_InputDataFileName"/>
-      </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QLabel" name="m_ImportData">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QPushButton" name="m_ImportButton">
-        <property name="text">
-         <string>Import...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="5">
-       <widget class="QPushButton" name="m_SetupOutputButton">
-        <property name="text">
-         <string>Setup Output...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QPushButton" name="m_PEMetaDataButton">
-        <property name="text">
-         <string>PE MetaData...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_InputDataSetName"/>
-      </item>
-      <item row="6" column="1">
-       <widget class="QPushButton" name="m_SaveDepsButton">
-        <property name="text">
-         <string>Save Deps...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_OutputDataFileName"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Input Data File:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Import Data:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="5">
-       <widget class="QCheckBox" name="m_Halting">
-        <property name="text">
-         <string>Halting?</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QPushButton" name="m_LoadDepsButton">
-        <property name="text">
-         <string>Load Deps...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="4">
-       <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
-        <property name="text">
-         <string>Analyze Spec Data...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="m_SetupImportButton">
-        <property name="text">
-         <string>Setup Import...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QPushButton" name="m_TransformButton">
-        <property name="text">
-         <string>Transform...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QPushButton" name="m_SetupTransformButton">
-        <property name="text">
-         <string>Setup Transform...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Output Data File:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="5">
-       <widget class="QPushButton" name="m_HaltButton">
-        <property name="text">
-         <string>Halt</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QPushButton" name="m_DependenciesButton">
-        <property name="text">
-         <string>Dependencies</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Input Dataset Name:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Output Dataset Name:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="4">
-       <widget class="QLineEdit" name="m_OutputDataSetName"/>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Messages</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="m_OutputMessages">
-          <property name="readOnly">
-           <bool>true</bool>
+      <widget class="QTabWidget" name="m_ParametersTabs">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="m_ImportTab">
+        <attribute name="title">
+         <string>Import</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0" colspan="3">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>498</width>
+             <height>580</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>393</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="m_SetupImportButton">
+           <property name="text">
+            <string>Setup Import...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="m_ImportButton">
+           <property name="text">
+            <string>Import...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="m_InputTab">
+        <attribute name="title">
+         <string>Input</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="1" column="0" colspan="2">
+          <widget class="QLineEdit" name="m_InputDataFileName"/>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QLineEdit" name="m_InputDataSetName"/>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>508</width>
+             <height>516</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="0">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>501</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="1">
+          <widget class="QPushButton" name="m_SetupInputButton">
+           <property name="text">
+            <string>Setup Input...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Input Data File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Input Dataset Name:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="m_OutputTab">
+        <attribute name="title">
+         <string>Output</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="0" colspan="2">
+          <widget class="QLineEdit" name="m_OutputDataFileName"/>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QLineEdit" name="m_OutputDataSetName"/>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>528</width>
+             <height>470</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="0">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>490</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="1">
+          <widget class="QPushButton" name="m_SetupOutputButton">
+           <property name="text">
+            <string>Setup Output...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Output Data File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Output Dataset Name:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="m_DependenciesTab">
+        <attribute name="title">
+         <string>Dependencies</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0" colspan="4">
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>548</width>
+             <height>580</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>253</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="m_SaveDepsButton">
+           <property name="text">
+            <string>Save Deps...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="m_LoadDepsButton">
+           <property name="text">
+            <string>Load Deps...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QPushButton" name="m_DependenciesButton">
+           <property name="text">
+            <string>Dependencies</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="m_TransformTab">
+        <attribute name="title">
+         <string>Transform</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="0" column="0" colspan="3">
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>548</width>
+             <height>580</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>346</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="m_SetupTransformButton">
+           <property name="text">
+            <string>Setup Transform...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="m_TransformButton">
+           <property name="text">
+            <string>Transform...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>Analysis</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0" colspan="3">
+          <spacer name="verticalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>558</width>
+             <height>580</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>323</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="m_AnalyzeSpecDataButton">
+           <property name="text">
+            <string>Analyze Spec Data...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="m_PEMetaDataButton">
+           <property name="text">
+            <string>PE MetaData...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Messages</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QTextEdit" name="m_OutputMessages">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>Graph</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QwtPlot" name="m_CctwGraph"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_CommandInput">
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Graph</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QwtPlot" name="m_CctwGraph"/>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
-    <item>
-     <widget class="QLineEdit" name="m_CommandInput">
-      <property name="layoutDirection">
-       <enum>Qt::RightToLeft</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
+    <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>596</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item>
        <widget class="QLabel" name="m_ProgressLabel">
         <property name="text">
@@ -231,19 +400,34 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="m_Halting">
+        <property name="text">
+         <string>Halting?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="m_HaltButton">
+        <property name="text">
+         <string>Halt</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
    <zorder>m_CommandInput</zorder>
    <zorder>tabWidget</zorder>
+   <zorder>m_ParametersTabs</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>917</width>
-     <height>27</height>
+     <width>1315</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -406,12 +590,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>m_SetupImportButton</tabstop>
-  <tabstop>m_ImportButton</tabstop>
-  <tabstop>m_InputDataFileName</tabstop>
-  <tabstop>m_SetupInputButton</tabstop>
-  <tabstop>m_OutputDataFileName</tabstop>
-  <tabstop>m_SetupOutputButton</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>m_OutputMessages</tabstop>
   <tabstop>m_CommandInput</tabstop>
