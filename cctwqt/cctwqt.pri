@@ -7,7 +7,8 @@ SOURCES += \
     $${PWD}/cctwqtsetupoutputdialog.cpp \
     $${PWD}/cctwqtsetuptransformdialog.cpp \
     $${PWD}/cctwqtsetupcomparedialog.cpp \
-    $${PWD}/cctwqtsetupcheckimportdialog.cpp
+    $${PWD}/cctwqtsetupcheckimportdialog.cpp \
+    cctwqttransformtester.cpp
 
 HEADERS += \
     $${PWD}/cctwqtmainwindow.h \
@@ -16,7 +17,8 @@ HEADERS += \
     $${PWD}/cctwqtsetupoutputdialog.h \
     $${PWD}/cctwqtsetuptransformdialog.h \
     $${PWD}/cctwqtsetupcomparedialog.h \
-    $${PWD}/cctwqtsetupcheckimportdialog.h
+    $${PWD}/cctwqtsetupcheckimportdialog.h \
+    cctwqttransformtester.h
 
 FORMS += \
     $${PWD}/cctwqtmainwindow.ui \

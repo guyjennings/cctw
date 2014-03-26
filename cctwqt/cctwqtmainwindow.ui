@@ -296,7 +296,7 @@
          <item row="8" column="0">
           <widget class="QLabel" name="label_12">
            <property name="text">
-            <string>Output HDF Chunk Size:</string>
+            <string>Input HDF Chunk Size:</string>
            </property>
           </widget>
          </item>
@@ -884,8 +884,345 @@
         <attribute name="title">
          <string>Transform</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_10">
-         <item row="0" column="0" colspan="3">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="2" column="4">
+          <widget class="QPushButton" name="m_GetDetPosButton">
+           <property name="text">
+            <string>getDetPos...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QDoubleSpinBox" name="m_TestQLabY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QDoubleSpinBox" name="m_TestHKLY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="4">
+          <widget class="QPushButton" name="m_HKL2GridButton">
+           <property name="text">
+            <string>hkl2grid...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="m_TestDetectorX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="5">
+          <widget class="QPushButton" name="m_GetDetPixButton">
+           <property name="text">
+            <string>getDetPix...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_35">
+           <property name="text">
+            <string>grid Coords:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="label_37">
+           <property name="text">
+            <string>/\</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="3">
+          <widget class="QDoubleSpinBox" name="m_TestHKLZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="4">
+          <widget class="QPushButton" name="m_SetupTransformButton">
+           <property name="text">
+            <string>Setup Transform...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QDoubleSpinBox" name="m_TestHKLX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QDoubleSpinBox" name="m_TestDetectorZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>\/</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="5">
+          <widget class="QPushButton" name="m_QLab2PixelButton">
+           <property name="text">
+            <string>qlab2pixel...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QDoubleSpinBox" name="m_TestQLabZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_32">
+           <property name="text">
+            <string>Detector Pixel Coords:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QDoubleSpinBox" name="m_TestGridX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_34">
+           <property name="text">
+            <string>hkl Coords:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_29">
+           <property name="text">
+            <string>Detector Coords:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="4">
+          <widget class="QPushButton" name="m_QLab2HKLButton">
+           <property name="text">
+            <string>qlab2hkl...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_28">
+           <property name="text">
+            <string>Y</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QDoubleSpinBox" name="m_TestPixelY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QDoubleSpinBox" name="m_TestQLabX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_30">
+           <property name="text">
+            <string>X</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="5">
+          <widget class="QPushButton" name="m_TransformButton">
+           <property name="text">
+            <string>Transform...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="5">
           <spacer name="verticalSpacer_5">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -898,7 +1235,155 @@
            </property>
           </spacer>
          </item>
-         <item row="1" column="0">
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_31">
+           <property name="text">
+            <string>Z</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QDoubleSpinBox" name="m_TestGridY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="m_TestDetectorY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QDoubleSpinBox" name="m_TestPixelZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="5">
+          <widget class="QPushButton" name="m_Grid2HKLButton">
+           <property name="text">
+            <string>grid2hkl...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_33">
+           <property name="text">
+            <string>qlab Coords:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="5">
+          <widget class="QPushButton" name="m_HKL2QLabButton">
+           <property name="text">
+            <string>hkl2qlab...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QDoubleSpinBox" name="m_TestGridZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QDoubleSpinBox" name="m_TestPixelX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="4">
+          <widget class="QPushButton" name="m_Pixel2QLabButton">
+           <property name="text">
+            <string>pixel2qlab...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="4">
           <spacer name="horizontalSpacer_6">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -911,17 +1396,32 @@
            </property>
           </spacer>
          </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="m_SetupTransformButton">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_38">
            <property name="text">
-            <string>Setup Transform...</string>
+            <string>Frame Rotation Angle:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="m_TransformButton">
-           <property name="text">
-            <string>Transform...</string>
+         <item row="1" column="3">
+          <widget class="QDoubleSpinBox" name="m_FrameAngle">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="decimals">
+            <number>10</number>
+           </property>
+           <property name="minimum">
+            <double>-1000000.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
            </property>
           </widget>
          </item>
@@ -1190,9 +1690,86 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>m_FrameAngle</tabstop>
+  <tabstop>m_TestDetectorX</tabstop>
+  <tabstop>m_TestDetectorY</tabstop>
+  <tabstop>m_TestDetectorZ</tabstop>
+  <tabstop>m_TestPixelX</tabstop>
+  <tabstop>m_TestPixelY</tabstop>
+  <tabstop>m_TestPixelZ</tabstop>
+  <tabstop>m_TestQLabX</tabstop>
+  <tabstop>m_TestQLabY</tabstop>
+  <tabstop>m_TestQLabZ</tabstop>
+  <tabstop>m_TestHKLX</tabstop>
+  <tabstop>m_TestHKLY</tabstop>
+  <tabstop>m_TestHKLZ</tabstop>
+  <tabstop>m_TestGridX</tabstop>
+  <tabstop>m_TestGridY</tabstop>
+  <tabstop>m_TestGridZ</tabstop>
+  <tabstop>m_GetDetPosButton</tabstop>
+  <tabstop>m_Pixel2QLabButton</tabstop>
+  <tabstop>m_QLab2HKLButton</tabstop>
+  <tabstop>m_HKL2GridButton</tabstop>
+  <tabstop>m_GetDetPixButton</tabstop>
+  <tabstop>m_QLab2PixelButton</tabstop>
+  <tabstop>m_HKL2QLabButton</tabstop>
+  <tabstop>m_Grid2HKLButton</tabstop>
+  <tabstop>m_SetupTransformButton</tabstop>
+  <tabstop>m_TransformButton</tabstop>
+  <tabstop>m_InputDataFileName</tabstop>
+  <tabstop>m_InputDataSetName</tabstop>
+  <tabstop>m_InputDimensionsX</tabstop>
+  <tabstop>m_InputDimensionsY</tabstop>
+  <tabstop>m_InputDimensionsZ</tabstop>
+  <tabstop>m_InputCountX</tabstop>
+  <tabstop>m_InputCountY</tabstop>
+  <tabstop>m_InputCountZ</tabstop>
+  <tabstop>m_InputChunkX</tabstop>
+  <tabstop>m_InputChunkY</tabstop>
+  <tabstop>m_InputChunkZ</tabstop>
+  <tabstop>m_InputHDFChunkX</tabstop>
+  <tabstop>m_InputHDFChunkY</tabstop>
+  <tabstop>m_InputHDFChunkZ</tabstop>
+  <tabstop>m_InputCompression</tabstop>
+  <tabstop>m_ImportDarkImagePath</tabstop>
+  <tabstop>m_ImportDataDirectory</tabstop>
+  <tabstop>m_OutputCompression</tabstop>
+  <tabstop>m_OutputHDFChunkZ</tabstop>
+  <tabstop>m_OutputHDFChunkY</tabstop>
+  <tabstop>m_OutputHDFChunkX</tabstop>
+  <tabstop>m_OutputChunkX</tabstop>
+  <tabstop>m_OutputCountX</tabstop>
+  <tabstop>m_OutputDimensionsX</tabstop>
+  <tabstop>m_OutputChunkY</tabstop>
+  <tabstop>m_OutputCountY</tabstop>
+  <tabstop>m_OutputDimensionsY</tabstop>
+  <tabstop>m_OutputChunkZ</tabstop>
+  <tabstop>m_OutputCountZ</tabstop>
+  <tabstop>m_OutputDimensionsZ</tabstop>
+  <tabstop>m_ImportOutputCompression</tabstop>
+  <tabstop>m_HaltButton</tabstop>
+  <tabstop>m_AnalyzeSpecDataButton</tabstop>
+  <tabstop>m_PEMetaDataButton</tabstop>
+  <tabstop>m_ImportOutputChunkY</tabstop>
+  <tabstop>m_Halting</tabstop>
+  <tabstop>m_ImportOutputPath</tabstop>
+  <tabstop>m_ImportDataImages</tabstop>
   <tabstop>m_OutputMessages</tabstop>
   <tabstop>m_CommandInput</tabstop>
+  <tabstop>m_ParametersTabs</tabstop>
+  <tabstop>m_ImportOutputChunkZ</tabstop>
+  <tabstop>m_SetupImportButton</tabstop>
+  <tabstop>m_ImportButton</tabstop>
+  <tabstop>m_ImportOutputChunkX</tabstop>
+  <tabstop>m_SetupInputButton</tabstop>
+  <tabstop>m_OutputDataFileName</tabstop>
+  <tabstop>m_OutputDataSetName</tabstop>
+  <tabstop>m_SetupOutputButton</tabstop>
+  <tabstop>m_SaveDepsButton</tabstop>
+  <tabstop>m_LoadDepsButton</tabstop>
+  <tabstop>m_DependenciesButton</tabstop>
+  <tabstop>m_ImportOutputDataset</tabstop>
+  <tabstop>tabWidget</tabstop>
  </tabstops>
  <resources/>
  <connections/>

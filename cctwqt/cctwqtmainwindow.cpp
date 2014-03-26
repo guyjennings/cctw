@@ -17,6 +17,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::CctwqtMainWindow),
   m_Application(app),
+  m_TransformTester(NULL),
   m_SetupInputDialog(NULL),
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
@@ -139,6 +140,8 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 //  m_Legend -> setItemMode(QwtLegend::CheckableItem);
 
   ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
+
+  m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, this);
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()

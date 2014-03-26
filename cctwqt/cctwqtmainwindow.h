@@ -12,6 +12,7 @@
 #include "cctwqtsetupcomparedialog.h"
 #include "cctwqtsetupcheckimportdialog.h"
 #include "cctwvector3d.h"
+#include "cctwqttransformtester.h"
 
 namespace Ui {
 class CctwqtMainWindow;
@@ -67,9 +68,12 @@ private:
   bool wantToClose();
   void closeEvent (QCloseEvent * event);
 
-private:
+public:
   Ui::CctwqtMainWindow       *ui;
-  CctwApplication          *m_Application;
+
+private:
+  CctwApplication            *m_Application;
+  CctwqtTransformTester      *m_TransformTester;
 
   QPointer<CctwqtSetupImportDialog>      m_SetupImportDialog;
   QPointer<CctwqtSetupInputDialog>       m_SetupInputDialog;
