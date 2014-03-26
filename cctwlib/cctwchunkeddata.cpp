@@ -86,11 +86,11 @@ void CctwChunkedData::setDataSource(QString desc)
   printMessage(tr("scheme:   %1").arg(url.scheme()));
   printMessage(tr("host:     %1").arg(url.host()));
   printMessage(tr("path:     %1").arg(url.path()));
-  printMessage(tr("filename: %1").arg(url.fileName()));
+//  printMessage(tr("filename: %1").arg(url.fileName()));
   printMessage(tr("query:    %1").arg(url.query()));
   printMessage(tr("fragment: %1").arg(url.fragment()));
 
-  set_DataFileName(url.fileName());
+  set_DataFileName(url.path());
   set_DataSetName(url.fragment());
 
   if (url.hasQuery()) {
