@@ -895,7 +895,7 @@
          <item row="5" column="2">
           <widget class="QDoubleSpinBox" name="m_TestQLabY">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>QLab Y</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -917,7 +917,7 @@
          <item row="6" column="2">
           <widget class="QDoubleSpinBox" name="m_TestHKLY">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>HKL Y</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -946,7 +946,7 @@
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="m_TestDetectorX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
+            <string>Detector Pixel Index X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -992,7 +992,7 @@
          <item row="6" column="3">
           <widget class="QDoubleSpinBox" name="m_TestHKLZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>HKL Z</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1021,7 +1021,7 @@
          <item row="6" column="1">
           <widget class="QDoubleSpinBox" name="m_TestHKLX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
+            <string>HKL X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1043,7 +1043,7 @@
          <item row="2" column="3">
           <widget class="QDoubleSpinBox" name="m_TestDetectorZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>Detector Pixel Index Z</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1082,7 +1082,7 @@
          <item row="5" column="3">
           <widget class="QDoubleSpinBox" name="m_TestQLabZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>QLab Z</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1111,7 +1111,7 @@
          <item row="7" column="1">
           <widget class="QDoubleSpinBox" name="m_TestGridX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
+            <string>Output Grid Coord X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1164,7 +1164,7 @@
          <item row="4" column="2">
           <widget class="QDoubleSpinBox" name="m_TestPixelY">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>Distance from detector beam center Y</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1186,7 +1186,7 @@
          <item row="5" column="1">
           <widget class="QDoubleSpinBox" name="m_TestQLabX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
+            <string>QLab X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1248,7 +1248,7 @@
          <item row="7" column="2">
           <widget class="QDoubleSpinBox" name="m_TestGridY">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>Output Grid Coord Y</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1270,7 +1270,7 @@
          <item row="2" column="2">
           <widget class="QDoubleSpinBox" name="m_TestDetectorY">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>Detector Pixel Index Y</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1292,7 +1292,7 @@
          <item row="4" column="3">
           <widget class="QDoubleSpinBox" name="m_TestPixelZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>Distance from detector beam center Z</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1335,7 +1335,7 @@
          <item row="7" column="3">
           <widget class="QDoubleSpinBox" name="m_TestGridZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>Output Grid Coord Z</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1357,7 +1357,7 @@
          <item row="4" column="1">
           <widget class="QDoubleSpinBox" name="m_TestPixelX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
+            <string>Distance from detector beam center X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -1406,7 +1406,7 @@
          <item row="1" column="3">
           <widget class="QDoubleSpinBox" name="m_FrameAngle">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
+            <string>Frame Rotation Angle</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>

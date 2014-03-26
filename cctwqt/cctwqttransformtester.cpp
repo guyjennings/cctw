@@ -67,12 +67,12 @@ void CctwqtTransformTester::unhighlight()
 
 void CctwqtTransformTester::highlightInput(QDoubleSpinBox *box)
 {
-  setColor(box, Qt::blue);
+  setColor(box, QColor(0,160,0));
 }
 
 void CctwqtTransformTester::highlightOutput(QDoubleSpinBox *box)
 {
-  setColor(box, Qt::green);
+  setColor(box, QColor(220,0,0));
 }
 
 double CctwqtTransformTester::getRotation()
