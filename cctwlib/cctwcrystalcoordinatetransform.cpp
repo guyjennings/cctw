@@ -18,7 +18,7 @@ void CctwCrystalCoordinateTransform::updateFromParameters()
   m_ChiAngle      = m_Parms->chiNom() + m_Parms->chiCorrection();
 
   m_GridBasisInv  = m_Parms->gridBasis().inverted();
-  m_OMat          = CctwDoubleMatrix3x3(1.0, 0.0, 0.0,
+  m_OMat          = CctwDoubleMatrix3x3(0.0, -1.0, 0.0,
                                         0.0, 0.0, 1.0,
                                         -1.0, 0.0, 0.0);
 
