@@ -11,10 +11,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 include(cctw-version.pri)
 
 TEMPLATE = subdirs
-SUBDIRS  = cctwlib cctwqt
+SUBDIRS  = cctwqt
 
 unix {
-SUBDIRS += cctwtcl cctwcli
+SUBDIRS += cctwlib cctwtcl cctwcli
 }
 
 OTHER_FILES += Doxyfile \
@@ -85,7 +85,7 @@ win32 { # Copy QT Libraries into app directory
 
     QMAKE_EXTRA_TARGETS += qtplatformdir
     qtplatformdir.target = bin/platforms
-    qtplatformdir.commands = $(MKDIR) ..\\platforms
+    qtplatformdir.commands = if not exist ..\\platforms $(MKDIR) ..\\platforms
 
     QMAKE_EXTRA_TARGETS += qtplatform
     qtplatform.target   = bin/platforms/$${platform}.dll
