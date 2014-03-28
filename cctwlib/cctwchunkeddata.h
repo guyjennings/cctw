@@ -72,6 +72,9 @@ public slots:
   void                closeOutputFile();
   void                closeInputFile();
 
+private slots:
+  void                onDataFileNameChanged();
+
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
 
@@ -100,6 +103,12 @@ private:
 
   Q_PROPERTY(CctwIntVector3D hdfChunkSize READ get_HDFChunkSize WRITE set_HDFChunkSize)
   CCTW_INTVECTOR3D_PROPERTY(HDFChunkSize)
+
+  Q_PROPERTY(int chunksRead READ get_ChunksRead WRITE set_ChunksRead STORED false)
+  QCEP_INTEGER_PROPERTY(ChunksRead)
+
+  Q_PROPERTY(int chunksWritten READ get_ChunksWritten WRITE set_ChunksWritten STORED false)
+  QCEP_INTEGER_PROPERTY(ChunksWritten)
 
   bool                m_IsInput;
   hid_t               m_FileId;

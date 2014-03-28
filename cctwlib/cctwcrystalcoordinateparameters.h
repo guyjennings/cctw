@@ -51,6 +51,7 @@ public:
   CctwDoubleVector3D  gridOrigin() const;
   CctwDoubleMatrix3x3 gridBasis() const;
   CctwDoubleVector3D  gridDim() const;
+  CctwDoubleVector3D  gridOffset() const;
 
   void setPixelSize(double sz);
   void setWavelength(double wv);
@@ -84,6 +85,7 @@ public:
   void setGridOrigin(CctwDoubleVector3D org);
   void setGridBasis(CctwDoubleMatrix3x3 bas);
   void setGridDim(CctwDoubleVector3D dim);
+  void setGridOffset(CctwDoubleVector3D off);
 
 private:
   double m_PixelSize;
@@ -118,6 +120,7 @@ private:
   CctwDoubleVector3D  m_GridOrigin;
   CctwDoubleMatrix3x3 m_GridBasis;
   CctwDoubleVector3D  m_GridDim;
+  CctwDoubleVector3D  m_GridOffset;
 
 public:
   Q_PROPERTY(double pixelSize                READ pixelSize            WRITE setPixelSize            NOTIFY parametersChanged)
@@ -152,6 +155,7 @@ public:
   Q_PROPERTY(CctwDoubleVector3D  gridOrigin  READ gridOrigin           WRITE setGridOrigin           NOTIFY parametersChanged)
   Q_PROPERTY(CctwDoubleMatrix3x3 gridBasis   READ gridBasis            WRITE setGridBasis            NOTIFY parametersChanged)
   Q_PROPERTY(CctwDoubleVector3D  gridDim     READ gridDim              WRITE setGridDim              NOTIFY parametersChanged)
+  Q_PROPERTY(CctwDoubleVector3D  gridOffset  READ gridOffset           WRITE setGridOffset           NOTIFY parametersChanged)
 };
 
 #endif // CCTWCRYSTALCOORDINATEPARAMETERS_H

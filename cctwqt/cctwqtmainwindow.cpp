@@ -91,6 +91,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     connect(inputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
 
     inputData->prop_Compression()->linkTo(ui->m_InputCompression);
+    inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
     updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
 
@@ -109,6 +110,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     connect(outputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
 
     outputData->prop_Compression()->linkTo(ui->m_OutputCompression);
+    outputData->prop_ChunksWritten()->linkTo(ui->m_ChunksWritten);
 
     updateOutputHDF5ChunkSize(outputData->get_HDFChunkSize());
 

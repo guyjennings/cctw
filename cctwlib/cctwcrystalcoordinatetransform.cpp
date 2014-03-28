@@ -198,7 +198,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::hkl2grid(CctwDoubleVector3D h
     xyz(i) *= qMax(m_Parms->gridDim()(i)-1,1.0);
   }
 
-  return xyz;
+  return xyz+m_Parms->gridOffset();
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(double gx, double gy, double gz)
@@ -208,7 +208,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(double gx, double gy
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(CctwDoubleVector3D grid)
 {
-  CctwDoubleVector3D xyz = grid;
+  CctwDoubleVector3D xyz = grid - m_Parms->gridOffset();
 
   for (int i=0; i<3; i++) {
     xyz(i) /= qMax(m_Parms->gridDim()(i)-1,1.0);

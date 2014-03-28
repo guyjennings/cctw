@@ -23,12 +23,16 @@ CctwChunkedData::CctwChunkedData
 //    m_ChunkCount(application->saver(), this, "chunkCount", (dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1), "Chunk Count"),
     m_Compression(application->saver(), this, "compression", 0, "Compression Level"),
     m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
+    m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
+    m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
     m_IsInput(isInput),
     m_FileId(-1),
     m_DatasetId(-1),
     m_DataspaceId(-1)
 {
   allocateChunks();
+
+  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
 }
 
 void CctwChunkedData::allocateChunks()
@@ -120,6 +124,14 @@ void CctwChunkedData::setDataSource(QString desc)
       QString dset      = qry.queryItemValue("dataset");
       setDataset(dset);
     }
+  }
+}
+
+void CctwChunkedData::onDataFileNameChanged()
+{
+  if (m_IsInput) {
+    openInputFile();
+    closeInputFile();
   }
 }
 
@@ -314,6 +326,9 @@ void CctwChunkedData::clearMergeCounters()
       dc -> clearMergeCounters();
     }
   }
+
+  set_ChunksRead(0);
+  set_ChunksWritten(0);
 }
 
 void CctwChunkedData::normalizeChunk(int n)
@@ -324,74 +339,6 @@ void CctwChunkedData::normalizeChunk(int n)
     chunk->normalizeChunk();
   }
 }
-
-//int CctwDataChunk::normalize()
-//{
-//  if (m_Normalized) {
-//    printf("Already normalized\n");
-//  } else if (m_ChunkData && m_ChunkWeights) {
-//    int cksz = m_Data->chunkSize().volume();
-
-//    for (int i=0; i<cksz; i++) {
-//      if (m_ChunkWeights[i] != 0) {
-//        m_ChunkData[i] /= m_ChunkWeights[i];
-//      }
-//    }
-//  }
-
-//  m_Normalized = true;
-
-//  return 0;
-//}
-
-//int CctwDataChunk::writeData()
-//{
-//  normalize();
-
-////  if (m_Manager) {
-////    m_Manager->writeChunk(this);
-////  }
-
-//  return chunkSize().volume()*sizeof(double);
-//}
-
-//int CctwDataChunk::writeWeights()
-//{
-//  return chunkSize().volume()*sizeof(double);
-//}
-
-
-//void CctwDataChunk::waitForData()
-//{
-//  int nbuff = dependencyCount();
-
-//  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
-//    printMessage(tr("Trying to allocate too many blocks - will sleep 5 secs then proceed anyway"));
-
-//    CctwThread::sleep(5);
-//  } else {
-////    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
-
-//    if (!g_Available.tryAcquire(nbuff)) {
-//      printMessage(tr("Failed to acquire %1 blocks").arg(nbuff));
-
-//      g_Available.acquire(nbuff);
-//    }
-//  }
-//}
-
-//void CctwDataChunk::finishedWithData()
-//{
-//  int nbuff = dependencyCount();
-
-//  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
-//    printMessage(tr("Skipped release"));
-//  } else {
-//    g_Available.release(nbuff);
-
-////    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
-//  }
-//}
 
 bool CctwChunkedData::openInputFile()
 {
@@ -411,6 +358,7 @@ bool CctwChunkedData::openInputFile()
   hid_t fileId = -1;
   hid_t dsetId = -1;
   hid_t dspcId = -1;
+  hid_t plist  = -1;
 
   if (!f.exists()) {
     printMessage(tr("File %1 does not exist").arg(fileName));
@@ -448,6 +396,23 @@ bool CctwChunkedData::openInputFile()
               res = false;
             } else {
               setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
+
+              plist = H5Dget_create_plist(dsetId);
+
+              if (plist < 0) {
+                printMessage("Could not get dataset create plist");
+              } else {
+                hsize_t cksz[3];
+
+                if (H5Pget_chunk(plist, 3, cksz) < 0) {
+                  printMessage(("Could not get dataset chunk size"));
+                  set_HDFChunkSize(CctwIntVector3D(0,0,0));
+                } else {
+                  set_HDFChunkSize(CctwIntVector3D(cksz[2], cksz[1], cksz[0]));
+                }
+
+//                set_Compression(H5Pget_deflate(plist));
+              }
             }
           }
         }
@@ -689,6 +654,8 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
   CctwDataChunk *chk = chunk(n);
 
   if (chk) {
+    prop_ChunksRead()->incValue(1);
+
     chk->allocateData();
     chk->allocateWeights();
 
@@ -703,15 +670,15 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
         CctwIntVector3D st = chk -> chunkStart();
         CctwIntVector3D sz = chk -> chunkSize();
 
-        printMessage(tr("Reading chunk %1 [%2..%3, %4..%5, %6..%7]")
-                     .arg(n)
-                     .arg(st.x())
-                     .arg(st.x()+sz.x()-1)
-                     .arg(st.y())
-                     .arg(st.y()+sz.y()-1)
-                     .arg(st.z())
-                     .arg(st.z()+sz.z()-1)
-                     );
+//        printMessage(tr("Reading chunk %1 [%2..%3, %4..%5, %6..%7]")
+//                     .arg(n)
+//                     .arg(st.x())
+//                     .arg(st.x()+sz.x()-1)
+//                     .arg(st.y())
+//                     .arg(st.y()+sz.y()-1)
+//                     .arg(st.z())
+//                     .arg(st.z()+sz.z()-1)
+//                     );
 
         count[0] = sz.z();
         count[1] = sz.y();
@@ -775,7 +742,7 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 //    }
   }
 
-  printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
+//  printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
 
   return chk;
 }
@@ -785,6 +752,8 @@ void CctwChunkedData::writeChunk(int n)
   CctwDataChunk *chk = chunk(n);
 
   if (chk) {
+    prop_ChunksWritten()->incValue(1);
+
     normalizeChunk(n);
 
     if (openOutputFile()) {
@@ -800,15 +769,15 @@ void CctwChunkedData::writeChunk(int n)
         CctwIntVector3D st = chk -> chunkStart();
         CctwIntVector3D sz = chk -> chunkSize();
 
-        printMessage(tr("Writing chunk %1 [%2..%3, %4..%5, %6..%7]")
-                     .arg(n)
-                     .arg(st.x())
-                     .arg(st.x()+sz.x()-1)
-                     .arg(st.y())
-                     .arg(st.y()+sz.y()-1)
-                     .arg(st.z())
-                     .arg(st.z()+sz.z()-1)
-                     );
+//        printMessage(tr("Writing chunk %1 [%2..%3, %4..%5, %6..%7]")
+//                     .arg(n)
+//                     .arg(st.x())
+//                     .arg(st.x()+sz.x()-1)
+//                     .arg(st.y())
+//                     .arg(st.y()+sz.y()-1)
+//                     .arg(st.z())
+//                     .arg(st.z()+sz.z()-1)
+//                     );
 
         count[0] = sz.z();
         count[1] = sz.y();
@@ -853,7 +822,7 @@ void CctwChunkedData::writeChunk(int n)
 
 void CctwChunkedData::releaseChunk(int n)
 {
-  printMessage(tr("CctwChunkedData::releaseChunk(%1)").arg(n));
+//  printMessage(tr("CctwChunkedData::releaseChunk(%1)").arg(n));
 
   CctwDataChunk *chk = chunk(n);
 

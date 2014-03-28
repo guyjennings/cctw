@@ -45,6 +45,8 @@ void CctwCrystalCoordinateParameters::setDefaults()
                                    0.0, 0.5, 0.5,
                                    0.0, 0.5, -0.5));
   setGridDim(CctwDoubleVector3D(101,71,71));
+
+  setGridOffset(CctwDoubleVector3D(1024,1024,1024));
 }
 
 double CctwCrystalCoordinateParameters::pixelSize() const { return m_PixelSize; }
@@ -79,6 +81,7 @@ double CctwCrystalCoordinateParameters::phiNom() const { return m_PhiNom; }
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridOrigin() const { return m_GridOrigin; }
 CctwDoubleMatrix3x3 CctwCrystalCoordinateParameters::gridBasis() const { return m_GridBasis; }
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridDim() const { return m_GridDim; }
+CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridOffset() const { return m_GridOffset; }
 
 void CctwCrystalCoordinateParameters::setPixelSize(double sz) { m_PixelSize = sz; }
 void CctwCrystalCoordinateParameters::setWavelength(double wv) { m_Wavelength = wv; }
@@ -112,4 +115,5 @@ void CctwCrystalCoordinateParameters::setPhiNom(double phin) { m_PhiNom = phin; 
 void CctwCrystalCoordinateParameters::setGridOrigin(CctwDoubleVector3D org) { m_GridOrigin = org; }
 void CctwCrystalCoordinateParameters::setGridBasis(CctwDoubleMatrix3x3 bas) { m_GridBasis = bas; }
 void CctwCrystalCoordinateParameters::setGridDim(CctwDoubleVector3D dim) { m_GridDim = dim; }
+void CctwCrystalCoordinateParameters::setGridOffset(CctwDoubleVector3D off) { m_GridOffset = off; }
 
