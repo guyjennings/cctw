@@ -13,8 +13,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
  QT += concurrent
 }
 
-target.path=$$prefix/lib
-INSTALLS += target
+#target.path=$$prefix/lib
+#INSTALLS += target
 
 #ldconf.files=qtcl.conf
 #ldconf.path=/etc/ls.so.conf.d
@@ -45,12 +45,12 @@ defined(TCL, var) {
     LIBS += -ltcl
 }
 
+pkgIndex.commands = ( echo "package ifneeded cctw $${VERSION} [list load [file join \\\$$dir libCctwTcl[info sharedlibextension]]]" ) > $${DESTDIR}/pkgIndex.tcl
+pkgIndex.depends  = $${PWD}/../cctw-version.pri
+
 PRE_TARGETDEPS += pkgIndex
 
-QMAKE_EXTRA_TARGETS +=pkgIndex
-
-pkgIndex.commands = ( echo "package ifneeded cctw $${VERSION} [list load [file join \\\$$dir libCctwTcl[info sharedlibextension]]]" ) > $${DESTDIR}/pkgIndex.tcl
-pkgIndex.depends = FORCE
+QMAKE_EXTRA_TARGETS += pkgIndex
 
 QMAKE_CLEAN += $${DESTDIR}/pkgIndex.tcl
 
