@@ -75,12 +75,12 @@ static QAtomicInt g_Allocated(0);
 static QAtomicInt g_AllocationLimit(1000);
 static QSemaphore g_Available(1000);
 
-double *CctwDataChunk::dataPointer()
+CctwChunkedData::MergeDataType *CctwDataChunk::dataPointer()
 {
   return m_ChunkData;
 }
 
-double *CctwDataChunk::weightsPointer()
+CctwChunkedData::MergeDataType *CctwDataChunk::weightsPointer()
 {
   return m_ChunkWeights;
 }
@@ -109,31 +109,31 @@ int CctwDataChunk::allocateData()
 {
   int cksz = m_ChunkSize.volume();
 
-  double *newData = allocateBuffer();
+  CctwChunkedData::MergeDataType *newData = allocateBuffer();
 
   releaseBuffer(m_ChunkData);
 
   m_ChunkData = newData;
 
-  return cksz*sizeof(double);
+  return cksz*sizeof(CctwChunkedData::MergeDataType);
 }
 
 int CctwDataChunk::allocateWeights()
 {
   int cksz = m_ChunkSize.volume();
 
-  double *newWeights = allocateBuffer();
+  CctwChunkedData::MergeDataType *newWeights = allocateBuffer();
 
   releaseBuffer(m_ChunkWeights);
 
   m_ChunkWeights = newWeights;
 
-  return cksz*sizeof(double);
+  return cksz*sizeof(CctwChunkedData::MergeDataType);
 }
 
 int CctwDataChunk::deallocateData()
 {
-  int res = m_ChunkData ? m_ChunkSize.volume()*sizeof(double) : 0;
+  int res = m_ChunkData ? m_ChunkSize.volume()*sizeof(CctwChunkedData::MergeDataType) : 0;
 
   releaseBuffer(m_ChunkData);
 
@@ -144,7 +144,7 @@ int CctwDataChunk::deallocateData()
 
 int CctwDataChunk::deallocateWeights()
 {
-  int res = m_ChunkWeights ? m_ChunkSize.volume()*sizeof(double) : 0;
+  int res = m_ChunkWeights ? m_ChunkSize.volume()*sizeof(CctwChunkedData::MergeDataType) : 0;
 
   releaseBuffer(m_ChunkWeights);
 
@@ -167,7 +167,7 @@ int CctwDataChunk::pixelOffset(int lx, int ly, int lz)
   }
 }
 
-double CctwDataChunk::data(int lx, int ly, int lz)
+CctwChunkedData::MergeDataType CctwDataChunk::data(int lx, int ly, int lz)
 {
   int offset = pixelOffset(lx, ly, lz);
 
@@ -178,7 +178,7 @@ double CctwDataChunk::data(int lx, int ly, int lz)
   }
 }
 
-double CctwDataChunk::weight(int lx, int ly, int lz)
+CctwChunkedData::MergeDataType CctwDataChunk::weight(int lx, int ly, int lz)
 {
   int offset = pixelOffset(lx, ly, lz);
 
@@ -189,7 +189,7 @@ double CctwDataChunk::weight(int lx, int ly, int lz)
   }
 }
 
-void CctwDataChunk::setData(int lx, int ly, int lz, double val)
+void CctwDataChunk::setData(int lx, int ly, int lz, CctwChunkedData::MergeDataType val)
 {
   int offset = pixelOffset(lx, ly, lz);
 
@@ -198,7 +198,7 @@ void CctwDataChunk::setData(int lx, int ly, int lz, double val)
   }
 }
 
-void CctwDataChunk::setWeight(int lx, int ly, int lz, double val)
+void CctwDataChunk::setWeight(int lx, int ly, int lz, CctwChunkedData::MergeDataType val)
 {
   int offset = pixelOffset(lx, ly, lz);
 
@@ -221,7 +221,7 @@ int CctwDataChunk::maxAllocated()
   return g_MaxAllocated.fetchAndAddOrdered(0);
 }
 
-double *CctwDataChunk::allocateBuffer()
+CctwChunkedData::MergeDataType *CctwDataChunk::allocateBuffer()
 {
   int cksz = m_ChunkSize.volume();
 
@@ -234,7 +234,7 @@ double *CctwDataChunk::allocateBuffer()
 //  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
 //               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
 
-  double *res = new double[cksz];
+  CctwChunkedData::MergeDataType *res = new CctwChunkedData::MergeDataType[cksz];
 
   for (int i=0; i<cksz; i++) {
     res[i] = 0;
@@ -243,7 +243,7 @@ double *CctwDataChunk::allocateBuffer()
   return res;
 }
 
-void CctwDataChunk::releaseBuffer(double *buffer)
+void CctwDataChunk::releaseBuffer(CctwChunkedData::MergeDataType *buffer)
 {
   if (buffer) {
     int nalloc = g_Allocated.fetchAndAddOrdered(-1);
@@ -315,12 +315,17 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 //               .arg(index()));
 
   if (c) {
+    if (mergeCount() == 0) {
+      printMessage(tr("Output chunk [%1] started")
+                   .arg(index()));
+    }
+
     if (c->index() != index()) {
       printMessage(tr("Merging anomaly [%1] != [%2]")
                    .arg(index()).arg(c->index()));
     }
 
-    double *d, *w, *id, *iw;
+    CctwChunkedData::MergeDataType *d, *w, *id, *iw;
     c -> popMergeData(&id, &iw);
 
     while (popMergeData(&d, &w))  {
@@ -396,7 +401,8 @@ int CctwDataChunk::mergeCount()
   return m_MergeCounter;
 }
 
-bool CctwDataChunk::popMergeData(double **data, double **weights)
+bool CctwDataChunk::popMergeData(CctwChunkedData::MergeDataType **data,
+                                 CctwChunkedData::MergeDataType **weights)
 {
   QMutexLocker lock(&m_MergeLock);
 
@@ -423,7 +429,8 @@ bool CctwDataChunk::popMergeData(double **data, double **weights)
   }
 }
 
-void CctwDataChunk::pushMergeData(double *data, double *weights)
+void CctwDataChunk::pushMergeData(CctwChunkedData::MergeDataType *data,
+                                  CctwChunkedData::MergeDataType *weights)
 {
   QMutexLocker lock(&m_MergeLock);
 

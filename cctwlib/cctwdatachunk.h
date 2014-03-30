@@ -35,14 +35,14 @@ public slots:
   bool dataAllocated() const;
   bool weightsAllocated() const;
 
-  double data(int lx, int ly, int lz);
-  double weight(int lx, int ly, int lz);
-  void setData(int lx, int ly, int lz, double val);
-  void setWeight(int lx, int ly, int lz, double val);
+  CctwChunkedData::MergeDataType data(int lx, int ly, int lz);
+  CctwChunkedData::MergeDataType weight(int lx, int ly, int lz);
+  void setData(int lx, int ly, int lz, CctwChunkedData::MergeDataType val);
+  void setWeight(int lx, int ly, int lz, CctwChunkedData::MergeDataType val);
   int pixelOffset(int lx, int ly, int lz);
 
-  double *dataPointer();
-  double *weightsPointer();
+  CctwChunkedData::MergeDataType *dataPointer();
+  CctwChunkedData::MergeDataType *weightsPointer();
 
   CctwIntVector3D chunkStart();
   CctwIntVector3D chunkSize();
@@ -61,8 +61,8 @@ public slots:
   void incMergeCounters();
   int mergeCount();
 
-  bool popMergeData(double **data, double **weights);
-  void pushMergeData(double *data, double *weights);
+  bool popMergeData(CctwChunkedData::MergeDataType **data, CctwChunkedData::MergeDataType **weights);
+  void pushMergeData(CctwChunkedData::MergeDataType *data, CctwChunkedData::MergeDataType *weights);
 
   void normalizeChunk();
 
@@ -73,8 +73,8 @@ public slots:
   static int maxAllocated();
 
 private:
-  double *allocateBuffer();
-  void releaseBuffer(double *);
+  CctwChunkedData::MergeDataType *allocateBuffer();
+  void releaseBuffer(CctwChunkedData::MergeDataType *);
   CctwIntVector3D calculateChunkStart();
   CctwIntVector3D calculateChunkSize();
 
@@ -83,8 +83,8 @@ private:
   int                                        m_ChunkIndex;
   CctwIntVector3D                            m_ChunkStart;
   CctwIntVector3D                            m_ChunkSize;
-  double                                    *m_ChunkData;
-  double                                    *m_ChunkWeights;
+  CctwChunkedData::MergeDataType            *m_ChunkData;
+  CctwChunkedData::MergeDataType            *m_ChunkWeights;
   int                                        m_Normalized;
   int                                        m_DataWritten;
   int                                        m_WeightsWritten;
@@ -92,8 +92,8 @@ private:
   QMutex                                     m_DependenciesLock;
   QMutex                                     m_MergeLock;
   int                                        m_MergeCounter;
-  QList< double* >                           m_MergeData;
-  QList< double* >                           m_MergeWeights;
+  QList< CctwChunkedData::MergeDataType* >   m_MergeData;
+  QList< CctwChunkedData::MergeDataType* >   m_MergeWeights;
 };
 
 #endif // CCTWDATACHUNK_H

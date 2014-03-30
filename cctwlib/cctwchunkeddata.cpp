@@ -696,15 +696,15 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
         offset[1] = st.y();
         offset[2] = st.x();
 
-        double *chunkData = chk->dataPointer();
-        double *weightData = chk->weightsPointer();
+        CctwChunkedData::MergeDataType *chunkData = chk->dataPointer();
+        CctwChunkedData::MergeDataType *weightData = chk->weightsPointer();
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly reading chunk %1, data == NULL").arg(n));
         } else {
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-          herr_t rderr  = H5Dread(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
+          herr_t rderr  = H5Dread(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
 
           if (selerr || rderr) {
             printMessage(tr("Error reading chunk %1, selerr = %2, rderr = %3")
@@ -795,14 +795,14 @@ void CctwChunkedData::writeChunk(int n)
         offset[1] = st.y();
         offset[2] = st.x();
 
-        double *chunkData = chk->dataPointer();
+        CctwChunkedData::MergeDataType *chunkData = chk->dataPointer();
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
         } else {
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-          herr_t wrterr = H5Dwrite(m_DatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
+          herr_t wrterr = H5Dwrite(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
 
           if (selerr || wrterr) {
             printMessage(tr("Error writing chunk %1, selerr = %2, wrterr = %3")

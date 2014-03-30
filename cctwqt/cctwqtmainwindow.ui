@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1315</width>
+    <width>1383</width>
     <height>790</height>
    </rect>
   </property>
@@ -885,14 +885,14 @@
          <string>Transform</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="8" column="0">
+         <item row="10" column="0">
           <widget class="QLabel" name="label_33">
            <property name="text">
             <string>qlab Coords:</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="2">
+         <item row="12" column="2">
           <widget class="QDoubleSpinBox" name="m_TestGridY">
            <property name="toolTip">
             <string>Output Grid Coord Y</string>
@@ -914,14 +914,14 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="5">
+         <item row="11" column="5">
           <widget class="QPushButton" name="m_HKL2QLabButton">
            <property name="text">
             <string>hkl2qlab...</string>
            </property>
           </widget>
          </item>
-         <item row="9" column="3">
+         <item row="11" column="3">
           <widget class="QDoubleSpinBox" name="m_TestHKLZ">
            <property name="toolTip">
             <string>HKL Z</string>
@@ -943,35 +943,35 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="4">
+         <item row="14" column="4">
           <widget class="QPushButton" name="m_SetupTransformButton">
            <property name="text">
             <string>Setup Transform...</string>
            </property>
           </widget>
          </item>
-         <item row="12" column="5">
+         <item row="14" column="5">
           <widget class="QPushButton" name="m_TransformButton">
            <property name="text">
             <string>Transform...</string>
            </property>
           </widget>
          </item>
-         <item row="9" column="4">
+         <item row="11" column="4">
           <widget class="QPushButton" name="m_HKL2GridButton">
            <property name="text">
             <string>hkl2grid...</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
+         <item row="7" column="0">
           <widget class="QLabel" name="label_29">
            <property name="text">
             <string>Detector Coords:</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
+         <item row="10" column="1">
           <widget class="QDoubleSpinBox" name="m_TestQLabX">
            <property name="toolTip">
             <string>QLab X</string>
@@ -993,7 +993,7 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="2">
+         <item row="9" column="2">
           <widget class="QDoubleSpinBox" name="m_TestPixelY">
            <property name="toolTip">
             <string>Distance from detector beam center Y</string>
@@ -1015,7 +1015,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="2">
+         <item row="5" column="2">
           <widget class="QLabel" name="label_28">
            <property name="text">
             <string>Y</string>
@@ -1025,14 +1025,14 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="4">
+         <item row="10" column="4">
           <widget class="QPushButton" name="m_QLab2HKLButton">
            <property name="text">
             <string>qlab2hkl...</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="5">
+         <item row="10" column="5">
           <widget class="QPushButton" name="m_QLab2PixelButton">
            <property name="text">
             <string>qlab2pixel...</string>
@@ -1046,7 +1046,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="5" column="1">
           <widget class="QLabel" name="label_30">
            <property name="text">
             <string>X</string>
@@ -1056,21 +1056,21 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="4">
+         <item row="7" column="4">
           <widget class="QPushButton" name="m_GetDetPosButton">
            <property name="text">
             <string>getDetPos...</string>
            </property>
           </widget>
          </item>
-         <item row="7" column="0">
+         <item row="9" column="0">
           <widget class="QLabel" name="label_32">
            <property name="text">
             <string>Detector Pixel Coords:</string>
            </property>
           </widget>
          </item>
-         <item row="9" column="1">
+         <item row="11" column="1">
           <widget class="QDoubleSpinBox" name="m_TestHKLX">
            <property name="toolTip">
             <string>HKL X</string>
@@ -1092,7 +1092,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="2">
+         <item row="7" column="2">
           <widget class="QDoubleSpinBox" name="m_TestDetectorY">
            <property name="toolTip">
             <string>Detector Pixel Index Y</string>
@@ -1114,7 +1114,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+         <item row="7" column="1">
           <widget class="QDoubleSpinBox" name="m_TestDetectorX">
            <property name="toolTip">
             <string>Detector Pixel Index X</string>
@@ -1136,14 +1136,14 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="5">
+         <item row="9" column="5">
           <widget class="QPushButton" name="m_GetDetPixButton">
            <property name="text">
             <string>getDetPix...</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="4">
+         <item row="5" column="4">
           <widget class="QLabel" name="label_36">
            <property name="text">
             <string>\/</string>
@@ -1153,7 +1153,7 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="2">
+         <item row="10" column="2">
           <widget class="QDoubleSpinBox" name="m_TestQLabY">
            <property name="toolTip">
             <string>QLab Y</string>
@@ -1175,7 +1175,7 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="0" colspan="4">
+         <item row="14" column="0" colspan="4">
           <spacer name="horizontalSpacer_6">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -1188,7 +1188,7 @@
            </property>
           </spacer>
          </item>
-         <item row="11" column="0" colspan="5">
+         <item row="13" column="0" colspan="5">
           <spacer name="verticalSpacer_5">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -1201,7 +1201,7 @@
            </property>
           </spacer>
          </item>
-         <item row="7" column="1">
+         <item row="9" column="1">
           <widget class="QDoubleSpinBox" name="m_TestPixelX">
            <property name="toolTip">
             <string>Distance from detector beam center X</string>
@@ -1223,14 +1223,14 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="4">
+         <item row="9" column="4">
           <widget class="QPushButton" name="m_Pixel2QLabButton">
            <property name="text">
             <string>pixel2qlab...</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="3">
+         <item row="12" column="3">
           <widget class="QDoubleSpinBox" name="m_TestGridZ">
            <property name="toolTip">
             <string>Output Grid Coord Z</string>
@@ -1252,14 +1252,14 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="0">
+         <item row="11" column="0">
           <widget class="QLabel" name="label_34">
            <property name="text">
             <string>hkl Coords:</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="3">
+         <item row="10" column="3">
           <widget class="QDoubleSpinBox" name="m_TestQLabZ">
            <property name="toolTip">
             <string>QLab Z</string>
@@ -1281,7 +1281,7 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="2">
+         <item row="11" column="2">
           <widget class="QDoubleSpinBox" name="m_TestHKLY">
            <property name="toolTip">
             <string>HKL Y</string>
@@ -1303,7 +1303,7 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="3">
+         <item row="6" column="3">
           <widget class="QDoubleSpinBox" name="m_FrameAngle">
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
@@ -1325,7 +1325,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="3">
+         <item row="5" column="3">
           <widget class="QLabel" name="label_31">
            <property name="text">
             <string>Z</string>
@@ -1335,7 +1335,7 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="3">
+         <item row="9" column="3">
           <widget class="QDoubleSpinBox" name="m_TestPixelZ">
            <property name="toolTip">
             <string>Distance from detector beam center Z</string>
@@ -1357,7 +1357,7 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="3">
+         <item row="7" column="3">
           <widget class="QDoubleSpinBox" name="m_TestDetectorZ">
            <property name="toolTip">
             <string>Detector Pixel Index Z</string>
@@ -1379,7 +1379,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="5">
+         <item row="5" column="5">
           <widget class="QLabel" name="label_37">
            <property name="text">
             <string>/\</string>
@@ -1389,21 +1389,21 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="5">
+         <item row="12" column="5">
           <widget class="QPushButton" name="m_Grid2HKLButton">
            <property name="text">
             <string>grid2hkl...</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="6" column="0">
           <widget class="QLabel" name="label_38">
            <property name="text">
             <string>Frame Rotation Angle:</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
+         <item row="12" column="1">
           <widget class="QDoubleSpinBox" name="m_TestGridX">
            <property name="toolTip">
             <string>Output Grid Coord X</string>
@@ -1425,7 +1425,7 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
+         <item row="12" column="0">
           <widget class="QLabel" name="label_35">
            <property name="text">
             <string>grid Coords:</string>
@@ -1446,7 +1446,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="4" column="0">
           <widget class="QLabel" name="label_42">
            <property name="text">
             <string>Testing:</string>
@@ -1471,6 +1471,98 @@
          </item>
          <item row="1" column="4">
           <widget class="QSpinBox" name="m_ChunksWritten">
+           <property name="toolTip">
+            <string>Frame Rotation Angle</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>1000000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_43">
+           <property name="text">
+            <string>Dummy Read:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QSpinBox" name="m_DummyRead">
+           <property name="toolTip">
+            <string>Frame Rotation Angle</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>1000000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="label_44">
+           <property name="text">
+            <string>Dummy Held:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QSpinBox" name="m_DummyHeld">
+           <property name="toolTip">
+            <string>Frame Rotation Angle</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>1000000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_45">
+           <property name="text">
+            <string>Dummy Written:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QSpinBox" name="m_DummyWritten">
+           <property name="toolTip">
+            <string>Frame Rotation Angle</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>1000000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLabel" name="label_46">
+           <property name="text">
+            <string>Max Dummy Held:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="4">
+          <widget class="QSpinBox" name="m_DummyMax">
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
            </property>
@@ -1586,7 +1678,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1315</width>
+     <width>1383</width>
      <height>22</height>
     </rect>
    </property>

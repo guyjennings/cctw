@@ -34,7 +34,10 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
   //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used")
+  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used"),
+  m_BlocksHeld(QcepSettingsSaverWPtr(), this, "blocksHeld", 0, "Blocks Held"),
+  m_BlocksRead(QcepSettingsSaverWPtr(), this, "blocksRead", 0, "Blocks Read"),
+  m_BlocksWritten(QcepSettingsSaverWPtr(), this, "blocksWritten", 0, "Blocks Written")
 {
   m_ChunksUsed = new int[m_ChunksTotal];
 
@@ -312,7 +315,315 @@ void CctwTransformer::transform()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-  set_BlocksMax(CctwDataChunk::maxAllocated());
+//  set_BlocksMax(CctwDataChunk::maxAllocated());
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransformChunkNumber(int chk)
+{
+  CctwDataChunk *chunk = m_InputData->chunk(chk);
+
+  if (chunk) {
+    prop_BlocksRead()->incValue(1);
+
+    int ndeps = chunk->dependencyCount();
+
+    for (int i=0; i<ndeps; i++) {
+      int ochk = chunk->dependency(i);
+
+      CctwDataChunk *opchunk = m_OutputData->chunk(ochk);
+
+      if (opchunk) {
+        opchunk->incMergeCounters();
+
+        if (opchunk->mergeCount() == opchunk->dependencyCount()) {
+          prop_BlocksWritten()->incValue(1);
+          prop_BlocksHeld()->incValue(-1);
+        } else if (opchunk->mergeCount() == 1) {
+          prop_BlocksHeld()->incValue(1);
+          if (get_BlocksHeld() > get_BlocksMax()) {
+            set_BlocksMax(get_BlocksHeld());
+          }
+        }
+      }
+    }
+  }
+}
+
+void CctwTransformer::runDummyTransformChunkNumber(int n)
+{
+  if (m_Application && !m_Application->get_Halting()) {
+    dummyTransformChunkNumber(n);
+
+    m_MergeCounter.fetchAndAddOrdered(-1);
+  } else {
+    m_MergeCounter.fetchAndStoreOrdered(0);
+  }
+
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
+}
+
+void CctwTransformer::dummyTransform1()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 1");
+
+  m_InputData  -> beginTransform(true);
+  m_OutputData -> beginTransform(false);
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  set_BlocksMax(0);
+  set_BlocksHeld(0);
+  set_BlocksRead(0);
+  set_BlocksWritten(0);
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+  qSort(inputChunks.begin(), inputChunks.end());
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+//    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+    runDummyTransformChunkNumber(ckidx);
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+//  set_BlocksMax(CctwDataChunk::maxAllocated());
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransform2()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 2");
+
+  m_InputData  -> beginTransform(true);
+  m_OutputData -> beginTransform(false);
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  set_BlocksMax(0);
+  set_BlocksHeld(0);
+  set_BlocksRead(0);
+  set_BlocksWritten(0);
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+//  qSort(inputChunks.begin(), inputChunks.end());
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+    //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+    runDummyTransformChunkNumber(ckidx);
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+//  set_BlocksMax(CctwDataChunk::maxAllocated());
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransform3()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 3");
+
+  m_InputData  -> beginTransform(true);
+  m_OutputData -> beginTransform(false);
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  set_BlocksMax(0);
+  set_BlocksHeld(0);
+  set_BlocksRead(0);
+  set_BlocksWritten(0);
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+//  qSort(inputChunks.begin(), inputChunks.end());
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+    //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+    runDummyTransformChunkNumber(ckidx);
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+//  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
@@ -418,7 +729,11 @@ void CctwTransformer::addDependency(int f, int t)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
 
-  m_Dependencies.append(QPair<int,int>(f,t));
+  CctwDependency dep(f,t);
+
+  if (!m_Dependencies.contains(dep)) {
+    m_Dependencies.append(dep);
+  }
 }
 
 void CctwTransformer::completedDependencies()

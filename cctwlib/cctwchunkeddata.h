@@ -23,6 +23,9 @@ public:
                            QObject *parent);
   void allocateChunks();
 
+  typedef float MergeDataType;
+#define CCTW_H5T_INTERNAL_TYPE H5T_NATIVE_FLOAT
+
 signals:
   void chunkSizeChanged(CctwIntVector3D sz);
   void dimensionsChanged(CctwIntVector3D dm);

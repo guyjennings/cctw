@@ -38,11 +38,16 @@ public slots:
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
   void transformChunkNumber(int n);
+  void dummyTransformChunkNumber(int n);
 
   void clearDependencies();
   void addDependency(int f, int t);
   void completedDependencies();
   int  countDependencies();
+
+  void dummyTransform1();
+  void dummyTransform2();
+  void dummyTransform3();
 
 public:
   virtual void writeSettings(QSettings *set, QString section);
@@ -51,12 +56,13 @@ public:
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
   void runTransformChunkNumber(int n);
+  void runDummyTransformChunkNumber(int n);
 
 private:
   CctwApplication         *m_Application;
   QAtomicInt               m_MergeCounter;
   CctwChunkedData         *m_InputData;
-  CctwChunkedData          *m_OutputData;
+  CctwChunkedData         *m_OutputData;
   CctwTransformInterface  *m_Transform;
   int                      m_OversampleX;
   int                      m_OversampleY;
@@ -83,6 +89,15 @@ public:
 
   Q_PROPERTY(int blocksMax READ get_BlocksMax WRITE set_BlocksMax STORED false)
   QCEP_INTEGER_PROPERTY(BlocksMax)
+
+  Q_PROPERTY(int blocksHeld READ get_BlocksHeld WRITE set_BlocksHeld STORED false)
+  QCEP_INTEGER_PROPERTY(BlocksHeld)
+
+  Q_PROPERTY(int blocksRead READ get_BlocksRead WRITE set_BlocksRead STORED false)
+  QCEP_INTEGER_PROPERTY(BlocksRead)
+
+  Q_PROPERTY(int blocksWritten READ get_BlocksWritten WRITE set_BlocksWritten STORED false)
+  QCEP_INTEGER_PROPERTY(BlocksWritten)
 };
 
 #endif // CCTWTRANSFORMER_H

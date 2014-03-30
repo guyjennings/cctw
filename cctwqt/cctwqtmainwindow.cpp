@@ -144,6 +144,15 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
 
   m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, this);
+
+  CctwTransformer *xform = app->m_Transformer;
+
+  if (xform) {
+    xform->prop_BlocksRead()->linkTo(ui->m_DummyRead);
+    xform->prop_BlocksWritten()->linkTo(ui->m_DummyWritten);
+    xform->prop_BlocksHeld()->linkTo(ui->m_DummyHeld);
+    xform->prop_BlocksMax()->linkTo(ui->m_DummyMax);
+  }
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
