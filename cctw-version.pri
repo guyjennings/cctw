@@ -14,3 +14,13 @@ DEFINES += CCTW_VERSION=\"$$VERSION\"
 win32 {
   DEFINES += NOMINMAX
 }
+
+*g++* {
+    QMAKE_CXXFLAGS += -g
+    QMAKE_CFLAGS += -g
+    QMAKE_LFLAGS += -g
+}
+
+unix:!macx {
+  LIBS += -ltcmalloc
+}
