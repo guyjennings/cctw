@@ -98,6 +98,9 @@ public:
 
   Q_PROPERTY(int blocksWritten READ get_BlocksWritten WRITE set_BlocksWritten STORED false)
   QCEP_INTEGER_PROPERTY(BlocksWritten)
+
+  Q_PROPERTY(int transformOptions READ get_TransformOptions WRITE set_TransformOptions)
+  QCEP_INTEGER_PROPERTY(TransformOptions)
 };
 
 #endif // CCTWTRANSFORMER_H

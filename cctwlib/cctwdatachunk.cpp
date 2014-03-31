@@ -372,7 +372,7 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
       printMessage(tr("Output chunk [%1] completed")
                    .arg(index()));
 
-      QMetaObject::invokeMethod(m_Data, "writeChunk", Qt::QueuedConnection, Q_ARG(int, index()));
+      QMetaObject::invokeMethod(m_Data, "writeChunk", Qt::BlockingQueuedConnection, Q_ARG(int, index()));
 //      writeData();
 //      writeWeights();
 //      deallocateData();

@@ -37,7 +37,8 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used"),
   m_BlocksHeld(QcepSettingsSaverWPtr(), this, "blocksHeld", 0, "Blocks Held"),
   m_BlocksRead(QcepSettingsSaverWPtr(), this, "blocksRead", 0, "Blocks Read"),
-  m_BlocksWritten(QcepSettingsSaverWPtr(), this, "blocksWritten", 0, "Blocks Written")
+  m_BlocksWritten(QcepSettingsSaverWPtr(), this, "blocksWritten", 0, "Blocks Written"),
+  m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
 {
   m_ChunksUsed = new int[m_ChunksTotal];
 
@@ -306,7 +307,11 @@ void CctwTransformer::transform()
       m_Application->addWorkOutstanding(1);
     }
 
-    QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
+    if ((get_TransformOptions() & 1) == 0) {
+      QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
+    } else {
+      runTransformChunkNumber(ckidx);
+    }
   }
 
   while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
