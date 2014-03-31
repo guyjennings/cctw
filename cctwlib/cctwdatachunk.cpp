@@ -389,6 +389,7 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 void CctwDataChunk::clearMergeCounters()
 {
   m_MergeCounter = 0;
+  m_Normalized   = 0;
 }
 
 void CctwDataChunk::incMergeCounters()
