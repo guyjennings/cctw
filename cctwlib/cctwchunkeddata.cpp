@@ -1,7 +1,11 @@
 #include "cctwchunkeddata.h"
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
+
+#if QT_VERSION >= 0x050000
 #include <QUrlQuery>
+#endif
+
 #include "cctwdebug.h"
 #include "qcepmutexlocker.h"
 
@@ -91,12 +95,15 @@ void CctwChunkedData::setDataSource(QString desc)
   printMessage(tr("host:     %1").arg(url.host()));
   printMessage(tr("path:     %1").arg(url.path()));
 //  printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
   printMessage(tr("query:    %1").arg(url.query()));
+#endif
   printMessage(tr("fragment: %1").arg(url.fragment()));
 
   set_DataFileName(url.path());
   set_DataSetName(url.fragment());
 
+#if QT_VERSION >= 0x050000
   if (url.hasQuery()) {
     QUrlQuery qry(url);
 
@@ -125,6 +132,7 @@ void CctwChunkedData::setDataSource(QString desc)
       setDataset(dset);
     }
   }
+#endif
 }
 
 void CctwChunkedData::onDataFileNameChanged()
