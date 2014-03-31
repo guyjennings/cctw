@@ -638,21 +638,25 @@ void CctwTransformer::dummyTransform3()
 
 void CctwTransformer::checkTransform()
 {
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
+  int chunks = m_OutputData->chunkCount().volume();
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+  for (int i = 0; i<chunks; i++) {
+    CctwDataChunk *chunk = m_OutputData->chunk(i);
 
-        if (chunk) {
-          if (chunk->dependencyCount() != chunk->mergeCount()) {
-            printMessage(tr("Anomaly in chunk [%1,%2,%3] : deps %4, merge %5")
-                         .arg(x).arg(y).arg(z)
-                         .arg(chunk->dependencyCount())
-                         .arg(chunk->mergeCount()));
-          }
-        }
+    if (chunk) {
+      if (chunk->dependencyCount() != chunk->mergeCount()) {
+        printMessage(tr("Anomaly in chunk [%1] : deps %2, merge %3")
+                     .arg(i)
+                     .arg(chunk->dependencyCount())
+                     .arg(chunk->mergeCount()));
+      }
+
+      if (chunk->dataPointer()) {
+        printMessage(tr("Chunk [%1] still has allocated data").arg(i));
+      }
+
+      if (chunk->weightsPointer()) {
+        printMessage(tr("Chunk [%1] still has allocated weights").arg(i));
       }
     }
   }
