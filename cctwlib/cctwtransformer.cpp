@@ -294,7 +294,10 @@ void CctwTransformer::transform()
 
   printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
 
-//  qSort(inputChunks.begin(), inputChunks.end());
+  if ((get_TransformOptions() & 2)) {
+    printMessage("Sorting input chunk list into input order");
+    qSort(inputChunks.begin(), inputChunks.end());
+  }
 
   if (m_Application) {
     m_Application->set_ProgressLimit(inputChunks.count());
