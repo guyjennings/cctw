@@ -441,7 +441,11 @@ void CctwApplication::evaluateCommand(QString cmd)
   if (m_ScriptEngine) {
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
 
-    printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+    if (val.isUndefined()) {
+      printMessage(tr("%1").arg(cmd));
+    } else {
+      printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+    }
   }
 }
 
