@@ -29,8 +29,6 @@ public:
   virtual ~CctwTransformer();
 
 public slots:
-  void performTests();
-
   void transform();
   void checkTransform();
 
@@ -67,10 +65,6 @@ private:
   int                      m_OversampleX;
   int                      m_OversampleY;
   int                      m_OversampleZ;
-  int                      m_Tests;
-  CctwIntVector3D          m_ChunkCount;
-  int                      m_ChunksTotal;
-  int                     *m_ChunksUsed;
   QMutex                   m_DependencyMutex;
   CctwDependencies         m_Dependencies;
 

@@ -26,10 +26,6 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_OversampleX(osx),
   m_OversampleY(osy),
   m_OversampleZ(osz),
-  m_Tests(nTests),
-  m_ChunkCount(input->chunkCount()),
-  m_ChunksTotal(m_ChunkCount.x()*m_ChunkCount.y()*m_ChunkCount.z()),
-  m_ChunksUsed(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
   //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
   //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
@@ -40,15 +36,12 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_BlocksWritten(QcepSettingsSaverWPtr(), this, "blocksWritten", 0, "Blocks Written"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
 {
-  m_ChunksUsed = new int[m_ChunksTotal];
-
   qRegisterMetaType< CctwDependencies >("CctwDependencies");
   qRegisterMetaTypeStreamOperators< CctwDependencies >("CctwDependencies");
 }
 
 CctwTransformer::~CctwTransformer()
 {
-  delete [] m_ChunksUsed;
 }
 
 void CctwTransformer::writeSettings(QSettings *set, QString section)
@@ -66,73 +59,6 @@ void CctwTransformer::readSettings(QSettings *set, QString section)
 
   set->beginGroup(section+"/dependencies");
   set->endGroup();
-}
-
-void CctwTransformer::performTests()
-{
-  printf("Performing tests\n");
-
-#ifndef WIN32
-  for (int i=0; i<m_Tests; i++) {
-    {
-      double rot1 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-      double rot2 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-      double rot3 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-
-      bool invertible;
-
-      CctwDoubleMatrix3x3 m1 = CctwDoubleMatrix3x3::rotationMatrix(rot1, rot2, rot3);
-      CctwDoubleMatrix3x3 m2 = m1.inverted(&invertible);
-      CctwDoubleMatrix3x3 m3 = m1*m2;
-
-      double det = m3.determinant();
-
-      double sum1 = fabs(m3(0,0)) + fabs(m3(1,1)) + fabs(m3(2,2));
-      double sum2 = fabs(m3(0,1)) + fabs(m3(0,2)) + fabs(m3(1,2));
-      double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
-
-      printf("Iter %d.0: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
-
-      double x = (double)random();
-      double y = (double)random();
-      double z = (double)random();
-
-      CctwDoubleVector3D v1(x,y,z);
-      CctwDoubleVector3D v2 = m1*v1;
-      CctwDoubleVector3D v3 = m2*v2;
-
-      double sum4 = (v1 - v3).length();
-
-      printf("Iter %d.1: Len %g\n", i, sum4);
-    }
-
-    {
-      double a = (double)random();
-      double b = (double)random();
-      double c = (double)random();
-      double d = (double)random();
-      double e = (double)random();
-      double f = (double)random();
-      double g = (double)random();
-      double h = (double)random();
-      double k = (double)random();
-
-      bool invertible;
-
-      CctwDoubleMatrix3x3 m1(a,b,c,d,e,f,g,h,k);
-      CctwDoubleMatrix3x3 m2 = m1.inverted(&invertible);
-      CctwDoubleMatrix3x3 m3 = m1*m2;
-
-      double det = m3.determinant();
-
-      double sum1 = fabs(m3(0,0)) + fabs(m3(1,1)) + fabs(m3(2,2));
-      double sum2 = fabs(m3(0,1)) + fabs(m3(0,2)) + fabs(m3(1,2));
-      double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
-
-      printf("Iter %d.2: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
-    }
-  }
-#endif
 }
 
 void CctwTransformer::runTransformChunkNumber(int n)
@@ -238,6 +164,8 @@ void CctwTransformer::transformChunkNumber(int n)
       m_OutputData->mergeChunk(outputChunk);
 
       delete outputChunk;
+
+//      outputChunk->deleteLater();
     }
 
     m_InputData->releaseChunk(n);
@@ -258,8 +186,8 @@ void CctwTransformer::transform()
 
   printMessage("Starting Transform");
 
-  m_InputData  -> beginTransform(true);
-  m_OutputData -> beginTransform(false);
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 
@@ -392,8 +320,8 @@ void CctwTransformer::dummyTransform1()
 
   printMessage("Starting Dummy Transform type 1");
 
-  m_InputData  -> beginTransform(true);
-  m_OutputData -> beginTransform(false);
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 
@@ -479,8 +407,8 @@ void CctwTransformer::dummyTransform2()
 
   printMessage("Starting Dummy Transform type 2");
 
-  m_InputData  -> beginTransform(true);
-  m_OutputData -> beginTransform(false);
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 
@@ -566,8 +494,8 @@ void CctwTransformer::dummyTransform3()
 
   printMessage("Starting Dummy Transform type 3");
 
-  m_InputData  -> beginTransform(true);
-  m_OutputData -> beginTransform(false);
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 

@@ -9,6 +9,8 @@
 #include "cctwdebug.h"
 #include "qcepmutexlocker.h"
 
+QMutex CctwChunkedData::m_FileAccessMutex;
+
 CctwChunkedData::CctwChunkedData
   (CctwApplication *application,
    CctwIntVector3D  dim,
@@ -30,6 +32,7 @@ CctwChunkedData::CctwChunkedData
     m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
     m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
     m_IsInput(isInput),
+    m_TransformOptions(0),
     m_FileId(-1),
     m_DatasetId(-1),
     m_DataspaceId(-1)
@@ -350,13 +353,13 @@ void CctwChunkedData::normalizeChunk(int n)
 
 bool CctwChunkedData::openInputFile()
 {
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
   if (m_FileId >= 0) {
     return true;
   }
 
   printMessage(tr("About to open input file"));
-
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
   int res = true;
 
@@ -448,9 +451,9 @@ bool CctwChunkedData::openInputFile()
 
 void CctwChunkedData::closeInputFile()
 {
-  printMessage("About to close input file");
-
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  printMessage("About to close input file");
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);
@@ -470,13 +473,13 @@ void CctwChunkedData::closeInputFile()
 
 bool CctwChunkedData::openOutputFile()
 {
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
   if (m_FileId >= 0) {
     return true;
   }
 
   printMessage("About to open output file");
-
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
   int res = true;
 
@@ -607,9 +610,9 @@ bool CctwChunkedData::openOutputFile()
 
 void CctwChunkedData::closeOutputFile()
 {
-  printMessage("About to close output file");
-
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  printMessage("About to close output file");
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);
@@ -659,18 +662,19 @@ void CctwChunkedData::closeOutputFile()
 
 CctwDataChunk *CctwChunkedData::readChunk(int n)
 {
-  CctwDataChunk *chk = chunk(n);
+  CctwDataChunk *chk = NULL;
+  if (openInputFile()) {
+    QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (chk) {
-    prop_ChunksRead()->incValue(1);
+    chk = chunk(n);
 
-    chk->allocateData();
-    chk->allocateWeights();
+    if (chk) {
+      prop_ChunksRead()->incValue(1);
 
-    if (openInputFile()) {
+      chk->allocateData();
+      chk->allocateWeights();
+
       printMessage(tr("About to read chunk %1").arg(n));
-
-      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
       if (m_FileId >= 0) {
         hid_t memspace_id = -1;
@@ -709,7 +713,7 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly reading chunk %1, data == NULL").arg(n));
-        } else {
+        } else if (m_TransformOptions & 4 == 0){
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t rderr  = H5Dread(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
@@ -757,17 +761,17 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 
 void CctwChunkedData::writeChunk(int n)
 {
-  CctwDataChunk *chk = chunk(n);
+  if (openOutputFile()) {
+    QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (chk) {
-    prop_ChunksWritten()->incValue(1);
+    printMessage(tr("About to write chunk %1").arg(n));
 
-    normalizeChunk(n);
+    CctwDataChunk *chk = chunk(n);
 
-    if (openOutputFile()) {
-      printMessage(tr("About to write chunk %1").arg(n));
+    if (chk) {
+      prop_ChunksWritten()->incValue(1);
 
-      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+      normalizeChunk(n);
 
       if (m_FileId >= 0) {
 
@@ -807,7 +811,7 @@ void CctwChunkedData::writeChunk(int n)
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
-        } else {
+        } else if (m_TransformOptions & 8 == 0){
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t wrterr = H5Dwrite(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
@@ -840,9 +844,10 @@ void CctwChunkedData::releaseChunk(int n)
   }
 }
 
-void CctwChunkedData::beginTransform(bool isInput)
+void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 {
   m_IsInput = isInput;
+  m_TransformOptions = transformOptions;
 
   printMessage("CctwChunkedData::beginTransform()");
 

@@ -67,7 +67,7 @@ public slots:
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();
 
-  void                beginTransform(bool isInput);
+  void                beginTransform(bool isInput, int transformOptions);
   void                endTransform();
 
   bool                openOutputFile();
@@ -114,11 +114,12 @@ private:
   QCEP_INTEGER_PROPERTY(ChunksWritten)
 
   bool                m_IsInput;
+  int                 m_TransformOptions;
   hid_t               m_FileId;
   hid_t               m_DatasetId;
   hid_t               m_DataspaceId;
 
-  QMutex              m_FileAccessMutex;
+  static QMutex       m_FileAccessMutex;
 };
 
 #endif // CCTWCHUNKEDDATA_H
