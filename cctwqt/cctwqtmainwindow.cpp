@@ -12,6 +12,7 @@
 #include "qwt_plot_zoomer.h"
 #include "qwt_symbol.h"
 #include "QtConcurrentRun"
+#include "cctwdatachunk.h"
 
 CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -410,7 +411,56 @@ void CctwqtMainWindow::doLoadDependencies()
 
 void CctwqtMainWindow::reportDependencies()
 {
-  printMessage("CctwqtMainWindow::reportDependencies still to be written");
+  CctwChunkedData *input = m_Application->m_InputData;
+
+  if (input) {
+    int maxdeps = 0;
+    int ndeps   = 0;
+    int nchnk   = input->chunkCount().volume();
+
+    for (int i=0; i < nchnk; i++) {
+      CctwDataChunk *chunk = input->chunk(i);
+
+      if (chunk) {
+        int ct = chunk->dependencyCount();
+
+        if (ct >= 1) {
+          ndeps++;
+        }
+
+        if (ct > maxdeps) {
+          maxdeps = ct;
+        }
+      }
+    }
+
+    ui->m_DependenciesTable->clear();
+    ui->m_DependenciesTable->setRowCount(ndeps + 3);
+    ui->m_DependenciesTable->setColumnCount((maxdeps+1)>4 ? (maxdeps+1):4);
+
+    ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
+    ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
+
+    int r = 0;
+
+    for (int i=0; i < nchnk; i++) {
+      CctwDataChunk *chunk = input->chunk(i);
+
+      if (chunk) {
+        int ct = chunk->dependencyCount();
+
+        if (ct >= 1) {
+          ui->m_DependenciesTable->setItem(r+3, 0, new QTableWidgetItem(tr("[%1] ->").arg(i)));
+
+          for (int i=0; i<ct; i++) {
+            ui->m_DependenciesTable->setItem(r+3, 1+i, new QTableWidgetItem(tr("%1").arg(chunk->dependency(i))));
+          }
+
+          r++;
+        }
+      }
+    }
+  }
 }
 
 void CctwqtMainWindow::doAnalyzePEMetaData()
