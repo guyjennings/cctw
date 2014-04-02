@@ -60,8 +60,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
   connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
 
-  connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), this, SLOT(reportDependencies()));
-  connect(ui->m_ReportDepsButton, SIGNAL(clicked()), this, SLOT(reportDependencies()));
+  connect(ui->m_ActionReportInputDependencies, SIGNAL(triggered()), this, SLOT(reportInputDependencies()));
+  connect(ui->m_ReportInputDepsButton, SIGNAL(clicked()), this, SLOT(reportInputDependencies()));
+
+  connect(ui->m_ActionReportOutputDependencies, SIGNAL(triggered()), this, SLOT(reportOutputDependencies()));
+  connect(ui->m_ReportOutputDepsButton, SIGNAL(clicked()), this, SLOT(reportOutputDependencies()));
 
   connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
   connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
@@ -409,17 +412,15 @@ void CctwqtMainWindow::doLoadDependencies()
   }
 }
 
-void CctwqtMainWindow::reportDependencies()
+void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
 {
-  CctwChunkedData *input = m_Application->m_InputData;
-
-  if (input) {
+  if (data) {
     int maxdeps = 0;
     int ndeps   = 0;
-    int nchnk   = input->chunkCount().volume();
+    int nchnk   = data->chunkCount().volume();
 
     for (int i=0; i < nchnk; i++) {
-      CctwDataChunk *chunk = input->chunk(i);
+      CctwDataChunk *chunk = data->chunk(i);
 
       if (chunk) {
         int ct = chunk->dependencyCount();
@@ -438,13 +439,14 @@ void CctwqtMainWindow::reportDependencies()
     ui->m_DependenciesTable->setRowCount(ndeps + 3);
     ui->m_DependenciesTable->setColumnCount((maxdeps+1)>4 ? (maxdeps+1):4);
 
-    ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
-    ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
+    ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(title));
+    ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
+    ui->m_DependenciesTable->setItem(1, 1, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
 
     int r = 0;
 
     for (int i=0; i < nchnk; i++) {
-      CctwDataChunk *chunk = input->chunk(i);
+      CctwDataChunk *chunk = data->chunk(i);
 
       if (chunk) {
         int ct = chunk->dependencyCount();
@@ -461,6 +463,16 @@ void CctwqtMainWindow::reportDependencies()
       }
     }
   }
+}
+
+void CctwqtMainWindow::reportInputDependencies()
+{
+  reportDependencies(m_Application->m_InputData, "Input Dependencies");
+}
+
+void CctwqtMainWindow::reportOutputDependencies()
+{
+  reportDependencies(m_Application->m_OutputData, "Output Dependencies");
 }
 
 void CctwqtMainWindow::doAnalyzePEMetaData()

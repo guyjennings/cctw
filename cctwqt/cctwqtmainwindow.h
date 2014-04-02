@@ -50,7 +50,8 @@ public slots:
   void doSaveSettings();
   void doSaveDependencies();
   void doLoadDependencies();
-  void reportDependencies();
+  void reportInputDependencies();
+  void reportOutputDependencies();
   void onProgressUpdate();
   void doAnalyzePEMetaData();
   void doAnalyzeSpecDataFile();
@@ -70,7 +71,7 @@ public slots:
 private:
   bool wantToClose();
   void closeEvent (QCloseEvent * event);
-
+  void reportDependencies(CctwChunkedData *data, QString title);
 public:
   Ui::CctwqtMainWindow       *ui;
 
