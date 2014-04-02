@@ -30,35 +30,57 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_CommandInput, SIGNAL(returnPressed()), this, SLOT(doEvaluateCommand()));
 
-  connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
   connect(ui->m_ActionSetupDataImport, SIGNAL(triggered()), this, SLOT(doSetupImport()));
+  connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
 
-  connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
   connect(ui->m_ActionImportData, SIGNAL(triggered()), this, SLOT(doImport()));
+  connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
 
+  connect(ui->m_ActionSetupInputData, SIGNAL(triggered()), this, SLOT(doSetupInput()));
   connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
+
+  connect(ui->m_ActionSetupOutputData, SIGNAL(triggered()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
+
+  connect(ui->m_ActionSetupTransform, SIGNAL(triggered()), this, SLOT(doSetupTransform()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
+
+  connect(ui->m_ActionPerformTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
   connect(ui->m_TransformButton, SIGNAL(clicked()), this, SLOT(doTransform()));
+
+  connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
+  connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
+
+  connect(ui->m_ActionDummyTransform, SIGNAL(triggered()), this, SLOT(doDummyTransform()));
+  connect(ui->m_DummyTransformButton, SIGNAL(clicked()), this, SLOT(doDummyTransform()));
+
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
-  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
-  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
-  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
-  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
-  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
 
   connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
-  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
+  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
+
+  connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), this, SLOT(reportDependencies()));
+  connect(ui->m_ReportDepsButton, SIGNAL(clicked()), this, SLOT(reportDependencies()));
+
   connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
-  connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), m_Application, SLOT(reportDependencies()));
+  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
+
+  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
+  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
+
   connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
+  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
+
   connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
+  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
 
   connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
   connect(ui->m_ActionCheckImportedData, SIGNAL(triggered()), this, SLOT(doCheckImportedData()));
 
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
+  connect(ui->m_ActionSaveCurrentSettings, SIGNAL(triggered()), m_Application, SLOT(writeSettings()));
+
   connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
@@ -148,10 +170,10 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   CctwTransformer *xform = app->m_Transformer;
 
   if (xform) {
-    xform->prop_BlocksRead()->linkTo(ui->m_DummyRead);
-    xform->prop_BlocksWritten()->linkTo(ui->m_DummyWritten);
-    xform->prop_BlocksHeld()->linkTo(ui->m_DummyHeld);
-    xform->prop_BlocksMax()->linkTo(ui->m_DummyMax);
+    xform->prop_BlocksRead()->linkTo(ui->m_ChunksRead);
+    xform->prop_BlocksWritten()->linkTo(ui->m_ChunksWritten);
+    xform->prop_BlocksHeld()->linkTo(ui->m_ChunksHeld);
+    xform->prop_BlocksMax()->linkTo(ui->m_MaxChunksHeld);
   }
 }
 
@@ -331,6 +353,16 @@ void CctwqtMainWindow::doTransform()
   QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform);
 }
 
+void CctwqtMainWindow::doCheckTransform()
+{
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
+}
+
+void CctwqtMainWindow::doDummyTransform()
+{
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::dummyTransform1);
+}
+
 void CctwqtMainWindow::doHalt()
 {
   m_Application->set_Halting(true);
@@ -374,6 +406,11 @@ void CctwqtMainWindow::doLoadDependencies()
   if (path.length()) {
     m_Application->loadDependencies(path);
   }
+}
+
+void CctwqtMainWindow::reportDependencies()
+{
+  printMessage("CctwqtMainWindow::reportDependencies still to be written");
 }
 
 void CctwqtMainWindow::doAnalyzePEMetaData()

@@ -43,11 +43,14 @@ public slots:
   void doSetupOutput();
   void doSetupTransform();
   void doTransform();
+  void doCheckTransform();
+  void doDummyTransform();
   void doHalt();
   void doLoadSettings();
   void doSaveSettings();
   void doSaveDependencies();
   void doLoadDependencies();
+  void reportDependencies();
   void onProgressUpdate();
   void doAnalyzePEMetaData();
   void doAnalyzeSpecDataFile();
