@@ -933,13 +933,6 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="5">
-          <widget class="QPushButton" name="m_HKL2GridButton">
-           <property name="text">
-            <string>hkl2grid...</string>
-           </property>
-          </widget>
-         </item>
          <item row="8" column="0">
           <widget class="QLabel" name="label_29">
            <property name="text">
@@ -1001,13 +994,6 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="5">
-          <widget class="QPushButton" name="m_QLab2HKLButton">
-           <property name="text">
-            <string>qlab2hkl...</string>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="1">
           <widget class="QLabel" name="label_30">
            <property name="text">
@@ -1015,13 +1001,6 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="5">
-          <widget class="QPushButton" name="m_GetDetPosButton">
-           <property name="text">
-            <string>getDetPos...</string>
            </property>
           </widget>
          </item>
@@ -1098,16 +1077,6 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="5">
-          <widget class="QLabel" name="label_36">
-           <property name="text">
-            <string>\/</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
          <item row="11" column="2">
           <widget class="QDoubleSpinBox" name="m_TestQLabY">
            <property name="toolTip">
@@ -1149,13 +1118,6 @@
            </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="5">
-          <widget class="QPushButton" name="m_Pixel2QLabButton">
-           <property name="text">
-            <string>pixel2qlab...</string>
            </property>
           </widget>
          </item>
@@ -1484,49 +1446,87 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="5">
-          <widget class="QPushButton" name="m_DummyTransformButton">
+         <item row="8" column="4">
+          <widget class="QPushButton" name="m_GetDetPosButton">
            <property name="text">
-            <string>Dummy Transform</string>
+            <string>getDetPos...</string>
            </property>
           </widget>
          </item>
-         <item row="15" column="6">
-          <widget class="QPushButton" name="m_TransformButton">
+         <item row="10" column="4">
+          <widget class="QPushButton" name="m_Pixel2QLabButton">
            <property name="text">
-            <string>Transform</string>
+            <string>pixel2qlab...</string>
            </property>
           </widget>
          </item>
-         <item row="10" column="6">
+         <item row="11" column="4">
+          <widget class="QPushButton" name="m_QLab2HKLButton">
+           <property name="text">
+            <string>qlab2hkl...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="4">
+          <widget class="QPushButton" name="m_HKL2GridButton">
+           <property name="text">
+            <string>hkl2grid...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="5">
           <widget class="QPushButton" name="m_GetDetPixButton">
            <property name="text">
             <string>getDetPix...</string>
            </property>
           </widget>
          </item>
-         <item row="11" column="6">
+         <item row="11" column="5">
           <widget class="QPushButton" name="m_QLab2PixelButton">
            <property name="text">
             <string>qlab2pixel...</string>
            </property>
           </widget>
          </item>
-         <item row="12" column="6">
+         <item row="12" column="5">
           <widget class="QPushButton" name="m_HKL2QLabButton">
            <property name="text">
             <string>hkl2qlab...</string>
            </property>
           </widget>
          </item>
-         <item row="13" column="6">
+         <item row="13" column="5">
           <widget class="QPushButton" name="m_Grid2HKLButton">
            <property name="text">
             <string>grid2hkl...</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="6">
+         <item row="15" column="4">
+          <widget class="QPushButton" name="m_DummyTransformButton">
+           <property name="text">
+            <string>Dummy Transform</string>
+           </property>
+          </widget>
+         </item>
+         <item row="15" column="5">
+          <widget class="QPushButton" name="m_TransformButton">
+           <property name="text">
+            <string>Transform</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="4">
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>\/</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="5">
           <widget class="QLabel" name="label_37">
            <property name="text">
             <string>/\</string>
@@ -1536,7 +1536,7 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="0" colspan="7">
+         <item row="14" column="0" colspan="6">
           <spacer name="verticalSpacer_5">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -1849,10 +1849,6 @@
   <tabstop>m_TestGridX</tabstop>
   <tabstop>m_TestGridY</tabstop>
   <tabstop>m_TestGridZ</tabstop>
-  <tabstop>m_GetDetPosButton</tabstop>
-  <tabstop>m_Pixel2QLabButton</tabstop>
-  <tabstop>m_QLab2HKLButton</tabstop>
-  <tabstop>m_HKL2GridButton</tabstop>
   <tabstop>m_InputDataFileName</tabstop>
   <tabstop>m_InputDataSetName</tabstop>
   <tabstop>m_InputDimensionsX</tabstop>
