@@ -14,107 +14,7 @@
    <string>CCTW - Setup Output...</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="1">
-    <widget class="QSpinBox" name="m_OutputCompression">
-     <property name="toolTip">
-      <string>Output HDF Chunk Size in X</string>
-     </property>
-     <property name="specialValueText">
-      <string>No Compression</string>
-     </property>
-     <property name="maximum">
-      <number>999999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_9">
-     <property name="text">
-      <string>HDF5 Output Compression: (0=none)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="4">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>688</width>
-       <height>115</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="6" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QLineEdit" name="m_OutputDatasetName"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>HDF5 Output Dataset Name:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1" colspan="2">
-    <widget class="QLineEdit" name="m_OutputFileName"/>
-   </item>
    <item row="1" column="3">
-    <widget class="QPushButton" name="m_BrowseOutputFileName">
-     <property name="text">
-      <string>Browse...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>HDF5 Output Filename:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="toolTip">
-      <string>Chunk size for transform calculations</string>
-     </property>
-     <property name="text">
-      <string>Output Chunk Size (X,Y,Z)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QSpinBox" name="m_OutputChunkX">
-     <property name="toolTip">
-      <string>Transform Chunk Size in X</string>
-     </property>
-     <property name="maximum">
-      <number>999999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QSpinBox" name="m_OutputChunkY">
-     <property name="toolTip">
-      <string>Transform Chunk Size in Y</string>
-     </property>
-     <property name="maximum">
-      <number>999999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
     <widget class="QSpinBox" name="m_OutputChunkZ">
      <property name="toolTip">
       <string>Transform Chunk Size in Z</string>
@@ -124,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_8">
      <property name="toolTip">
       <string>HDF Chunk Size of Output File (0=unchunked)</string>
@@ -134,20 +34,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QSpinBox" name="m_HDFOutputChunkX">
-     <property name="toolTip">
-      <string>Output HDF Chunk Size in X</string>
-     </property>
-     <property name="specialValueText">
-      <string>No Chunks</string>
-     </property>
-     <property name="maximum">
-      <number>999999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
+   <item row="4" column="2">
     <widget class="QSpinBox" name="m_HDFOutputChunkY">
      <property name="toolTip">
       <string>Output HDF Chunk Size in Y</string>
@@ -160,13 +47,166 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>HDF5 Output Dataset Name:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="toolTip">
+      <string>Chunk size for transform calculations</string>
+     </property>
+     <property name="text">
+      <string>Output Chunk Size (X,Y,Z)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
     <widget class="QSpinBox" name="m_HDFOutputChunkZ">
      <property name="toolTip">
       <string>Output HDF Chunk Size in Z</string>
      </property>
      <property name="specialValueText">
       <string>No Chunks</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QLineEdit" name="m_OutputFileName"/>
+   </item>
+   <item row="2" column="3">
+    <widget class="QPushButton" name="m_BrowseOutputFileName">
+     <property name="text">
+      <string>Browse...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QSpinBox" name="m_OutputChunkX">
+     <property name="toolTip">
+      <string>Transform Chunk Size in X</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QSpinBox" name="m_HDFOutputChunkX">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in X</string>
+     </property>
+     <property name="specialValueText">
+      <string>No Chunks</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QSpinBox" name="m_OutputChunkY">
+     <property name="toolTip">
+      <string>Transform Chunk Size in Y</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>HDF5 Output Compression: (0=none)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="4">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>688</width>
+       <height>115</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>HDF5 Output Filename:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QSpinBox" name="m_OutputCompression">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in X</string>
+     </property>
+     <property name="specialValueText">
+      <string>No Compression</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QLineEdit" name="m_OutputDatasetName"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="toolTip">
+      <string>Chunk size for transform calculations</string>
+     </property>
+     <property name="text">
+      <string>Output Dimensions (X,Y,Z)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QSpinBox" name="m_OutputDimensionsX">
+     <property name="toolTip">
+      <string>Transform Chunk Size in X</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QSpinBox" name="m_OutputDimensionsY">
+     <property name="toolTip">
+      <string>Transform Chunk Size in Y</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QSpinBox" name="m_OutputDimensionsZ">
+     <property name="toolTip">
+      <string>Transform Chunk Size in Z</string>
      </property>
      <property name="maximum">
       <number>999999</number>

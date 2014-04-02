@@ -20,6 +20,12 @@ CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwC
     ui->m_OutputDatasetName->setText(m_Data->get_DataSetName());
     ui->m_OutputCompression->setValue(m_Data->get_Compression());
 
+    CctwIntVector3D dims = m_Data->dimensions();
+
+    ui->m_OutputDimensionsX->setValue(dims.x());
+    ui->m_OutputDimensionsY->setValue(dims.y());
+    ui->m_OutputDimensionsZ->setValue(dims.z());
+
     CctwIntVector3D cksz = m_Data->chunkSize();
 
     ui->m_OutputChunkX->setValue(cksz.x());
@@ -42,19 +48,24 @@ CctwqtSetupOutputDialog::~CctwqtSetupOutputDialog()
 void CctwqtSetupOutputDialog::accept()
 {
   if (m_Data) {
+    CctwIntVector3D dims(ui->m_OutputDimensionsX->value(),
+                         ui->m_OutputDimensionsY->value(),
+                         ui->m_OutputDimensionsZ->value());
+
     CctwIntVector3D cksz(ui->m_OutputChunkX->value(),
                          ui->m_OutputChunkY->value(),
                          ui->m_OutputChunkZ->value());
 
+    CctwIntVector3D hcksz(ui->m_HDFOutputChunkX->value(),
+                          ui->m_HDFOutputChunkY->value(),
+                          ui->m_HDFOutputChunkZ->value());
+
+    m_Data->setDimensions(dims);
     m_Data->setChunkSize(cksz);
     m_Data->set_Compression(ui->m_OutputCompression->value());
 
     m_Data->set_DataFileName(ui->m_OutputFileName->text());
     m_Data->set_DataSetName(ui->m_OutputDatasetName->text());
-
-    CctwIntVector3D hcksz(ui->m_HDFOutputChunkX->value(),
-                          ui->m_HDFOutputChunkY->value(),
-                          ui->m_HDFOutputChunkZ->value());
 
     m_Data->set_HDFChunkSize(hcksz);
   }
