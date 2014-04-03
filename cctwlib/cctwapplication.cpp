@@ -839,7 +839,7 @@ abort:
 //    f.waitForFinished();
 //  }
 
-  m_Transformer -> completedDependencies();
+//  m_Transformer -> completedDependencies();
 
   int msec = startAt.elapsed();
 
@@ -896,9 +896,6 @@ void CctwApplication::saveDependencies(QString path)
 
 void CctwApplication::loadDependencies(QString path)
 {
-//  m_InputData -> clearDependencies();
-//  m_OutputData -> clearDependencies();
-
   m_Transformer -> clearDependencies();
 
   QSettings settings(path, QSettings::IniFormat);
@@ -927,9 +924,6 @@ void CctwApplication::loadDependencies(QString path)
 
       CctwIntVector3D ochnk(idx, idy, idz);
 
-//      m_InputData->addDependency(in, idn);
-//      m_OutputData->addDependency(idn, in);
-
       m_Transformer->addDependency(in, idn);
     }
 
@@ -937,8 +931,6 @@ void CctwApplication::loadDependencies(QString path)
   }
 
   settings.endArray();
-
-  m_Transformer->completedDependencies();
 }
 
 void CctwApplication::reportDependencies()

@@ -30,8 +30,6 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
 {
-  qRegisterMetaType< CctwDependencies >("CctwDependencies");
-  qRegisterMetaTypeStreamOperators< CctwDependencies >("CctwDependencies");
 }
 
 CctwTransformer::~CctwTransformer()
@@ -41,18 +39,11 @@ CctwTransformer::~CctwTransformer()
 void CctwTransformer::writeSettings(QSettings *set, QString section)
 {
   CctwObject::writeSettings(set, section);
-
-  set->beginGroup(section+"/dependencies");
-//  set->setValue("dependencies", m_Dependencies);
-  set->endGroup();
 }
 
 void CctwTransformer::readSettings(QSettings *set, QString section)
 {
   CctwObject::readSettings(set, section);
-
-  set->beginGroup(section+"/dependencies");
-  set->endGroup();
 }
 
 void CctwTransformer::runTransformChunkNumber(int n)
@@ -360,8 +351,6 @@ void CctwTransformer::dummyTransform1()
       m_Application->addWorkOutstanding(1);
     }
 
-//    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
-
     runDummyTransformChunkNumber(ckidx);
   }
 
@@ -371,7 +360,6 @@ void CctwTransformer::dummyTransform1()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-//  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
@@ -453,7 +441,6 @@ void CctwTransformer::dummyTransform2()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-//  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
@@ -535,7 +522,6 @@ void CctwTransformer::dummyTransform3()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-//  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
@@ -636,38 +622,12 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
 
 void CctwTransformer::clearDependencies()
 {
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
-
-  m_Dependencies.clear();
+  m_InputData->clearDependencies();
+  m_OutputData->clearDependencies();
 }
 
 void CctwTransformer::addDependency(int f, int t)
 {
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
-
-  CctwDependency dep(f,t);
-
-  if (!m_Dependencies.contains(dep)) {
-    m_Dependencies.append(dep);
-  }
-}
-
-void CctwTransformer::completedDependencies()
-{
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
-
-  m_InputData->clearDependencies();
-  m_OutputData->clearDependencies();
-
-  foreach (CctwDependency p, m_Dependencies) {
-    m_InputData->addDependency(p.first, p.second);
-    m_OutputData->addDependency(p.second, p.first);
-  }
-}
-
-int CctwTransformer::countDependencies()
-{
-  QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
-
-  return m_Dependencies.count();
+  m_InputData->addDependency(f, t);
+  m_OutputData->addDependency(t, f);
 }

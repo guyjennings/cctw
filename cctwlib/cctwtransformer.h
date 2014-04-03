@@ -8,11 +8,6 @@
 
 class CctwApplication;
 
-typedef QPair<int,int>             CctwDependency;
-typedef QVector < CctwDependency > CctwDependencies;
-
-Q_DECLARE_METATYPE(CctwDependencies)
-
 class CctwTransformer : public CctwObject
 {
   Q_OBJECT
@@ -40,8 +35,6 @@ public slots:
 
   void clearDependencies();
   void addDependency(int f, int t);
-  void completedDependencies();
-  int  countDependencies();
 
   void dummyTransform1();
   void dummyTransform2();
@@ -65,8 +58,6 @@ private:
   int                      m_OversampleX;
   int                      m_OversampleY;
   int                      m_OversampleZ;
-  QMutex                   m_DependencyMutex;
-  CctwDependencies         m_Dependencies;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)
