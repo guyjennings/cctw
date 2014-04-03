@@ -110,6 +110,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   if (inputData) {
     inputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
     inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
+    inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
     connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
     connect(inputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
@@ -129,6 +130,9 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   if (outputData) {
     outputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
     outputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
+    outputData->prop_ChunksWritten()->linkTo(ui->m_ChunksWritten);
+    outputData->prop_ChunksHeld()->linkTo(ui->m_ChunksHeld);
+    outputData->prop_ChunksHeldMax()->linkTo(ui->m_ChunksHeldMax);
 
     connect(outputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateOutputHDF5ChunkSize(CctwIntVector3D)));
     connect(outputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
@@ -170,15 +174,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
 
   m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, this);
-
-  CctwTransformer *xform = app->m_Transformer;
-
-  if (xform) {
-    xform->prop_BlocksRead()->linkTo(ui->m_ChunksRead);
-    xform->prop_BlocksWritten()->linkTo(ui->m_ChunksWritten);
-    xform->prop_BlocksHeld()->linkTo(ui->m_ChunksHeld);
-    xform->prop_BlocksMax()->linkTo(ui->m_MaxChunksHeld);
-  }
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()

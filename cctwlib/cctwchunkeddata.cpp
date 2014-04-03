@@ -31,6 +31,8 @@ CctwChunkedData::CctwChunkedData
     m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
     m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
     m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
+    m_ChunksHeld(QcepSettingsSaverWPtr(), this, "chunksHeld", 0, "Chunks held on output"),
+    m_ChunksHeldMax(QcepSettingsSaverWPtr(), this, "chunksHeldMax", 0, "Max Chunks held on output"),
     m_IsInput(isInput),
     m_TransformOptions(0),
     m_FileId(-1),
@@ -340,6 +342,8 @@ void CctwChunkedData::clearMergeCounters()
 
   set_ChunksRead(0);
   set_ChunksWritten(0);
+  set_ChunksHeld(0);
+  set_ChunksHeldMax(0);
 }
 
 void CctwChunkedData::normalizeChunk(int n)
@@ -713,7 +717,7 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly reading chunk %1, data == NULL").arg(n));
-        } else if (m_TransformOptions & 4 == 0){
+        } else if ((m_TransformOptions & 4) == 0){
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t rderr  = H5Dread(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
@@ -811,7 +815,7 @@ void CctwChunkedData::writeChunk(int n)
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
-        } else if (m_TransformOptions & 8 == 0){
+        } else if ((m_TransformOptions & 8) == 0){
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t wrterr = H5Dwrite(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
@@ -866,5 +870,24 @@ void CctwChunkedData::endTransform()
     closeInputFile();
   } else {
     closeOutputFile();
+  }
+}
+
+void CctwChunkedData::incChunksRead(int n)
+{
+  prop_ChunksRead()->incValue(n);
+}
+
+void CctwChunkedData::incChunksWritten(int n)
+{
+  prop_ChunksWritten()->incValue(n);
+}
+
+void CctwChunkedData::incChunksHeld(int n)
+{
+  prop_ChunksHeld()->incValue(n);
+
+  if (get_ChunksHeld() > get_ChunksHeldMax()) {
+    set_ChunksHeldMax(get_ChunksHeld());
   }
 }

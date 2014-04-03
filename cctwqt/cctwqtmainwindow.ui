@@ -54,7 +54,7 @@
       </property>
       <widget class="QTabWidget" name="m_ParametersTabs">
        <property name="currentIndex">
-        <number>3</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="m_ImportTab">
         <attribute name="title">
@@ -1411,7 +1411,7 @@
           </widget>
          </item>
          <item row="2" column="3">
-          <widget class="QSpinBox" name="m_MaxChunksHeld">
+          <widget class="QSpinBox" name="m_ChunksHeldMax">
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
            </property>

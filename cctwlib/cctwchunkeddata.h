@@ -10,6 +10,7 @@
 
 class CctwDataChunk;
 class CctwApplication;
+class CctwTransformer;
 
 class CctwChunkedData : public CctwObject
 {
@@ -37,6 +38,10 @@ public:
 
   void                setDimensions(CctwIntVector3D dim);
   void                setChunkSize(CctwIntVector3D cksz);
+
+  void                incChunksRead(int n);
+  void                incChunksWritten(int n);
+  void                incChunksHeld(int n);
 
 public slots:
   virtual void        setDataSource(QString desc);
@@ -112,6 +117,12 @@ private:
 
   Q_PROPERTY(int chunksWritten READ get_ChunksWritten WRITE set_ChunksWritten STORED false)
   QCEP_INTEGER_PROPERTY(ChunksWritten)
+
+  Q_PROPERTY(int chunksHeld READ get_ChunksHeld WRITE set_ChunksHeld STORED false)
+  QCEP_INTEGER_PROPERTY(ChunksHeld)
+
+  Q_PROPERTY(int chunksHeldMax READ get_ChunksHeldMax WRITE set_ChunksHeldMax STORED false)
+  QCEP_INTEGER_PROPERTY(ChunksHeldMax)
 
   bool                m_IsInput;
   int                 m_TransformOptions;

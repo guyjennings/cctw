@@ -374,16 +374,18 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
       printMessage(tr("Output chunk [%1] completed")
                    .arg(index()));
 
-      QMetaObject::invokeMethod(m_Data, "writeChunk", Qt::BlockingQueuedConnection, Q_ARG(int, index()));
-//      writeData();
-//      writeWeights();
-//      deallocateData();
-//      deallocateWeights();
+      if (m_Data) {
+        m_Data->writeChunk(index());
+        m_Data->incChunksWritten(1);
+        m_Data->incChunksHeld(-1);
+      }
+    } else if (mergeCount() == 1) {
+      if (m_Data) {
+        m_Data->incChunksHeld(1);
+      }
     } else if (mergeCount() > dependencyCount()) {
       printMessage(tr("Exceeded expected number of merges for chunk [%1] %2 > %3")
                    .arg(index()).arg(mergeCount()).arg(dependencyCount()));
-//      deallocateData();
-//      deallocateWeights();
     }
   }
 }

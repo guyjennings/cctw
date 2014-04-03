@@ -27,13 +27,7 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_OversampleY(osy),
   m_OversampleZ(osz),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
-  //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
-  //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used"),
-  m_BlocksHeld(QcepSettingsSaverWPtr(), this, "blocksHeld", 0, "Blocks Held"),
-  m_BlocksRead(QcepSettingsSaverWPtr(), this, "blocksRead", 0, "Blocks Read"),
-  m_BlocksWritten(QcepSettingsSaverWPtr(), this, "blocksWritten", 0, "Blocks Written"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
 {
   qRegisterMetaType< CctwDependencies >("CctwDependencies");
@@ -164,8 +158,6 @@ void CctwTransformer::transformChunkNumber(int n)
       m_OutputData->mergeChunk(outputChunk);
 
       delete outputChunk;
-
-//      outputChunk->deleteLater();
     }
 
     m_InputData->releaseChunk(n);
@@ -251,7 +243,6 @@ void CctwTransformer::transform()
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-//  set_BlocksMax(CctwDataChunk::maxAllocated());
 
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
@@ -264,7 +255,7 @@ void CctwTransformer::dummyTransformChunkNumber(int chk)
   CctwDataChunk *chunk = m_InputData->chunk(chk);
 
   if (chunk) {
-    prop_BlocksRead()->incValue(1);
+    m_InputData->incChunksRead(1);
 
     int ndeps = chunk->dependencyCount();
 
@@ -277,13 +268,10 @@ void CctwTransformer::dummyTransformChunkNumber(int chk)
         opchunk->incMergeCounters();
 
         if (opchunk->mergeCount() == opchunk->dependencyCount()) {
-          prop_BlocksWritten()->incValue(1);
-          prop_BlocksHeld()->incValue(-1);
+          m_OutputData->incChunksWritten(1);
+          m_OutputData->incChunksHeld(-1);
         } else if (opchunk->mergeCount() == 1) {
-          prop_BlocksHeld()->incValue(1);
-          if (get_BlocksHeld() > get_BlocksMax()) {
-            set_BlocksMax(get_BlocksHeld());
-          }
+          m_OutputData->incChunksHeld(1);
         }
       }
     }
@@ -328,11 +316,6 @@ void CctwTransformer::dummyTransform1()
   m_InputData  -> clearMergeCounters();
   m_OutputData -> clearMergeCounters();
 
-  set_BlocksMax(0);
-  set_BlocksHeld(0);
-  set_BlocksRead(0);
-  set_BlocksWritten(0);
-
   CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
   CctwIntVector3D chunks = m_OutputData->chunkCount();
@@ -361,7 +344,10 @@ void CctwTransformer::dummyTransform1()
 
   printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
 
-  qSort(inputChunks.begin(), inputChunks.end());
+  if ((get_TransformOptions() & 2)) {
+    printMessage("Sorting input chunk list into input order");
+    qSort(inputChunks.begin(), inputChunks.end());
+  }
 
   if (m_Application) {
     m_Application->set_ProgressLimit(inputChunks.count());
@@ -414,11 +400,6 @@ void CctwTransformer::dummyTransform2()
 
   m_InputData  -> clearMergeCounters();
   m_OutputData -> clearMergeCounters();
-
-  set_BlocksMax(0);
-  set_BlocksHeld(0);
-  set_BlocksRead(0);
-  set_BlocksWritten(0);
 
   CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
@@ -501,11 +482,6 @@ void CctwTransformer::dummyTransform3()
 
   m_InputData  -> clearMergeCounters();
   m_OutputData -> clearMergeCounters();
-
-  set_BlocksMax(0);
-  set_BlocksHeld(0);
-  set_BlocksRead(0);
-  set_BlocksWritten(0);
 
   CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
@@ -679,9 +655,6 @@ void CctwTransformer::addDependency(int f, int t)
 void CctwTransformer::completedDependencies()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_DependencyMutex);
-
-//  set_InputDependencies(m_InputDependenciesTemp);
-//  set_OutputDependencies(m_OutputDependenciesTemp);
 
   m_InputData->clearDependencies();
   m_OutputData->clearDependencies();

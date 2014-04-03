@@ -21,12 +21,6 @@ public:
 
 public slots:
 
-//  virtual int readData();
-//  virtual int readWeights();
-//  virtual int normalize();
-//  virtual int writeData();
-//  virtual int writeWeights();
-
   int allocateData();
   int allocateWeights();
   int deallocateData();
@@ -65,9 +59,6 @@ public slots:
   void pushMergeData(CctwChunkedData::MergeDataType *data, CctwChunkedData::MergeDataType *weights);
 
   void normalizeChunk();
-
-//  void waitForData();
-//  void finishedWithData();
 
   static void resetAllocationLimits(int nmax);
   static int maxAllocated();
