@@ -773,7 +773,7 @@ void CctwChunkedData::writeChunk(int n)
     CctwDataChunk *chk = chunk(n);
 
     if (chk) {
-      prop_ChunksWritten()->incValue(1);
+//      prop_ChunksWritten()->incValue(1);
 
       normalizeChunk(n);
 
