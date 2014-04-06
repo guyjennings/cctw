@@ -1,6 +1,7 @@
 #include "cctwchunkeddata.h"
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
+#include <QDir>
 
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
@@ -489,8 +490,14 @@ bool CctwChunkedData::openOutputFile()
 
   QString fileName = get_DataFileName();
   QFileInfo f(fileName);
+  QString dpath = get_DataSetName();
+  QFileInfo d(dpath);
+  QString grp = d.dir().path();
+  QString dset = d.fileName();
 
   hid_t fileId = -1;
+//  hid_t grpId  = -1;
+  hid_t gplist = -1;
   hid_t dsetId = -1;
   hid_t dspcId = -1;
   hid_t plist  = -1;
@@ -577,13 +584,20 @@ bool CctwChunkedData::openOutputFile()
         }
       }
 
-      dsetId = H5Dcreate(fileId,
-                         qPrintable(get_DataSetName()),
-                         H5T_NATIVE_FLOAT,
-                         dspcId,
-                         H5P_DEFAULT,
-                         plist,
-                         H5P_DEFAULT);
+      gplist = H5Pcreate(H5P_LINK_CREATE);
+
+      if (H5Pset_create_intermediate_group(gplist, 1) < 0) {
+        printMessage(tr("Failed to set create intermediate groups"));
+        res = false;
+      } else {
+        dsetId = H5Dcreate(fileId,
+                           qPrintable(get_DataSetName()),
+                           H5T_NATIVE_FLOAT,
+                           dspcId,
+                           gplist,
+                           plist,
+                           H5P_DEFAULT);
+      }
     }
 
     if (dsetId < 0) {
@@ -593,6 +607,8 @@ bool CctwChunkedData::openOutputFile()
   }
 
   if (plist  >= 0) H5Pclose(plist);
+  if (gplist >= 0) H5Pclose(gplist);
+//  if (grpId  >= 0) H5Gclose(grpId);
 
   if (res == false) {
     if (dspcId >= 0) H5Sclose(dspcId);
