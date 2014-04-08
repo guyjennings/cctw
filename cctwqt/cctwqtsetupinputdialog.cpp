@@ -52,36 +52,69 @@ void CctwqtSetupInputDialog::doBrowseInputFile()
   }
 }
 
-static herr_t dataset(hid_t loc_id, const char *name, void *opdata)
+//static herr_t dataset(hid_t loc_id, const char *name, void *opdata)
+//{
+//  H5G_stat_t statbuf;
+
+//  /*
+//   * Get type of the object and display its name and type.
+//   * The name of the object is passed to this function by
+//   * the Library. Some magic :-)
+//   */
+//  H5Gget_objinfo(loc_id, name, false, &statbuf);
+
+//  switch (statbuf.type) {
+//  case H5G_GROUP:
+////       printf(" Object with name %s is a group \n", name);
+//       break;
+//  case H5G_DATASET:
+////       printf(" Object with name %s is a dataset \n", name);
+//       if (opdata) {
+//         QStringList *sl = (QStringList*)(opdata);
+
+//         sl->append(name);
+//       }
+//       break;
+//  case H5G_TYPE:
+////       printf(" Object with name %s is a named datatype \n", name);
+//       break;
+//  default:
+//       printf(" Unable to identify an object ");
+//  }
+
+//  return 0;
+//}
+
+//static herr_t iterate_links(hid_t g_id,
+//                            const char *name,
+//                            const H5L_info_t *info,
+//                            void *op_data)
+//{
+//  printf("Link: %s\n", name);
+
+//  return 0;
+//}
+
+static herr_t iterate_objects(hid_t o_id,
+                              const char *name,
+                              const H5O_info_t *object_info,
+                              void *op_data)
 {
-  H5G_stat_t statbuf;
+//  printf("Object: %s\n", name);
 
-  /*
-   * Get type of the object and display its name and type.
-   * The name of the object is passed to this function by
-   * the Library. Some magic :-)
-   */
-  H5Gget_objinfo(loc_id, name, false, &statbuf);
+  if (object_info) {
+    switch (object_info->type) {
+    case H5O_TYPE_DATASET:
+      if (op_data) {
+        QStringList *sl = (QStringList*)(op_data);
 
-  switch (statbuf.type) {
-  case H5G_GROUP:
-//       printf(" Object with name %s is a group \n", name);
-       break;
-  case H5G_DATASET:
-//       printf(" Object with name %s is a dataset \n", name);
-       if (opdata) {
-         QStringList *sl = (QStringList*)(opdata);
-
-         sl->append(name);
-       }
-       break;
-  case H5G_TYPE:
-//       printf(" Object with name %s is a named datatype \n", name);
-       break;
-  default:
-       printf(" Unable to identify an object ");
+        if (sl) {
+          sl->append(QString("/%1").arg(name));
+        }
+      }
+      break;
+    }
   }
-
   return 0;
 }
 
@@ -100,7 +133,11 @@ static QStringList iterateHDF5datasets(QString path)
 
   hid_t file = H5Fopen(qPrintable(path), H5F_ACC_RDONLY, H5P_DEFAULT);
 
-  H5Giterate(file, "/", NULL, dataset, &paths);
+//  H5Giterate(file, "/", NULL, dataset, &paths);
+
+//  H5Lvisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_links, &paths);
+
+  H5Ovisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_objects, &paths);
 
   /* Close file */
   herr_t ret = H5Fclose(file);
@@ -113,26 +150,29 @@ static QStringList iterateHDF5datasets(QString path)
 
 void CctwqtSetupInputDialog::doCheckDataFile(QString path)
 {
-  if (m_Window) {
-    m_Window->printMessage(tr("CctwqtSetupInputDialog::doCheckDataFile(\"%1\")").arg(path));
-  }
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtSetupInputDialog::doCheckDataFile(\"%1\")").arg(path));
+//  }
 
   QStringList paths = iterateHDF5datasets(path);
 
   ui->m_BrowseInputDataset->clear();
+  ui->m_BrowseInputDataset->addItem("");
   ui->m_BrowseInputDataset->addItems(paths);
 }
 
 void CctwqtSetupInputDialog::doBrowseInputDataset(int entry)
 {
-  if (m_Window) {
-    m_Window->printMessage(tr("CctwqtSetupInputDialog::doBrowseInputDataset(%1)").arg(entry));
-  }
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtSetupInputDialog::doBrowseInputDataset(%1)").arg(entry));
+//  }
+
+  ui->m_InputDatasetName->setText(ui->m_BrowseInputDataset->itemText(entry));
 }
 
 void CctwqtSetupInputDialog::doCheckDataset(QString name)
 {
-  if (m_Window) {
-    m_Window->printMessage(tr("CctwqtSetupInputDialog::doCheckDataset(\"%1\")").arg(name));
-  }
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtSetupInputDialog::doCheckDataset(\"%1\")").arg(name));
+//  }
 }
