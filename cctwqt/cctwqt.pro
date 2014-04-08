@@ -17,6 +17,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 TARGET       = cctwqt
 
 include(../submodules/qceplib/qceplib-base.pri)
+include(../submodules/qceplib/qceplib-szip.pri)
+include(../submodules/qceplib/qceplib-zlib.pri)
 include(../submodules/qceplib/qceplib-hdf5.pri)
 include(../submodules/qceplib/qceplib-tiff.pri)
 include(../submodules/qceplib/qceplib-cbf.pri)

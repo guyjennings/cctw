@@ -12,6 +12,8 @@ DEFINES += CCTW_VERSION=\"$$VERSION\"
 DEFINES += NO_GUI
 
 include(../submodules/qceplib/qceplib-base.pri)
+include(../submodules/qceplib/qceplib-szip.pri)
+include(../submodules/qceplib/qceplib-zlib.pri)
 include(../submodules/qceplib/qceplib-hdf5.pri)
 include(../submodules/qceplib/qceplib-tiff.pri)
 include(../submodules/qceplib/qceplib-cbf.pri)
