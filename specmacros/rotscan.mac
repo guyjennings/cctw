@@ -16,7 +16,7 @@ def rotscan '{
 }'
 
 def _rotscan '{
-  global _n1 _m _s _f
+  global _n1 _m _s _f _started
   if (_n1 <= 0) {
     eprint "Intervals <= 0"
     exit
@@ -55,9 +55,13 @@ def _rotscan '{
   PFMT=sprintf("%%s%%8.%df ", UP)
   VFMT=sprintf("%%s%%9.%df ", UP)
   def _scan_on \'{
+    _started=0
     for(; ; NPTS++) {
       local dt
-      if (NPTS==_n2*_n3) _rotscan_scan_motor
+      if (NPTS==_n2*_n3) {
+        _rotscan_scan_motor
+        _started = 1
+      }
       get_angles; calcHKL
       _time = time()
       dt = _rotscan_check_detector()
