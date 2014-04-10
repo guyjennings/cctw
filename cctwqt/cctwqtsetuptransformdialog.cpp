@@ -123,6 +123,12 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_GridDimX->setValue(gridDim.x());
   ui->m_GridDimY->setValue(gridDim.y());
   ui->m_GridDimZ->setValue(gridDim.z());
+
+  CctwDoubleVector3D gridOffset = parms->gridOffset();
+
+  ui->m_GridOffsetX->setValue(gridOffset.x());
+  ui->m_GridOffsetY->setValue(gridOffset.y());
+  ui->m_GridOffsetZ->setValue(gridOffset.z());
 }
 
 void CctwqtSetupTransformDialog::updateTwoTheta()
@@ -235,6 +241,12 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridDim.z() = ui->m_GridDimZ->value();
 
   parms->setGridDim(gridDim);
+
+  CctwDoubleVector3D gridOffset;
+
+  gridOffset.x() = ui->m_GridOffsetX->value();
+  gridOffset.y() = ui->m_GridOffsetY->value();
+  gridOffset.z() = ui->m_GridOffsetZ->value();
 }
 
 double CctwqtSetupTransformDialog::rad2deg(double rad)
