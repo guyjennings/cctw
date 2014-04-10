@@ -742,11 +742,15 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
           H5Sclose(memspace_id);
         }
 
-        if (weightData) {
+        if (weightData && chunkData) {
           int s = sz.volume();
 
           for (int i=0; i<s; i++) {
-            weightData[i] = 1;
+            if (chunkData[i] == chunkData[i]) { // Test for NaN
+              weightData[i] = 1;
+            } else {
+              weightData[i] = 0;
+            }
           }
         }
       }
