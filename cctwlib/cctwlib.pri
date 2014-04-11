@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-INCLUDEPATH += $${PWD}
+INCLUDEPATH += $${PWD} $${PWD}/lzf/
 
 SOURCES += \
     $${PWD}/cctwdebug.cpp \
@@ -31,7 +31,10 @@ SOURCES += \
     $${PWD}/cctwapplication.cpp \
     $${PWD}/cctwimporter.cpp \
     $${PWD}/cctwcomparer.cpp \
-    $${PWD}/cctwinputdatah5.cpp
+    $${PWD}/cctwinputdatah5.cpp \
+    $${PWD}/lzf/lzf_filter.c \
+    $${PWD}/lzf/lzf/lzf_c.c \
+    $${PWD}/lzf/lzf/lzf_d.c
 
 HEADERS += \
     $${PWD}/cctwdebug.h \
@@ -58,4 +61,8 @@ HEADERS += \
     $${PWD}/cctwapplication.h \
     $${PWD}/cctwimporter.h \
     $${PWD}/cctwcomparer.h \
-    $${PWD}/cctwinputdatah5.h
+    $${PWD}/cctwinputdatah5.h \
+    $${PWD}/lzf/lzf_filter.h \
+    $${PWD}/lzf/lzf/lzf.h \
+    $${PWD}/lzf/lzf/lzfP.h
+

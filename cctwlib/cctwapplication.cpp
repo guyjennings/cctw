@@ -19,6 +19,7 @@
 #include "qcepimagedataformattiff.h"
 
 #include <hdf5.h>
+#include "lzf_filter.h"
 
 #ifdef Q_OS_UNIX
 #include "getopt.h"
@@ -72,6 +73,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   connect(prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgress(int)));
 
   connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
+
+  register_lzf();
 }
 
 QcepSettingsSaverWPtr CctwApplication::saver() const
