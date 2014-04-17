@@ -62,8 +62,8 @@ public slots:
   void doCheckImportedData();
 
   void updateImportImagePaths(QStringList p);
-  void updateImportChunkSize(CctwIntVector3D sz);
-  void updateInputHDF5ChunkSize(CctwIntVector3D sz);
+//  void updateImportChunkSize(CctwIntVector3D sz);
+//  void updateInputHDF5ChunkSize(CctwIntVector3D sz);
   void updateOutputHDF5ChunkSize(CctwIntVector3D sz);
   void updateInputDimensions();
   void updateOutputDimensions();

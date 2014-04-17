@@ -99,10 +99,14 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     import->prop_Compression()->linkTo(ui->m_ImportOutputCompression);
 
     connect(import->prop_ImagePaths(), SIGNAL(valueChanged(QStringList,int)), this, SLOT(updateImportImagePaths(QStringList)));
-    connect(import->prop_ChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateImportChunkSize(CctwIntVector3D)));
+//    connect(import->prop_ChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateImportChunkSize(CctwIntVector3D)));
+
+    import->prop_ChunkSize()->linkTo(ui->m_ImportOutputChunkX,
+                                     ui->m_ImportOutputChunkY,
+                                     ui->m_ImportOutputChunkZ);
 
     updateImportImagePaths(import->get_ImagePaths());
-    updateImportChunkSize(import->get_ChunkSize());
+//    updateImportChunkSize(import->get_ChunkSize());
   }
 
   CctwChunkedData *inputData = app->m_InputData;
@@ -112,7 +116,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
-    connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
+//    connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
     connect(inputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
     connect(inputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
     connect(inputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
@@ -120,8 +124,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     inputData->prop_Compression()->linkTo(ui->m_InputCompression);
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
-    updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
+//    updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
 
+    inputData->prop_HDFChunkSize()->linkTo(ui->m_InputHDFChunkX,
+                                           ui->m_InputHDFChunkY,
+                                           ui->m_InputHDFChunkZ);
     updateInputDimensions();
   }
 
@@ -235,12 +242,12 @@ void CctwqtMainWindow::updateImportImagePaths(QStringList p)
   ui->m_ImportDataImages->addItems(p);
 }
 
-void CctwqtMainWindow::updateImportChunkSize(CctwIntVector3D sz)
-{
-  ui->m_ImportOutputChunkX->setValue(sz.x());
-  ui->m_ImportOutputChunkY->setValue(sz.y());
-  ui->m_ImportOutputChunkZ->setValue(sz.z());
-}
+//void CctwqtMainWindow::updateImportChunkSize(CctwIntVector3D sz)
+//{
+//  ui->m_ImportOutputChunkX->setValue(sz.x());
+//  ui->m_ImportOutputChunkY->setValue(sz.y());
+//  ui->m_ImportOutputChunkZ->setValue(sz.z());
+//}
 
 void CctwqtMainWindow::doSetupImport()
 {
@@ -279,12 +286,12 @@ void CctwqtMainWindow::updateInputDimensions()
   }
 }
 
-void CctwqtMainWindow::updateInputHDF5ChunkSize(CctwIntVector3D sz)
-{
-  ui->m_InputHDFChunkX->setValue(sz.x());
-  ui->m_InputHDFChunkY->setValue(sz.y());
-  ui->m_InputHDFChunkZ->setValue(sz.z());
-}
+//void CctwqtMainWindow::updateInputHDF5ChunkSize(CctwIntVector3D sz)
+//{
+//  ui->m_InputHDFChunkX->setValue(sz.x());
+//  ui->m_InputHDFChunkY->setValue(sz.y());
+//  ui->m_InputHDFChunkZ->setValue(sz.z());
+//}
 
 void CctwqtMainWindow::doSetupInput()
 {
