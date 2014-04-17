@@ -21,16 +21,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="m_InputFileName"/>
-   </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="m_BrowseInputFile">
-     <property name="text">
-      <string>Browse...</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
@@ -38,13 +28,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="m_InputDatasetName"/>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="m_InputFileName"/>
    </item>
-   <item row="1" column="2">
-    <widget class="QComboBox" name="m_BrowseInputDataset"/>
-   </item>
-   <item row="2" column="0" colspan="3">
+   <item row="3" column="0" colspan="3">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -57,7 +44,14 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0" colspan="3">
+   <item row="0" column="2">
+    <widget class="QPushButton" name="m_BrowseInputFile">
+     <property name="text">
+      <string>Browse...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -66,6 +60,12 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="m_BrowseInputDataset"/>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QLineEdit" name="m_InputDatasetName"/>
    </item>
   </layout>
  </widget>
