@@ -69,13 +69,14 @@ void CctwTransformer::transformChunkNumber(int n)
   int lastChunkIndex = -1;
 
   CctwDataChunk *inputChunk = m_InputData->readChunk(n);
-  CctwDataChunk *lastChunk = NULL;
-
-  CctwIntVector3D chStart = inputChunk->chunkStart();
-  CctwIntVector3D chSize  = inputChunk->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
   if (inputChunk) {
+    CctwDataChunk *lastChunk = NULL;
+
+    CctwIntVector3D chStart = inputChunk->chunkStart();
+    CctwIntVector3D chSize  = inputChunk->chunkSize();
+    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
     QMap<int, CctwDataChunk*> outputChunks;
 
     for (int z=0; z<chSize.z(); z++) {
