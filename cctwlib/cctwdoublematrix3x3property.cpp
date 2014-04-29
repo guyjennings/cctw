@@ -3,6 +3,7 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include <stdio.h>
 
 CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
                                                              QObject *parent, const char *name,

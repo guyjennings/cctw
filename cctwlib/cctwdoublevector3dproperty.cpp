@@ -3,6 +3,7 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include <stdio.h>
 
 CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),

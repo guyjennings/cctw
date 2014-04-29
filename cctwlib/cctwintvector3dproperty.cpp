@@ -3,6 +3,7 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include <stdio.h>
 
 CctwIntVector3DProperty::CctwIntVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwIntVector3D value, QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
