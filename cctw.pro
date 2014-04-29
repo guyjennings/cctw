@@ -17,6 +17,10 @@ unix {
 SUBDIRS += cctwlib cctwtcl cctwcli
 }
 
+unix:!macx {
+SUBDIRS += cctwmpi
+}
+
 OTHER_FILES += Doxyfile \
     cctw.dox \
     doc/Doxyfile \
