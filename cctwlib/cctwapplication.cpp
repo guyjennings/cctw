@@ -361,7 +361,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_Transformer      = new CctwTransformer(this,
                                            m_InputData,
                                            m_OutputData,
-                                           m_Transform, 1, 1, 1, 0,
+                                           m_Transform, 1, 1, 1,
                                            "transformer",
                                            this);
 

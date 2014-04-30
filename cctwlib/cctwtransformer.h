@@ -17,7 +17,6 @@ public:
                   CctwChunkedData        *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
                   int osx, int osy, int osz,        // Oversampling factors
-                  int nTests,
                   QString name,
                   QObject *parent);
 
