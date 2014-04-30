@@ -179,6 +179,12 @@ public:
 
   Q_PROPERTY(QString specDataFilePath READ get_SpecDataFilePath WRITE set_SpecDataFilePath)
   QCEP_STRING_PROPERTY(SpecDataFilePath)
+
+  Q_PROPERTY(int mpiRank READ get_MpiRank WRITE set_MpiRank STORED false)
+  QCEP_INTEGER_PROPERTY(MpiRank)
+
+  Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
+  QCEP_INTEGER_PROPERTY(MpiSize)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

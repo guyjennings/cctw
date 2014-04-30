@@ -364,7 +364,7 @@ bool CctwChunkedData::openInputFile()
     return true;
   }
 
-  printMessage(tr("About to open input file"));
+//  printMessage(tr("About to open input file"));
 
   int res = true;
 
@@ -458,7 +458,7 @@ void CctwChunkedData::closeInputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  printMessage("About to close input file");
+//  printMessage("About to close input file");
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);

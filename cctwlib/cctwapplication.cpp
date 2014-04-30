@@ -50,7 +50,11 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Transformer(NULL),
   m_ScriptEngine(NULL),
   m_PEIngressCommand(NULL),
+#ifdef NO_GUI
+  m_Saver(NULL),
+#else
   m_Saver(new QcepSettingsSaver(this)),
+#endif
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
@@ -59,7 +63,9 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
-  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file")
+  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
+  m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -376,7 +382,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   readSettings();
 
-  m_Saver->start();
+  if (m_Saver) {
+    m_Saver->start();
+  }
 
 #ifdef NO_GUI
   set_GuiWanted(false);
@@ -403,7 +411,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
 void CctwApplication::doAboutToQuit()
 {
+#ifndef NO_GUI
   writeSettings();
+#endif
 }
 
 void CctwApplication::printLine(QString msg)

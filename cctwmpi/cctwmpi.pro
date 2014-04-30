@@ -12,6 +12,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
  QT += concurrent
 }
 
+QMAKE_CC  = mpicc -DCCTW_WANT_MPI
+QMAKE_CXX = mpicxx -DCCTW_WANT_MPI
+QMAKE_LINK = mpicxx -DCCTW_WANT_MPI
+
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-szip.pri)
 include(../submodules/qceplib/qceplib-zlib.pri)
@@ -23,4 +27,4 @@ include(../submodules/qceplib/qceplib-qwt.pri)
 #include(../submodules/qceplib/qceplib-nexus.pri)
 include(../cctwlib/cctwlib.pri)
 
-include(../cctwcli/cctwcli.pri)
+include(cctwmpi.pri)
