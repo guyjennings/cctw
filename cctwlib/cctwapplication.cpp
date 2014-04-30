@@ -630,8 +630,6 @@ void CctwApplication::readSettings(QString path)
   printMessage(tr("Reading settings from %1").arg(path));
 
   readSettings(&settings);
-
-  set_SettingsPath(path);
 }
 
 void CctwApplication::readSettings(QSettings *settings)
@@ -696,8 +694,6 @@ void CctwApplication::writeSettings(QString path)
   QSettings settings(path, QSettings::IniFormat);
 
   printMessage(tr("Writing settings to %1").arg(path));
-
-  set_SettingsPath(path);
 
   writeSettings(&settings);
 }

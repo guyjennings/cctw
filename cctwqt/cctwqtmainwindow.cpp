@@ -381,6 +381,7 @@ void CctwqtMainWindow::doSaveSettings()
 
   if (path.length()) {
     m_Application->writeSettings(path);
+    m_Application->set_SettingsPath(path);
   }
 }
 
@@ -391,6 +392,7 @@ void CctwqtMainWindow::doLoadSettings()
 
   if (path.length()) {
     m_Application->readSettings(path);
+    m_Application->set_SettingsPath(path);
   }
 }
 
@@ -401,6 +403,7 @@ void CctwqtMainWindow::doSaveDependencies()
 
   if (path.length()) {
     m_Application->saveDependencies(path);
+    m_Application->set_DependenciesPath(path);
   }
 }
 
@@ -411,6 +414,7 @@ void CctwqtMainWindow::doLoadDependencies()
 
   if (path.length()) {
     m_Application->loadDependencies(path);
+    m_Application->set_DependenciesPath(path);
   }
 }
 
