@@ -423,6 +423,7 @@ void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
   if (data) {
     int maxdeps = 0;
     int ndeps   = 0;
+    int sumdeps = 0;
     int nchnk   = data->chunkCount().volume();
 
     for (int i=0; i < nchnk; i++) {
@@ -438,6 +439,8 @@ void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
         if (ct > maxdeps) {
           maxdeps = ct;
         }
+
+        sumdeps += ct;
       }
     }
 
@@ -448,6 +451,9 @@ void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
     ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(title));
     ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
     ui->m_DependenciesTable->setItem(1, 1, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
+    ui->m_DependenciesTable->setItem(1, 2, new QTableWidgetItem(tr("%1 Sum").arg(sumdeps)));
+    ui->m_DependenciesTable->setItem(1, 3, new QTableWidgetItem(tr("%1 Avg").arg(double(sumdeps)/double(nchnk))));
+    ui->m_DependenciesTable->setItem(1, 4, new QTableWidgetItem(tr("%1 Avg-NZ").arg(double(sumdeps)/double(ndeps))));
 
     int r = 0;
 
@@ -458,7 +464,7 @@ void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
         int ct = chunk->dependencyCount();
 
         if (ct >= 1) {
-          ui->m_DependenciesTable->setItem(r+3, 0, new QTableWidgetItem(tr("[%1] ->").arg(i)));
+          ui->m_DependenciesTable->setItem(r+3, 0, new QTableWidgetItem(tr("%1->[%2]").arg(i).arg(ct)));
 
           for (int i=0; i<ct; i++) {
             ui->m_DependenciesTable->setItem(r+3, 1+i, new QTableWidgetItem(tr("%1").arg(chunk->dependency(i))));
