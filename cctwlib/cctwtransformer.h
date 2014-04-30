@@ -27,6 +27,9 @@ public slots:
   void transform();
   void checkTransform();
 
+  void saveDependencies(QString path);
+  void loadDependencies(QString path);
+
   QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 

@@ -857,89 +857,16 @@ abort:
 
 void CctwApplication::saveDependencies(QString path)
 {
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  QSettings settings(path, QSettings::IniFormat);
-
-  settings.beginWriteArray("dependencies");
-  int n=0;
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwIntVector3D idx(x,y,z);
-
-        CctwDataChunk *chunk = m_InputData->chunk(idx);
-
-        chunk->sortDependencies();
-
-        int nDeps = chunk->dependencyCount();
-
-        if (nDeps > 0) {
-          settings.setArrayIndex(n++);
-          settings.setValue("n", m_InputData->chunkNumberFromIndex(idx));
-          settings.setValue("x", x);
-          settings.setValue("y", y);
-          settings.setValue("z", z);
-
-          settings.beginWriteArray("deps");
-
-          for (int i=0; i<nDeps; i++) {
-            settings.setArrayIndex(i);
-            int dn = chunk->dependency(i);
-            CctwIntVector3D dep = m_OutputData->chunkIndexFromNumber(dn);
-            settings.setValue("n", dn);
-            settings.setValue("x", dep.x());
-            settings.setValue("y", dep.y());
-            settings.setValue("z", dep.z());
-          }
-
-          settings.endArray();
-        }
-      }
-    }
+  if (m_Transformer) {
+    m_Transformer->saveDependencies(path);
   }
-
-  settings.endArray();
 }
 
 void CctwApplication::loadDependencies(QString path)
 {
-  m_Transformer -> clearDependencies();
-
-  QSettings settings(path, QSettings::IniFormat);
-
-  int n = settings.beginReadArray("dependencies");
-
-  for (int i=0; i<n; i++) {
-    settings.setArrayIndex(i);
-
-    int in = settings.value("n").toInt();
-    int ix = settings.value("x").toInt();
-    int iy = settings.value("y").toInt();
-    int iz = settings.value("z").toInt();
-
-    CctwIntVector3D ichnk(ix, iy, iz);
-
-    int nd = settings.beginReadArray("deps");
-
-    for (int j=0; j<nd; j++) {
-      settings.setArrayIndex(j);
-
-      int idn = settings.value("n").toInt();
-      int idx = settings.value("x").toInt();
-      int idy = settings.value("y").toInt();
-      int idz = settings.value("z").toInt();
-
-      CctwIntVector3D ochnk(idx, idy, idz);
-
-      m_Transformer->addDependency(in, idn);
-    }
-
-    settings.endArray();
+  if (m_Transformer) {
+    m_Transformer->loadDependencies(path);
   }
-
-  settings.endArray();
 }
 
 void CctwApplication::reportDependencies()
