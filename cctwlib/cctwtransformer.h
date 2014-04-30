@@ -6,6 +6,9 @@
 #include "cctwtransforminterface.h"
 #include <QUrl>
 
+template <class T>
+class QcepImageData;
+
 class CctwApplication;
 
 class CctwTransformer : public CctwObject
@@ -42,6 +45,9 @@ public slots:
   void dummyTransform2();
   void dummyTransform3();
 
+  void projectInput(QString path, int axes);
+  void projectOutput(QString path, int axes);
+
 public:
   virtual void writeSettings(QSettings *set, QString section);
   virtual void readSettings(QSettings *set, QString section);
@@ -50,6 +56,9 @@ private:
   void markInputChunkNeeded(CctwIntVector3D idx);
   void runTransformChunkNumber(int n);
   void runDummyTransformChunkNumber(int n);
+
+  void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
+  void projectDataset(QString path, CctwChunkedData *data, int axes);
 
 private:
   CctwApplication         *m_Application;
@@ -60,6 +69,14 @@ private:
   int                      m_OversampleX;
   int                      m_OversampleY;
   int                      m_OversampleZ;
+
+  QMutex                   m_LockX;
+  QMutex                   m_LockY;
+  QMutex                   m_LockZ;
+
+  QcepImageData<double>   *m_ImageX;
+  QcepImageData<double>   *m_ImageY;
+  QcepImageData<double>   *m_ImageZ;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)

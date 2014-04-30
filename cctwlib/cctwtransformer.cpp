@@ -8,6 +8,7 @@
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
 #include "qcepmutexlocker.h"
+#include "qcepimagedataformattiff.h"
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
 #include <QUrlQuery>
@@ -26,6 +27,9 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_OversampleX(osx),
   m_OversampleY(osy),
   m_OversampleZ(osz),
+  m_ImageX(NULL),
+  m_ImageY(NULL),
+  m_ImageZ(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
@@ -754,4 +758,220 @@ void CctwTransformer::addDependency(int f, int t)
 {
   m_InputData->addDependency(f, t);
   m_OutputData->addDependency(t, f);
+}
+
+void CctwTransformer::projectInput(QString path, int axes)
+{
+  projectDataset(path, m_InputData, axes);
+}
+
+void CctwTransformer::projectOutput(QString path, int axes)
+{
+  projectDataset(path, m_OutputData, axes);
+}
+
+void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes)
+{
+  if (m_Application && !m_Application->get_Halting()) {
+    CctwDataChunk *chunk = data->readChunk(i);
+
+    if (chunk) {
+      CctwIntVector3D chStart = chunk->chunkStart();
+      CctwIntVector3D chSize  = chunk->chunkSize();
+
+      int cx = chStart.x(),
+          cy = chStart.y(),
+          cz = chStart.z();
+
+      QcepImageData<double> *imgx = NULL, *imgy = NULL, *imgz = NULL;
+
+      if (axes & 1) {
+        imgx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
+      }
+
+      if (axes & 2) {
+        imgy = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
+      }
+
+      if (axes & 4) {
+        imgz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
+      }
+
+      for (int z=0; z<chSize.z(); z++) {
+        for (int y=0; y<chSize.y(); y++) {
+          for (int x=0; x<chSize.x(); x++) {
+            double data = chunk->data(x,y,z);
+            double wgt  = chunk->weight(x,y,z);
+
+            if (wgt != 0) {
+              if (imgx) {
+                imgx->addValue(y,z,data);
+              }
+
+              if (imgy) {
+                imgy->addValue(x,z,data);
+              }
+
+              if (imgz) {
+                imgz->addValue(x,y,data);
+              }
+            }
+          }
+        }
+      }
+
+      if (axes & 1) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
+
+        if (m_ImageX && imgx) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int y=0; y<chSize.y(); y++) {
+              m_ImageX->addValue(cy+y, cz+z, imgx->value(y,z));
+            }
+          }
+        }
+
+        delete imgx;
+      }
+
+      if (axes & 2) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockY);
+
+        if (m_ImageY && imgy) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int x=0; x<chSize.x(); x++) {
+              m_ImageY->addValue(cx+x, cz+z, imgy->value(x,z));
+            }
+          }
+        }
+
+        delete imgy;
+      }
+
+      if (axes & 4) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockZ);
+
+        if (m_ImageZ && imgz) {
+          for (int y=0; y<chSize.y(); y++) {
+            for (int x=0; x<chSize.x(); x++) {
+               m_ImageZ->addValue(cx+x, cy+y, imgz->value(x,y));
+            }
+          }
+        }
+
+        delete imgz;
+      }
+
+      m_InputData->releaseChunk(i);
+    }
+
+    m_MergeCounter.fetchAndAddOrdered(-1);
+  } else {
+    m_MergeCounter.fetchAndStoreOrdered(0);
+  }
+
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
+}
+
+void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
+{
+  if (data) {
+    if (m_Application) {
+      m_Application->waitCompleted();
+      m_Application->set_Progress(0);
+      m_Application->set_Halting(false);
+    }
+
+    QTime startAt;
+
+    startAt.start();
+
+    printMessage("Starting Projection");
+
+    m_MergeCounter.fetchAndStoreOrdered(0);
+
+    QcepImageDataFormatTiff<double> fmt("TIFF");
+
+    CctwIntVector3D dims = data->dimensions();
+
+    int px = axes & 1,
+        py = axes & 2,
+        pz = axes & 4;
+
+    delete m_ImageX;
+    delete m_ImageY;
+    delete m_ImageZ;
+
+    if (px) {
+      m_ImageX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
+    } else {
+      m_ImageX = NULL;
+    }
+
+    if (py) {
+      m_ImageY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
+    } else {
+      m_ImageY = NULL;
+    }
+
+    if (pz) {
+      m_ImageZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
+    } else {
+      m_ImageZ = NULL;
+    }
+
+    int nc = data->chunkCount().volume();
+
+    if (m_Application) {
+      m_Application->set_ProgressLimit(nc);
+    }
+
+    for (int i=0; i<nc; i++) {
+      m_MergeCounter.fetchAndAddOrdered(1);
+
+      if (m_Application) {
+        if (m_Application->get_Halting()) break;
+
+        m_Application->addWorkOutstanding(1);
+      }
+
+      QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes);
+    }
+
+    while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+      CctwThread::msleep(10);
+      m_Application->processEvents();
+    }
+
+    if (m_ImageX) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
+
+      fmt.saveFile(path+".x.tif", m_ImageX, false);
+      delete m_ImageX;
+      m_ImageX = NULL;
+    }
+
+    if (m_ImageY) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockY);
+
+      fmt.saveFile(path+".y.tif", m_ImageY, false);
+      delete m_ImageY;
+      m_ImageY = NULL;
+    }
+
+    if (m_ImageZ) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockZ);
+
+      fmt.saveFile(path+".z.tif", m_ImageZ, false);
+      delete m_ImageZ;
+      m_ImageZ = NULL;
+    }
+
+    set_WallTime(startAt.elapsed()/1000.0);
+
+    printMessage(tr("Projection complete after %1 sec").arg(get_WallTime()));
+  }
 }
