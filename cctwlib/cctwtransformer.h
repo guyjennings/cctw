@@ -87,6 +87,18 @@ public:
 
   Q_PROPERTY(int transformOptions READ get_TransformOptions WRITE set_TransformOptions)
   QCEP_INTEGER_PROPERTY(TransformOptions)
+
+  Q_PROPERTY(bool projectX READ get_ProjectX WRITE set_ProjectX)
+  QCEP_BOOLEAN_PROPERTY(ProjectX)
+
+  Q_PROPERTY(bool projectY READ get_ProjectY WRITE set_ProjectY)
+  QCEP_BOOLEAN_PROPERTY(ProjectY)
+
+  Q_PROPERTY(bool projectZ READ get_ProjectZ WRITE set_ProjectZ)
+  QCEP_BOOLEAN_PROPERTY(ProjectZ)
+
+  Q_PROPERTY(QString projectDestination READ get_ProjectDestination WRITE set_ProjectDestination)
+  QCEP_STRING_PROPERTY(ProjectDestination)
 };
 
 #endif // CCTWTRANSFORMER_H

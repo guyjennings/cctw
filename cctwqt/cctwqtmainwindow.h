@@ -68,6 +68,10 @@ public slots:
   void updateInputDimensions();
   void updateOutputDimensions();
 
+  void doBrowseProject();
+  void doProjectInput();
+  void doProjectOutput();
+
 private:
   bool wantToClose();
   void closeEvent (QCloseEvent * event);

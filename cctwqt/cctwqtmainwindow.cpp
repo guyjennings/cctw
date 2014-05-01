@@ -154,6 +154,24 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     updateOutputDimensions();
   }
 
+  CctwTransformer *xform = app->m_Transformer;
+
+  if (xform) {
+    xform->prop_ProjectX()->linkTo(ui->m_ProjectX);
+    xform->prop_ProjectY()->linkTo(ui->m_ProjectY);
+    xform->prop_ProjectZ()->linkTo(ui->m_ProjectZ);
+    xform->prop_ProjectDestination()->linkTo(ui->m_ProjectDestination);
+  }
+
+  connect(ui->m_ActionProjectBrowse, SIGNAL(triggered()), this, SLOT(doBrowseProject()));
+  connect(ui->m_ProjectBrowseButton, SIGNAL(clicked()), this, SLOT(doBrowseProject()));
+
+  connect(ui->m_ActionProjectInput, SIGNAL(triggered()), this, SLOT(doProjectInput()));
+  connect(ui->m_ProjectInputButton, SIGNAL(clicked()), this, SLOT(doProjectInput()));
+
+  connect(ui->m_ActionProjectOutput, SIGNAL(triggered()), this, SLOT(doProjectOutput()));
+  connect(ui->m_ProjectOutputButton, SIGNAL(clicked()), this, SLOT(doProjectOutput()));
+
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
 
@@ -575,4 +593,57 @@ void CctwqtMainWindow::doCheckImportedData()
 
   m_SetupCheckImportDialog->raise();
   m_SetupCheckImportDialog->activateWindow();
+}
+
+void CctwqtMainWindow::doBrowseProject()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    QString s = QFileDialog::getExistingDirectory(this, "Destination", xform->get_ProjectDestination());
+
+    if (s.length()) {
+      xform->set_ProjectDestination(s);
+    }
+  }
+}
+
+void CctwqtMainWindow::doProjectInput()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    int flags = (xform->get_ProjectX() ? 1 : 0) +
+                (xform->get_ProjectY() ? 2 : 0) +
+                (xform->get_ProjectZ() ? 4 : 0);
+
+    QString inputPath = m_Application->m_InputData->get_DataFileName();
+
+    QFileInfo info(inputPath);
+
+    QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
+    QString cmd = tr("transformer.projectInput(\"%1\", %2)").arg(dst).arg(flags);
+
+    m_Application->evaluateCommand(cmd);
+  }
+}
+
+void CctwqtMainWindow::doProjectOutput()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    int flags = (xform->get_ProjectX() ? 1 : 0) +
+                (xform->get_ProjectY() ? 2 : 0) +
+                (xform->get_ProjectZ() ? 4 : 0);
+
+    QString outputPath = m_Application->m_OutputData->get_DataFileName();
+
+    QFileInfo info(outputPath);
+
+    QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
+    QString cmd = tr("transformer.projectOutput(\"%1\", %2)").arg(dst).arg(flags);
+
+    m_Application->evaluateCommand(cmd);
+  }
 }

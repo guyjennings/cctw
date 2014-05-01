@@ -32,7 +32,11 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ImageZ(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options")
+  m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options"),
+  m_ProjectX(m_Application->saver(), this, "projectX", true, "Project along X"),
+  m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
+  m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
+  m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images")
 {
 }
 

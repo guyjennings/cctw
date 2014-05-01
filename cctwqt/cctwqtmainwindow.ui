@@ -889,6 +889,13 @@
          <string>Transform</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_7">
+         <item row="19" column="4">
+          <widget class="QPushButton" name="m_DummyTransformButton">
+           <property name="text">
+            <string>Dummy Transform</string>
+           </property>
+          </widget>
+         </item>
          <item row="11" column="0">
           <widget class="QLabel" name="label_33">
            <property name="text">
@@ -1410,6 +1417,19 @@
            </property>
           </widget>
          </item>
+         <item row="18" column="0" colspan="6">
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>548</width>
+             <height>580</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="2" column="3">
           <widget class="QSpinBox" name="m_ChunksHeldMax">
            <property name="toolTip">
@@ -1426,7 +1446,7 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="0" colspan="2">
+         <item row="19" column="0" colspan="2">
           <spacer name="horizontalSpacer_6">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -1439,14 +1459,14 @@
            </property>
           </spacer>
          </item>
-         <item row="15" column="2">
+         <item row="19" column="2">
           <widget class="QPushButton" name="m_CheckTransformButton">
            <property name="text">
             <string>Check Transform</string>
            </property>
           </widget>
          </item>
-         <item row="15" column="3">
+         <item row="19" column="3">
           <widget class="QPushButton" name="m_SetupTransformButton">
            <property name="text">
             <string>Setup Transform...</string>
@@ -1509,14 +1529,7 @@
            </property>
           </widget>
          </item>
-         <item row="15" column="4">
-          <widget class="QPushButton" name="m_DummyTransformButton">
-           <property name="text">
-            <string>Dummy Transform</string>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="5">
+         <item row="19" column="5">
           <widget class="QPushButton" name="m_TransformButton">
            <property name="text">
             <string>Transform</string>
@@ -1543,18 +1556,71 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="0" colspan="6">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="14" column="0">
+          <widget class="QLabel" name="label_45">
+           <property name="text">
+            <string> </string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>548</width>
-             <height>580</height>
-            </size>
+          </widget>
+         </item>
+         <item row="15" column="0">
+          <widget class="QLabel" name="label_47">
+           <property name="text">
+            <string>Projection:</string>
            </property>
-          </spacer>
+          </widget>
+         </item>
+         <item row="17" column="0">
+          <widget class="QCheckBox" name="m_ProjectX">
+           <property name="text">
+            <string>Project X</string>
+           </property>
+          </widget>
+         </item>
+         <item row="17" column="1">
+          <widget class="QCheckBox" name="m_ProjectY">
+           <property name="text">
+            <string>Project Y</string>
+           </property>
+          </widget>
+         </item>
+         <item row="17" column="2">
+          <widget class="QCheckBox" name="m_ProjectZ">
+           <property name="text">
+            <string>Project Z</string>
+           </property>
+          </widget>
+         </item>
+         <item row="17" column="3">
+          <widget class="QPushButton" name="m_ProjectInputButton">
+           <property name="text">
+            <string>Project Input</string>
+           </property>
+          </widget>
+         </item>
+         <item row="17" column="4">
+          <widget class="QPushButton" name="m_ProjectOutputButton">
+           <property name="text">
+            <string>Project Output</string>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="5">
+          <widget class="QPushButton" name="m_ProjectBrowseButton">
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="1" colspan="4">
+          <widget class="QLineEdit" name="m_ProjectDestination"/>
+         </item>
+         <item row="16" column="0">
+          <widget class="QLabel" name="label_48">
+           <property name="text">
+            <string>Destination:</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1638,7 +1704,7 @@
      <x>0</x>
      <y>0</y>
      <width>1383</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1664,6 +1730,9 @@
     <addaction name="m_ActionPerformTransform"/>
     <addaction name="m_ActionCheckTransform"/>
     <addaction name="m_ActionDummyTransform"/>
+    <addaction name="m_ActionProjectBrowse"/>
+    <addaction name="m_ActionProjectInput"/>
+    <addaction name="m_ActionProjectOutput"/>
    </widget>
    <widget class="QMenu" name="menuDependencies">
     <property name="title">
@@ -1837,6 +1906,30 @@
    </property>
    <property name="toolTip">
     <string>Report on Output Dependencies</string>
+   </property>
+  </action>
+  <action name="m_ActionProjectInput">
+   <property name="text">
+    <string>Project Input Dataset</string>
+   </property>
+   <property name="toolTip">
+    <string>Project Input Dataset</string>
+   </property>
+  </action>
+  <action name="m_ActionProjectOutput">
+   <property name="text">
+    <string>Project Output Dataset</string>
+   </property>
+   <property name="toolTip">
+    <string>Project Output Dataset</string>
+   </property>
+  </action>
+  <action name="m_ActionProjectBrowse">
+   <property name="text">
+    <string>Browse Projection Destination</string>
+   </property>
+   <property name="toolTip">
+    <string>Browse Projection Destination</string>
    </property>
   </action>
  </widget>
