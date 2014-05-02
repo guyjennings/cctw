@@ -19,7 +19,7 @@ public:
                   CctwChunkedData        *input,    // The input data
                   CctwChunkedData        *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
-                  int osx, int osy, int osz,        // Oversampling factors
+//                  int osx, int osy, int osz,        // Oversampling factors
                   QString name,
                   QObject *parent);
 
@@ -66,9 +66,9 @@ private:
   CctwChunkedData         *m_InputData;
   CctwChunkedData         *m_OutputData;
   CctwTransformInterface  *m_Transform;
-  int                      m_OversampleX;
-  int                      m_OversampleY;
-  int                      m_OversampleZ;
+//  int                      m_OversampleX;
+//  int                      m_OversampleY;
+//  int                      m_OversampleZ;
 
   QMutex                   m_LockX;
   QMutex                   m_LockY;
@@ -87,6 +87,15 @@ public:
 
   Q_PROPERTY(int transformOptions READ get_TransformOptions WRITE set_TransformOptions)
   QCEP_INTEGER_PROPERTY(TransformOptions)
+
+  Q_PROPERTY(int oversampleX READ get_OversampleX WRITE set_OversampleX)
+  QCEP_INTEGER_PROPERTY(OversampleX)
+
+  Q_PROPERTY(int oversampleY READ get_OversampleY WRITE set_OversampleY)
+  QCEP_INTEGER_PROPERTY(OversampleY)
+
+  Q_PROPERTY(int oversampleZ READ get_OversampleZ WRITE set_OversampleZ)
+  QCEP_INTEGER_PROPERTY(OversampleZ)
 
   Q_PROPERTY(bool projectX READ get_ProjectX WRITE set_ProjectX)
   QCEP_BOOLEAN_PROPERTY(ProjectX)

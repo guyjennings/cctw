@@ -18,21 +18,24 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
                                  CctwChunkedData *input,
                                  CctwChunkedData *output,
                                  CctwTransformInterface *xform,
-                                 int osx, int osy, int osz, QString name, QObject *parent) :
+                                 /*int osx, int osy, int osz, */QString name, QObject *parent) :
   CctwObject(name, parent),
   m_Application(application),
   m_InputData(input),
   m_OutputData(output),
   m_Transform(xform),
-  m_OversampleX(osx),
-  m_OversampleY(osy),
-  m_OversampleZ(osz),
+//  m_OversampleX(osx),
+//  m_OversampleY(osy),
+//  m_OversampleZ(osz),
   m_ImageX(NULL),
   m_ImageY(NULL),
   m_ImageZ(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options"),
+  m_OversampleX(m_Application->saver(), this, "oversampleX", 1, "Oversampling along X"),
+  m_OversampleY(m_Application->saver(), this, "oversampleY", 1, "Oversampling along Y"),
+  m_OversampleZ(m_Application->saver(), this, "oversampleZ", 1, "Oversampling along Z"),
   m_ProjectX(m_Application->saver(), this, "projectX", true, "Project along X"),
   m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
   m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
@@ -73,51 +76,6 @@ void CctwTransformer::runTransformChunkNumber(int n)
 
 void CctwTransformer::saveDependencies(QString path)
 {
-//  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-//  QSettings settings(path, QSettings::IniFormat);
-
-//  settings.beginWriteArray("dependencies");
-//  int n=0;
-
-//  for (int z=0; z<chunks.z(); z++) {
-//    for (int y=0; y<chunks.y(); y++) {
-//      for (int x=0; x<chunks.x(); x++) {
-//        CctwIntVector3D idx(x,y,z);
-
-//        CctwDataChunk *chunk = m_InputData->chunk(idx);
-
-//        chunk->sortDependencies();
-
-//        int nDeps = chunk->dependencyCount();
-
-//        if (nDeps > 0) {
-//          settings.setArrayIndex(n++);
-//          settings.setValue("n", m_InputData->chunkNumberFromIndex(idx));
-//          settings.setValue("x", x);
-//          settings.setValue("y", y);
-//          settings.setValue("z", z);
-
-//          settings.beginWriteArray("deps");
-
-//          for (int i=0; i<nDeps; i++) {
-//            settings.setArrayIndex(i);
-//            int dn = chunk->dependency(i);
-//            CctwIntVector3D dep = m_OutputData->chunkIndexFromNumber(dn);
-//            settings.setValue("n", dn);
-//            settings.setValue("x", dep.x());
-//            settings.setValue("y", dep.y());
-//            settings.setValue("z", dep.z());
-//          }
-
-//          settings.endArray();
-//        }
-//      }
-//    }
-//  }
-
-//  settings.endArray();
-
   QFile f(path);
 
   if (f.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -144,40 +102,6 @@ void CctwTransformer::saveDependencies(QString path)
 void CctwTransformer::loadDependencies(QString path)
 {
   clearDependencies();
-
-//  QSettings settings(path, QSettings::IniFormat);
-
-//  int n = settings.beginReadArray("dependencies");
-
-//  for (int i=0; i<n; i++) {
-//    settings.setArrayIndex(i);
-
-//    int in = settings.value("n").toInt();
-//    int ix = settings.value("x").toInt();
-//    int iy = settings.value("y").toInt();
-//    int iz = settings.value("z").toInt();
-
-//    CctwIntVector3D ichnk(ix, iy, iz);
-
-//    int nd = settings.beginReadArray("deps");
-
-//    for (int j=0; j<nd; j++) {
-//      settings.setArrayIndex(j);
-
-//      int idn = settings.value("n").toInt();
-//      int idx = settings.value("x").toInt();
-//      int idy = settings.value("y").toInt();
-//      int idz = settings.value("z").toInt();
-
-//      CctwIntVector3D ochnk(idx, idy, idz);
-
-//      addDependency(in, idn);
-//    }
-
-//    settings.endArray();
-//  }
-
-//  settings.endArray();
 
   QFile f(path);
 
@@ -210,54 +134,68 @@ void CctwTransformer::transformChunkNumber(int n)
 
     QMap<int, CctwDataChunk*> outputChunks;
 
+    int osx = get_OversampleX();
+    int osy = get_OversampleY();
+    int osz = get_OversampleZ();
+
+    double osxstp = osx >= 1 ? 1.0/osx : 0;
+    double osystp = osy >= 1 ? 1.0/osy : 0;
+    double oszstp = osz >= 1 ? 1.0/osz : 0;
+
     for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwIntVector3D iprelat(x,y,z);
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
-          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+      for (int oz=0; oz<osz; oz++) {
+        for (int y=0; y<chSize.y(); y++) {
+          for (int oy=0; oy<osy; oy++) {
+            for (int x=0; x<chSize.x(); x++) {
+              CctwIntVector3D iprelat(x,y,z);
+              for (int ox=0; ox<osx; ox++) {
+                CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
+                CctwDoubleVector3D xfmcoord = transform.forward(coords);
+                CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
 
-          if (m_OutputData->containsPixel(pixels)) {
-            int opchunk = m_OutputData->chunkContaining(pixels);
-            CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
+                if (m_OutputData->containsPixel(pixels)) {
+                  int opchunk = m_OutputData->chunkContaining(pixels);
+                  CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
 
-            if (opchunk != lastChunkIndex) {
+                  if (opchunk != lastChunkIndex) {
 
-              lastChunkIndex = opchunk;
+                    lastChunkIndex = opchunk;
 
-              if (!outputChunks.contains(lastChunkIndex)) {
-//                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
-//                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
-//                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
+                    if (!outputChunks.contains(lastChunkIndex)) {
+                      //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
+                      //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
+                      //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
 
-                CctwDataChunk *chunk =
-                    new CctwDataChunk(m_OutputData, lastChunkIndex,
-                                      tr("chunk-%1").arg(lastChunkIndex), NULL);
+                      CctwDataChunk *chunk =
+                          new CctwDataChunk(m_OutputData, lastChunkIndex,
+                                            tr("chunk-%1").arg(lastChunkIndex), NULL);
 
-                if (chunk) {
-                  chunk->allocateData();
-                  chunk->allocateWeights();
+                      if (chunk) {
+                        chunk->allocateData();
+                        chunk->allocateWeights();
+                      }
+
+                      outputChunks[lastChunkIndex] = chunk;
+                    }
+
+                    lastChunk = outputChunks[lastChunkIndex];
+                  }
+
+                  if (lastChunk) {
+                    int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
+                    int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
+
+                    double oval = lastChunk->data(ox, oy, oz);
+                    double owgt = lastChunk->weight(ox, oy, oz);
+                    double ival = inputChunk->data(ix, iy, iz);
+                    double iwgt = inputChunk->weight(ix, iy, iz);
+
+                    if (iwgt != 0) {
+                      lastChunk->setData(ox, oy, oz, oval+ival);
+                      lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
+                    }
+                  }
                 }
-
-                outputChunks[lastChunkIndex] = chunk;
-              }
-
-              lastChunk = outputChunks[lastChunkIndex];
-            }
-
-            if (lastChunk) {
-              int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
-              int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
-
-              double oval = lastChunk->data(ox, oy, oz);
-              double owgt = lastChunk->weight(ox, oy, oz);
-              double ival = inputChunk->data(ix, iy, iz);
-              double iwgt = inputChunk->weight(ix, iy, iz);
-
-              if (iwgt != 0) {
-                lastChunk->setData(ox, oy, oz, oval+ival);
-                lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
               }
             }
           }
