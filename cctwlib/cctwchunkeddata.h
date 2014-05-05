@@ -8,6 +8,11 @@
 #include "qcepproperty.h"
 #include "hdf5.h"
 
+#define NEXUS_ENABLED 1
+#if NEXUS_ENABLED == 1
+#include <nexus/NeXusFile.hpp>
+#endif
+
 class CctwDataChunk;
 class CctwApplication;
 class CctwTransformer;
@@ -80,12 +85,18 @@ public slots:
   bool                openInputNeXusFile();
   void                closeOutputFile();
   void                closeInputFile();
+  void                closeInputNeXusFile();
 
 private slots:
   void                onDataFileNameChanged();
 
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
+  /** Is this a NeXus file? */
+  bool                 isNeXus;
+#if NEXUS_ENABLED == 1
+  NeXus::File          *neXusFile;
+#endif
 
 private:
   CctwIntVector3D     m_Dimensions;

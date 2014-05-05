@@ -10,11 +10,6 @@
 #include "cctwdebug.h"
 #include "qcepmutexlocker.h"
 
-#define NEXUS_ENABLED 1
-#if NEXUS_ENABLED == 1
-#include <nexus/NeXusFile.hpp>
-#endif
-
 QMutex CctwChunkedData::m_FileAccessMutex;
 
 CctwChunkedData::CctwChunkedData
@@ -46,7 +41,7 @@ CctwChunkedData::CctwChunkedData
     m_DataspaceId(-1)
 {
   allocateChunks();
-
+  isNeXus = false;
   connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
 }
 
@@ -462,33 +457,14 @@ bool CctwChunkedData::openInputFile()
   return res;
 }
 
-bool CctwChunkedData::openInputNeXusFile()
-{
-  bool res = true;
-  QString fileName = get_DataFileName();
-  QFileInfo f(fileName);
-
-  if (!f.exists()) {
-    printMessage(tr("File %1 does not exist").arg(fileName));
-    res = false;
-  } else if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
-    printMessage(tr("File %1 exists but is not an hdf file").arg(fileName));
-    res = false;
-  }
-
-  using namespace NeXus;
-  File file = new File(qPrintable(fileName));
-  printMessage(tr("NeXus file opened successfully: %1").arg(fileName));
-  file.close();
-
-  return res;
-}
-
 void CctwChunkedData::closeInputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
 //  printMessage("About to close input file");
+
+  if (isNeXus)
+    closeInputNeXusFile();
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);
@@ -505,6 +481,48 @@ void CctwChunkedData::closeInputFile()
     m_FileId = -1;
   }
 }
+
+#if NEXUS_ENABLED == 1
+
+bool CctwChunkedData::openInputNeXusFile()
+{
+  bool res = true;
+
+  isNeXus = true;
+
+  QString fileName = get_DataFileName();
+  QFileInfo f(fileName);
+
+  if (!f.exists()) {
+    printMessage(tr("File %1 does not exist").arg(fileName));
+    res = false;
+  } else if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
+    printMessage(tr("File %1 exists but is not an hdf file").arg(fileName));
+    res = false;
+  }
+
+  neXusFile = new NeXus::File(qPrintable(fileName));
+  printMessage(tr("NeXus file opened successfully: %1").arg(fileName));
+
+  return res;
+}
+
+void CctwChunkedData::closeInputNeXusFile()
+{
+  neXusFile->close();
+}
+
+#else
+bool CctwChunkedData::openInputNeXusFile()
+{
+  printMessage(tr("NeXus was not enabled at build time!"));
+  return false;
+}
+void CctwChunkedData::closeInputNeXusFile()
+{
+  printMessage(tr("NeXus was not enabled at build time!"));
+}
+#endif
 
 bool CctwChunkedData::openOutputFile()
 {
