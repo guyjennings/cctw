@@ -366,7 +366,7 @@ bool CctwChunkedData::openInputFile()
 
 //  printMessage(tr("About to open input file"));
 
-  int res = true;
+  bool res = true;
 
   QString fileName = get_DataFileName();
   QFileInfo f(fileName);
