@@ -98,3 +98,46 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
   }
   return TCL_OK;
 }
+
+int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
+{
+  // cctw_transform <input_data_pointer>  --> a list of outputs
+  // Transform a blob of input data into a list of intermediate blobs
+  // returns a list of triples { { <merge ID> <pointer> <length> }... }
+
+  if (objc != 2) {
+    Tcl_SetResult(interp, "Wrong number of arguments: usage: cctw_transform <inputchunk>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+
+    Tcl_WideInt input;
+
+    if (Tcl_GetWideIntFromObj(interp, objv[2], &input) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    int chunkX = 128;
+    int chunkY = 128;
+    int chunkZ = 128;
+    int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
+
+    Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+
+    /*  PSEUDO-CODE
+    CctwDataChunk *chunk = importChunk(input);
+    QList<OutputItem> res = g_Application->transform(chunk);
+    foreach(OutputItem item, res) {
+      Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
+
+      Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(item->mergeID()));
+      Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(item->dataPointer()));
+      Tcl_ListObjAppendElement(interp, entry, Tcl_NewLongObj(length));
+      Tcl_ListObjAppendElement(interp, result, item);
+    }
+    */
+
+    Tcl_SetObjResult(interp, result);
+  }
+
+  return TCL_OK;
+}
