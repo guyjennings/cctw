@@ -6,6 +6,8 @@
 #include "cctwapplication.h"
 #include "cctwcrystalcoordinateparameters.h"
 
+#include "cctwdatachunk.h"
+
 #include "cctwtclutils.h"
 
 static CctwApplication *g_Application = NULL;
@@ -45,7 +47,54 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
 //  Tcl_SetResult(interp, /* (char*) qPrintable(valStr) */ "hello", TCL_STATIC);
 
     Tcl_SetObjResult(interp, result);
-  }
 
+    return TCL_OK;
+  }
+  return TCL_ERROR;
+}
+
+int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+{
+  // cctw_input <input_data_path> <input_chunk_id> --> <input_data_blob>
+  // Read a blob of input data from the file system, perform any masking and normalization needed
+  // returns a pair { <pointer> <length> }
+
+  if (objc != 3) {
+    Tcl_SetResult(interp, (char*)"Wrong number of arguments: usage: cctw_input <input_path> <chunkid>", TCL_STATIC);
+    return TCL_ERROR;
+  } else {
+    int chunkId = -1;
+    char *path  = NULL;
+
+    path  = Tcl_GetString(objv[1]);
+
+    if (path==NULL) {
+      return TCL_ERROR;
+    }
+
+    if (Tcl_GetIntFromObj(interp, objv[2], &chunkId) != TCL_OK) {
+      return TCL_ERROR;
+    }
+
+    int chunkX = 128;
+    int chunkY = 128;
+    int chunkZ = 128;
+
+    void *pointer = NULL;
+    int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
+
+    QObject *parent = NULL;
+    CctwIntVector3D dataSize(2048,2048,10);
+    CctwIntVector3D chunkSize(128,128,128);
+    CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
+
+    CctwDataChunk *chunk = data.readChunk(chunkId);
+    pointer = chunk->dataPointer();
+
+    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)pointer));
+    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
+    Tcl_SetObjResult(interp, res);
+  }
   return TCL_OK;
 }
