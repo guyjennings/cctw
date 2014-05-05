@@ -77,6 +77,7 @@ public slots:
 
   bool                openOutputFile();
   bool                openInputFile();
+  bool                openInputNeXusFile();
   void                closeOutputFile();
   void                closeInputFile();
 

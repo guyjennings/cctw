@@ -10,6 +10,11 @@
 #include "cctwdebug.h"
 #include "qcepmutexlocker.h"
 
+#define NEXUS_ENABLED 1
+#if NEXUS_ENABLED == 1
+#include <nexus/NeXusFile.hpp>
+#endif
+
 QMutex CctwChunkedData::m_FileAccessMutex;
 
 CctwChunkedData::CctwChunkedData
@@ -369,6 +374,9 @@ bool CctwChunkedData::openInputFile()
   bool res = true;
 
   QString fileName = get_DataFileName();
+  if (fileName.endsWith(tr(".nxs")))
+    return openInputNeXusFile();
+
   QFileInfo f(fileName);
 
   hid_t fileId = -1;
@@ -450,6 +458,28 @@ bool CctwChunkedData::openInputFile()
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
   }
+
+  return res;
+}
+
+bool CctwChunkedData::openInputNeXusFile()
+{
+  bool res = true;
+  QString fileName = get_DataFileName();
+  QFileInfo f(fileName);
+
+  if (!f.exists()) {
+    printMessage(tr("File %1 does not exist").arg(fileName));
+    res = false;
+  } else if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
+    printMessage(tr("File %1 exists but is not an hdf file").arg(fileName));
+    res = false;
+  }
+
+  using namespace NeXus;
+  File file = new File(qPrintable(fileName));
+  printMessage(tr("NeXus file opened successfully: %1").arg(fileName));
+  file.close();
 
   return res;
 }
