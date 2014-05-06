@@ -20,6 +20,9 @@ void CctwObject::printMessage(QString msg, QDateTime dt)
 {
   if (parent()) {
     QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
+  } else {
+    printf("MESSAGE: %s %s\n",
+           qPrintable(dt.toString("hh:mm:ss")), qPrintable(msg));
   }
 }
 
