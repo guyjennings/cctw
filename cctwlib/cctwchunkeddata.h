@@ -8,7 +8,7 @@
 #include "qcepproperty.h"
 #include "hdf5.h"
 
-#define NEXUS_ENABLED 1
+#define NEXUS_ENABLED 0
 #if NEXUS_ENABLED == 1
 #include <nexus/NeXusFile.hpp>
 #endif
