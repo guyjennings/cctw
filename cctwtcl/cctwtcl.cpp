@@ -1,10 +1,7 @@
+
 #include <tcl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "cctwtcl_commands.h"
-#include "cctwtcltiff.h"
 
 extern "C"
 int Cctwtcl_Init(Tcl_Interp *interp)
@@ -28,6 +25,12 @@ int Cctwtcl_Init(Tcl_Interp *interp)
   }
 
   Tcl_CreateObjCommand(interp, "cctw", (Tcl_ObjCmdProc *) Cctwtcl_Cmd,
+          (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_input", (Tcl_ObjCmdProc *) Cctwtcl_Input_Cmd,
+          (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_transform", (Tcl_ObjCmdProc *) Cctwtcl_Transform_Cmd,
           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
   Cctwtcl_Initialize();
