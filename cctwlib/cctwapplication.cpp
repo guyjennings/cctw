@@ -465,7 +465,13 @@ void CctwApplication::evaluateCommand(QString cmd)
 QScriptValue CctwApplication::evaluate(QString cmd)
 {
   if (m_ScriptEngine) {
-    return m_ScriptEngine->evaluate(cmd);
+    QScriptValue result = m_ScriptEngine->evaluate(cmd);
+    if (m_ScriptEngine->hasUncaughtException())
+    {
+      QScriptValue exception = m_ScriptEngine->uncaughtException();
+      printMessage(tr("Script resulted in exception!"));
+    }
+    return result;
   } else {
     return QScriptValue();
   }
