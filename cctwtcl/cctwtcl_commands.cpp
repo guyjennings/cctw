@@ -69,46 +69,43 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
   // Read a blob of input data from the file system, perform any masking and normalization needed
   // returns a pair { <pointer> <length> }
 
-  if (objc != 4) {
-    Tcl_SetResult(interp, (char*)"Wrong number of arguments: usage: cctw_input <input_path> <dataset> <chunkid>", TCL_STATIC);
+  TCL_ARGS(4, "usage: cctw_input <input_path> <dataset> <chunkid>");
+
+  int chunkId = -1;
+  char *path    = Tcl_GetString(objv[1]);
+  char *dataset = Tcl_GetString(objv[2]);
+
+  int rc;
+  rc = Tcl_GetIntFromObj(interp, objv[3], &chunkId);
+  if (rc != TCL_OK) {
+    printf("chunkid must be an integer!");
     return TCL_ERROR;
-  } else {
-    int chunkId = -1;
-    char *path = Tcl_GetString(objv[1]);
-    if (path==NULL) {
-      return TCL_ERROR;
-    }
-
-    char *dataset = Tcl_GetString(objv[2]);
-
-    if (Tcl_GetIntFromObj(interp, objv[3], &chunkId) != TCL_OK) {
-      return TCL_ERROR;
-    }
-
-    int chunkX = 128;
-    int chunkY = 128;
-    int chunkZ = 128;
-
-    void *pointer = NULL;
-    int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
-
-    QObject *parent = NULL;
-    CctwIntVector3D dataSize(2048,2048,10);
-    CctwIntVector3D chunkSize(128,128,128);
-    CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
-    data.set_DataFileName(path);
-    data.set_DataSetName(dataset);
-
-    printf("readChunk()...\n");
-    CctwDataChunk *chunk = data.readChunk(chunkId);
-    printf("dataPointer()...\n");
-    pointer = chunk->dataPointer();
-
-    Tcl_Obj *res = Tcl_NewListObj(0, NULL);
-    Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)pointer));
-    Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
-    Tcl_SetObjResult(interp, res);
   }
+
+  int chunkX = 128;
+  int chunkY = 128;
+  int chunkZ = 128;
+
+  void *pointer = NULL;
+  int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
+
+  QObject *parent = NULL;
+  CctwIntVector3D dataSize(2048,2048,10);
+  CctwIntVector3D chunkSize(128,128,128);
+  CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
+  data.set_DataFileName(path);
+  data.set_DataSetName(dataset);
+
+  printf("readChunk()...\n");
+  CctwDataChunk *chunk = data.readChunk(chunkId);
+  printf("dataPointer()...\n");
+  pointer = chunk->dataPointer();
+
+  Tcl_Obj *res = Tcl_NewListObj(0, NULL);
+  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)pointer));
+  Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
+  Tcl_SetObjResult(interp, res);
+
   return TCL_OK;
 }
 
