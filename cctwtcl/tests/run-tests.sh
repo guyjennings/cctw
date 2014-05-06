@@ -24,9 +24,12 @@ else
   TESTS=( ${*} )
 fi
 
+VALGRIND=${VALGRIND:-}
+
 for TEST in ${TESTS[@]}
 do
+  TEST=$( basename ${TEST} )
   echo running test: ${TEST}
-  tclsh ${TEST}
+  ${VALGRIND} tclsh ${TEST}
   echo
 done

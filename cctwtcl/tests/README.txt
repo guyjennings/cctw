@@ -5,6 +5,10 @@ To run all the tests, just run:
 
 tests/run-tests.sh
 
+To run under valgrind, first set 
+
+export VALGRIND="valgrind <args>"
+
 TESTS:
 
 0. Tests that a basic call to the CCTW QScript interface works. 
