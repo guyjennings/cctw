@@ -1,3 +1,6 @@
+
+#include <stdio.h>
+
 #include <QScriptValue>
 #include <QString>
 #include "cctwtcl_commands.h"
@@ -20,6 +23,11 @@ int Cctwtcl_Initialize()
   int nargs = 2;
   char* args[] = {"cctw", "-n", 0};
 
+  if (getenv("VALGRIND") != NULL)
+    // We are running under valgrind: do not buffer stdout
+    // Avoids sequencing issues with stderr
+    setvbuf(stdout, NULL, _IONBF, 0);
+
   g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
@@ -36,11 +44,13 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
   if (objc >= 2) {
     const char *cmd = Tcl_GetString(objv[1]);
 
+    printf("evaluating: {%s}\n", cmd);
+
     QScriptValue val = g_Application->evaluate(cmd);
 
     QString valStr = val.toString();
 
-//    printf("%s -> %s\n", cmd, qPrintable(valStr));
+    printf("%s -> %s\n", cmd, qPrintable(valStr));
 
     Tcl_Obj *result = Tcl_NewStringObj(qPrintable(valStr), -1);
 
@@ -87,8 +97,12 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
     CctwIntVector3D dataSize(2048,2048,10);
     CctwIntVector3D chunkSize(128,128,128);
     CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
+    data.set_DataFileName(path);
+    data.set_DataSetName("v");
 
+    printf("readChunk()...\n");
     CctwDataChunk *chunk = data.readChunk(chunkId);
+    printf("dataPointer()...\n");
     pointer = chunk->dataPointer();
 
     Tcl_Obj *res = Tcl_NewListObj(0, NULL);
