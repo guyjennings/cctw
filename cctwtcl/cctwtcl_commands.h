@@ -9,6 +9,10 @@ int Cctwtcl_Cmd               (ClientData clientData, Tcl_Interp *interp, int ob
 int Cctwtcl_Input_Cmd         (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 int Cctwtcl_Transform_Cmd     (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 
+int Cctwtcl_Input_Cmd         (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+
+int Cctwtcl_Transform_Cmd     (ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
+
 /*
  *  Commands to implement a basic interface to cctw from swift/t via tcl
  *
