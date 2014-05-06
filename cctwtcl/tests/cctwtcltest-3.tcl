@@ -1,17 +1,9 @@
 
-# Flex Tcl cctw_dependencies
+# TCL TEST 3
+# Test transform
 
 package require cctw
 
-set x 1
-set y 1
-set z 1
-
-foreach i [ list 0 1 2 ] {
-    set d [ cctw "inputData.dimensions\[$i\]" ]
-    puts "d: $d"
-}
-
-set deps [ cctw_dependencies $x $y $z ]
-
-puts "deps: $deps"
+set L [ cctw_input "/home/wozniak/nexus-data/pznpt.nxs" "entry/data/v" 1 ] 
+set ptr [ lindex $L 0 ] 
+cctw_transform $ptr
