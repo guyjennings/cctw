@@ -115,10 +115,19 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   // Transform a blob of input data into a list of intermediate blobs
   // returns a list of triples { { <merge ID> <pointer> <length> }... }
 
-  TCL_ARGS(2, "Wrong number of arguments: usage: cctw_transform <inputchunk>");
+  TCL_ARGS(3, "usage: cctw_transform <chunk ptr> <chunk id>");
 
+  int rc;
   Tcl_WideInt input;
-  if (Tcl_GetWideIntFromObj(interp, objv[2], &input) != TCL_OK) {
+  rc = Tcl_GetWideIntFromObj(interp, objv[2], &input);
+  if (rc != TCL_OK) {
+    printf("chunk ptr must be an integer!\n");
+    return TCL_ERROR;
+  }
+  int chunk;
+  rc = Tcl_GetIntFromObj(interp, objv[2], &chunk);
+  if (rc != TCL_OK) {
+    printf("chunk ptr must be an integer!\n");
     return TCL_ERROR;
   }
 
