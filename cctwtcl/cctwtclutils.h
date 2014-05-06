@@ -15,16 +15,16 @@
    objc should be equal to count.  If not, fail.
    Note that in Tcl, the command name counts as an argument
 */
-#define TCL_ARGS(count_expr) {                                  \
+#define TCL_ARGS(count_expr, help) {                            \
     int count = count_expr;                                     \
     if (objc != count) {                                        \
       char* tmp = Tcl_GetStringFromObj(objv[0], NULL);          \
       printf("command %s requires %i arguments, received %i\n", \
              tmp, count, objc);                                 \
+      printf(help "\n");                                        \
       return TCL_ERROR;                                         \
     }                                                           \
   }
-
 
 /**
    Print error message and setup Tcl error state
@@ -55,5 +55,10 @@ void tcl_condition_failed(Tcl_Interp* interp, Tcl_Obj* command,
    If rc is not TCL_OK, return a blank Tcl error
  */
 #define TCL_CHECK(rc) { if (rc != TCL_OK) { return TCL_ERROR; }}
+
+#define TCL_CONDITION(condition, format, args...)                \
+  if (!(condition)) {                                            \
+    TCL_RETURN_ERROR(format, ## args);                           \
+  }
 
 #endif
