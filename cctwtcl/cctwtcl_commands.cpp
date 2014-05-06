@@ -69,20 +69,19 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
   // Read a blob of input data from the file system, perform any masking and normalization needed
   // returns a pair { <pointer> <length> }
 
-  if (objc != 3) {
-    Tcl_SetResult(interp, (char*)"Wrong number of arguments: usage: cctw_input <input_path> <chunkid>", TCL_STATIC);
+  if (objc != 4) {
+    Tcl_SetResult(interp, (char*)"Wrong number of arguments: usage: cctw_input <input_path> <dataset> <chunkid>", TCL_STATIC);
     return TCL_ERROR;
   } else {
     int chunkId = -1;
-    char *path  = NULL;
-
-    path  = Tcl_GetString(objv[1]);
-
+    char *path = Tcl_GetString(objv[1]);
     if (path==NULL) {
       return TCL_ERROR;
     }
 
-    if (Tcl_GetIntFromObj(interp, objv[2], &chunkId) != TCL_OK) {
+    char *dataset = Tcl_GetString(objv[2]);
+
+    if (Tcl_GetIntFromObj(interp, objv[3], &chunkId) != TCL_OK) {
       return TCL_ERROR;
     }
 
@@ -98,7 +97,7 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
     CctwIntVector3D chunkSize(128,128,128);
     CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
     data.set_DataFileName(path);
-    data.set_DataSetName("v");
+    data.set_DataSetName(dataset);
 
     printf("readChunk()...\n");
     CctwDataChunk *chunk = data.readChunk(chunkId);

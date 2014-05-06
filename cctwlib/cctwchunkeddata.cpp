@@ -364,20 +364,14 @@ bool CctwChunkedData::openInputFile()
     return true;
   }
 
-  QString fileName = get_DataFileName();
-  QString groupName1 = "entry";
-  QString groupName2 = "data";
+  QString fileName    = get_DataFileName();
   QString dataSetName = get_DataSetName();
-  printMessage(tr("About to open input file: %1 dataset: %2").arg(fileName).arg(dataSetName));
-
-  //  if (fileName.endsWith(tr(".nxs")))
-  //    return openInputNeXusFile();
+  printMessage(tr("About to open input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
 
   QFileInfo f(fileName);
 
   hid_t fileId = -1;
-  hid_t gId1   = -1;
-  hid_t gId2   = -1;
   hid_t dsetId = -1;
   hid_t dspcId = -1;
   hid_t plist  = -1;
@@ -393,15 +387,7 @@ bool CctwChunkedData::openInputFile()
     if (fileId < 0)
       throw tr("File %1 could not be opened").arg(fileName);
 
-    gId1 = H5Gopen(fileId, qPrintable(groupName1), H5P_DEFAULT);
-    if (gId1 < 0)
-      throw tr("File %1 group %2 not found!").arg(fileName).arg(groupName1);
-    gId2 = H5Gopen(gId1, qPrintable(groupName2), H5P_DEFAULT);
-    if (gId2 < 0)
-      throw tr("File %1 group %2/%3 not found!")
-               .arg(fileName).arg(groupName1).arg(groupName2);
-
-    dsetId = H5Dopen(gId2, qPrintable(dataSetName), H5P_DEFAULT);
+    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
     if (dsetId <= 0)
       throw tr("Could not open dataset!");
 
