@@ -141,9 +141,11 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   dataChunk.setBuffer((void*) input);
 
   Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+  QMap<int, CctwDataChunk*> outputChunks;
+  CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
+  transformer.transformChunkData(chunkIndex, &dataChunk, outputChunks);
 
     /*  PSEUDO-CODE
-    QList<OutputItem> res = g_Application->transform(chunk);
     foreach(OutputItem item, res) {
       Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
 
