@@ -7,7 +7,7 @@ CCTWTCL_DIR=$( cd ${TEST_DIR}/..    ; /bin/pwd )
 CCTW_DIR=$(    cd ${CCTWTCL_DIR}/.. ; /bin/pwd )
 
 MAKE=""
-zparseopts m=MAKE
+zparseopts -D m=MAKE
 if [[ ${MAKE} != "" ]] 
 then
   pushd ${CCTW_DIR}
