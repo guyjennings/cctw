@@ -63,6 +63,8 @@ public slots:
   static void resetAllocationLimits(int nmax);
   static int maxAllocated();
 
+  void setBuffer(void *buffer);
+
 private:
   CctwChunkedData::MergeDataType *allocateBuffer();
   void releaseBuffer(CctwChunkedData::MergeDataType *);
@@ -85,6 +87,8 @@ private:
   int                                        m_MergeCounter;
   QList< CctwChunkedData::MergeDataType* >   m_MergeData;
   QList< CctwChunkedData::MergeDataType* >   m_MergeWeights;
+  /** True iff this object owns the chunk memory */
+  bool                                       m_OwnData;
 };
 
 #endif // CCTWDATACHUNK_H

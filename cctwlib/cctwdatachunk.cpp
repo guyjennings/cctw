@@ -58,15 +58,17 @@ CctwDataChunk::~CctwDataChunk()
 {
 //  printf("Delete chunk %d\n", m_ChunkIndex);
 
-  if (m_ChunkData || m_ChunkWeights) {
-    printMessage("Anomaly in CctwDataChunk::~CctwDataChunk");
+  if (m_OwnData) {
+    if (m_ChunkData || m_ChunkWeights) {
+      printMessage("Anomaly in CctwDataChunk::~CctwDataChunk");
+    }
+
+    //  delete [] m_ChunkData;
+    //  delete [] m_ChunkWeights;
+
+    releaseBuffer(m_ChunkData);
+    releaseBuffer(m_ChunkWeights);
   }
-
-//  delete [] m_ChunkData;
-//  delete [] m_ChunkWeights;
-
-  releaseBuffer(m_ChunkData);
-  releaseBuffer(m_ChunkWeights);
 
   m_ChunkData = NULL;
   m_ChunkWeights = NULL;
@@ -243,6 +245,13 @@ CctwChunkedData::MergeDataType *CctwDataChunk::allocateBuffer()
   }
 
   return res;
+}
+
+void CctwDataChunk::setBuffer(void *buffer)
+{
+  printMessage(tr("Setting buffer to: %1").arg((long long) buffer));
+  m_ChunkData = (CctwChunkedData::MergeDataType*) buffer;
+  m_OwnData = false;
 }
 
 void CctwDataChunk::releaseBuffer(CctwChunkedData::MergeDataType *buffer)
