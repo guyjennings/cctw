@@ -35,7 +35,10 @@ public slots:
   QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
-  void transformChunkNumber(int n);
+  void transformChunkNumber(int chunkId);
+  void transformChunkData(int chunkId,
+                          CctwDataChunk *inputChunk,
+                          QMap<int, CctwDataChunk*> &outputChunks);
   void dummyTransformChunkNumber(int n);
 
   void clearDependencies();

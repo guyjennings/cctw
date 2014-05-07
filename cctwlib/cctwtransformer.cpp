@@ -117,91 +117,14 @@ void CctwTransformer::loadDependencies(QString path)
   }
 }
 
-void CctwTransformer::transformChunkNumber(int n)
+void CctwTransformer::transformChunkNumber(int chunkId)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
-
-  int lastChunkIndex = -1;
-
-  CctwDataChunk *inputChunk = m_InputData->readChunk(n);
+  CctwDataChunk *inputChunk = m_InputData->readChunk(chunkId);
+  QMap<int, CctwDataChunk*> outputChunks;
 
   if (inputChunk) {
-    CctwDataChunk *lastChunk = NULL;
 
-    CctwIntVector3D chStart = inputChunk->chunkStart();
-    CctwIntVector3D chSize  = inputChunk->chunkSize();
-    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-
-    QMap<int, CctwDataChunk*> outputChunks;
-
-    int osx = get_OversampleX();
-    int osy = get_OversampleY();
-    int osz = get_OversampleZ();
-
-    double osxstp = osx >= 1 ? 1.0/osx : 0;
-    double osystp = osy >= 1 ? 1.0/osy : 0;
-    double oszstp = osz >= 1 ? 1.0/osz : 0;
-
-    for (int z=0; z<chSize.z(); z++) {
-      for (int oz=0; oz<osz; oz++) {
-        for (int y=0; y<chSize.y(); y++) {
-          for (int oy=0; oy<osy; oy++) {
-            for (int x=0; x<chSize.x(); x++) {
-              CctwIntVector3D iprelat(x,y,z);
-              for (int ox=0; ox<osx; ox++) {
-                CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
-                CctwDoubleVector3D xfmcoord = transform.forward(coords);
-                CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-                if (m_OutputData->containsPixel(pixels)) {
-                  int opchunk = m_OutputData->chunkContaining(pixels);
-                  CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
-
-                  if (opchunk != lastChunkIndex) {
-
-                    lastChunkIndex = opchunk;
-
-                    if (!outputChunks.contains(lastChunkIndex)) {
-                      //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
-                      //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
-                      //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
-
-                      CctwDataChunk *chunk =
-                          new CctwDataChunk(m_OutputData, lastChunkIndex,
-                                            tr("chunk-%1").arg(lastChunkIndex), NULL);
-
-                      if (chunk) {
-                        chunk->allocateData();
-                        chunk->allocateWeights();
-                      }
-
-                      outputChunks[lastChunkIndex] = chunk;
-                    }
-
-                    lastChunk = outputChunks[lastChunkIndex];
-                  }
-
-                  if (lastChunk) {
-                    int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
-                    int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
-
-                    double oval = lastChunk->data(ox, oy, oz);
-                    double owgt = lastChunk->weight(ox, oy, oz);
-                    double ival = inputChunk->data(ix, iy, iz);
-                    double iwgt = inputChunk->weight(ix, iy, iz);
-
-                    if (iwgt != 0) {
-                      lastChunk->setData(ox, oy, oz, oval+ival);
-                      lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    transformChunkData(chunkId, inputChunk, outputChunks);
 
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
@@ -221,7 +144,96 @@ void CctwTransformer::transformChunkNumber(int n)
       delete outputChunk;
     }
 
-    m_InputData->releaseChunk(n);
+    m_InputData->releaseChunk(chunkId);
+  }
+  else {
+    printMessage(tr("Could not read chunk: %1").arg(chunkId));
+    exit(1);
+  }
+}
+
+void CctwTransformer::transformChunkData(int chunkId,
+                                         CctwDataChunk *inputChunk,
+                                         QMap<int, CctwDataChunk*> &outputChunks)
+{
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(),
+                                           tr("transform-%1").arg(chunkId), NULL);
+
+  CctwDataChunk *lastChunk = NULL;
+
+  CctwIntVector3D chStart = inputChunk->chunkStart();
+  CctwIntVector3D chSize  = inputChunk->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  int lastChunkIndex = -1;
+
+  int osx = get_OversampleX();
+  int osy = get_OversampleY();
+  int osz = get_OversampleZ();
+
+  double osxstp = osx >= 1 ? 1.0/osx : 0;
+  double osystp = osy >= 1 ? 1.0/osy : 0;
+  double oszstp = osz >= 1 ? 1.0/osz : 0;
+
+  for (int z=0; z<chSize.z(); z++) {
+    for (int oz=0; oz<osz; oz++) {
+      for (int y=0; y<chSize.y(); y++) {
+        for (int oy=0; oy<osy; oy++) {
+          for (int x=0; x<chSize.x(); x++) {
+            CctwIntVector3D iprelat(x,y,z);
+            for (int ox=0; ox<osx; ox++) {
+              CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
+              CctwDoubleVector3D xfmcoord = transform.forward(coords);
+              CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+
+              if (m_OutputData->containsPixel(pixels)) {
+                int opchunk = m_OutputData->chunkContaining(pixels);
+                CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
+
+                if (opchunk != lastChunkIndex) {
+
+                  lastChunkIndex = opchunk;
+
+                  if (!outputChunks.contains(lastChunkIndex)) {
+                    //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
+                    //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
+                    //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
+
+                    CctwDataChunk *chunk =
+                        new CctwDataChunk(m_OutputData, lastChunkIndex,
+                                          tr("chunk-%1").arg(lastChunkIndex), NULL);
+
+                    if (chunk) {
+                      chunk->allocateData();
+                      chunk->allocateWeights();
+                    }
+
+                    outputChunks[lastChunkIndex] = chunk;
+                  }
+
+                  lastChunk = outputChunks[lastChunkIndex];
+                }
+
+                if (lastChunk) {
+                  int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
+                  int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
+
+                  double oval = lastChunk->data(ox, oy, oz);
+                  double owgt = lastChunk->weight(ox, oy, oz);
+                  double ival = inputChunk->data(ix, iy, iz);
+                  double iwgt = inputChunk->weight(ix, iy, iz);
+
+                  if (iwgt != 0) {
+                    lastChunk->setData(ox, oy, oz, oval+ival);
+                    lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
