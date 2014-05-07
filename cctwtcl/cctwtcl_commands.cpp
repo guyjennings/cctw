@@ -119,13 +119,13 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
   int rc;
   Tcl_WideInt input;
-  rc = Tcl_GetWideIntFromObj(interp, objv[2], &input);
+  rc = Tcl_GetWideIntFromObj(interp, objv[1], &input);
   if (rc != TCL_OK) {
     printf("chunk ptr must be an integer!\n");
     return TCL_ERROR;
   }
-  int chunk;
-  rc = Tcl_GetIntFromObj(interp, objv[2], &chunk);
+  int chunkIndex;
+  rc = Tcl_GetIntFromObj(interp, objv[2], &chunkIndex);
   if (rc != TCL_OK) {
     printf("chunk ptr must be an integer!\n");
     return TCL_ERROR;
@@ -136,10 +136,13 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   int chunkZ = 128;
   int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
 
+  QString chunkName = QString("chunk-%1").arg(chunkIndex);
+  CctwDataChunk dataChunk(NULL, chunkIndex, chunkName, NULL);
+  dataChunk.setBuffer((void*) input);
+
   Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
     /*  PSEUDO-CODE
-    CctwDataChunk *chunk = importChunk(input);
     QList<OutputItem> res = g_Application->transform(chunk);
     foreach(OutputItem item, res) {
       Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
