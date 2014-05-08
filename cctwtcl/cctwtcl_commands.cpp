@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 
+#include <QMap>
 #include <QScriptValue>
 #include <QString>
 #include "cctwtcl_commands.h"
@@ -30,6 +31,8 @@ int Cctwtcl_Initialize()
 
   g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
+
+
 
   g_Application = new CctwApplication(nargs, args);
   g_Application -> initialize(nargs, args);
@@ -117,6 +120,9 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
   TCL_ARGS(3, "usage: cctw_transform <chunk ptr> <chunk id>");
 
+  char* t = Tcl_GetString(objv[1]);
+  printf("arg 1: %s\n", t);
+
   int rc;
   Tcl_WideInt input;
   rc = Tcl_GetWideIntFromObj(interp, objv[1], &input);
@@ -141,20 +147,18 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   dataChunk.setBuffer((void*) input);
 
   Tcl_Obj *result = Tcl_NewListObj(0, NULL);
-  QMap<int, CctwDataChunk*> outputChunks;
-  CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
-  transformer.transformChunkData(chunkIndex, &dataChunk, outputChunks);
-
-    /*  PSEUDO-CODE
-    foreach(OutputItem item, res) {
-      Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
-
-      Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(item->mergeID()));
-      Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(item->dataPointer()));
-      Tcl_ListObjAppendElement(interp, entry, Tcl_NewLongObj(length));
-      Tcl_ListObjAppendElement(interp, result, item);
-    }
-    */
+  QMap<int,CctwDataChunk*> outputChunks;
+  // CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
+  g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
+  Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
+  for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
+  {
+    int outputChunkId          = i.key();
+    CctwDataChunk* outputChunk = i.value();
+    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(outputChunkId));
+    Tcl_ListObjAppendElement(interp, entry, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
+    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(length));
+  }
 
   Tcl_SetObjResult(interp, result);
 
