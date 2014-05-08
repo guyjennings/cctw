@@ -6,6 +6,7 @@
 .cproject
 .project
 .settings
+bin
 Makefile
 adlb.clog2
 ui_*.h
