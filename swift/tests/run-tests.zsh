@@ -32,10 +32,9 @@ export LD_LIBRARY_PATH=${CCTWTCL_DIR}
 
 TURBINE_WORKERS=${TURBINE_WORKERS:-2}
 
-declare CCTWTCL_DIR TURBINE_WORKERS
 print
 
-PROCS=$(( TURBINE_WORKERS + 2 ))
+PROCS=$(( TURBINE_WORKERS + 1 ))
 
 if [[ -z ${TURBINE_USER_LIB} ]]
 then
@@ -65,6 +64,7 @@ declare PWD
 for TEST in ${TESTS}
 do
   TEST=$( basename ${TEST} )
-  @ stc -u -I .. ${TEST}
-  @ turbine -n ${PROCS} ${TEST%.swift}.tcl
+  TEST=${TEST%.swift}
+  @ stc -u -I .. ${TEST}.swift
+  @ turbine -l -n ${PROCS} ${TEST}.tcl |& tee ${TEST}.out
 done
