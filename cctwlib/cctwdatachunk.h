@@ -40,6 +40,7 @@ public slots:
 
   CctwIntVector3D chunkStart();
   CctwIntVector3D chunkSize();
+  void setChunkSize(CctwIntVector3D size);
 
   void clearDependencies();
   void addDependency(int dep);

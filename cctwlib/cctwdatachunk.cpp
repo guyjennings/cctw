@@ -109,6 +109,11 @@ CctwIntVector3D CctwDataChunk::chunkSize()
   return m_ChunkSize;
 }
 
+void CctwDataChunk::setChunkSize(CctwIntVector3D size)
+{
+  m_ChunkSize = size;
+}
+
 int CctwDataChunk::allocateData()
 {
   int cksz = m_ChunkSize.volume();
