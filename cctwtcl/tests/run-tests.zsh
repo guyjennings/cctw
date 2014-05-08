@@ -1,10 +1,16 @@
 #!/bin/zsh -eu
 
-# Run from cctw/cctwtcl/tests
+# RUN-TESTS.ZSH (Tcl)
+
+# usage: run-tests.zsh [-m] <tests>*
+#  -m:    Runs make first
+#  tests: Runs each given test file.  If none, run all tests.
 
 TEST_DIR=$(    cd $( dirname $0 )   ; /bin/pwd )
 CCTWTCL_DIR=$( cd ${TEST_DIR}/..    ; /bin/pwd )
 CCTW_DIR=$(    cd ${CCTWTCL_DIR}/.. ; /bin/pwd )
+
+setopt PUSHD_SILENT
 
 MAKE=""
 zparseopts -D m=MAKE
@@ -15,7 +21,6 @@ then
   popd
 fi
 
-setopt PUSHD_SILENT
 pushd ${CCTWTCL_DIR} 
 if [[ ! -e libCctwTcl.so ]] 
 then 
