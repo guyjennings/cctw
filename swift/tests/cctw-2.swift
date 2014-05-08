@@ -1,6 +1,6 @@
 
 /**
-   Use turbine -n 4 to get 2 workers
+   CCTW TEST 2
 */
 
 import blob;
