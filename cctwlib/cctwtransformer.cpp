@@ -588,27 +588,58 @@ void CctwTransformer::dummyTransform3()
 
   printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
 
-//  qSort(inputChunks.begin(), inputChunks.end());
+  qSort(inputChunks.begin(), inputChunks.end());
+
+  int minMaxHeld;
 
   if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count());
+    m_Application->set_ProgressLimit(inputChunks.count()*10);
   }
 
-  foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
+  if (inputChunks.count() > 10) {
+    for (int i=0; i<1000; i++) {
+      int s1, s2;
+      if (i>0) {
+        s1 = qrand()%inputChunks.count();
+        s2 = qrand()%inputChunks.count();
 
-    if (m_Application) {
-      m_Application->addWorkOutstanding(1);
+        int c1 = inputChunks[s1];
+        int c2 = inputChunks[s2];
+
+        inputChunks[s1] = c2;
+        inputChunks[s2] = c1;
+      }
+
+      m_InputData  -> clearMergeCounters();
+      m_OutputData -> clearMergeCounters();
+
+      foreach(int ckidx, inputChunks) {
+        m_MergeCounter.fetchAndAddOrdered(1);
+
+        if (m_Application) {
+          m_Application->addWorkOutstanding(1);
+        }
+
+        //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+        runDummyTransformChunkNumber(ckidx);
+      }
+
+      int maxHeld = m_OutputData->get_ChunksHeldMax();
+
+      if (i==0 || maxHeld < minMaxHeld) {
+        minMaxHeld = maxHeld;
+      } else {
+
+      }
+
+      printMessage(tr("Iteration %1 : max %2").arg(i).arg(minMaxHeld));
+
+      while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+        CctwThread::msleep(10);
+        m_Application->processEvents();
+      }
     }
-
-    //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
-
-    runDummyTransformChunkNumber(ckidx);
-  }
-
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
