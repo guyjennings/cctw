@@ -145,6 +145,8 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   QString chunkName = QString("chunk-%1").arg(chunkIndex);
   CctwDataChunk dataChunk(NULL, chunkIndex, chunkName, NULL);
   dataChunk.setBuffer((void*) input);
+  CctwIntVector3D chunkSize(chunkX, chunkY, chunkZ);
+  dataChunk.setChunkSize(chunkSize);
 
   Tcl_Obj *result = Tcl_NewListObj(0, NULL);
   QMap<int,CctwDataChunk*> outputChunks;
