@@ -14,7 +14,8 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
   m_Normalized(0),
   m_DataWritten(0),
   m_WeightsWritten(0),
-  m_MergeCounter(0)
+  m_MergeCounter(0),
+  m_OwnData(true)
 {
 }
 
