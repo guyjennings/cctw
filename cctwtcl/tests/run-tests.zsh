@@ -46,7 +46,8 @@ VALGRIND=${VALGRIND:-}
 for TEST in ${TESTS[@]}
 do
   TEST=$( basename ${TEST} )
+  TEST=${TEST%.tcl}
   echo running test: ${TEST}
-  ${VALGRIND} tclsh ${TEST}
+  ${VALGRIND} tclsh ${TEST}.tcl |& tee ${TEST}.out
   echo
 done
