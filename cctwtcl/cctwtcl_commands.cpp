@@ -153,6 +153,7 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   // CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
   g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
   Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
+  printf("products: %i\n", outputChunks.size());
   for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
   {
     int outputChunkId          = i.key();
