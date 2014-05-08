@@ -143,7 +143,7 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
 
   QString chunkName = QString("chunk-%1").arg(chunkIndex);
-  CctwDataChunk dataChunk(NULL, chunkIndex, chunkName, NULL);
+  CctwDataChunk dataChunk(g_Application->m_InputData, chunkIndex, chunkName, NULL);
   dataChunk.setBuffer((void*) input);
   CctwIntVector3D chunkSize(chunkX, chunkY, chunkZ);
   dataChunk.setChunkSize(chunkSize);
