@@ -38,10 +38,10 @@ CctwChunkedData::CctwChunkedData
     m_TransformOptions(0),
     m_FileId(-1),
     m_DatasetId(-1),
-    m_DataspaceId(-1)
+    m_DataspaceId(-1),
+    m_IsNeXus(false)
 {
   allocateChunks();
-  isNeXus = false;
   connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
 }
 
@@ -444,7 +444,7 @@ void CctwChunkedData::closeInputFile()
 
 //  printMessage("About to close input file");
 
-  if (isNeXus)
+  if (m_IsNeXus)
     closeInputNeXusFile();
 
   if (m_DataspaceId >= 0) {
@@ -469,7 +469,7 @@ bool CctwChunkedData::openInputNeXusFile()
 {
   bool res = true;
 
-  isNeXus = true;
+  m_IsNeXus = true;
 
   QString fileName = get_DataFileName();
   QFileInfo f(fileName);
@@ -482,7 +482,7 @@ bool CctwChunkedData::openInputNeXusFile()
     res = false;
   }
 
-  neXusFile = new NeXus::File(qPrintable(fileName));
+  m_NeXusFile = new NeXus::File(qPrintable(fileName));
   printMessage(tr("NeXus file opened successfully: %1").arg(fileName));
 
   return res;
@@ -490,7 +490,7 @@ bool CctwChunkedData::openInputNeXusFile()
 
 void CctwChunkedData::closeInputNeXusFile()
 {
-  neXusFile->close();
+  m_NeXusFile->close();
 }
 
 #else

@@ -93,9 +93,9 @@ private slots:
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
   /** Is this a NeXus file? */
-  bool                 isNeXus;
+  bool                 m_IsNeXus;
 #if NEXUS_ENABLED == 1
-  NeXus::File          *neXusFile;
+  NeXus::File          *m_NeXusFile;
 #endif
 
 private:
