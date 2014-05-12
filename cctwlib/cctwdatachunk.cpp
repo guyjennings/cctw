@@ -21,6 +21,7 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
 
 CctwIntVector3D CctwDataChunk::calculateChunkStart()
 {
+  printMessage(tr("calculateChunkStart(): %1").arg(m_ChunkIndex));
   if (m_Data) {
     return m_Data -> chunkStart(m_ChunkIndex);
   } else {
@@ -103,6 +104,12 @@ bool CctwDataChunk::weightsAllocated() const
 CctwIntVector3D CctwDataChunk::chunkStart()
 {
   return m_ChunkStart;
+}
+
+void CctwDataChunk::resetChunkStart()
+{
+  m_ChunkStart = calculateChunkStart();
+  qDebug("CctwDataChunk::resetChunkStart(): %s", qPrintable(m_ChunkStart.toString()));
 }
 
 CctwIntVector3D CctwDataChunk::chunkSize()
