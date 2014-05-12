@@ -123,6 +123,7 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   char* t = Tcl_GetString(objv[1]);
   printf("arg 1: %s\n", t);
 
+  // Retrieve inputs from Tcl
   int rc;
   int chunkIndex;
   rc = Tcl_GetIntFromObj(interp, objv[1], &chunkIndex);
@@ -142,19 +143,29 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   int chunkZ = 128;
   int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
 
+  // Set up a ChunkedData
+  QString chunkDataName = QString("chunkdata-%1").arg(chunkIndex);
+  CctwChunkedData chunkData(g_Application, CctwIntVector3D(2048,2048,10),
+                            CctwIntVector3D(chunkX, chunkY, chunkZ),
+                            true, chunkDataName, NULL);
+
+  // Set up the input DataChunk
   QString chunkName = QString("chunk-%1").arg(chunkIndex);
-  CctwDataChunk dataChunk(NULL, chunkIndex, chunkName, NULL);
+  CctwDataChunk dataChunk(&chunkData, chunkIndex, chunkName, NULL);
   dataChunk.setBuffer((void*) inputPtr);
   CctwIntVector3D chunkSize(chunkX, chunkY, chunkZ);
   dataChunk.setChunkSize(chunkSize);
+  dataChunk.resetChunkStart();
 
+  // Perform the transform
+  QMap<int,CctwDataChunk*> outputChunks;
+  g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
+  printf("products: %i\n", outputChunks.size());
+
+  // Assemble the output Tcl objects
   Tcl_Obj *result          = Tcl_NewListObj(0, NULL);
   Tcl_Obj *outputIdsDict   = Tcl_NewDictObj();
   Tcl_Obj *outputBlobsDict = Tcl_NewDictObj();
-  QMap<int,CctwDataChunk*> outputChunks;
-  // CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
-  g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
-  printf("products: %i\n", outputChunks.size());
   int counter = 0;
   for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
   {
