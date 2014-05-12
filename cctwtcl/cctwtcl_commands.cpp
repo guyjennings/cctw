@@ -124,14 +124,14 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   printf("arg 1: %s\n", t);
 
   int rc;
-  Tcl_WideInt input;
-  rc = Tcl_GetWideIntFromObj(interp, objv[1], &input);
+  int chunkIndex;
+  rc = Tcl_GetIntFromObj(interp, objv[1], &chunkIndex);
   if (rc != TCL_OK) {
-    printf("chunk ptr must be an integer!\n");
+    printf("chunk index must be an integer!\n");
     return TCL_ERROR;
   }
-  int chunkIndex;
-  rc = Tcl_GetIntFromObj(interp, objv[2], &chunkIndex);
+  Tcl_WideInt inputPtr;
+  rc = Tcl_GetWideIntFromObj(interp, objv[2], &inputPtr);
   if (rc != TCL_OK) {
     printf("chunk ptr must be an integer!\n");
     return TCL_ERROR;
@@ -144,26 +144,44 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
   QString chunkName = QString("chunk-%1").arg(chunkIndex);
   CctwDataChunk dataChunk(NULL, chunkIndex, chunkName, NULL);
-  dataChunk.setBuffer((void*) input);
+  dataChunk.setBuffer((void*) inputPtr);
   CctwIntVector3D chunkSize(chunkX, chunkY, chunkZ);
   dataChunk.setChunkSize(chunkSize);
 
-  Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+  Tcl_Obj *result          = Tcl_NewListObj(0, NULL);
+  Tcl_Obj *outputIdsDict   = Tcl_NewDictObj();
+  Tcl_Obj *outputBlobsDict = Tcl_NewDictObj();
   QMap<int,CctwDataChunk*> outputChunks;
   // CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
   g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
-  Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
   printf("products: %i\n", outputChunks.size());
+  int counter = 0;
   for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
   {
     int outputChunkId          = i.key();
     CctwDataChunk* outputChunk = i.value();
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(outputChunkId));
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(length));
+    Tcl_DictObjPut(interp, outputIdsDict,   Tcl_NewIntObj(counter), Tcl_NewIntObj(outputChunkId));
+    Tcl_Obj *blob = Tcl_NewListObj(0, NULL);
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(length));
+    Tcl_DictObjPut(interp, outputBlobsDict, Tcl_NewIntObj(counter), blob);
+    counter++;
   }
 
-  Tcl_SetObjResult(interp, result);
+//  int dummies = 3;
+//  for (int i = 0; i < dummies; i++)
+//  {
+//    void *p = malloc(length);
+//    memset(p, i+1, 1024);
+//    Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
+//    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(100+i+1));
+//    Tcl_ListObjAppendElement(interp, entry, Tcl_NewWideIntObj((Tcl_WideInt) p));
+//    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(length));
+//    Tcl_ListObjAppendElement(interp, result, entry);
+//  }
 
+  Tcl_ListObjAppendElement(interp, result, outputIdsDict);
+  Tcl_ListObjAppendElement(interp, result, outputBlobsDict);
+  Tcl_SetObjResult(interp, result);
   return TCL_OK;
 }
