@@ -39,6 +39,9 @@ public slots:
   void transformChunkData(int chunkId,
                           CctwDataChunk *inputChunk,
                           QMap<int, CctwDataChunk*> &outputChunks);
+  void transformChunkData2(int chunkId,
+                           CctwDataChunk *inputChunk,
+                           QMap<int, CctwChunkedData::MergeDataType*> &outputChunks);
   void dummyTransformChunkNumber(int n);
 
   void clearDependencies();

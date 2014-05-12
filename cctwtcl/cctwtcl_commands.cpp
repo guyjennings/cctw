@@ -32,8 +32,6 @@ int Cctwtcl_Initialize()
   g_DebugLevel            = QSharedPointer<CctwDebug>(new CctwDebug());
   gDocumentationDirectory = new QcepDocumentationDictionary();
 
-
-
   g_Application = new CctwApplication(nargs, args);
   g_Application -> initialize(nargs, args);
 
@@ -89,23 +87,15 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
   int chunkY = 128;
   int chunkZ = 128;
 
-  void *pointer = NULL;
   int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
 
-  QObject *parent = NULL;
-  CctwIntVector3D dataSize(2048,2048,10);
-  CctwIntVector3D chunkSize(128,128,128);
-  CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
-  data.set_DataFileName(path);
-  data.set_DataSetName(dataset);
-
   printf("readChunk()...\n");
-  CctwDataChunk *chunk = data.readChunk(chunkId);
+  CctwChunkedData::MergeDataType *chunk =
+      CctwChunkedData::readChunk(QString(path), QString(dataset), chunkId);
   printf("dataPointer()...\n");
-  pointer = chunk->dataPointer();
 
   Tcl_Obj *res = Tcl_NewListObj(0, NULL);
-  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)pointer));
+  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)chunk));
   Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
   Tcl_SetObjResult(interp, res);
 
@@ -158,8 +148,8 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   dataChunk.resetChunkStart();
 
   // Perform the transform
-  QMap<int,CctwDataChunk*> outputChunks;
-  g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
+  QMap<int,CctwChunkedData::MergeDataType*> outputChunks;
+  g_Application->m_Transformer->transformChunkData2(chunkIndex, &dataChunk, outputChunks);
   printf("products: %i\n", outputChunks.size());
 
   // Assemble the output Tcl objects
@@ -167,13 +157,13 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   Tcl_Obj *outputIdsDict   = Tcl_NewDictObj();
   Tcl_Obj *outputBlobsDict = Tcl_NewDictObj();
   int counter = 0;
-  for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
+  for (QMap<int,CctwChunkedData::MergeDataType*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
   {
     int outputChunkId          = i.key();
-    CctwDataChunk* outputChunk = i.value();
+    CctwChunkedData::MergeDataType* outputChunk = i.value();
     Tcl_DictObjPut(interp, outputIdsDict,   Tcl_NewIntObj(counter), Tcl_NewIntObj(outputChunkId));
     Tcl_Obj *blob = Tcl_NewListObj(0, NULL);
-    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk));
     Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(length));
     Tcl_DictObjPut(interp, outputBlobsDict, Tcl_NewIntObj(counter), blob);
     counter++;
