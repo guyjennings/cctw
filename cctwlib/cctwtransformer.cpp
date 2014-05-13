@@ -1,11 +1,9 @@
 #include "cctwtransformer.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "cctwmatrix3x3.h"
 #include "cctwapplication.h"
-#include "cctwchunkquick.h"
 #include <QtConcurrentRun>
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
@@ -183,10 +181,6 @@ void CctwTransformer::transformChunkData(int chunkId,
   double osystp = osy >= 1 ? 1.0/osy : 0;
   double oszstp = osz >= 1 ? 1.0/osz : 0;
 
-  qDebug("input chunk size: %s\n", qPrintable(chSize.toString()));
-  qDebug("output chunk size: %s\n", qPrintable(m_OutputData->chunkSize().toString()));
-  m_OutputData->setDimensions(CctwIntVector3D(2048,2048,2048));
-
   for (int z=0; z<chSize.z(); z++) {
     for (int oz=0; oz<osz; oz++) {
       for (int y=0; y<chSize.y(); y++) {
@@ -197,9 +191,6 @@ void CctwTransformer::transformChunkData(int chunkId,
               CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
               CctwDoubleVector3D xfmcoord = transform.forward(coords);
               CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-              printMessage(tr("m_OutputData: %1").arg(m_OutputData->dimensions().toString()));
-              printMessage(tr("pixels:       %1").arg(pixels      .toString()));
 
               if (m_OutputData->containsPixel(pixels)) {
                 int opchunk = m_OutputData->chunkContaining(pixels);
@@ -243,10 +234,6 @@ void CctwTransformer::transformChunkData(int chunkId,
                     lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
                   }
                 }
-                else {
-                  printMessage("lastChunk not allocated!");
-                  exit(1);
-                }
               }
             }
           }
@@ -256,50 +243,6 @@ void CctwTransformer::transformChunkData(int chunkId,
   }
   qDebug("Transform chunk data: %i: done. Time %0.3f s",
                               chunkId,       time.elapsed()/1000.0);
-}
-
-void CctwTransformer::transformChunkData2(int chunkId,
-                                         CctwDataChunk *inputChunk,
-                                         QMap<int, CctwChunkedData::MergeDataType*> &outputChunks)
-{
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(),
-                                           tr("transform-%1").arg(chunkId), NULL);
-
-  CctwIntVector3D inputChunkStart = inputChunk->chunkStart();
-  CctwIntVector3D inputChunkSize  = inputChunk->chunkSize();
-  CctwDoubleVector3D dblStart(inputChunkStart.x(), inputChunkStart.y(), inputChunkStart.z());
-
-  CctwIntVector3D outputChunkCount(16,16,16);
-  CctwIntVector3D outputChunkSize(128,128,128);
-
-  int outputChunkId = -1;
-
-  qDebug("input chunk size:  %s\n", qPrintable(inputChunkSize.toString()));
-  qDebug("output chunk size: %s\n", qPrintable(outputChunkSize.toString()));
-
-  for (int z=0; z<inputChunkSize.z(); z++) {
-    for (int y=0; y<inputChunkSize.y(); y++) {
-      for (int x=0; x<inputChunkSize.x(); x++) {
-        CctwIntVector3D inputPixel(x, y, z);
-        CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x, y, z);
-        CctwDoubleVector3D xfmcoord = transform.forward(coords);
-        CctwIntVector3D outputPixel(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-        outputChunkId = CctwChunkedData::chunkContaining(outputChunkCount, outputChunkSize, outputPixel);
-        CctwChunkedData::MergeDataType *chunk = NULL;
-        if (!outputChunks.contains(outputChunkId)) {
-          chunk = makeChunk(outputChunkSize);
-          outputChunks[outputChunkId] = chunk;
-        }
-
-        CctwIntVector3D outputChunkStart = CctwChunkedData::chunkStart(outputChunkSize, outputChunkId);
-        CctwIntVector3D inputPixelRelative  = inputPixel  - inputChunkStart;
-        CctwIntVector3D outputPixelRelative = outputPixel - outputChunkStart;
-        int ix = inputPixelRelative.x(),  iy = inputPixelRelative.y(),  iz = inputPixelRelative.z();
-        int ox = outputPixelRelative.x(), oy = outputPixelRelative.y(), oz = outputPixelRelative.z();
-        double value = inputChunk->data(ix, iy, iz);
-        assignToChunk(outputChunkSize, ox, oy, oz, value, chunk);
-      }}}
 }
 
 void CctwTransformer::transform()

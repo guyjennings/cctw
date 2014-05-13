@@ -55,19 +55,14 @@ public slots:
   virtual void        setDataset(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
-  static bool         containsChunk(CctwIntVector3D chunkCount, int ix, int iy, int iz);
 
   CctwIntVector3D     chunkStart(int n);    // Return pixel coords of start of chunk chunkIdx
-  static CctwIntVector3D chunkStart(CctwIntVector3D chunkSize, int n);
   int                 chunkContaining(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
-  static int          chunkContaining(CctwIntVector3D chunkCount, CctwIntVector3D chunkSize, CctwIntVector3D pixelCoord);
   int                 chunkContaining(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
   CctwIntVector3D     chunkCount() const;
 
   CctwIntVector3D     chunkIndexFromNumber(int n);
-  static CctwIntVector3D chunkIndexFromNumber(CctwIntVector3D chunkCount, int n);
   int                 chunkNumberFromIndex(CctwIntVector3D chunkIdx);
-  static int          chunkNumberFromIndex(CctwIntVector3D chunkCount, CctwIntVector3D chunkIdx);
 
   void                clearDependencies();
   void                addDependency(int f, int t);
@@ -76,7 +71,6 @@ public slots:
   CctwDataChunk      *chunk(CctwIntVector3D idx);
 
   CctwDataChunk      *readChunk(int n);
-  static CctwChunkedData::MergeDataType *readChunk(QString fileName, QString datasetName, int n);
   void                writeChunk(int n);
   void                releaseChunk(int n);
   void                normalizeChunk(int n);
@@ -88,12 +82,6 @@ public slots:
 
   bool                openOutputFile();
   bool                openInputFile();
-  static bool         openInputFile(QString fileName, QString dataSetName,
-                                    hid_t *result_fileId,
-                                    hid_t *result_datasetId,
-                                    hid_t *result_dataspaceId,
-                                    CctwIntVector3D &dimensions,
-                                    CctwIntVector3D &chunkSize);
   bool                openInputNeXusFile();
   void                closeOutputFile();
   void                closeInputFile();
@@ -104,6 +92,8 @@ private slots:
 
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
+  /** Is this a NeXus file? */
+  bool                 m_IsNeXus;
 #if NEXUS_ENABLED == 1
   NeXus::File          *m_NeXusFile;
 #endif
@@ -153,9 +143,6 @@ private:
   hid_t               m_DataspaceId;
 
   static QMutex       m_FileAccessMutex;
-  /** Is this a NeXus file? */
-  bool                 m_IsNeXus;
-
 };
 
 #endif // CCTWCHUNKEDDATA_H

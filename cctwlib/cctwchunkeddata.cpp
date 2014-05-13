@@ -1,7 +1,6 @@
 #include "cctwchunkeddata.h"
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
-#include "cctwchunkquick.h"
 #include <QDir>
 
 #if QT_VERSION >= 0x050000
@@ -48,7 +47,7 @@ CctwChunkedData::CctwChunkedData
 
 void CctwChunkedData::allocateChunks()
 {
-  // printMessage("Allocate chunks");
+//  printMessage("Allocate chunks");
 
   int n = chunkCount().volume();
 
@@ -222,16 +221,6 @@ CctwIntVector3D     CctwChunkedData::chunkStart(int n)
   return m_ChunkSize*chunkIdx;
 }
 
-// static
-CctwIntVector3D CctwChunkedData::chunkStart(CctwIntVector3D chunkSize, int n)
-{
-  // Return pixel coords of start of chunk chunkIdx
-
-  CctwIntVector3D chunkIdx = chunkIndexFromNumber(chunkSize, n);
-
-  return chunkSize*chunkIdx;
-}
-
 int     CctwChunkedData::chunkContaining(CctwIntVector3D pixelCoord)
 {
   // Return index of chunk containing given pixel
@@ -239,16 +228,6 @@ int     CctwChunkedData::chunkContaining(CctwIntVector3D pixelCoord)
   CctwIntVector3D res = pixelCoord / m_ChunkSize;
 
   return chunkNumberFromIndex(res);
-}
-
-// static
-int CctwChunkedData::chunkContaining(CctwIntVector3D chunkCount, CctwIntVector3D chunkSize, CctwIntVector3D pixelCoord)
-{
-  // Return index of chunk containing given pixel
-
-  CctwIntVector3D res = pixelCoord / chunkSize;
-
-  return chunkNumberFromIndex(chunkCount, res);
 }
 
 int     CctwChunkedData::chunkContaining(CctwDoubleVector3D fracPixelCoord)
@@ -270,14 +249,6 @@ bool CctwChunkedData::containsChunk(int ix, int iy, int iz)
          iz>=0 && iz<m_ChunkCount.z();
 }
 
-// static
-bool CctwChunkedData::containsChunk(CctwIntVector3D chunkCount, int ix, int iy, int iz)
-{
-  return ix>=0 && ix<chunkCount.x() &&
-         iy>=0 && iy<chunkCount.y() &&
-         iz>=0 && iz<chunkCount.z();
-}
-
 int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
 {
   if (containsChunk(chunkIdx.x(), chunkIdx.y(), chunkIdx.z())) {
@@ -291,50 +262,12 @@ int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
   }
 }
 
-// static
-int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkCount, CctwIntVector3D chunkIdx)
-{
-  if (containsChunk(chunkCount, chunkIdx.x(), chunkIdx.y(), chunkIdx.z())) {
-    int xstride = 1;
-    int ystride = chunkCount.x();
-    int zstride = chunkCount.x()*chunkCount.y();
-
-    return chunkIdx.x()*xstride + chunkIdx.y()*ystride + chunkIdx.z()*zstride;
-  } else {
-    return -1;
-  }
-}
-
 CctwIntVector3D CctwChunkedData::chunkIndexFromNumber(int n)
 {
   if (n>=0 && n<m_ChunkCount.volume()) {
     int xstride = 1;
     int ystride = m_ChunkCount.x();
     int zstride = m_ChunkCount.x()*m_ChunkCount.y();
-
-    int z = n / zstride;
-
-    n %= zstride;
-
-    int y = n / ystride;
-
-    n %= ystride;
-
-    int x = n / xstride;
-
-    return CctwIntVector3D(x,y,z);
-  } else {
-    return CctwIntVector3D(-1,-1,-1);
-  }
-}
-
-// static
-CctwIntVector3D CctwChunkedData::chunkIndexFromNumber(CctwIntVector3D chunkCount, int n)
-{
-  if (n>=0 && n<chunkCount.volume()) {
-    int xstride = 1;
-    int ystride = chunkCount.x();
-    int zstride = chunkCount.x()*chunkCount.y();
 
     int z = n / zstride;
 
@@ -504,86 +437,6 @@ bool CctwChunkedData::openInputFile()
   }
   return true;
 }
-
-// static
-bool CctwChunkedData::openInputFile(QString fileName, QString dataSetName,
-                                    hid_t *result_fileId,
-                                    hid_t *result_datasetId,
-                                    hid_t *result_dataspaceId,
-                                    CctwIntVector3D &dimensions,
-                                    CctwIntVector3D &chunkSize)
-{
-  qDebug("About to open input file: %s dataset: %s",
-         qPrintable(fileName), qPrintable(dataSetName));
-
-  QFileInfo f(fileName);
-
-  hid_t fileId = -1;
-  hid_t dsetId = -1;
-  hid_t dspcId = -1;
-  hid_t plist  = -1;
-
-  try
-  {
-    if (!f.exists())
-      throw tr("File %1 does not exist").arg(fileName);
-    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
-      throw tr("File %1 exists but is not an hdf file").arg(fileName);
-
-    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
-    if (fileId < 0)
-      throw tr("File %1 could not be opened").arg(fileName);
-
-    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
-    if (dsetId <= 0)
-      throw tr("Could not open dataset!");
-
-    dspcId = H5Dget_space(dsetId);
-    if (dspcId < 0)
-      throw tr("Could not get dataspace of existing dataset");
-
-    hsize_t dims[3];
-    int ndims = H5Sget_simple_extent_ndims(dspcId);
-    if (ndims != 3)
-      throw tr("Dataspace is not 3-dimensional");
-
-    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
-    if (ndims2 != 3)
-      throw tr("Could not get dataspace dimensions");
-
-    dimensions = CctwIntVector3D(dims[2], dims[1], dims[0]);
-    plist = H5Dget_create_plist(dsetId);
-
-    if (plist < 0)
-      throw tr("Could not get dataset create plist");
-
-    hsize_t cksz[3];
-    if (H5Pget_chunk(plist, 3, cksz) < 0) {
-      qWarning("WARNING: Could not get dataset chunk size");
-      chunkSize = CctwIntVector3D(0,0,0);
-    } else {
-      printf("chunk size is: %llu %llu %llu\n", cksz[2], cksz[1], cksz[0]);
-      chunkSize = CctwIntVector3D(cksz[2], cksz[1], cksz[0]);
-    }
-  }
-  catch (QString &msg )
-  {
-    qWarning("WARNING: Anomaly in CctwChunkedData::openInputFile(): %s",
-             qPrintable(fileName));
-    if (dspcId >= 0) H5Sclose(dspcId);
-    if (dsetId >= 0) H5Dclose(dsetId);
-    if (fileId >= 0) H5Fclose(fileId);
-    return false;
-  }
-
-  *result_fileId      = fileId;
-  *result_datasetId   = dsetId;
-  *result_dataspaceId = dspcId;
-  qDebug("openInputFile(): OK.");
-
-  return true;
-}
-
 
 void CctwChunkedData::closeInputFile()
 {
@@ -956,61 +809,6 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 
   return chk;
 }
-
-// static
-CctwChunkedData::MergeDataType*
-CctwChunkedData::readChunk(QString fileName, QString datasetName,
-                           int n)
-{
-  hid_t fileId, datasetId, dataspaceId;
-  CctwIntVector3D dimensions;
-  CctwIntVector3D chunkSize;
-  bool rc = openInputFile(fileName, datasetName, &fileId, &datasetId, &dataspaceId,
-                          dimensions, chunkSize);
-  if (!rc) {
-    qWarning("failed to open: %s", qPrintable(fileName));
-    return NULL;
-  }
-
-  hid_t memspace_id = -1;
-  hsize_t offset[3], count[3], stride[3], block[3];
-
-  CctwIntVector3D start = CctwChunkedData::chunkStart(chunkSize, n);
-  count[0] = chunkSize.z();
-  count[1] = chunkSize.y();
-  count[2] = chunkSize.x();
-
-  stride[0] = 1;
-  stride[1] = 1;
-  stride[2] = 1;
-
-  block[0] = 1;
-  block[1] = 1;
-  block[2] = 1;
-
-  offset[0] = start.z();
-  offset[1] = start.y();
-  offset[2] = start.x();
-
-  memspace_id   = H5Screate_simple(3, count, NULL);
-  herr_t selerr = H5Sselect_hyperslab(dataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-  if (selerr < 0) {
-    qFatal("ERROR: select_hyperslab failed!");
-    exit(1);
-  }
-
-  qDebug("readChunk: makeChunk: %s", qPrintable(chunkSize.toString()));
-  CctwChunkedData::MergeDataType *data = makeChunk(chunkSize);
-  herr_t rderr  = H5Dread(datasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, dataspaceId, H5P_DEFAULT, data);
-  if (rderr < 0) {
-    qFatal("Error reading chunk");
-    exit(1);
-  }
-
-  H5Sclose(memspace_id);
-  return data;
-}
-
 
 void CctwChunkedData::writeChunk(int n)
 {
