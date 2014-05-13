@@ -39,6 +39,7 @@ public slots:
   CctwChunkedData::MergeDataType *weightsPointer();
 
   CctwIntVector3D chunkStart();
+  void resetChunkStart();
   CctwIntVector3D chunkSize();
   void setChunkSize(CctwIntVector3D size);
 

@@ -68,44 +68,33 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
 
 int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
-  // cctw_input <input_data_path> <input_chunk_id> --> <input_data_blob>
+  // cctw_input <input_chunk_id> --> <input_data_blob>
   // Read a blob of input data from the file system, perform any masking and normalization needed
   // returns a pair { <pointer> <length> }
 
-  TCL_ARGS(4, "usage: cctw_input <input_path> <dataset> <chunkid>");
+  TCL_ARGS(2, "usage: cctw_input <chunkid>");
 
   int chunkId = -1;
-  char *path    = Tcl_GetString(objv[1]);
-  char *dataset = Tcl_GetString(objv[2]);
 
   int rc;
-  rc = Tcl_GetIntFromObj(interp, objv[3], &chunkId);
+  rc = Tcl_GetIntFromObj(interp, objv[1], &chunkId);
   if (rc != TCL_OK) {
-    printf("chunkid must be an integer!");
+    Tcl_SetResult(interp, "chunkid must be an integer!\n", TCL_STATIC);
     return TCL_ERROR;
   }
 
-  int chunkX = 128;
-  int chunkY = 128;
-  int chunkZ = 128;
+  CctwDataChunk *chunk = g_Application->m_InputData->readChunk(chunkId);
 
-  void *pointer = NULL;
-  int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
+  if (chunk == NULL) {
+    Tcl_SetResult(interp, "input chunk does not exist\n", TCL_STATIC);
+    return TCL_ERROR;
+  }
 
-  QObject *parent = NULL;
-  CctwIntVector3D dataSize(2048,2048,10);
-  CctwIntVector3D chunkSize(128,128,128);
-  CctwChunkedData data(g_Application, dataSize, chunkSize, true, "tcl_chunk", parent);
-  data.set_DataFileName(path);
-  data.set_DataSetName(dataset);
-
-  printf("readChunk()...\n");
-  CctwDataChunk *chunk = data.readChunk(chunkId);
-  printf("dataPointer()...\n");
-  pointer = chunk->dataPointer();
+  int length = chunk->chunkSize().volume()*sizeof(CctwChunkedData::MergeDataType);
 
   Tcl_Obj *res = Tcl_NewListObj(0, NULL);
-  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)pointer));
+  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)chunk->dataPointer()));
+  Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)chunk->weightsPointer()));
   Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
   Tcl_SetObjResult(interp, res);
 
@@ -116,54 +105,48 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 {
   // cctw_transform <input_data_pointer>  --> a list of outputs
   // Transform a blob of input data into a list of intermediate blobs
-  // returns a list of triples { { <merge ID> <pointer> <length> }... }
+  // returns a list of lists { { <merge ID> <data-pointer> <weights-pointer> <length> }... }
 
-  TCL_ARGS(3, "usage: cctw_transform <chunk ptr> <chunk id>");
-
-  char* t = Tcl_GetString(objv[1]);
-  printf("arg 1: %s\n", t);
+  TCL_ARGS(2, "usage: cctw_transform <chunk id>");
 
   int rc;
-  Tcl_WideInt input;
-  rc = Tcl_GetWideIntFromObj(interp, objv[1], &input);
-  if (rc != TCL_OK) {
-    printf("chunk ptr must be an integer!\n");
-    return TCL_ERROR;
-  }
   int chunkIndex;
-  rc = Tcl_GetIntFromObj(interp, objv[2], &chunkIndex);
+  rc = Tcl_GetIntFromObj(interp, objv[1], &chunkIndex);
   if (rc != TCL_OK) {
-    printf("chunk ptr must be an integer!\n");
+    Tcl_SetResult(interp, "chunk index must be an integer!\n", TCL_STATIC);
     return TCL_ERROR;
   }
 
-  int chunkX = 128;
-  int chunkY = 128;
-  int chunkZ = 128;
-  int length = chunkX*chunkY*chunkZ*sizeof(CctwChunkedData::MergeDataType);
+  CctwDataChunk *chunkData = g_Application->m_InputData->readChunk(chunkIndex);
 
-  QString chunkName = QString("chunk-%1").arg(chunkIndex);
-  CctwDataChunk dataChunk(g_Application->m_InputData, chunkIndex, chunkName, NULL);
-  dataChunk.setBuffer((void*) input);
-  CctwIntVector3D chunkSize(chunkX, chunkY, chunkZ);
-  dataChunk.setChunkSize(chunkSize);
+  if (chunkData == NULL) {
+    Tcl_SetResult(interp, "input chunk is not present\n", TCL_STATIC);
+    return TCL_ERROR;
+  }
 
-  Tcl_Obj *result = Tcl_NewListObj(0, NULL);
+  CctwIntVector3D cksz = chunkData->chunkSize();
+  int             cklen = cksz.volume();
+
+  // Perform the transform
   QMap<int,CctwDataChunk*> outputChunks;
-  // CctwTransformer transformer(g_Application, NULL, NULL, NULL, "transformer", g_Application);
-  g_Application->m_Transformer->transformChunkData(chunkIndex, &dataChunk, outputChunks);
-  Tcl_Obj *entry = Tcl_NewListObj(0, NULL);
+
+  g_Application->m_Transformer->transformChunkData(chunkIndex, chunkData, outputChunks);
+
   printf("products: %i\n", outputChunks.size());
-  for (QMap<int,CctwDataChunk*> ::iterator i = outputChunks.begin(); i != outputChunks.end(); ++i)
+
+  // Assemble the output Tcl objects
+  Tcl_Obj *result          = Tcl_NewListObj(0, NULL);
+
+  foreach (CctwDataChunk *outputChunk, outputChunks)
   {
-    int outputChunkId          = i.key();
-    CctwDataChunk* outputChunk = i.value();
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(outputChunkId));
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
-    Tcl_ListObjAppendElement(interp, entry, Tcl_NewIntObj(length));
+    Tcl_Obj *blob = Tcl_NewListObj(0, NULL);
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(outputChunk->index()));
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->weightsPointer()));
+    Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(outputChunk->chunkSize().volume()));
+    Tcl_ListObjAppendElement(interp, result, blob);
   }
 
   Tcl_SetObjResult(interp, result);
-
   return TCL_OK;
 }
