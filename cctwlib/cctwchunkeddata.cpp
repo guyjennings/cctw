@@ -327,6 +327,20 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
   }
 }
 
+void CctwChunkedData::releaseChunk(int n)
+{
+  if (n >= 0 && n < m_DataChunks.count()) {
+    QcepMutexLocker lock(__FILE__, __LINE__, &m_ChunkLock);
+
+    CctwDataChunk *chunk = m_DataChunks[n];
+
+    if (chunk) {
+      delete chunk;
+      m_DataChunks[n] = NULL;
+    }
+  }
+}
+
 CctwDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
 {
   return chunk(chunkNumberFromIndex(idx));
@@ -892,18 +906,6 @@ void CctwChunkedData::writeChunk(int n)
     }
 
     releaseChunk(n);
-  }
-}
-
-void CctwChunkedData::releaseChunk(int n)
-{
-//  printMessage(tr("CctwChunkedData::releaseChunk(%1)").arg(n));
-
-  CctwDataChunk *chk = chunk(n);
-
-  if (chk) {
-    chk->deallocateData();
-    chk->deallocateWeights();
   }
 }
 
