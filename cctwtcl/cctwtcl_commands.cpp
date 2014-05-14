@@ -157,6 +157,8 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
     Tcl_ListObjAppendElement(interp, result, blob);
   }
 
+  g_Application->m_InputData->releaseChunk(chunkIndex);
+
   Tcl_SetObjResult(interp, result);
   return TCL_OK;
 }
