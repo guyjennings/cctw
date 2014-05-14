@@ -251,11 +251,13 @@ CctwChunkedData::MergeDataType *CctwDataChunk::allocateBuffer()
 //  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
 //               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
 
-  CctwChunkedData::MergeDataType *res = new CctwChunkedData::MergeDataType[cksz];
+//  CctwChunkedData::MergeDataType *res = new CctwChunkedData::MergeDataType[cksz];
 
-  for (int i=0; i<cksz; i++) {
-    res[i] = 0;
-  }
+//  for (int i=0; i<cksz; i++) {
+//    res[i] = 0;
+//  }
+
+  CctwChunkedData::MergeDataType *res = (CctwChunkedData::MergeDataType*) calloc(sizeof(CctwChunkedData::MergeDataType), cksz);
 
   return res;
 }
@@ -274,7 +276,9 @@ void CctwDataChunk::releaseBuffer(CctwChunkedData::MergeDataType *buffer)
 
 //    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
 
-    delete [] buffer;
+//    delete [] buffer;
+
+    free(buffer);
   }
 }
 
