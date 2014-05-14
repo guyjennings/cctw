@@ -58,16 +58,7 @@ CctwIntVector3D CctwDataChunk::calculateChunkSize()
 
 CctwDataChunk::~CctwDataChunk()
 {
-//  printf("Delete chunk %d\n", m_ChunkIndex);
-
   if (m_OwnData) {
-    if (m_ChunkData || m_ChunkWeights) {
-      printMessage("Anomaly in CctwDataChunk::~CctwDataChunk");
-    }
-
-    //  delete [] m_ChunkData;
-    //  delete [] m_ChunkWeights;
-
     releaseBuffer(m_ChunkData);
     releaseBuffer(m_ChunkWeights);
   }
