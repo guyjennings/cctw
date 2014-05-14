@@ -170,6 +170,20 @@ int CctwDataChunk::deallocateWeights()
   return res;
 }
 
+int CctwDataChunk::detachData()
+{
+  m_ChunkData = NULL;
+
+  return 0;
+}
+
+int CctwDataChunk::detachWeights()
+{
+  m_ChunkWeights = NULL;
+
+  return 0;
+}
+
 int CctwDataChunk::pixelOffset(int lx, int ly, int lz)
 {
   if (lx < 0 || lx >= m_ChunkSize.x()) {

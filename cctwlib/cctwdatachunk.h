@@ -25,6 +25,8 @@ public slots:
   int allocateWeights();
   int deallocateData();
   int deallocateWeights();
+  int detachData();
+  int detachWeights();
 
   bool dataAllocated() const;
   bool weightsAllocated() const;

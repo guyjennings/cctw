@@ -96,6 +96,10 @@ int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const o
   Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)chunk->dataPointer()));
   Tcl_ListObjAppendElement(interp, res, Tcl_NewWideIntObj((Tcl_WideInt)chunk->weightsPointer()));
   Tcl_ListObjAppendElement(interp, res, Tcl_NewIntObj(length));
+
+  chunk->detachData();
+  chunk->detachWeights();
+
   Tcl_SetObjResult(interp, res);
 
   return TCL_OK;
@@ -144,6 +148,12 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
     Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
     Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->weightsPointer()));
     Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(outputChunk->chunkSize().volume()));
+
+    outputChunk->detachData();
+    outputChunk->detachWeights();
+
+    delete outputChunk;
+
     Tcl_ListObjAppendElement(interp, result, blob);
   }
 
