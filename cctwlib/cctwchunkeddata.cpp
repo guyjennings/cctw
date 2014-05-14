@@ -20,14 +20,14 @@ CctwChunkedData::CctwChunkedData
    QString          name,
    QObject         *parent)
   :CctwObject(name, parent),
-    m_Dimensions(dim),
-    m_ChunkSize(chunkSize),
-    m_ChunkCount((dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1)),
+    m_DimensionsCache(dim),
+    m_ChunkSizeCache(chunkSize),
+    m_ChunkCountCache((dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1)),
     m_DataFileName(application->saver(), this, "dataFileName", "input.h5", "HDF5 Data File Name"),
     m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
-//    m_Dimensions(application->saver(), this, "dimensions", dim, "Dataset Dimensions"),
-//    m_ChunkSize(application->saver(), this, "chunkSize", chunkSize, "Chunk Size"),
-//    m_ChunkCount(application->saver(), this, "chunkCount", (dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1), "Chunk Count"),
+    m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
+    m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
+    m_ChunkCount(application->saver(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
     m_Compression(application->saver(), this, "compression", 0, "Compression Level"),
     m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
     m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
@@ -43,6 +43,12 @@ CctwChunkedData::CctwChunkedData
 {
   allocateChunks();
   connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+  connect(this, SIGNAL(dimensionsChanged(CctwIntVector3D)), prop_Dimensions(), SLOT(setValue(CctwIntVector3D)));
+  connect(this, SIGNAL(chunkSizeChanged(CctwIntVector3D)), prop_ChunkSize(), SLOT(setValue(CctwIntVector3D)));
+  connect(this, SIGNAL(chunkCountChanged(CctwIntVector3D)), prop_ChunkCount(), SLOT(setValue(CctwIntVector3D)));
+
+  connect(prop_Dimensions(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(sizingChanged()));
+  connect(prop_ChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(sizingChanged()));
 }
 
 void CctwChunkedData::allocateChunks()
@@ -66,30 +72,43 @@ void CctwChunkedData::allocateChunks()
 
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
-  if (m_Dimensions != dim) {
-    m_Dimensions = dim;
+  if (m_DimensionsCache != dim) {
+    m_DimensionsCache = dim;
 
-    m_ChunkCount = ((m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1));
+    m_ChunkCountCache = ((m_DimensionsCache-CctwIntVector3D(1,1,1))/m_ChunkSizeCache+CctwIntVector3D(1,1,1));
 
     allocateChunks();
 
-    emit dimensionsChanged(m_Dimensions);
-    emit chunkCountChanged(m_ChunkCount);
+    emit dimensionsChanged(m_DimensionsCache);
+    emit chunkCountChanged(m_ChunkCountCache);
   }
 }
 
 void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 {
-  if (m_ChunkSize != cksz) {
-    m_ChunkSize = cksz;
+  if (m_ChunkSizeCache != cksz) {
+    m_ChunkSizeCache = cksz;
 
-    m_ChunkCount = ((m_Dimensions-CctwIntVector3D(1,1,1))/m_ChunkSize+CctwIntVector3D(1,1,1));
+    m_ChunkCountCache = ((m_DimensionsCache-CctwIntVector3D(1,1,1))/m_ChunkSizeCache+CctwIntVector3D(1,1,1));
 
     allocateChunks();
 
-    emit chunkSizeChanged(m_ChunkSize);
-    emit chunkCountChanged(m_ChunkCount);
+    emit chunkSizeChanged(m_ChunkSizeCache);
+    emit chunkCountChanged(m_ChunkCountCache);
   }
+}
+
+void CctwChunkedData::sizingChanged()
+{
+  if (m_DimensionsCache != get_Dimensions()) {
+    setDimensions(get_Dimensions());
+  }
+
+  if (m_ChunkSizeCache != get_ChunkSize()) {
+    setChunkSize(get_ChunkSize());
+  }
+
+  set_ChunkCount(m_ChunkCountCache);
 }
 
 void CctwChunkedData::setDataSource(QString desc)
@@ -208,9 +227,9 @@ bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
   return pixelCoord.x() >= 0 &&
       pixelCoord.y() >= 0 &&
       pixelCoord.z() >= 0 &&
-      pixelCoord.x() < m_Dimensions.x() &&
-      pixelCoord.y() < m_Dimensions.y() &&
-      pixelCoord.z() < m_Dimensions.z();
+      pixelCoord.x() < m_DimensionsCache.x() &&
+      pixelCoord.y() < m_DimensionsCache.y() &&
+      pixelCoord.z() < m_DimensionsCache.z();
 }
 
 CctwIntVector3D     CctwChunkedData::chunkStart(int n)
@@ -219,43 +238,43 @@ CctwIntVector3D     CctwChunkedData::chunkStart(int n)
 
   CctwIntVector3D chunkIdx = chunkIndexFromNumber(n);
 
-  return m_ChunkSize*chunkIdx;
+  return m_ChunkSizeCache*chunkIdx;
 }
 
 int     CctwChunkedData::chunkContaining(CctwIntVector3D pixelCoord)
 {
   // Return index of chunk containing given pixel
 
-  CctwIntVector3D res = pixelCoord / m_ChunkSize;
+  CctwIntVector3D res = pixelCoord / m_ChunkSizeCache;
 
   return chunkNumberFromIndex(res);
 }
 
 int     CctwChunkedData::chunkContaining(CctwDoubleVector3D fracPixelCoord)
 {
-  CctwDoubleVector3D fchk = fracPixelCoord / CctwDoubleVector3D(m_ChunkSize.x(), m_ChunkSize.y(), m_ChunkSize.z());
+  CctwDoubleVector3D fchk = fracPixelCoord / CctwDoubleVector3D(m_ChunkSizeCache.x(), m_ChunkSizeCache.y(), m_ChunkSizeCache.z());
 
   return chunkNumberFromIndex(CctwIntVector3D(fchk.x(), fchk.y(), fchk.z()));
 }
 
 CctwIntVector3D     CctwChunkedData::chunkCount() const
 {
-  return m_ChunkCount;
+  return m_ChunkCountCache;
 }
 
 bool CctwChunkedData::containsChunk(int ix, int iy, int iz)
 {
-  return ix>=0 && ix<m_ChunkCount.x() &&
-         iy>=0 && iy<m_ChunkCount.y() &&
-         iz>=0 && iz<m_ChunkCount.z();
+  return ix>=0 && ix<m_ChunkCountCache.x() &&
+         iy>=0 && iy<m_ChunkCountCache.y() &&
+         iz>=0 && iz<m_ChunkCountCache.z();
 }
 
 int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
 {
   if (containsChunk(chunkIdx.x(), chunkIdx.y(), chunkIdx.z())) {
     int xstride = 1;
-    int ystride = m_ChunkCount.x();
-    int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+    int ystride = m_ChunkCountCache.x();
+    int zstride = m_ChunkCountCache.x()*m_ChunkCountCache.y();
 
     return chunkIdx.x()*xstride + chunkIdx.y()*ystride + chunkIdx.z()*zstride;
   } else {
@@ -265,10 +284,10 @@ int CctwChunkedData::chunkNumberFromIndex(CctwIntVector3D chunkIdx)
 
 CctwIntVector3D CctwChunkedData::chunkIndexFromNumber(int n)
 {
-  if (n>=0 && n<m_ChunkCount.volume()) {
+  if (n>=0 && n<m_ChunkCountCache.volume()) {
     int xstride = 1;
-    int ystride = m_ChunkCount.x();
-    int zstride = m_ChunkCount.x()*m_ChunkCount.y();
+    int ystride = m_ChunkCountCache.x();
+    int zstride = m_ChunkCountCache.x()*m_ChunkCountCache.y();
 
     int z = n / zstride;
 

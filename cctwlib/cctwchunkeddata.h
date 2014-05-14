@@ -38,8 +38,8 @@ signals:
   void chunkCountChanged(CctwIntVector3D ct);
 
 public:
-  CctwIntVector3D     dimensions() const   { return m_Dimensions; }
-  CctwIntVector3D     chunkSize() const    { return m_ChunkSize; }
+  CctwIntVector3D     dimensions() const   { return m_DimensionsCache; }
+  CctwIntVector3D     chunkSize() const    { return m_ChunkSizeCache; }
 
   void                setDimensions(CctwIntVector3D dim);
   void                setChunkSize(CctwIntVector3D cksz);
@@ -49,6 +49,7 @@ public:
   void                incChunksHeld(int n);
 
 public slots:
+  void                sizingChanged();
   virtual void        setDataSource(QString desc);
   virtual void        setDims(QString desc);
   virtual void        setChunks(QString desc);
@@ -100,9 +101,9 @@ protected:
 
 private:
   QMutex              m_ChunkLock;
-  CctwIntVector3D     m_Dimensions;
-  CctwIntVector3D     m_ChunkSize;
-  CctwIntVector3D     m_ChunkCount;
+  CctwIntVector3D     m_DimensionsCache;
+  CctwIntVector3D     m_ChunkSizeCache;
+  CctwIntVector3D     m_ChunkCountCache;
 
   Q_PROPERTY(QString dataFileName READ get_DataFileName WRITE set_DataFileName)
   QCEP_STRING_PROPERTY(DataFileName)
@@ -110,14 +111,14 @@ private:
   Q_PROPERTY(QString dataSetName READ get_DataSetName WRITE set_DataSetName)
   QCEP_STRING_PROPERTY(DataSetName)
 
-  Q_PROPERTY(CctwIntVector3D dimensions READ dimensions WRITE setDimensions)
-//  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
+  Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
+  CCTW_INTVECTOR3D_PROPERTY(Dimensions)
 
-  Q_PROPERTY(CctwIntVector3D chunkSize READ chunkSize WRITE setChunkSize)
-//  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
+  Q_PROPERTY(CctwIntVector3D chunkSize READ get_ChunkSize WRITE set_ChunkSize)
+  CCTW_INTVECTOR3D_PROPERTY(ChunkSize)
 
-  Q_PROPERTY(CctwIntVector3D chunkCount READ chunkCount STORED false)
-//  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
+  Q_PROPERTY(CctwIntVector3D chunkCount READ get_ChunkCount WRITE set_ChunkCount STORED false)
+  CCTW_INTVECTOR3D_PROPERTY(ChunkCount)
 
   Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
   QCEP_INTEGER_PROPERTY(Compression)
