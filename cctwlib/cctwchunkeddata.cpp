@@ -27,7 +27,7 @@ CctwChunkedData::CctwChunkedData
     m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
-    m_ChunkCount(application->saver(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
+    m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
     m_Compression(application->saver(), this, "compression", 0, "Compression Level"),
     m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
     m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
