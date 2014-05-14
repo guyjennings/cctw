@@ -2,6 +2,7 @@
 #include "ui_cctwqtsetupoutputdialog.h"
 #include "cctwqtmainwindow.h"
 #include <QFileDialog>
+#include "cctwapplication.h"
 
 CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwChunkedData *data) :
   QDialog(parent),
@@ -37,6 +38,14 @@ CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwC
     ui->m_HDFOutputChunkX->setValue(hcksz.x());
     ui->m_HDFOutputChunkY->setValue(hcksz.y());
     ui->m_HDFOutputChunkZ->setValue(hcksz.z());
+
+    CctwTransformer *xform = m_Window->cctwApplication()->m_Transformer;
+
+    if (xform) {
+      ui->m_OversampleX->setValue(xform->get_OversampleX());
+      ui->m_OversampleY->setValue(xform->get_OversampleY());
+      ui->m_OversampleZ->setValue(xform->get_OversampleZ());
+    }
   }
 }
 
@@ -68,6 +77,14 @@ void CctwqtSetupOutputDialog::accept()
     m_Data->set_DataSetName(ui->m_OutputDatasetName->text());
 
     m_Data->set_HDFChunkSize(hcksz);
+
+    CctwTransformer *xform = m_Window->cctwApplication()->m_Transformer;
+
+    if (xform) {
+      xform->set_OversampleX(ui->m_OversampleX->value());
+      xform->set_OversampleY(ui->m_OversampleY->value());
+      xform->set_OversampleZ(ui->m_OversampleZ->value());
+    }
   }
 
   QDialog::accept();

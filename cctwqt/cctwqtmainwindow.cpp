@@ -117,19 +117,31 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
 //    connect(inputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateInputHDF5ChunkSize(CctwIntVector3D)));
-    connect(inputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
-    connect(inputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
-    connect(inputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
+//    connect(inputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
+//    connect(inputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
+//    connect(inputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateInputDimensions()));
 
     inputData->prop_Compression()->linkTo(ui->m_InputCompression);
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
 //    updateInputHDF5ChunkSize(inputData->get_HDFChunkSize());
 
+    inputData->prop_Dimensions()->linkTo(ui->m_InputDimensionsX,
+                                         ui->m_InputDimensionsY,
+                                         ui->m_InputDimensionsZ);
+
+    inputData->prop_ChunkSize()->linkTo(ui->m_InputChunkX,
+                                        ui->m_InputChunkY,
+                                        ui->m_InputChunkZ);
+
+    inputData->prop_ChunkCount()->linkTo(ui->m_InputCountX,
+                                         ui->m_InputCountY,
+                                         ui->m_InputCountZ);
+
     inputData->prop_HDFChunkSize()->linkTo(ui->m_InputHDFChunkX,
                                            ui->m_InputHDFChunkY,
                                            ui->m_InputHDFChunkZ);
-    updateInputDimensions();
+//    updateInputDimensions();
   }
 
   CctwChunkedData *outputData = app->m_OutputData;
@@ -141,17 +153,33 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     outputData->prop_ChunksHeld()->linkTo(ui->m_ChunksHeld);
     outputData->prop_ChunksHeldMax()->linkTo(ui->m_ChunksHeldMax);
 
-    connect(outputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateOutputHDF5ChunkSize(CctwIntVector3D)));
-    connect(outputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
-    connect(outputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
-    connect(outputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
+//    connect(outputData->prop_HDFChunkSize(), SIGNAL(valueChanged(CctwIntVector3D,int)), this, SLOT(updateOutputHDF5ChunkSize(CctwIntVector3D)));
+//    connect(outputData, SIGNAL(chunkSizeChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
+//    connect(outputData, SIGNAL(dimensionsChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
+//    connect(outputData, SIGNAL(chunkCountChanged(CctwIntVector3D)), this, SLOT(updateOutputDimensions()));
 
     outputData->prop_Compression()->linkTo(ui->m_OutputCompression);
     outputData->prop_ChunksWritten()->linkTo(ui->m_ChunksWritten);
 
-    updateOutputHDF5ChunkSize(outputData->get_HDFChunkSize());
+    outputData->prop_Dimensions()->linkTo(ui->m_OutputDimensionsX,
+                                          ui->m_OutputDimensionsY,
+                                          ui->m_OutputDimensionsZ);
 
-    updateOutputDimensions();
+    outputData->prop_ChunkSize()->linkTo(ui->m_OutputChunkX,
+                                         ui->m_OutputChunkY,
+                                         ui->m_OutputChunkZ);
+
+    outputData->prop_ChunkCount()->linkTo(ui->m_OutputCountX,
+                                          ui->m_OutputCountY,
+                                          ui->m_OutputCountZ);
+
+    outputData->prop_HDFChunkSize()->linkTo(ui->m_OutputHDFChunkX,
+                                            ui->m_OutputHDFChunkY,
+                                            ui->m_OutputHDFChunkZ);
+
+//    updateOutputHDF5ChunkSize(outputData->get_HDFChunkSize());
+
+//    updateOutputDimensions();
   }
 
   CctwTransformer *xform = app->m_Transformer;
@@ -161,6 +189,9 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     xform->prop_ProjectY()->linkTo(ui->m_ProjectY);
     xform->prop_ProjectZ()->linkTo(ui->m_ProjectZ);
     xform->prop_ProjectDestination()->linkTo(ui->m_ProjectDestination);
+    xform->prop_OversampleX()->linkTo(ui->m_OversampleX);
+    xform->prop_OversampleY()->linkTo(ui->m_OversampleY);
+    xform->prop_OversampleZ()->linkTo(ui->m_OversampleZ);
   }
 
   connect(ui->m_ActionProjectBrowse, SIGNAL(triggered()), this, SLOT(doBrowseProject()));
@@ -204,6 +235,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 CctwqtMainWindow::~CctwqtMainWindow()
 {
   delete ui;
+}
+
+CctwApplication *CctwqtMainWindow::cctwApplication()
+{
+  return m_Application;
 }
 
 void CctwqtMainWindow::closeEvent ( QCloseEvent * event )
@@ -283,26 +319,26 @@ void CctwqtMainWindow::doImport()
   QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
 
-void CctwqtMainWindow::updateInputDimensions()
-{
-  if (m_Application) {
-    CctwChunkedData *inputData = m_Application->m_InputData;
+//void CctwqtMainWindow::updateInputDimensions()
+//{
+//  if (m_Application) {
+//    CctwChunkedData *inputData = m_Application->m_InputData;
 
-    if (inputData) {
-      ui->m_InputDimensionsX->setValue(inputData->dimensions().x());
-      ui->m_InputDimensionsY->setValue(inputData->dimensions().y());
-      ui->m_InputDimensionsZ->setValue(inputData->dimensions().z());
+//    if (inputData) {
+//      ui->m_InputDimensionsX->setValue(inputData->dimensions().x());
+//      ui->m_InputDimensionsY->setValue(inputData->dimensions().y());
+//      ui->m_InputDimensionsZ->setValue(inputData->dimensions().z());
 
-      ui->m_InputCountX->setValue(inputData->chunkCount().x());
-      ui->m_InputCountY->setValue(inputData->chunkCount().y());
-      ui->m_InputCountZ->setValue(inputData->chunkCount().z());
+//      ui->m_InputCountX->setValue(inputData->chunkCount().x());
+//      ui->m_InputCountY->setValue(inputData->chunkCount().y());
+//      ui->m_InputCountZ->setValue(inputData->chunkCount().z());
 
-      ui->m_InputChunkX->setValue(inputData->chunkSize().x());
-      ui->m_InputChunkY->setValue(inputData->chunkSize().y());
-      ui->m_InputChunkZ->setValue(inputData->chunkSize().z());
-    }
-  }
-}
+//      ui->m_InputChunkX->setValue(inputData->chunkSize().x());
+//      ui->m_InputChunkY->setValue(inputData->chunkSize().y());
+//      ui->m_InputChunkZ->setValue(inputData->chunkSize().z());
+//    }
+//  }
+//}
 
 //void CctwqtMainWindow::updateInputHDF5ChunkSize(CctwIntVector3D sz)
 //{
@@ -322,33 +358,33 @@ void CctwqtMainWindow::doSetupInput()
   m_SetupInputDialog->activateWindow();
 }
 
-void CctwqtMainWindow::updateOutputDimensions()
-{
-  if (m_Application) {
-    CctwChunkedData *outputData = m_Application->m_OutputData;
+//void CctwqtMainWindow::updateOutputDimensions()
+//{
+//  if (m_Application) {
+//    CctwChunkedData *outputData = m_Application->m_OutputData;
 
-    if (outputData) {
-      ui->m_OutputDimensionsX->setValue(outputData->dimensions().x());
-      ui->m_OutputDimensionsY->setValue(outputData->dimensions().y());
-      ui->m_OutputDimensionsZ->setValue(outputData->dimensions().z());
+//    if (outputData) {
+//      ui->m_OutputDimensionsX->setValue(outputData->dimensions().x());
+//      ui->m_OutputDimensionsY->setValue(outputData->dimensions().y());
+//      ui->m_OutputDimensionsZ->setValue(outputData->dimensions().z());
 
-      ui->m_OutputCountX->setValue(outputData->chunkCount().x());
-      ui->m_OutputCountY->setValue(outputData->chunkCount().y());
-      ui->m_OutputCountZ->setValue(outputData->chunkCount().z());
+//      ui->m_OutputCountX->setValue(outputData->chunkCount().x());
+//      ui->m_OutputCountY->setValue(outputData->chunkCount().y());
+//      ui->m_OutputCountZ->setValue(outputData->chunkCount().z());
 
-      ui->m_OutputChunkX->setValue(outputData->chunkSize().x());
-      ui->m_OutputChunkY->setValue(outputData->chunkSize().y());
-      ui->m_OutputChunkZ->setValue(outputData->chunkSize().z());
-    }
-  }
-}
+//      ui->m_OutputChunkX->setValue(outputData->chunkSize().x());
+//      ui->m_OutputChunkY->setValue(outputData->chunkSize().y());
+//      ui->m_OutputChunkZ->setValue(outputData->chunkSize().z());
+//    }
+//  }
+//}
 
-void CctwqtMainWindow::updateOutputHDF5ChunkSize(CctwIntVector3D sz)
-{
-  ui->m_OutputHDFChunkX->setValue(sz.x());
-  ui->m_OutputHDFChunkY->setValue(sz.y());
-  ui->m_OutputHDFChunkZ->setValue(sz.z());
-}
+//void CctwqtMainWindow::updateOutputHDF5ChunkSize(CctwIntVector3D sz)
+//{
+//  ui->m_OutputHDFChunkX->setValue(sz.x());
+//  ui->m_OutputHDFChunkY->setValue(sz.y());
+//  ui->m_OutputHDFChunkZ->setValue(sz.z());
+//}
 
 void CctwqtMainWindow::doSetupOutput()
 {

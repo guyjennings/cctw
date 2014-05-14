@@ -140,7 +140,7 @@
             <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
@@ -160,37 +160,10 @@
             <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="0" colspan="3">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>393</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="12" column="3" colspan="2">
-          <widget class="QPushButton" name="m_SetupImportButton">
-           <property name="text">
-            <string>Setup Import...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="5">
-          <widget class="QPushButton" name="m_ImportButton">
-           <property name="text">
-            <string>Import...</string>
            </property>
           </widget>
          </item>
@@ -200,7 +173,7 @@
             <string>Output HDF Chunk Size in Y</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
@@ -213,12 +186,39 @@
             <string>Output HDF Chunk Size in Z</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
+         </item>
+         <item row="12" column="5">
+          <widget class="QPushButton" name="m_ImportButton">
+           <property name="text">
+            <string>Import...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="4">
+          <widget class="QPushButton" name="m_SetupImportButton">
+           <property name="text">
+            <string>Setup Import...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0" colspan="4">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>393</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -227,100 +227,17 @@
          <string>Input</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="9" column="1">
-          <widget class="QSpinBox" name="m_InputCompression">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="4">
-          <widget class="QPushButton" name="m_SetupInputButton">
+         <item row="4" column="2">
+          <widget class="QLabel" name="label_26">
            <property name="text">
-            <string>Setup Input...</string>
+            <string>Y</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
-          <widget class="QSpinBox" name="m_InputDimensionsX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Input Compression: (0=none)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QSpinBox" name="m_InputHDFChunkX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="3">
-          <widget class="QSpinBox" name="m_InputHDFChunkZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Input HDF Chunk Size:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="5">
-          <widget class="QLineEdit" name="m_InputDataSetName">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0" colspan="5">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>508</width>
-             <height>516</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="8" column="2">
+         <item row="9" column="2">
           <widget class="QSpinBox" name="m_InputHDFChunkY">
            <property name="toolTip">
             <string>Output HDF Chunk Size in Y</string>
@@ -333,23 +250,43 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="0" colspan="4">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>501</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_16">
+         <item row="4" column="3">
+          <widget class="QLabel" name="label_27">
            <property name="text">
-            <string>Transform Chunk Size:</string>
+            <string>Z</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Input Dimensions:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="label_25">
+           <property name="text">
+            <string>X</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QSpinBox" name="m_InputDimensionsZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
@@ -357,39 +294,6 @@
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Input Dataset Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QSpinBox" name="m_InputChunkX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Input Data File:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QSpinBox" name="m_InputCountY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
            </property>
           </widget>
          </item>
@@ -406,17 +310,17 @@
             <string>Output HDF Chunk Size in Y</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>Input Dimensions:</string>
+         <item row="3" column="0" colspan="5">
+          <widget class="QLineEdit" name="m_InputDataSetName">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -426,53 +330,133 @@
             <string>Output HDF Chunk Size in Y</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_18">
-           <property name="text">
-            <string>Transform Chunk Count:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QSpinBox" name="m_InputDimensionsZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="3">
-          <widget class="QSpinBox" name="m_InputCountZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QSpinBox" name="m_InputCountX">
+         <item row="7" column="1">
+          <widget class="QSpinBox" name="m_InputChunkX">
            <property name="toolTip">
             <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Transform Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="5">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>508</width>
+             <height>516</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Input Data File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QSpinBox" name="m_InputHDFChunkX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="4">
+          <widget class="QPushButton" name="m_SetupInputButton">
+           <property name="text">
+            <string>Setup Input...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0" colspan="4">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>501</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Input HDF Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Input Compression: (0=none)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="3">
+          <widget class="QSpinBox" name="m_InputHDFChunkZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QSpinBox" name="m_InputCompression">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QSpinBox" name="m_InputDimensionsX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
@@ -485,40 +469,74 @@
             <string>Output HDF Chunk Size in Z</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="label_25">
-           <property name="text">
-            <string>X</string>
+         <item row="8" column="3">
+          <widget class="QSpinBox" name="m_InputCountZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="4" column="2">
-          <widget class="QLabel" name="label_26">
-           <property name="text">
-            <string>Y</string>
+         <item row="8" column="2">
+          <widget class="QSpinBox" name="m_InputCountY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="4" column="3">
-          <widget class="QLabel" name="label_27">
-           <property name="text">
-            <string>Z</string>
+         <item row="8" column="1">
+          <widget class="QSpinBox" name="m_InputCountX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>Transform Chunk Count:</string>
            </property>
           </widget>
          </item>
@@ -529,39 +547,6 @@
          <string>Output</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_6">
-         <item row="6" column="2">
-          <widget class="QSpinBox" name="m_OutputCountY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QSpinBox" name="m_OutputDimensionsX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_20">
-           <property name="text">
-            <string>Transform Chunk Count:</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0" colspan="5">
           <widget class="QLineEdit" name="m_OutputDataSetName">
            <property name="readOnly">
@@ -569,21 +554,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0" colspan="5">
-          <widget class="QLineEdit" name="m_OutputDataFileName">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_21">
-           <property name="text">
-            <string>Output Dimensions:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="0" colspan="5">
+         <item row="12" column="0" colspan="5">
           <spacer name="verticalSpacer_3">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -596,93 +567,39 @@
            </property>
           </spacer>
          </item>
-         <item row="8" column="3">
-          <widget class="QSpinBox" name="m_OutputHDFChunkZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_19">
-           <property name="text">
-            <string>Transform Chunk Size:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="4">
-          <widget class="QPushButton" name="m_SetupOutputButton">
-           <property name="text">
-            <string>Setup Output...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QSpinBox" name="m_OutputDimensionsY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="3">
-          <widget class="QSpinBox" name="m_OutputCountZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
          <item row="9" column="1">
-          <widget class="QSpinBox" name="m_OutputCompression">
+          <widget class="QSpinBox" name="m_OutputHDFChunkX">
            <property name="toolTip">
             <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Output Data File:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_15">
-           <property name="text">
-            <string>Output Compression: (0=none)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="2">
-          <widget class="QSpinBox" name="m_OutputHDFChunkY">
+         <item row="7" column="3">
+          <widget class="QSpinBox" name="m_OutputChunkZ">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>Output HDF Chunk Size in Z</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QSpinBox" name="m_OutputDimensionsZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
@@ -696,88 +613,13 @@
            </property>
           </widget>
          </item>
-         <item row="11" column="0" colspan="4">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>490</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_14">
+         <item row="4" column="3">
+          <widget class="QLabel" name="label_24">
            <property name="text">
-            <string>Output HDF Chunk Size:</string>
+            <string>Z</string>
            </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QSpinBox" name="m_OutputCountX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QSpinBox" name="m_OutputHDFChunkX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QSpinBox" name="m_OutputChunkY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QSpinBox" name="m_OutputDimensionsZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="3">
-          <widget class="QSpinBox" name="m_OutputChunkZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -787,10 +629,31 @@
             <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Output Data File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="4">
+          <widget class="QPushButton" name="m_SetupOutputButton">
+           <property name="text">
+            <string>Setup Output...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Output Compression: (0=none)</string>
            </property>
           </widget>
          </item>
@@ -804,6 +667,32 @@
            </property>
           </widget>
          </item>
+         <item row="5" column="2">
+          <widget class="QSpinBox" name="m_OutputDimensionsY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="0" colspan="4">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>490</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="4" column="2">
           <widget class="QLabel" name="label_23">
            <property name="text">
@@ -814,13 +703,206 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="3">
-          <widget class="QLabel" name="label_24">
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_21">
            <property name="text">
-            <string>Z</string>
+            <string>Output Dimensions:</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+          </widget>
+         </item>
+         <item row="9" column="3">
+          <widget class="QSpinBox" name="m_OutputHDFChunkZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QSpinBox" name="m_OutputDimensionsX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="2">
+          <widget class="QSpinBox" name="m_OutputHDFChunkY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QSpinBox" name="m_OutputChunkY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Output HDF Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_49">
+           <property name="text">
+            <string>Oversampling Factors:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QSpinBox" name="m_OutputCompression">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="5">
+          <widget class="QLineEdit" name="m_OutputDataFileName">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>Transform Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QSpinBox" name="m_OversampleX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="2">
+          <widget class="QSpinBox" name="m_OversampleY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="3">
+          <widget class="QSpinBox" name="m_OversampleZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>Transform Chunk Count:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QSpinBox" name="m_OutputCountX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="2">
+          <widget class="QSpinBox" name="m_OutputCountY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="3">
+          <widget class="QSpinBox" name="m_OutputCountZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
@@ -1339,6 +1421,9 @@
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
            </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -1368,6 +1453,9 @@
           <widget class="QSpinBox" name="m_ChunksWritten">
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
            </property>
            <property name="readOnly">
             <bool>true</bool>
@@ -1406,6 +1494,9 @@
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
            </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -1434,6 +1525,9 @@
           <widget class="QSpinBox" name="m_ChunksHeldMax">
            <property name="toolTip">
             <string>Frame Rotation Angle</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
            </property>
            <property name="readOnly">
             <bool>true</bool>
@@ -1559,7 +1653,7 @@
          <item row="14" column="0">
           <widget class="QLabel" name="label_45">
            <property name="text">
-            <string> </string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -1704,7 +1798,7 @@
      <x>0</x>
      <y>0</y>
      <width>1383</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1963,9 +2057,6 @@
   <tabstop>m_InputDimensionsX</tabstop>
   <tabstop>m_InputDimensionsY</tabstop>
   <tabstop>m_InputDimensionsZ</tabstop>
-  <tabstop>m_InputCountX</tabstop>
-  <tabstop>m_InputCountY</tabstop>
-  <tabstop>m_InputCountZ</tabstop>
   <tabstop>m_InputChunkX</tabstop>
   <tabstop>m_InputChunkY</tabstop>
   <tabstop>m_InputChunkZ</tabstop>
@@ -1980,13 +2071,10 @@
   <tabstop>m_OutputHDFChunkY</tabstop>
   <tabstop>m_OutputHDFChunkX</tabstop>
   <tabstop>m_OutputChunkX</tabstop>
-  <tabstop>m_OutputCountX</tabstop>
   <tabstop>m_OutputDimensionsX</tabstop>
   <tabstop>m_OutputChunkY</tabstop>
-  <tabstop>m_OutputCountY</tabstop>
   <tabstop>m_OutputDimensionsY</tabstop>
   <tabstop>m_OutputChunkZ</tabstop>
-  <tabstop>m_OutputCountZ</tabstop>
   <tabstop>m_OutputDimensionsZ</tabstop>
   <tabstop>m_ImportOutputCompression</tabstop>
   <tabstop>m_HaltButton</tabstop>
@@ -2000,8 +2088,6 @@
   <tabstop>m_CommandInput</tabstop>
   <tabstop>m_ParametersTabs</tabstop>
   <tabstop>m_ImportOutputChunkZ</tabstop>
-  <tabstop>m_SetupImportButton</tabstop>
-  <tabstop>m_ImportButton</tabstop>
   <tabstop>m_ImportOutputChunkX</tabstop>
   <tabstop>m_SetupInputButton</tabstop>
   <tabstop>m_OutputDataFileName</tabstop>

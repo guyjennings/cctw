@@ -32,7 +32,8 @@ class CctwqtMainWindow : public QMainWindow
 public:
   explicit CctwqtMainWindow(CctwApplication *app, QWidget *parent = 0);
   ~CctwqtMainWindow();
-  
+  CctwApplication* cctwApplication();
+
 public slots:
   void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
@@ -64,9 +65,9 @@ public slots:
   void updateImportImagePaths(QStringList p);
 //  void updateImportChunkSize(CctwIntVector3D sz);
 //  void updateInputHDF5ChunkSize(CctwIntVector3D sz);
-  void updateOutputHDF5ChunkSize(CctwIntVector3D sz);
-  void updateInputDimensions();
-  void updateOutputDimensions();
+//  void updateOutputHDF5ChunkSize(CctwIntVector3D sz);
+//  void updateInputDimensions();
+//  void updateOutputDimensions();
 
   void doBrowseProject();
   void doProjectInput();
