@@ -310,7 +310,11 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
     CctwDataChunk *chunk = m_DataChunks[n];
 
     if (chunk == NULL) {
-      chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), parent());
+      chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), NULL);
+
+      chunk->moveToThread(parent()->thread());
+      chunk->setParent(parent());
+
       m_DataChunks[n] = chunk;
     }
 
