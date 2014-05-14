@@ -2,6 +2,7 @@
 #include <tcl.h>
 
 #include "cctwtcl_commands.h"
+#include "cctwapplication.h"
 
 extern "C"
 int Cctwtcl_Init(Tcl_Interp *interp)
@@ -20,7 +21,7 @@ int Cctwtcl_Init(Tcl_Interp *interp)
       return TCL_ERROR;
   }
 
-  if (Tcl_PkgProvide(interp, "cctw", "0.1") != TCL_OK) {
+  if (Tcl_PkgProvide(interp, "cctw", STR(CCTW_VERSION)) != TCL_OK) {
       return TCL_ERROR;
   }
 
@@ -31,6 +32,12 @@ int Cctwtcl_Init(Tcl_Interp *interp)
           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
   Tcl_CreateObjCommand(interp, "cctw_transform", (Tcl_ObjCmdProc *) Cctwtcl_Transform_Cmd,
+          (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_merge", (Tcl_ObjCmdProc *) Cctwtcl_Merge_Cmd,
+          (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+
+  Tcl_CreateObjCommand(interp, "cctw_output", (Tcl_ObjCmdProc *) Cctwtcl_Output_Cmd,
           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
 
   Cctwtcl_Initialize();

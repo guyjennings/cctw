@@ -162,3 +162,11 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   Tcl_SetObjResult(interp, result);
   return TCL_OK;
 }
+
+int Cctwtcl_Merge_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
+{
+}
+
+int Cctwtcl_Output_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
+{
+}
