@@ -159,7 +159,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 #ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-  qDebug("Transforming chunk data: %d", chunkId);
+  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
@@ -241,8 +241,8 @@ void CctwTransformer::transformChunkData(int chunkId,
       }
     }
   }
-  qDebug("Transform chunk data: %i: done. Time %0.3f s",
-                              chunkId,       time.elapsed()/1000.0);
+
+  printMessage(tr("Transform chunk data: %1: done. Time %2 s").arg(chunkId).arg(time.elapsed()/1000.0,5));
 }
 
 void CctwTransformer::transform()
