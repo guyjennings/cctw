@@ -48,6 +48,7 @@ CctwChunkedData::CctwChunkedData
 void CctwChunkedData::allocateChunks()
 {
 //  printMessage("Allocate chunks");
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_ChunkLock);
 
   int n = chunkCount().volume();
 
@@ -58,9 +59,9 @@ void CctwChunkedData::allocateChunks()
 
   m_DataChunks.resize(n);
 
-  for (int i=0; i<n; i++) {
-    m_DataChunks[i] = new CctwDataChunk(this, i, tr("chunk-%1").arg(i), parent());
-  }
+//  for (int i=0; i<n; i++) {
+//    m_DataChunks[i] = new CctwDataChunk(this, i, tr("chunk-%1").arg(i), parent());
+//  }
 }
 
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
@@ -297,14 +298,21 @@ void CctwChunkedData::clearDependencies()
 void CctwChunkedData::addDependency(int f, int t)
 {
   if (f >= 0 && f < m_DataChunks.count()) {
-    m_DataChunks[f] ->addDependency(t);
+    chunk(f) -> addDependency(t);
   }
 }
 
 CctwDataChunk *CctwChunkedData::chunk(int n)
 {
   if (n >= 0 && n < m_DataChunks.count()) {
+    QcepMutexLocker lock(__FILE__, __LINE__, &m_ChunkLock);
+
     CctwDataChunk *chunk = m_DataChunks[n];
+
+    if (chunk == NULL) {
+      chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), parent());
+      m_DataChunks[n] = chunk;
+    }
 
     if (chunk && chunk->index() != n) {
       printMessage(tr("Chunk anomaly"));

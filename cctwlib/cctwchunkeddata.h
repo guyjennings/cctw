@@ -99,6 +99,7 @@ protected:
 #endif
 
 private:
+  QMutex              m_ChunkLock;
   CctwIntVector3D     m_Dimensions;
   CctwIntVector3D     m_ChunkSize;
   CctwIntVector3D     m_ChunkCount;
