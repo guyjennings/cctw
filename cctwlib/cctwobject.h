@@ -18,6 +18,9 @@ public slots:
   virtual void printLine(QString line);
   virtual void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
 
+  virtual QString settingsScript();
+  QString scriptValueLiteral(QVariant v);
+
 public:
   virtual void writeSettings(QSettings *set, QString section);
   virtual void readSettings(QSettings *set, QString section);
