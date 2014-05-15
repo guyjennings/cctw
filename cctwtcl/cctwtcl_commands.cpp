@@ -66,6 +66,32 @@ int Cctwtcl_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj
   return TCL_ERROR;
 }
 
+int Cctwtcl_Parameters_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
+{
+  if (objc == 1) {
+    QString res = g_Application->settingsScript();
+
+    Tcl_Obj *result = Tcl_NewStringObj(qPrintable(res), -1);
+    Tcl_SetObjResult(interp, result);
+
+    return TCL_OK;
+  } else if (objc == 2) {
+    const char *cmd = Tcl_GetString(objv[1]);
+
+    QScriptValue val = g_Application->evaluate(cmd);
+
+    QString res = val.toString();
+    Tcl_Obj *result = Tcl_NewStringObj(qPrintable(res), -1);
+    Tcl_SetObjResult(interp, result);
+
+    return TCL_OK;
+  } else {
+    Tcl_SetResult(interp, "usage: tcl_parameters [params]", TCL_STATIC);
+  }
+
+  return TCL_ERROR;
+}
+
 int Cctwtcl_Input_Cmd(ClientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
 {
   // cctw_input <input_chunk_id> --> <input_data_blob>

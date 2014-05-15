@@ -741,6 +741,45 @@ void CctwApplication::writeSettings(QSettings *settings)
   }
 }
 
+QString CctwApplication::settingsScript()
+{
+  QString res;
+
+  if (m_Parameters) {
+    res += m_Parameters->settingsScript();
+  }
+
+//  if (m_ImportData) {
+//    res += m_ImportData->settingsScript();
+//  }
+
+//  if (m_CompareData) {
+//    res += m_CompareData->settingsScript();
+//  }
+
+  if (m_InputData) {
+    res += m_InputData->settingsScript();
+  }
+
+  if (m_OutputData) {
+    res += m_OutputData->settingsScript();
+  }
+
+  if (m_Transform) {
+    res += m_Transform->settingsScript();
+  }
+
+  if (m_Transformer) {
+    res += m_Transformer->settingsScript();
+  }
+
+  if (m_PEIngressCommand) {
+    res += m_PEIngressCommand->settingsScript();
+  }
+
+  return res;
+}
+
 void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {

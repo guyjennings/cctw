@@ -57,6 +57,8 @@ public slots:
   void writeSettings(QString path);
   void readSettings(QString path);
 
+  QString settingsScript();
+
   void setInputData(QString data);
   void setInputChunks(QString data);
   void setInputDataset(QString data);
