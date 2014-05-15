@@ -69,6 +69,10 @@ public slots:
 
   void setBuffer(void *buffer);
 
+  void mergeData(CctwChunkedData::MergeDataType *id,
+                 CctwChunkedData::MergeDataType *iw,
+                 int n);
+
 private:
   CctwChunkedData::MergeDataType *allocateBuffer();
   void releaseBuffer(CctwChunkedData::MergeDataType *);

@@ -165,8 +165,107 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
 int Cctwtcl_Merge_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
+  // cctw_merge <blob-list> -> null
+  // merges a list of blobs into one or more output blobs
+  // <blob-list> is a list of lists
+  // { { <merge ID> <data-pointer> <weights-pointer> <length> } ... }
+  // If merge IDs differ, data is merged into multiple output blobs
+
+  TCL_ARGS(2, "usage: cctw_merge { { <merge ID> <data-pointer> <weights-pointer> <length> } ... }");
+
+  int       rc;
+  int       nblobs;
+  Tcl_Obj **blobs;
+
+  rc = Tcl_ListObjGetElements(interp, objv[1], &nblobs, &blobs);
+
+  if (rc != TCL_OK) {
+    Tcl_SetResult(interp, "Input argument should be a list\n", TCL_STATIC);
+    return TCL_ERROR;
+  }
+
+  for (int i=0; i<nblobs; i++) {
+    int       nargs;
+    Tcl_Obj **blobargs;
+
+    rc = Tcl_ListObjGetElements(interp, blobs[i], &nargs, &blobargs);
+
+    if (rc != TCL_OK) {
+      Tcl_SetResult(interp, "Input list element should also be a list\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    if (nargs < 4) {
+      Tcl_SetResult(interp, "Input list element should be at least 4 elements long\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    int chunkId;
+    Tcl_WideInt dataPointer, weightPointer;
+    int blobLength;
+
+    rc = Tcl_GetIntFromObj(interp, blobargs[0], &chunkId);
+
+    if (rc != TCL_OK) {
+      Tcl_SetResult(interp, "Blob ID should be an integer\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    rc = Tcl_GetWideIntFromObj(interp, blobargs[1], &dataPointer);
+
+    if (rc != TCL_OK) {
+      Tcl_SetResult(interp, "Data Pointer should be wide integer\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    rc = Tcl_GetWideIntFromObj(interp, blobargs[2], &weightPointer);
+
+    if (rc != TCL_OK) {
+      Tcl_SetResult(interp, "Weight Pointer should be wide integer\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    rc = Tcl_GetIntFromObj(interp, blobargs[3], &blobLength);
+
+    if (rc != TCL_OK) {
+      Tcl_SetResult(interp, "Blob length should be an integer\n", TCL_STATIC);
+      return TCL_ERROR;
+    }
+
+    CctwDataChunk *opchk = g_Application->m_OutputData->chunk(chunkId);
+
+    if (opchk) {
+      opchk->mergeData((CctwChunkedData::MergeDataType*) dataPointer,
+                       (CctwChunkedData::MergeDataType*) weightPointer,
+                       blobLength/sizeof(CctwChunkedData::MergeDataType));
+    } else {
+      printf("Output chunk %d does not exist, skipped\n", chunkId);
+    }
+  }
 }
 
 int Cctwtcl_Output_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int objc, Tcl_Obj * const objv[])
 {
+  // cctw_output <id>
+  // Output chunk <id> to the output file and deallocate the chunk storage
+
+  TCL_ARGS(2, "usage: cctw_output <chunk-id>");
+
+  int rc;
+  int chunkId;
+
+  rc = Tcl_GetIntFromObj(interp, objv[1], &chunkId);
+
+  if (rc != TCL_OK) {
+    Tcl_SetResult(interp, "chunk id should be an integer\n", TCL_STATIC);
+    return TCL_ERROR;
+  }
+
+  CctwDataChunk *opchk = g_Application->m_OutputData->chunk(chunkId);
+
+  if (opchk) {
+    g_Application->m_OutputData->writeChunk(chunkId);
+  }
+
+  return TCL_OK;
 }

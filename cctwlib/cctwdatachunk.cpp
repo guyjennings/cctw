@@ -342,6 +342,41 @@ void CctwDataChunk::reportDependencies()
   printMessage(msg);
 }
 
+void CctwDataChunk::mergeData(CctwChunkedData::MergeDataType *id,
+                              CctwChunkedData::MergeDataType *iw,
+                              int n)
+{
+  QMutexLocker lock(&m_MergeLock);
+
+  if (m_ChunkData == NULL) {
+    allocateData();
+  }
+
+  if (m_ChunkWeights == NULL) {
+    allocateWeights();
+  }
+
+  CctwChunkedData::MergeDataType *d = m_ChunkData, *w = m_ChunkWeights;
+
+  if (d && id) {
+    for (int i=0; i<n; i++) {
+      if ((iw && iw[i] != 0 && iw[i] == iw[i]) || !iw) {
+        d[i] += id[i];
+      }
+    }
+  } else {
+    printMessage(tr("Couldn't merge data for chunk [%1]").arg(index()));
+  }
+
+  if (w && iw) {
+    for (int i=0; i<n; i++) {
+      if ((iw && iw[i] != 0 && iw[i] == iw[i]) || !iw) {
+        w[i] += iw[i];
+      }
+    }
+  }
+}
+
 void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 {
 //  printMessage(tr("Merging chunk [%1]")
