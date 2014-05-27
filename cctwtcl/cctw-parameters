@@ -1,0 +1,10 @@
+#!/bin/sh -eu
+
+# CCTW PARAMETERS
+# Reports CCTW parameters
+
+CCTWTCL_DIR=$( cd $( dirname $0 ) ; /bin/pwd )
+
+export TCLLIBPATH=${CCTWTCL_DIR}
+
+tclsh ${CCTWTCL_DIR}/cctw-parameters.tcl
