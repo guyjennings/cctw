@@ -4,7 +4,10 @@
 
 package require cctw
 
-set chunks [ list 0 4 65 130 ]
+set p [ cctw_parameters ]
+puts "parameters: \n $p"
+
+set chunks [ list 0 4 65 130 5100 ]
 foreach chunk $chunks { 
     # set L [ cctw_input $chunk ]
     # set ptr [ lindex $L 0 ]
