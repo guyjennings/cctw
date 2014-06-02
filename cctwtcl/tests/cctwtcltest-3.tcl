@@ -4,10 +4,13 @@
 
 package require cctw
 
-set chunks 2
-for { set chunk 0 } { $chunk < $chunks } { incr chunk } {
+set chunks [ list 0 4 65 130 ]
+foreach chunk $chunks { 
     # set L [ cctw_input $chunk ]
     # set ptr [ lindex $L 0 ]
     # cctw { script engine load preferences }
-    cctw_transform $chunk
+    puts "chunk: $chunk"
+    set output [ cctw_transform $chunk ]
+    puts $output
+    puts ""
 }
