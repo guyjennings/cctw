@@ -86,7 +86,7 @@ int Cctwtcl_Parameters_Cmd(ClientData clientData, Tcl_Interp *interp, int objc, 
 
     return TCL_OK;
   } else {
-    Tcl_SetResult(interp, "usage: tcl_parameters [params]", TCL_STATIC);
+    Tcl_SetResult(interp, "usage: cctw_parameters [params]", TCL_STATIC);
   }
 
   return TCL_ERROR;
