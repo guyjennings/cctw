@@ -4,10 +4,16 @@
 
 package require cctw
 
-set chunks 9
-for { set chunk 0 } { $chunk < $chunks } { incr chunk } { 
-    set L [ cctw_input "/home/wozniak/nexus-data/pznpt.nxs" "entry/data/v" $chunk ] 
-    set ptr [ lindex $L 0 ] 
-    # cctw { script engine load preferences } 
-    cctw_transform $ptr $chunk
+set p [ cctw_parameters ]
+puts "parameters: \n $p"
+
+set chunks [ list 0 4 65 130 5100 ]
+foreach chunk $chunks { 
+    # set L [ cctw_input $chunk ]
+    # set ptr [ lindex $L 0 ]
+    # cctw { script engine load preferences }
+    puts "chunk: $chunk"
+    set output [ cctw_transform $chunk ]
+    puts $output
+    puts ""
 }

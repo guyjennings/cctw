@@ -1,19 +1,20 @@
 
 package require cctw
 
-set L [ cctw_input "/home/wozniak/nexus-data/pznpt.nxs" "entry/data/v" 1 ] 
+set L [ cctw_input 1 ]
+# "/home/wozniak/nexus-data/pznpt.nxs" "entry/data/v"
 
-# Other ideas: 
+# Other ideas:
 
-# cctw { 
+# cctw {
 #     setInputData("/home/wozniak/nexus-data/pznpt.nxs#entry")
-# } 
-# CctwChunkedData data 
+# }
+# CctwChunkedData data
 # data.DataFileName = "f"
 
 
-# set pointer [ lindex $L 0 ] 
-# set length  [ lindex $L 1 ] 
+# set pointer [ lindex $L 0 ]
+# set length  [ lindex $L 1 ]
 
 # puts "pointer: $pointer length: $length"
 

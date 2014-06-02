@@ -150,12 +150,13 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   CctwDataChunk *chunkData = g_Application->m_InputData->readChunk(chunkIndex);
 
   if (chunkData == NULL) {
-    Tcl_SetResult(interp, "input chunk is not present\n", TCL_STATIC);
+    Tcl_SetResult(interp, (char*) "input chunk is not present\n", TCL_STATIC);
     return TCL_ERROR;
   }
 
-  CctwIntVector3D cksz = chunkData->chunkSize();
-  int             cklen = cksz.volume();
+  // Currently unused
+  // CctwIntVector3D cksz = chunkData->chunkSize();
+  // int             cklen = cksz.volume();
 
   // Perform the transform
   QMap<int,CctwDataChunk*> outputChunks;
@@ -164,23 +165,36 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
 
   printf("products: %i\n", outputChunks.size());
 
-  // Assemble the output Tcl objects
-  Tcl_Obj *result          = Tcl_NewListObj(0, NULL);
+  // Assemble the output list: A list of tuples
+  // TODO: Study range of outputChunks.size() to figure out how to construct this list efficiently
+  Tcl_Obj *result = Tcl_NewListObj(0, NULL);
 
   foreach (CctwDataChunk *outputChunk, outputChunks)
   {
-    Tcl_Obj *blob = Tcl_NewListObj(0, NULL);
-    Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(outputChunk->index()));
-    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer()));
-    Tcl_ListObjAppendElement(interp, blob, Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->weightsPointer()));
-    Tcl_ListObjAppendElement(interp, blob, Tcl_NewIntObj(outputChunk->chunkSize().volume()));
+    // Add each chunk as a tuple to the output: (index, data blob, weights blob, length)
+    // A blob is a pair: (pointer, length)
 
+    // Construct the Tcl objects
+    Tcl_Obj *index = Tcl_NewIntObj(outputChunk->index());
+    int blob_length = outputChunk->chunkSize().volume() * sizeof(CctwChunkedData::MergeDataType);
+    Tcl_Obj *blob_length_tcl = Tcl_NewIntObj(blob_length);
+    Tcl_Obj *data_pointer = Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->dataPointer());
+    Tcl_Obj * const blob_data_array[] = { data_pointer, blob_length_tcl };
+    Tcl_Obj *blob_data  = Tcl_NewListObj(2, blob_data_array);
+    Tcl_Obj *weights_pointer = Tcl_NewWideIntObj((Tcl_WideInt) outputChunk->weightsPointer());
+    Tcl_Obj * const blob_weights_array[] = { weights_pointer, blob_length_tcl };
+    Tcl_Obj *blob_weights  = Tcl_NewListObj(2, blob_weights_array);
+
+    // Assemble the tuple
+    Tcl_Obj * const tuple_array[] = { index, blob_data, blob_weights, blob_length_tcl };
+    Tcl_Obj *tuple = Tcl_NewListObj(4, tuple_array);
+    // Add the tuple to the output list
+    Tcl_ListObjAppendElement(interp, result, tuple);
+
+    // Clean up
     outputChunk->detachData();
     outputChunk->detachWeights();
-
     delete outputChunk;
-
-    Tcl_ListObjAppendElement(interp, result, blob);
   }
 
   g_Application->m_InputData->releaseChunk(chunkIndex);
