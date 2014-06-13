@@ -74,6 +74,24 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_UBMat21->setValue(ubMat(2,1));
   ui->m_UBMat22->setValue(ubMat(2,2));
 
+  CctwDoubleMatrix3x3 oMat = parms->oMat();
+
+  ui->m_OMat00->setValue(oMat(0,0));
+  ui->m_OMat01->setValue(oMat(0,1));
+  ui->m_OMat02->setValue(oMat(0,2));
+  ui->m_OMat10->setValue(oMat(1,0));
+  ui->m_OMat11->setValue(oMat(1,1));
+  ui->m_OMat12->setValue(oMat(1,2));
+  ui->m_OMat20->setValue(oMat(2,0));
+  ui->m_OMat21->setValue(oMat(2,1));
+  ui->m_OMat22->setValue(oMat(2,2));
+
+  CctwDoubleVector3D oVec = parms->oVec();
+
+  ui->m_OVec0->setValue(oVec(0));
+  ui->m_OVec1->setValue(oVec(1));
+  ui->m_OVec2->setValue(oVec(2));
+
   ui->m_Det0x->setValue(parms->det0x());
   ui->m_Det0y->setValue(parms->det0y());
 
@@ -183,6 +201,28 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   ubMat(2,2) = ui->m_UBMat22->value();
 
   parms->setUBMat(ubMat);
+
+  CctwDoubleMatrix3x3 oMat;
+
+  oMat(0,0) = ui->m_OMat00->value();
+  oMat(0,1) = ui->m_OMat01->value();
+  oMat(0,2) = ui->m_OMat02->value();
+  oMat(1,0) = ui->m_OMat10->value();
+  oMat(1,1) = ui->m_OMat11->value();
+  oMat(1,2) = ui->m_OMat12->value();
+  oMat(2,0) = ui->m_OMat20->value();
+  oMat(2,1) = ui->m_OMat21->value();
+  oMat(2,2) = ui->m_OMat22->value();
+
+  parms->setOMat(oMat);
+
+  CctwDoubleVector3D oVec;
+
+  oVec(0) = ui->m_OVec0->value();
+  oVec(1) = ui->m_OVec1->value();
+  oVec(2) = ui->m_OVec2->value();
+
+  parms->setOVec(oVec);
 
   parms->setDet0x(ui->m_Det0x->value());
   parms->setDet0y(ui->m_Det0y->value());
