@@ -25,6 +25,8 @@ public:
 
   CctwUnitCell        unitCell() const;
   CctwDoubleMatrix3x3 ubMat() const;
+  CctwDoubleMatrix3x3 oMat() const;
+  CctwDoubleVector3D  oVec() const;
 
   double det0x() const;
   double det0y() const;
@@ -59,6 +61,8 @@ public:
 
   void setUnitCell(CctwUnitCell uc);
   void setUBMat(CctwDoubleMatrix3x3 ub);
+  void setOMat(CctwDoubleMatrix3x3 om);
+  void setOVec(CctwDoubleVector3D ov);
 
   void setDet0x(double d0x);
   void setDet0y(double d0y);
@@ -94,6 +98,8 @@ private:
 
   CctwUnitCell        m_UnitCell;
   CctwDoubleMatrix3x3 m_UBMat;
+  CctwDoubleMatrix3x3 m_OMat;
+  CctwDoubleVector3D  m_OVec;
 
   double m_Det0x;
   double m_Det0y;
@@ -129,6 +135,8 @@ public:
 
   Q_PROPERTY(CctwUnitCell unitCell           READ unitCell             WRITE setUnitCell             NOTIFY parametersChanged)
   Q_PROPERTY(CctwDoubleMatrix3x3 ubMat       READ ubMat                WRITE setUBMat                NOTIFY parametersChanged)
+  Q_PROPERTY(CctwDoubleMatrix3x3 oMat        READ oMat                 WRITE setOMat                 NOTIFY parametersChanged)
+  Q_PROPERTY(CctwDoubleVector3D  oVec        READ oVec                 WRITE setOVec                 NOTIFY parametersChanged)
 
   Q_PROPERTY(double det0x                    READ det0x                WRITE setDet0x                NOTIFY parametersChanged)
   Q_PROPERTY(double det0y                    READ det0y                WRITE setDet0y                NOTIFY parametersChanged)

@@ -18,11 +18,10 @@ void CctwCrystalCoordinateTransform::updateFromParameters()
   m_ChiAngle      = m_Parms->chiNom() + m_Parms->chiCorrection();
 
   m_GridBasisInv  = m_Parms->gridBasis().inverted();
-  m_OMat          = CctwDoubleMatrix3x3(0.0, -1.0, 0.0,
-                                        0.0, 0.0, 1.0,
-                                        -1.0, 0.0, 0.0);
 
+  m_OMat          = m_Parms->oMat();
   m_OMatInv       = m_OMat.inverted();
+  m_OVec          = m_Parms->oVec();
 
   m_UBMatInv      = m_Parms->ubMat().inverted();
 
@@ -160,6 +159,8 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(CctwDoubleVector3D
   double scale = 1.0/m_Parms->wavelength();
 
   xyz = m_OMatInv*xyz;
+  xyz = xyz - m_OVec;
+
   xyz = m_DMatInv*xyz;
   xyz = xyz - m_CD;
   xyz = xyz.normalized();
@@ -253,6 +254,9 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::qlab2pixel(CctwDoubleVector3D
   xyz = xyz + m_CD;
 
   xyz = m_DMat*xyz;
+
+  xyz = xyz + m_OVec;
+
   xyz = m_OMat*xyz;
 
   return xyz;

@@ -55,6 +55,7 @@ public slots:
   CctwDoubleMatrix3x3 gMat() { return m_GMat; }
   CctwDoubleMatrix3x3 dMat() { return m_DMat; }
   CctwDoubleMatrix3x3 oMat() { return m_OMat; }
+  CctwDoubleVector3D  oVec() { return m_OVec; }
 
   CctwDoubleMatrix3x3 ubMatInv() { return m_UBMatInv; }
   CctwDoubleMatrix3x3 gridBasisInv() { return m_GridBasisInv; }
@@ -84,6 +85,7 @@ public:
   CctwDoubleMatrix3x3 m_GMat;
   CctwDoubleMatrix3x3 m_DMat;
   CctwDoubleMatrix3x3 m_OMat;
+  CctwDoubleVector3D  m_OVec;
 
 private:
   CctwDoubleMatrix3x3 m_UBMatInv;

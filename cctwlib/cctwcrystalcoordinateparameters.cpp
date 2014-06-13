@@ -18,6 +18,10 @@ void CctwCrystalCoordinateParameters::setDefaults()
                                -0.247516, -0.000885, 0.001892,
                                0.000736, 0.172899, 0.177127));
 
+  setOMat(CctwDoubleMatrix3x3(0.0, -1.0, 0.0,
+                              0.0, 0.0, 1.0,
+                              -1.0, 0.0, 0.0));
+
   setDet0x(1041.266200);
   setDet0y(989.624800);
 
@@ -55,6 +59,8 @@ double CctwCrystalCoordinateParameters::distance() const { return m_Distance; }
 
 CctwUnitCell        CctwCrystalCoordinateParameters::unitCell() const { return m_UnitCell; }
 CctwDoubleMatrix3x3 CctwCrystalCoordinateParameters::ubMat() const { return m_UBMat; }
+CctwDoubleMatrix3x3 CctwCrystalCoordinateParameters::oMat() const  { return m_OMat; }
+CctwDoubleVector3D  CctwCrystalCoordinateParameters::oVec() const  { return m_OVec; }
 
 double CctwCrystalCoordinateParameters::det0x() const { return m_Det0x; }
 double CctwCrystalCoordinateParameters::det0y() const { return m_Det0y; }
@@ -89,6 +95,8 @@ void CctwCrystalCoordinateParameters::setDistance(double d) { m_Distance = d; }
 
 void CctwCrystalCoordinateParameters::setUnitCell(CctwUnitCell uc) { m_UnitCell = uc; }
 void CctwCrystalCoordinateParameters::setUBMat(CctwDoubleMatrix3x3 ub) { m_UBMat = ub; }
+void CctwCrystalCoordinateParameters::setOMat(CctwDoubleMatrix3x3 om) { m_OMat = om; }
+void CctwCrystalCoordinateParameters::setOVec(CctwDoubleVector3D ov) { m_OVec = ov; }
 
 void CctwCrystalCoordinateParameters::setDet0x(double d0x) { m_Det0x = d0x; }
 void CctwCrystalCoordinateParameters::setDet0y(double d0y) { m_Det0y = d0y; }
