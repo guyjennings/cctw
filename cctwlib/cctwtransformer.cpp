@@ -242,7 +242,12 @@ void CctwTransformer::transformChunkData(int chunkId,
     }
   }
 
-  printMessage(tr("Transform chunk data: %1: done. Time %2 s").arg(chunkId).arg(time.elapsed()/1000.0,5));
+#ifndef QT_NO_DEBUG_OUTPUT
+  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks")
+               .arg(chunkId)
+               .arg(time.elapsed()/1000.0,5)
+               .arg(outputChunks.count()));
+#endif
 }
 
 void CctwTransformer::transform()
