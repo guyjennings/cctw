@@ -287,6 +287,8 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridOffset.x() = ui->m_GridOffsetX->value();
   gridOffset.y() = ui->m_GridOffsetY->value();
   gridOffset.z() = ui->m_GridOffsetZ->value();
+
+  parms->setGridOffset(gridOffset);
 }
 
 double CctwqtSetupTransformDialog::rad2deg(double rad)
