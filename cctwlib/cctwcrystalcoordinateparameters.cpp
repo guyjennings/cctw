@@ -89,6 +89,8 @@ CctwDoubleMatrix3x3 CctwCrystalCoordinateParameters::gridBasis() const { return 
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridDim() const { return m_GridDim; }
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridOffset() const { return m_GridOffset; }
 
+int CctwCrystalCoordinateParameters::extraFlip() const { return m_ExtraFlip; }
+
 void CctwCrystalCoordinateParameters::setPixelSize(double sz) { m_PixelSize = sz; }
 void CctwCrystalCoordinateParameters::setWavelength(double wv) { m_Wavelength = wv; }
 void CctwCrystalCoordinateParameters::setDistance(double d) { m_Distance = d; }
@@ -125,3 +127,4 @@ void CctwCrystalCoordinateParameters::setGridBasis(CctwDoubleMatrix3x3 bas) { m_
 void CctwCrystalCoordinateParameters::setGridDim(CctwDoubleVector3D dim) { m_GridDim = dim; }
 void CctwCrystalCoordinateParameters::setGridOffset(CctwDoubleVector3D off) { m_GridOffset = off; }
 
+void CctwCrystalCoordinateParameters::setExtraFlip(int extra) { m_ExtraFlip = extra; }
