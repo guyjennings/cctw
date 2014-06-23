@@ -144,7 +144,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPos(double x, double y)
 {
   double pixelSize = m_Parms->pixelSize();
 
-  if (m_Parms->extraFlip()) {
+  if (m_Parms->get_ExtraFlip()) {
     return CctwDoubleVector3D(((2048-y)+0.5 - m_Parms->det0x())*pixelSize,
                               ((2048-x)+0.5 - m_Parms->det0y())*pixelSize, 0.0);
   } else {
@@ -279,7 +279,7 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPix(CctwDoubleVector3D 
   detpix.x() = (int)(xyz.x()/m_Parms->pixelSize() + m_Parms->det0x() - 0.5);
   detpix.y() = (int)(xyz.y()/m_Parms->pixelSize() + m_Parms->det0y() - 0.5);
 
-  if (m_Parms->extraFlip()) {
+  if (m_Parms->get_ExtraFlip()) {
     double x = detpix.x();
     double y = detpix.y();
 

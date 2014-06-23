@@ -1,6 +1,7 @@
 #ifndef CCTWCRYSTALCOORDINATEPARAMETERS_H
 #define CCTWCRYSTALCOORDINATEPARAMETERS_H
 
+#include "qcepproperty.h"
 #include "cctwobject.h"
 #include "cctwvector3d.h"
 #include "cctwmatrix3x3.h"
@@ -55,7 +56,7 @@ public:
   CctwDoubleVector3D  gridDim() const;
   CctwDoubleVector3D  gridOffset() const;
 
-  int extraFlip() const;
+//  int extraFlip() const;
 
   void setPixelSize(double sz);
   void setWavelength(double wv);
@@ -93,7 +94,7 @@ public:
   void setGridDim(CctwDoubleVector3D dim);
   void setGridOffset(CctwDoubleVector3D off);
 
-  void setExtraFlip(int extra);
+//  void setExtraFlip(int extra);
 
 private:
   double m_PixelSize;
@@ -132,8 +133,6 @@ private:
   CctwDoubleVector3D  m_GridDim;
   CctwDoubleVector3D  m_GridOffset;
 
-  int m_ExtraFlip;
-
 public:
   Q_PROPERTY(double pixelSize                READ pixelSize            WRITE setPixelSize            NOTIFY parametersChanged)
   Q_PROPERTY(double wavelength               READ wavelength           WRITE setWavelength           NOTIFY parametersChanged)
@@ -171,7 +170,8 @@ public:
   Q_PROPERTY(CctwDoubleVector3D  gridDim     READ gridDim              WRITE setGridDim              NOTIFY parametersChanged)
   Q_PROPERTY(CctwDoubleVector3D  gridOffset  READ gridOffset           WRITE setGridOffset           NOTIFY parametersChanged)
 
-  Q_PROPERTY(int extraFlip                   READ extraFlip            WRITE setExtraFlip            NOTIFY parametersChanged)
+  Q_PROPERTY(bool extraFlip                  READ get_ExtraFlip        WRITE set_ExtraFlip           NOTIFY parametersChanged)
+  QCEP_BOOLEAN_PROPERTY(ExtraFlip)
 };
 
 #endif // CCTWCRYSTALCOORDINATEPARAMETERS_H

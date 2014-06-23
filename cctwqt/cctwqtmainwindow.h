@@ -6,7 +6,6 @@
 #include <QDateTime>
 #include "cctwapplication.h"
 #include "cctwqtsetupimportdialog.h"
-#include "cctwqtsetupinputdialog.h"
 #include "cctwqtsetupoutputdialog.h"
 #include "cctwqtsetuptransformdialog.h"
 #include "cctwqtsetupcomparedialog.h"
@@ -40,7 +39,10 @@ public slots:
   void doEvaluateCommand();
   void doSetupImport();
   void doImport();
-  void doSetupInput();
+  void doBrowseInputFile();
+  void doCheckDataFile(QString path);
+  void doBrowseInputDataset(QString entry);
+  void doCheckDataset(QString name);
   void doSetupOutput();
   void doSetupTransform();
   void doTransform();
@@ -80,7 +82,6 @@ private:
   CctwqtTransformTester      *m_TransformTester;
 
   QPointer<CctwqtSetupImportDialog>      m_SetupImportDialog;
-  QPointer<CctwqtSetupInputDialog>       m_SetupInputDialog;
   QPointer<CctwqtSetupOutputDialog>      m_SetupOutputDialog;
   QPointer<CctwqtSetupTransformDialog>   m_SetupTransformDialog;
   QPointer<CctwqtSetupCheckImportDialog> m_SetupCheckImportDialog;

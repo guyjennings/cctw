@@ -19,7 +19,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   ui(new Ui::CctwqtMainWindow),
   m_Application(app),
   m_TransformTester(NULL),
-  m_SetupInputDialog(NULL),
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
   m_Legend(NULL),
@@ -36,9 +35,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_ActionImportData, SIGNAL(triggered()), this, SLOT(doImport()));
   connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
-
-  connect(ui->m_ActionSetupInputData, SIGNAL(triggered()), this, SLOT(doSetupInput()));
-  connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
 
   connect(ui->m_ActionSetupOutputData, SIGNAL(triggered()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
@@ -134,6 +130,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
                                            ui->m_InputHDFChunkZ);
   }
 
+  connect(ui->m_BrowseInputFile, SIGNAL(clicked()), this, SLOT(doBrowseInputFile()));
+  connect(ui->m_InputDataFileName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataFile(QString)));
+  connect(ui->m_BrowseInputDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowseInputDataset(QString)));
+  connect(ui->m_InputDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataset(QString)));
+
   CctwChunkedData *outputData = app->m_OutputData;
 
   if (outputData) {
@@ -173,6 +174,12 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     xform->prop_OversampleX()->linkTo(ui->m_OversampleX);
     xform->prop_OversampleY()->linkTo(ui->m_OversampleY);
     xform->prop_OversampleZ()->linkTo(ui->m_OversampleZ);
+  }
+
+  CctwCrystalCoordinateParameters *parms= app->parameters();
+
+  if (parms) {
+    parms->prop_ExtraFlip()->linkTo(ui->m_ExtraFlip);
   }
 
   connect(ui->m_ActionProjectBrowse, SIGNAL(triggered()), this, SLOT(doBrowseProject()));
@@ -293,15 +300,100 @@ void CctwqtMainWindow::doImport()
   QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
 
-void CctwqtMainWindow::doSetupInput()
+void CctwqtMainWindow::doBrowseInputFile()
 {
-  if (m_SetupInputDialog == NULL) {
-    m_SetupInputDialog = new CctwqtSetupInputDialog(this, m_Application->m_InputData);
-    m_SetupInputDialog -> show();
-  }
+  CctwChunkedData *inputData = m_Application->m_InputData;
 
-  m_SetupInputDialog->raise();
-  m_SetupInputDialog->activateWindow();
+  if (inputData) {
+    QString path = QFileDialog::getOpenFileName(this, "Input File",
+                                                inputData->get_DataFileName());
+
+    if (path.length() > 0) {
+      inputData->set_DataFileName(path);
+    }
+  }
+}
+
+static herr_t iterate_objects(hid_t o_id,
+                              const char *name,
+                              const H5O_info_t *object_info,
+                              void *op_data)
+{
+//  printf("Object: %s\n", name);
+
+  if (object_info) {
+    switch (object_info->type) {
+    case H5O_TYPE_DATASET:
+      if (op_data) {
+        QStringList *sl = (QStringList*)(op_data);
+
+        if (sl) {
+          sl->append(QString("/%1").arg(name));
+        }
+      }
+      break;
+    }
+  }
+  return 0;
+}
+
+static QStringList iterateHDF5datasets(QString path)
+{
+  /* Save old error handler */
+  H5E_auto2_t  old_func;
+  void *old_client_data;
+
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  QStringList paths;
+
+  hid_t file = H5Fopen(qPrintable(path), H5F_ACC_RDONLY, H5P_DEFAULT);
+
+//  H5Giterate(file, "/", NULL, dataset, &paths);
+
+//  H5Lvisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_links, &paths);
+
+  H5Ovisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_objects, &paths);
+
+  /* Close file */
+  herr_t ret = H5Fclose(file);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return paths;
+}
+
+void CctwqtMainWindow::doCheckDataFile(QString path)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataFile(\"%1\")").arg(path));
+//  }
+
+  QStringList paths = iterateHDF5datasets(path);
+
+  ui->m_BrowseInputDataset->clear();
+  ui->m_BrowseInputDataset->addItem("");
+  ui->m_BrowseInputDataset->addItems(paths);
+}
+
+void CctwqtMainWindow::doBrowseInputDataset(QString entry)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doBrowseInputDataset(%1)").arg(entry));
+//  }
+
+  ui->m_InputDataSetName->setText(entry);
+}
+
+void CctwqtMainWindow::doCheckDataset(QString name)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataset(\"%1\")").arg(name));
+//  }
 }
 
 void CctwqtMainWindow::doSetupOutput()
