@@ -642,8 +642,13 @@ bool CctwChunkedData::openOutputFile()
         c[1] = cksz.y();
         c[2] = cksz.x();
 
+        float zero = 0.0;
+
         if (H5Pset_chunk(plist, 3, c) < 0) {
           printMessage("Failed to set chunk size");
+          res = false;
+        } else if (H5Pset_fill_value(plist, H5T_NATIVE_FLOAT, &zero)) {
+          printMessage("Failed to set fill value");
           res = false;
         } else if (cmprs) {
           if (H5Pset_deflate(plist, cmprs) < 0) {
