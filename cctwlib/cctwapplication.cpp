@@ -1006,7 +1006,7 @@ void CctwApplication::reportOutputDependencies()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          reportInputDependencies(idx);
+          reportOutputDependencies(idx);
         }
       }
     }
