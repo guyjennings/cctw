@@ -74,6 +74,7 @@ public slots:
   CctwDataChunk      *readChunk(int n);
   void                writeChunk(int n);
   void                releaseChunk(int n);
+  void                releaseChunkData(int n);
   void                normalizeChunk(int n);
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();

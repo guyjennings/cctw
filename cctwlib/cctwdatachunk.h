@@ -90,7 +90,7 @@ private:
   int                                        m_DataWritten;
   int                                        m_WeightsWritten;
   QVector< int >                             m_Dependencies;
-  QMutex                                     m_DependenciesLock;
+  mutable QMutex                             m_DependenciesLock;
   QMutex                                     m_MergeLock;
   int                                        m_MergeCounter;
   QList< CctwChunkedData::MergeDataType* >   m_MergeData;

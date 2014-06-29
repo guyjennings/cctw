@@ -360,6 +360,16 @@ void CctwChunkedData::releaseChunk(int n)
   }
 }
 
+void CctwChunkedData::releaseChunkData(int n)
+{
+  CctwDataChunk *chk = chunk(n);
+
+  if (chk) {
+    chk->deallocateData();
+    chk->deallocateWeights();
+  }
+}
+
 CctwDataChunk *CctwChunkedData::chunk(CctwIntVector3D idx)
 {
   return chunk(chunkNumberFromIndex(idx));
@@ -929,7 +939,7 @@ void CctwChunkedData::writeChunk(int n)
       }
     }
 
-    releaseChunk(n);
+    releaseChunkData(n);
   }
 }
 

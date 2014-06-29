@@ -144,7 +144,7 @@ void CctwTransformer::transformChunkNumber(int chunkId)
       delete outputChunk;
     }
 
-    m_InputData->releaseChunk(chunkId);
+    m_InputData->releaseChunkData(chunkId);
   }
   else {
     printMessage(tr("Could not read chunk: %1").arg(chunkId));

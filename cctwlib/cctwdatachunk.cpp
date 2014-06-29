@@ -58,6 +58,10 @@ CctwIntVector3D CctwDataChunk::calculateChunkSize()
 
 CctwDataChunk::~CctwDataChunk()
 {
+  if (dependencyCount()) {
+    printMessage("Deleting chunk with deps");
+  }
+
   if (m_OwnData) {
     releaseBuffer(m_ChunkData);
     releaseBuffer(m_ChunkWeights);
@@ -301,16 +305,22 @@ void CctwDataChunk::clearDependencies()
 
 void CctwDataChunk::sortDependencies()
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   qSort(m_Dependencies.begin(), m_Dependencies.end());
 }
 
 int  CctwDataChunk::dependencyCount() const
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   return m_Dependencies.count();
 }
 
 int CctwDataChunk::dependency(int n) const
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   return m_Dependencies.value(n);
 }
 
