@@ -860,7 +860,7 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
         delete imgz;
       }
 
-      m_InputData->releaseChunk(i);
+      m_InputData->releaseChunkData(i);
     }
 
     m_MergeCounter.fetchAndAddOrdered(-1);
