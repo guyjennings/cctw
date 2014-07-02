@@ -23,6 +23,6 @@ win32 {
     QMAKE_LFLAGS += -g
 }
 
-unix:!macx {
-  LIBS += -ltcmalloc
-}
+#unix:!macx {
+#  LIBS += -ltcmalloc
+#}
