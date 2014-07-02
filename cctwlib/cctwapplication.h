@@ -43,6 +43,7 @@ public slots:
   void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void wait(QString msg);
+  void evaluateStartupCommand(QString cmd);
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 

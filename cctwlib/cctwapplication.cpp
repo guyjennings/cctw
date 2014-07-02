@@ -401,7 +401,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
 #endif
 
   foreach(QString cmd, get_StartupCommands()) {
-    QMetaObject::invokeMethod(this, "evaluateCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
+    QMetaObject::invokeMethod(this, "evaluateStartupCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
   }
 
   if (!get_GuiWanted()) {
@@ -447,6 +447,17 @@ void CctwApplication::wait(QString msg)
   waitCompleted();
 
 //  printMessage(tr("Wait: %1").arg(msg));
+}
+
+void CctwApplication::evaluateStartupCommand(QString cmd)
+{
+  if (m_ScriptEngine) {
+    QScriptValue val = m_ScriptEngine->evaluate(cmd);
+
+    if (!val.isUndefined()) {
+      printMessage(tr("%1").arg(val.toString()));
+    }
+  }
 }
 
 void CctwApplication::evaluateCommand(QString cmd)
