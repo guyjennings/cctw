@@ -12,6 +12,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
  QT += concurrent
 }
 
+macx {
+  CONFIG -= app_bundle
+}
+
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-szip.pri)
 include(../submodules/qceplib/qceplib-zlib.pri)

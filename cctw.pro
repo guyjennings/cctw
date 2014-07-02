@@ -14,11 +14,13 @@ TEMPLATE = subdirs
 SUBDIRS  = cctwqt
 
 unix {
-SUBDIRS += cctwlib cctwtcl cctwcli
+#SUBDIRS += cctwlib
+SUBDIRS += cctwtcl
+SUBDIRS += cctwcli
 }
 
 unix:!macx {
-SUBDIRS += cctwmpi
+#SUBDIRS += cctwmpi
 }
 
 OTHER_FILES += Doxyfile \
