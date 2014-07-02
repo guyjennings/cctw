@@ -83,7 +83,8 @@ public slots:
   void                endTransform();
 
   bool                openOutputFile();
-  bool                openInputFile();
+  bool                checkInputFile();
+  bool                openInputFile(bool quietly = true);
   bool                openInputNeXusFile();
   void                closeOutputFile();
   void                closeInputFile();

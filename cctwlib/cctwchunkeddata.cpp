@@ -43,6 +43,7 @@ CctwChunkedData::CctwChunkedData
 {
   allocateChunks();
   connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+  connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
   connect(this, SIGNAL(dimensionsChanged(CctwIntVector3D)), prop_Dimensions(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkSizeChanged(CctwIntVector3D)), prop_ChunkSize(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkCountChanged(CctwIntVector3D)), prop_ChunkCount(), SLOT(setValue(CctwIntVector3D)));
@@ -164,8 +165,7 @@ void CctwChunkedData::setDataSource(QString desc)
 void CctwChunkedData::onDataFileNameChanged()
 {
   if (m_IsInput) {
-    openInputFile();
-    closeInputFile();
+    checkInputFile();
   }
 }
 
@@ -411,7 +411,26 @@ void CctwChunkedData::normalizeChunk(int n)
   }
 }
 
-bool CctwChunkedData::openInputFile()
+bool CctwChunkedData::checkInputFile()
+{
+  /* Save old error handler */
+  herr_t (*old_func)(hid_t, void*);
+  void *old_client_data;
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  bool res = openInputFile(true);
+  closeInputFile();
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return res;
+}
+
+bool CctwChunkedData::openInputFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -421,8 +440,11 @@ bool CctwChunkedData::openInputFile()
 
   QString fileName    = get_DataFileName();
   QString dataSetName = get_DataSetName();
-  printMessage(tr("About to open input file: %1 dataset: %2")
+
+  if (!quietly) {
+    printMessage(tr("About to open input file: %1 dataset: %2")
                   .arg(fileName).arg(dataSetName));
+  }
 
   QFileInfo f(fileName);
 
@@ -477,14 +499,18 @@ bool CctwChunkedData::openInputFile()
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
 
-    printMessage(tr("openInputFile(): OK.\n"));
-
+    if (!quietly) {
+      printMessage(tr("openInputFile(): OK.\n"));
+    }
   }
   catch (QString &msg )
   {
-    printMessage(tr("Anomaly in CctwChunkedData::openInputFile fileId=%1, dsetId=%2, dspcId=%3")
-                 .arg(fileId).arg(dsetId).arg(dspcId));
-    printMessage(msg);
+    if (!quietly) {
+      printMessage(tr("Anomaly in CctwChunkedData::openInputFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
     if (dspcId >= 0) H5Sclose(dspcId);
     if (dsetId >= 0) H5Dclose(dsetId);
     if (fileId >= 0) H5Fclose(fileId);
