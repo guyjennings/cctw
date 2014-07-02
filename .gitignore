@@ -1,9 +1,9 @@
+.gitignore
 *~
 *.o
 *.so
 *.so.*
 *.d
-.gitignore
 .cproject
 .project
 .settings
