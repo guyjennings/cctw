@@ -1,0 +1,40 @@
+#!/bin/bash -eu 
+
+# CCTW-TRANSFORM
+# Wrapper script for cctwcli transform capability
+
+CCTW_BIN=$( cd $( dirname $0 ) ; /bin/pwd )
+
+usage()
+{
+  echo "CCTW-TRANSFORM"
+  echo
+  echo "usage: cctw-transform <SETTINGS> <INPUT> <OUTPUT>"
+}
+  
+while getopts "h" OPTION
+do
+  case ${OPTION} in 
+    h) 
+      usage 
+      exit 0
+  esac
+done
+
+if [[ ${#*} != 3 ]] 
+then
+  usage 
+  exit 1
+fi
+
+SETTINGS=$1
+INPUT=$2
+OUTPUT=$3
+
+${CCTW_BIN}/cctwcli -p ${SETTINGS}  \
+  -c "cctw.calculateDependencies()" \
+  -c "transformer.transform()"
+
+# Local Variables: 
+# mode: sh
+# End:
