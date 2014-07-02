@@ -31,6 +31,8 @@ SETTINGS=$1
 INPUT=$2
 OUTPUT=$3
 
+# TODO: Figure out how to set input and output locations with QScript
+
 ${CCTW_BIN}/cctwcli -p ${SETTINGS}  \
   -c "cctw.calculateDependencies()" \
   -c "transformer.transform()"
