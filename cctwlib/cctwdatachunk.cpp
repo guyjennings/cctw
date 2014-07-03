@@ -394,8 +394,8 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 
   if (c) {
     if (mergeCount() == 0) {
-      printMessage(tr("Output chunk [%1] started")
-                   .arg(index()));
+//      printMessage(tr("Output chunk [%1] started")
+//                   .arg(index()));
     }
 
     if (c->index() != index()) {
@@ -447,8 +447,8 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
     incMergeCounters();
 
     if (mergeCount() == dependencyCount()) {
-      printMessage(tr("Output chunk [%1] completed")
-                   .arg(index()));
+//      printMessage(tr("Output chunk [%1] completed")
+//                   .arg(index()));
 
       if (m_Data) {
         m_Data->writeChunk(index());

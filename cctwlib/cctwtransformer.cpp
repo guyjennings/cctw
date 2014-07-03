@@ -159,7 +159,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 #ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
