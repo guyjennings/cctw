@@ -625,12 +625,18 @@ void CctwApplication::setOutputDataset(QString data)
 
 void CctwApplication::partialTransform(QString desc)
 {
-  printMessage(tr("Partial transform of %1").arg(desc));
+//  printMessage(tr("Partial transform of %1").arg(desc));
+
+  if (m_Transformer) {
+    m_Transformer->transform();
+  }
 }
 
 void CctwApplication::partialDependencies(QString desc)
 {
-  printMessage(tr("Partial dependencies of %1").arg(desc));
+//  printMessage(tr("Partial dependencies of %1").arg(desc));
+
+  calculateDependencies();
 }
 
 void CctwApplication::readSettings()
