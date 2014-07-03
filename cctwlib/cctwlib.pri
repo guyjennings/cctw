@@ -20,8 +20,6 @@ SOURCES += \
     $${PWD}/cctwvector3d.cpp \
     $${PWD}/cctwmatrix3x3.cpp \
     $${PWD}/cctwcrystalcoordinatetransform.cpp \
-    $${PWD}/cctwrotationtransform.cpp \
-    $${PWD}/cctwcompoundtransform.cpp \
     $${PWD}/cctwchunkeddata.cpp \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
@@ -50,8 +48,6 @@ HEADERS += \
     $${PWD}/cctwvector3d.h \
     $${PWD}/cctwmatrix3x3.h \
     $${PWD}/cctwcrystalcoordinatetransform.h \
-    $${PWD}/cctwrotationtransform.h \
-    $${PWD}/cctwcompoundtransform.h \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \

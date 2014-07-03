@@ -161,14 +161,21 @@ upload-dox.commands = rsync -e ssh -av --del dox/html/ guyjennings,$${TARGET}@we
 
 QMAKE_EXTRA_TARGETS += tarball
 
-tarball.depends = FORCE
+tarball.depends = FORCE $${TARGET}.spec
 
 tarball.commands += \
       rm -rf $${TARGET}-$${VERSION} ; \
       $(MKDIR) $${TARGET}-$${VERSION} && \
 
 tarball.commands += \
-      $(COPY_FILE) -R $${PWD}/* $${TARGET}-$${VERSION}/ &&
+      $(COPY_FILE) -R $${PWD}/* $${TARGET}-$${VERSION}/ && \
+      $(COPY_FILE) $${TARGET}.spec -t $${TARGET}-$${VERSION} &&
 
 tarball.commands += \
   tar -czf $${TARGET}-$${VERSION}.tar.gz $${TARGET}-$${VERSION} ; rm -rf $${TARGET}-$${VERSION}
+
+QMAKE_EXTRA_TARGETS += specfile
+
+specfile.target = $${TARGET}.spec
+specfile.depends = $${PWD}/$${TARGET}.spec.in $${PWD}/$${TARGET}-version.pri
+specfile.commands = perl -p -e '\'s/Version:.*/Version: $${VERSION}/\'' $${PWD}/$${TARGET}.spec.in > $${TARGET}.spec
