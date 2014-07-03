@@ -11,6 +11,8 @@ usage()
   echo
   echo "usage: cctw-transform <SETTINGS> <INPUT> <OUTPUT>"
 }
+
+VERBOSE=0
   
 while getopts "h" OPTION
 do
@@ -18,6 +20,10 @@ do
     h) 
       usage 
       exit 0
+      ;;
+    v) 
+      (( ++VERBOSE )) 
+      ;;
   esac
 done
 
@@ -27,6 +33,11 @@ then
   exit 1
 fi
 
+if (( VERBOSE )) 
+then 
+  set -x 
+fi
+
 SETTINGS=$1
 INPUT=$2
 OUTPUT=$3
@@ -34,6 +45,8 @@ OUTPUT=$3
 # TODO: Figure out how to set input and output locations with QScript
 
 ${CCTW_BIN}/cctwcli -p ${SETTINGS}  \
+  --input  ${INPUT}                 \
+  --output ${OUTPUT}                \
   -c "cctw.calculateDependencies()" \
   -c "transformer.transform()"
 
