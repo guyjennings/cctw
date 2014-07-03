@@ -380,7 +380,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
   m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
 
+#ifndef NO_GUI
   readSettings();
+#endif
 
   if (m_Saver) {
     m_Saver->start();
@@ -498,7 +500,9 @@ void CctwApplication::executeScriptFile(QString path)
 
       QScriptValue val = m_ScriptEngine->evaluate(script, path, 1);
 
-      printMessage(tr("Result -> %1").arg(val.toString()));
+      if (!val.isUndefined()) {
+        printMessage(tr("%1").arg(val.toString()));
+      }
     }
   }
 }
