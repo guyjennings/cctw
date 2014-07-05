@@ -8,19 +8,20 @@ greaterThan(QT_MAJOR_VERSION, 4) {
   cache()
 }
 
+
 include(cctw-version.pri)
 
 TEMPLATE = subdirs
-SUBDIRS  = cctwqt
+BUILD_CCTWQT:  SUBDIRS  = cctwqt
 
 unix {
-#SUBDIRS += cctwlib
-SUBDIRS += cctwtcl
-SUBDIRS += cctwcli
+BUILD_CCTWLIB: SUBDIRS += cctwlib
+BUILD_CCTWTCL: SUBDIRS += cctwtcl
+BUILD_CCTWCLI: SUBDIRS += cctwcli
 }
 
 unix:!macx {
-#SUBDIRS += cctwmpi
+BUILD_CCTWMPI: SUBDIRS += cctwmpi
 }
 
 OTHER_FILES += Doxyfile \

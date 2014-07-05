@@ -37,8 +37,10 @@ public slots:
   void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void doEvaluateCommand();
+#ifdef WANT_IMPORT_COMMANDS
   void doSetupImport();
   void doImport();
+#endif
   void doBrowseInputFile();
   void doCheckDataFile(QString path);
   void doBrowseInputDataset(QString entry);
@@ -62,9 +64,11 @@ public slots:
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 
   void doCompareHDF5();
-  void doCheckImportedData();
 
+#ifdef WANT_IMPORT_COMMANDS
+  void doCheckImportedData();
   void updateImportImagePaths(QStringList p);
+#endif
 
   void doBrowseProject();
   void doProjectInput();
@@ -81,7 +85,9 @@ private:
   CctwApplication            *m_Application;
   CctwqtTransformTester      *m_TransformTester;
 
+#ifdef WANT_IMPORT_COMMANDS
   QPointer<CctwqtSetupImportDialog>      m_SetupImportDialog;
+#endif
   QPointer<CctwqtSetupOutputDialog>      m_SetupOutputDialog;
   QPointer<CctwqtSetupTransformDialog>   m_SetupTransformDialog;
   QPointer<CctwqtSetupCheckImportDialog> m_SetupCheckImportDialog;

@@ -14,7 +14,11 @@
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwpeingresscommand.h"
+
+#ifdef WANT_IMPORT_COMMANDS
 #include "cctwimporter.h"
+#endif
+
 #include "cctwcomparer.h"
 
 class CctwqtMainWindow;
@@ -140,7 +144,9 @@ public:
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
+#ifdef WANT_IMPORT_COMMANDS
   CctwImporter                       *m_ImportData;
+#endif
   CctwComparer                       *m_CompareData;
   CctwChunkedData                    *m_InputData;
   CctwChunkedData                    *m_OutputData;

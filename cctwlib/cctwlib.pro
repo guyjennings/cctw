@@ -18,7 +18,7 @@ include(../submodules/qceplib/qceplib-hdf5.pri)
 include(../submodules/qceplib/qceplib-tiff.pri)
 include(../submodules/qceplib/qceplib-cbf.pri)
 include(../submodules/qceplib/qceplib-mar345.pri)
-include(../submodules/qceplib/qceplib-qwt.pri)
+#include(../submodules/qceplib/qceplib-qwt.pri)
 #include(../submodules/qceplib/qceplib-nexus.pri)
 
 include(cctwlib.pri)

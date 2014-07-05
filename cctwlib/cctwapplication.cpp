@@ -14,9 +14,12 @@
 #include "cctwunitcellproperty.h"
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
+
+#ifdef WANT_IMPORT_COMMANDS
 #include "qcepimagedataformatcbf.h"
 #include "qcepimagedataformatmar345.h"
 #include "qcepimagedataformattiff.h"
+#endif
 
 #include <hdf5.h>
 #include "lzf_filter.h"
@@ -27,9 +30,11 @@
 
 QcepSettingsSaverPtr g_Saver;
 
+#ifdef WANT_IMPORT_COMMANDS
 QcepImageDataFormatCBF<double> cbfImg("cbf");
 QcepImageDataFormatTiff<double> tiffImg("tiff");
 QcepImageDataFormatMar345<double> mar345Img("mar345");
+#endif
 
 CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
@@ -42,7 +47,9 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Window(NULL),
 #endif
   m_Parameters(NULL),
+#ifdef WANT_IMPORT_COMMANDS
   m_ImportData(NULL),
+#endif
   m_CompareData(NULL),
   m_InputData(NULL),
   m_OutputData(NULL),
@@ -334,7 +341,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   decodeCommandLineArgs(argc, argv);
 
+#ifdef WANT_IMPORT_COMMANDS
   m_ImportData       = new CctwImporter(this, "importData", this);
+#endif
 
   m_CompareData      = new CctwComparer(this, "compareData", this);
 
@@ -369,7 +378,10 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
+#ifdef WANT_IMPORT_COMMANDS
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
+#endif
+
   m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
   m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
   m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
@@ -667,9 +679,11 @@ void CctwApplication::readSettings(QSettings *settings)
     m_Parameters->readSettings(settings, "parameters");
   }
 
+#ifdef WANT_IMPORT_COMMANDS
   if (m_ImportData) {
     m_ImportData->readSettings(settings, "importData");
   }
+#endif
 
   if (m_CompareData) {
     m_CompareData->readSettings(settings, "compareData");
@@ -733,9 +747,11 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_Parameters->writeSettings(settings, "parameters");
   }
 
+#ifdef WANT_IMPORT_COMMANDS
   if (m_ImportData) {
     m_ImportData->writeSettings(settings, "importData");
   }
+#endif
 
   if (m_CompareData) {
     m_CompareData->writeSettings(settings, "compareData");
