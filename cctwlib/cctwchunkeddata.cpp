@@ -422,7 +422,7 @@ bool CctwChunkedData::checkInputFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openInputFile(true);
-  closeInputFile();
+  closeInputFile(true);
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -519,7 +519,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeInputFile()
+void CctwChunkedData::closeInputFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -541,7 +541,9 @@ void CctwChunkedData::closeInputFile()
     m_FileId = -1;
   }
 
-  printMessage("Closed input file");
+  if (!quietly) {
+    printMessage("Closed input file");
+  }
 }
 
 #if NEXUS_ENABLED == 1
