@@ -93,6 +93,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
 #else
   ui->m_ParametersTabs->removeTab(5);
+  ui->m_Menubar->removeAction(ui->m_AnalysisMenu->menuAction());
 #endif
 
 #ifdef WANT_IMPORT_COMMANDS
@@ -115,6 +116,8 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   }
 #else
   ui->m_ParametersTabs->removeTab(0);
+  ui->m_FileMenu->removeAction(ui->m_ActionSetupDataImport);
+  ui->m_FileMenu->removeAction(ui->m_ActionImportData);
 #endif
 
   CctwChunkedData *inputData = app->m_InputData;
