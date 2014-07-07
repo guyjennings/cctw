@@ -14,6 +14,10 @@
 #include <QUrlQuery>
 #endif
 
+#ifdef WANT_ANALYSIS_COMMANDS
+#include "qcepimagedataformattiff.h"
+#endif
+
 CctwTransformer::CctwTransformer(CctwApplication        *application,
                                  CctwChunkedData *input,
                                  CctwChunkedData *output,
