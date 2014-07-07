@@ -16,6 +16,7 @@
 
 #ifdef WANT_ANALYSIS_COMMANDS
 #include "qcepimagedataformattiff.h"
+#include "qcepimagedata.h"
 #endif
 
 CctwTransformer::CctwTransformer(CctwApplication        *application,
