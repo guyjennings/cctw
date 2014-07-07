@@ -3,8 +3,10 @@ CCTW_VERSION = 0.1.2
 VERSION = $${CCTW_VERSION}
 
 exists(cctw-config-local.pri) {
+    message(reading local config)
     include(cctw-config-local.pri)
 } else {
+    message(reading default config)
     include(cctw-config-default.pri)
 }
 
