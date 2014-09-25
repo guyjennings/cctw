@@ -514,15 +514,9 @@ void CctwApplication::executeScriptFile(QString path)
 
       QScriptValue val = m_ScriptEngine->evaluate(script, path, 1);
 
-<<<<<<< HEAD
       m_ScriptEngine->checkForExceptions();
 
       printMessage(tr("Result -> %1").arg(val.toString()));
-=======
-      if (!val.isUndefined()) {
-        printMessage(tr("%1").arg(val.toString()));
-      }
->>>>>>> 3678dbba9fb32ad73669c11c80afed773e1f91bf
     }
   }
 }
@@ -560,9 +554,12 @@ void CctwApplication::showHelp(QString about)
 void CctwApplication::showVersion()
 {
   printLine(tr("cctw   version " STR(CCTW_VERSION)));
+  printLine(tr("qt     version %1").arg(qVersion()));
   printLine(tr("ceplib version " STR(QCEPLIB_VERSION)));
   printLine(tr("hdf5   version " STR(QCEPLIB_HDF5_VERSION)));
+#ifndef NO_GUI
   printLine(tr("qwt    version " STR(QCEPLIB_QWT_VERSION)));
+#endif
   printLine(tr("tiff   version " STR(QCEPLIB_TIFF_VERSION)));
   printLine(tr("cbf    version " STR(QCEPLIB_CBF_VERSION)));
 }
