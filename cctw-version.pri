@@ -2,6 +2,14 @@ CCTW_VERSION = 0.1.3
 
 VERSION = $${CCTW_VERSION}
 
+exists(cctw-config-local.pri) {
+    message(reading local config)
+    include(cctw-config-local.pri)
+} else {
+    message(reading default config)
+    include(cctw-config-default.pri)
+}
+
 DESTDIR      = ../bin/
 
 MOC_DIR = moc
@@ -26,3 +34,11 @@ win32 {
 #unix:!macx {
 #  LIBS += -ltcmalloc
 #}
+
+INCLUDE_IMPORT_COMMANDS {
+    DEFINES += WANT_IMPORT_COMMANDS
+}
+
+INCLUDE_ANALYSIS_COMMANDS {
+    DEFINES += WANT_ANALYSIS_COMMANDS
+}

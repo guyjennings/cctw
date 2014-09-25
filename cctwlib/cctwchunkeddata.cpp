@@ -422,7 +422,7 @@ bool CctwChunkedData::checkInputFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openInputFile(true);
-  closeInputFile();
+  closeInputFile(true);
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -500,7 +500,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
     m_DataspaceId = dspcId;
 
     if (!quietly) {
-      printMessage(tr("openInputFile(): OK.\n"));
+      printMessage(tr("Opened input file OK"));
     }
   }
   catch (QString &msg )
@@ -519,11 +519,9 @@ bool CctwChunkedData::openInputFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeInputFile()
+void CctwChunkedData::closeInputFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
-
-//  printMessage("About to close input file");
 
   if (m_IsNeXus)
     closeInputNeXusFile();
@@ -541,6 +539,10 @@ void CctwChunkedData::closeInputFile()
   if (m_FileId >= 0) {
     H5Fclose(m_FileId);
     m_FileId = -1;
+  }
+
+  if (!quietly) {
+    printMessage("Closed input file");
   }
 }
 
@@ -594,11 +596,14 @@ bool CctwChunkedData::openOutputFile()
     return true;
   }
 
-  printMessage("About to open output file");
+  QString fileName = get_DataFileName();
+  QString dataSetName = get_DataSetName();
+
+  printMessage(tr("About to open output file: %1 dataset: %2")
+                .arg(fileName).arg(dataSetName));
 
   int res = true;
 
-  QString fileName = get_DataFileName();
   QFileInfo f(fileName);
 
   hid_t fileId = -1;
@@ -627,7 +632,17 @@ bool CctwChunkedData::openOutputFile()
   }
 
   if (fileId >= 0) {
+    herr_t (*old_func)(hid_t, void*);
+    void *old_client_data;
+    H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+    /* Turn off error handling */
+    H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
     dsetId = H5Dopen(fileId, qPrintable(get_DataSetName()), H5P_DEFAULT);
+
+    /* Restore previous error handler */
+    H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
 
     if (dsetId >= 0) {
       dspcId = H5Dget_space(dsetId);
@@ -652,7 +667,7 @@ bool CctwChunkedData::openOutputFile()
             if (dims[0] != (hsize_t) dimensions().z() ||
                 dims[1] != (hsize_t) dimensions().y() ||
                 dims[2] != (hsize_t) dimensions().x()) {
-              printMessage("Dataspace dimensions do not match imported data");
+              printMessage("Dataspace dimensions do not match output data");
               res = false;
             }
           }
@@ -732,6 +747,8 @@ bool CctwChunkedData::openOutputFile()
     m_FileId      = fileId;
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
+
+    printMessage("Opened output file OK");
   }
 
   return res;
@@ -740,8 +757,6 @@ bool CctwChunkedData::openOutputFile()
 void CctwChunkedData::closeOutputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
-
-  printMessage("About to close output file");
 
   if (m_DataspaceId >= 0) {
     H5Sclose(m_DataspaceId);
@@ -757,6 +772,8 @@ void CctwChunkedData::closeOutputFile()
     H5Fclose(m_FileId);
     m_FileId = -1;
   }
+
+  printMessage("Closed output file");
 }
 
 //CctwDataChunk *CctwChunkedData::readChunk(int n)
@@ -804,7 +821,7 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
       chk->allocateData();
       chk->allocateWeights();
 
-      printMessage(tr("About to read chunk %1").arg(n));
+//      printMessage(tr("About to read chunk %1").arg(n));
 
       if (m_FileId >= 0) {
         hid_t memspace_id = -1;
@@ -901,7 +918,7 @@ void CctwChunkedData::writeChunk(int n)
   if (openOutputFile()) {
     QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-    printMessage(tr("About to write chunk %1").arg(n));
+    printMessage(tr("Writing chunk %1").arg(n));
 
     CctwDataChunk *chk = chunk(n);
 
@@ -974,7 +991,7 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
   m_IsInput = isInput;
   m_TransformOptions = transformOptions;
 
-  printMessage("CctwChunkedData::beginTransform()");
+//  printMessage("CctwChunkedData::beginTransform()");
 
   if (m_IsInput) {
     openInputFile();
@@ -985,7 +1002,7 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
 void CctwChunkedData::endTransform()
 {
-  printMessage("CctwChunkedData::endTransform()");
+//  printMessage("CctwChunkedData::endTransform()");
 
   if (m_IsInput) {
     closeInputFile();

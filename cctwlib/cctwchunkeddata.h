@@ -84,10 +84,10 @@ public slots:
 
   bool                openOutputFile();
   bool                checkInputFile();
-  bool                openInputFile(bool quietly = true);
+  bool                openInputFile(bool quietly = false);
   bool                openInputNeXusFile();
   void                closeOutputFile();
-  void                closeInputFile();
+  void                closeInputFile(bool quietly = false);
   void                closeInputNeXusFile();
 
 private slots:

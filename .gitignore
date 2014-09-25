@@ -15,3 +15,5 @@ cctwtcl/libCctwTcl.so*
 cctwtcl/pkgIndex.tcl
 *.tif
 *.h5
+cctw-config-local.pri
+

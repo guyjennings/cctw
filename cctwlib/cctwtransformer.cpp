@@ -8,10 +8,15 @@
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
 #include "qcepmutexlocker.h"
-#include "qcepimagedataformattiff.h"
+#include <QFile>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
 #include <QUrlQuery>
+#endif
+
+#ifdef WANT_ANALYSIS_COMMANDS
+#include "qcepimagedataformattiff.h"
+#include "qcepimagedata.h"
 #endif
 
 CctwTransformer::CctwTransformer(CctwApplication        *application,
@@ -159,7 +164,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 #ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
@@ -758,6 +763,8 @@ void CctwTransformer::addDependency(int f, int t)
   m_OutputData->addDependency(t, f);
 }
 
+#ifdef WANT_ANALYSIS_COMMANDS
+
 void CctwTransformer::projectInput(QString path, int axes)
 {
   projectDataset(path, m_InputData, axes);
@@ -973,3 +980,5 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     printMessage(tr("Projection complete after %1 sec").arg(get_WallTime()));
   }
 }
+
+#endif

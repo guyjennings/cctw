@@ -30,11 +30,13 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_CommandInput, SIGNAL(returnPressed()), this, SLOT(doEvaluateCommand()));
 
+#ifdef WANT_IMPORT_COMMANDS
   connect(ui->m_ActionSetupDataImport, SIGNAL(triggered()), this, SLOT(doSetupImport()));
   connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
 
   connect(ui->m_ActionImportData, SIGNAL(triggered()), this, SLOT(doImport()));
   connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
+#endif
 
   connect(ui->m_ActionSetupOutputData, SIGNAL(triggered()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
@@ -68,14 +70,10 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
   connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
 
-  connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
-  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
 
-  connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
-  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
-
-  connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
+#ifdef WANT_IMPORT_COMMANDS
   connect(ui->m_ActionCheckImportedData, SIGNAL(triggered()), this, SLOT(doCheckImportedData()));
+#endif
 
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
@@ -85,6 +83,20 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   app->prop_Halting()->linkTo(ui->m_Halting);
 
+#ifdef WANT_ANALYSIS_COMMANDS
+  connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
+  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
+
+  connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
+  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
+
+  connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
+#else
+  ui->m_ParametersTabs->removeTab(5);
+  ui->m_Menubar->removeAction(ui->m_AnalysisMenu->menuAction());
+#endif
+
+#ifdef WANT_IMPORT_COMMANDS
   CctwImporter *import = app->m_ImportData;
 
   if (import) {
@@ -102,6 +114,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
     updateImportImagePaths(import->get_ImagePaths());
   }
+#else
+  ui->m_ParametersTabs->removeTab(0);
+  ui->m_FileMenu->removeAction(ui->m_ActionSetupDataImport);
+  ui->m_FileMenu->removeAction(ui->m_ActionImportData);
+#endif
 
   CctwChunkedData *inputData = app->m_InputData;
 
@@ -278,6 +295,7 @@ void CctwqtMainWindow::doEvaluateCommand()
   QMetaObject::invokeMethod(m_Application, "evaluateCommand", Q_ARG(QString, cmd));
 }
 
+#ifdef WANT_IMPORT_COMMANDS
 void CctwqtMainWindow::updateImportImagePaths(QStringList p)
 {
   ui->m_ImportDataImages->clear();
@@ -299,6 +317,7 @@ void CctwqtMainWindow::doImport()
 {
   QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
 }
+#endif
 
 void CctwqtMainWindow::doBrowseInputFile()
 {
@@ -630,6 +649,7 @@ void CctwqtMainWindow::doCompareHDF5()
   m_SetupCompareDialog->activateWindow();
 }
 
+#ifdef WANT_IMPORT_COMMANDS
 void CctwqtMainWindow::doCheckImportedData()
 {
   if (m_SetupCheckImportDialog == NULL) {
@@ -640,6 +660,7 @@ void CctwqtMainWindow::doCheckImportedData()
   m_SetupCheckImportDialog->raise();
   m_SetupCheckImportDialog->activateWindow();
 }
+#endif
 
 void CctwqtMainWindow::doBrowseProject()
 {

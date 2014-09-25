@@ -1789,7 +1789,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
+  <widget class="QMenuBar" name="m_Menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -1798,7 +1798,7 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="m_FileMenu">
     <property name="title">
      <string>File</string>
     </property>
@@ -1811,7 +1811,7 @@
     <addaction name="separator"/>
     <addaction name="m_ActionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuTransform">
+   <widget class="QMenu" name="m_TransformMenu">
     <property name="title">
      <string>Transform</string>
     </property>
@@ -1824,7 +1824,7 @@
     <addaction name="m_ActionProjectInput"/>
     <addaction name="m_ActionProjectOutput"/>
    </widget>
-   <widget class="QMenu" name="menuDependencies">
+   <widget class="QMenu" name="m_DependenciesMenu">
     <property name="title">
      <string>Dependencies</string>
     </property>
@@ -1834,7 +1834,7 @@
     <addaction name="m_ActionReportInputDependencies"/>
     <addaction name="m_ActionReportOutputDependencies"/>
    </widget>
-   <widget class="QMenu" name="menuAnalysis">
+   <widget class="QMenu" name="m_AnalysisMenu">
     <property name="title">
      <string>Analysis</string>
     </property>
@@ -1845,10 +1845,10 @@
     <addaction name="m_ActionCheckImportedData"/>
     <addaction name="m_ActionCompareTwoHDF5"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuTransform"/>
-   <addaction name="menuDependencies"/>
-   <addaction name="menuAnalysis"/>
+   <addaction name="m_FileMenu"/>
+   <addaction name="m_TransformMenu"/>
+   <addaction name="m_DependenciesMenu"/>
+   <addaction name="m_AnalysisMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="m_ActionSaveSettings">

@@ -48,8 +48,10 @@ public slots:
   void dummyTransform2();
   void dummyTransform3();
 
+#ifdef WANT_ANALYSIS_COMMANDS
   void projectInput(QString path, int axes);
   void projectOutput(QString path, int axes);
+#endif
 
 public:
   virtual void writeSettings(QSettings *set, QString section);
@@ -60,8 +62,10 @@ private:
   void runTransformChunkNumber(int n);
   void runDummyTransformChunkNumber(int n);
 
+#ifdef WANT_ANALYSIS_COMMANDS
   void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
   void projectDataset(QString path, CctwChunkedData *data, int axes);
+#endif
 
 private:
   CctwApplication         *m_Application;
