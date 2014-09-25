@@ -464,3 +464,17 @@ QScriptValue CctwScriptEngine::partialDependenciesFunc(QScriptContext *context, 
 //{
 //  object = value.toQObject();
 //}
+
+void CctwScriptEngine::checkForExceptions()
+{
+  if (hasUncaughtException())
+  {
+    QScriptValue exception     = uncaughtException();
+    int          exceptionLine = uncaughtExceptionLineNumber();
+
+    if (m_Application) {
+      m_Application -> printMessage(tr("Script resulted in exception!"));
+      m_Application -> printMessage(tr("Line %1: %2").arg(exceptionLine).arg(exception.toString()));
+    }
+  }
+}

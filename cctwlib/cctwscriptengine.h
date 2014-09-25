@@ -13,7 +13,8 @@ public:
 signals:
   
 public slots:
-  
+  void checkForExceptions();
+
 public:
   CctwApplication* application() const;
 

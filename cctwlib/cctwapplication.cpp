@@ -454,6 +454,8 @@ void CctwApplication::evaluateStartupCommand(QString cmd)
   if (m_ScriptEngine) {
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
 
+    m_ScriptEngine->checkForExceptions();
+
     if (!val.isUndefined()) {
       printMessage(tr("%1").arg(val.toString()));
     }
@@ -464,6 +466,8 @@ void CctwApplication::evaluateCommand(QString cmd)
 {
   if (m_ScriptEngine) {
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
+
+    m_ScriptEngine->checkForExceptions();
 
     if (val.isUndefined()) {
       printMessage(tr("%1").arg(cmd));
@@ -477,11 +481,9 @@ QScriptValue CctwApplication::evaluate(QString cmd)
 {
   if (m_ScriptEngine) {
     QScriptValue result = m_ScriptEngine->evaluate(cmd);
-    if (m_ScriptEngine->hasUncaughtException())
-    {
-      QScriptValue exception = m_ScriptEngine->uncaughtException();
-      printMessage(tr("Script resulted in exception!"));
-    }
+
+    m_ScriptEngine->checkForExceptions();
+
     return result;
   } else {
     return QScriptValue();
@@ -497,6 +499,8 @@ void CctwApplication::executeScriptFile(QString path)
       QString script = f.readAll();
 
       QScriptValue val = m_ScriptEngine->evaluate(script, path, 1);
+
+      m_ScriptEngine->checkForExceptions();
 
       printMessage(tr("Result -> %1").arg(val.toString()));
     }
