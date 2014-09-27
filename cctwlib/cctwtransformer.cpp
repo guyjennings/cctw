@@ -195,7 +195,7 @@ void CctwTransformer::transformChunkData(int chunkId,
             for (int ox=0; ox<osx; ox++) {
               CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
               CctwDoubleVector3D xfmcoord = transform.forward(coords);
-              CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+              CctwIntVector3D pixels(xfmcoord);
 
               if (m_OutputData->containsPixel(pixels)) {
                 int opchunk = m_OutputData->chunkContaining(pixels);
@@ -710,7 +710,7 @@ QcepIntList CctwTransformer::dependencies(int n)
           for (int x=0; x<chSize.x(); x++) {
             CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
             CctwDoubleVector3D xfmcoord = transform.forward(coords);
-            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+            CctwIntVector3D pixels(xfmcoord);
 
             if (m_OutputData->containsPixel(pixels)) {
               int opchunk = m_OutputData->chunkContaining(pixels);

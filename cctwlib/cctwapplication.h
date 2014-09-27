@@ -110,6 +110,8 @@ public slots:
   QcepIntList dependencies(int chunkId);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void testing();
+
 public:
 #ifndef NO_GUI
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);

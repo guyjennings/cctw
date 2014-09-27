@@ -855,8 +855,7 @@ void CctwApplication::calculateChunkDependencies(int n)
 
                   CctwDoubleVector3D xfmcoord = transform.forward(coords);
 
-                  CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
-                      CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+                  CctwIntVector3D    pixels(xfmcoord);
 
                   if (m_OutputData->containsPixel(pixels)) {
                     int opchunk  = m_OutputData->chunkContaining(pixels);
@@ -1251,4 +1250,13 @@ int CctwApplication::inputChunkCount()
 int CctwApplication::outputChunkCount()
 {
   return m_OutputData->chunkCount().volume();
+}
+
+void CctwApplication::testing()
+{
+  CctwDoubleVector3D dv1(1.2,2.2,3.2), dv2(-1.2,-2.2,-3.2);
+
+  CctwIntVector3D iv1(dv1), iv2(dv2);
+
+  printMessage(tr("iv1 = %1, iv2 = %2").arg(iv1.toString()).arg(iv2.toString()));
 }
