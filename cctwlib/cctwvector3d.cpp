@@ -18,6 +18,24 @@ CctwVector3D<T>::CctwVector3D()
 }
 
 template <typename T>
+template <typename T2>
+CctwVector3D<T>::CctwVector3D(const CctwVector3D<T2> &v)
+{
+  m_Vector[0] = v.x();
+  m_Vector[1] = v.y();
+  m_Vector[2] = v.z();
+}
+
+template <>
+template <>
+CctwVector3D<int>::CctwVector3D(const CctwVector3D<double> &v)
+{
+  m_Vector[0] = floor(v.x());
+  m_Vector[1] = floor(v.y());
+  m_Vector[2] = floor(v.z());
+}
+
+template <typename T>
 CctwVector3D<T> CctwVector3D<T>::operator + (const CctwVector3D<T> &vec) const
 {
   return CctwVector3D<T>(x()+vec.x(), y()+vec.y(), z()+vec.z());
