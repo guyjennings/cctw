@@ -20,9 +20,9 @@ BUILD_CCTWTCL: SUBDIRS += cctwtcl
 BUILD_CCTWCLI: SUBDIRS += cctwcli
 }
 
-unix:!macx {
-BUILD_CCTWMPI: SUBDIRS += cctwmpi
-}
+#unix:!macx {
+#BUILD_CCTWMPI: SUBDIRS += cctwmpi
+#}
 
 OTHER_FILES += Doxyfile \
     cctw.dox \
