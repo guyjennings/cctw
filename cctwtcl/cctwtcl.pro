@@ -44,6 +44,8 @@ defined(TCL, var) {
     INCLUDEPATH += $${TCL}/include
     LIBS += -L$${TCL}/lib -ltcl8.6
 } else {
+    # This is the include path for APT package tcl-dev
+    INCLUDEPATH += /usr/include/tcl8.6
     LIBS += -ltcl
 }
 
