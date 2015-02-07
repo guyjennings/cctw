@@ -1,8 +1,9 @@
+.gitignore
 *~
 *.o
 *.so
+*.so.*
 *.d
-.gitignore
 .cproject
 .project
 .settings
@@ -10,9 +11,9 @@ Makefile
 adlb.clog2
 ui_*.h
 moc
-cctw
-cctwqt/cctwqt
 cctwtcl/libCctwTcl.so*
 cctwtcl/pkgIndex.tcl
 *.tif
 *.h5
+cctw-config-local.pri
+

@@ -1,15 +1,20 @@
 
 /**
-   Use turbine -n 4 to get 2 workers
+   CCTW TEST 2
 */
 
 import blob;
 import io;
+import sys;
 
 import cctw;
 
 main
 {
-  blob tiff = cctw_chunk_read("pznpt4_0070.tif");
-  printf("blob_size: %i", blob_size(tiff));
+  foreach i in [0:9]
+  {
+    blob b = cctw_input(getenv("HOME")/"nexus-data/pznpt.nxs",
+                        "entry/data/v", i);
+    printf("blob_size: %i", blob_size(b));
+  }
 }

@@ -1,5 +1,4 @@
 #include "cctwtransformer.h"
-#include "cctwcommandline.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -8,147 +7,59 @@
 #include <QtConcurrentRun>
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
+#include "qcepmutexlocker.h"
+#include <QFile>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
 #include <QUrlQuery>
 #endif
 
-CctwTransformer::CctwTransformer(CctwApplication *application,
-                                 CctwInputDataInterface *input,
-                                 CctwOutputDataInterface *output,
+#ifdef WANT_ANALYSIS_COMMANDS
+#include "qcepimagedataformattiff.h"
+#include "qcepimagedata.h"
+#endif
+
+CctwTransformer::CctwTransformer(CctwApplication        *application,
+                                 CctwChunkedData *input,
+                                 CctwChunkedData *output,
                                  CctwTransformInterface *xform,
-                                 int osx, int osy, int osz, int nTests, QObject *parent) :
-  CctwObject(parent),
+                                 /*int osx, int osy, int osz, */QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Application(application),
   m_InputData(input),
   m_OutputData(output),
   m_Transform(xform),
-  m_OversampleX(osx),
-  m_OversampleY(osy),
-  m_OversampleZ(osz),
-  m_Tests(nTests),
-  m_ChunkCount(input->chunkCount()),
-  m_ChunksTotal(m_ChunkCount.x()*m_ChunkCount.y()*m_ChunkCount.z()),
-  m_ChunksUsed(NULL),
+//  m_OversampleX(osx),
+//  m_OversampleY(osy),
+//  m_OversampleZ(osz),
+  m_ImageX(NULL),
+  m_ImageY(NULL),
+  m_ImageZ(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
-  //  m_BlocksAvailable(QcepSettingsSaverWPtr(), this, "blocksAvailable", 0, "Blocks Available"),
-  //  m_BlocksAllocated(QcepSettingsSaverWPtr(), this, "blocksAllocated", 0, "Blocks Allocated"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_BlocksMax(QcepSettingsSaverWPtr(), this, "blocksMax", 0, "Max Blocks Used")
+  m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options"),
+  m_OversampleX(m_Application->saver(), this, "oversampleX", 1, "Oversampling along X"),
+  m_OversampleY(m_Application->saver(), this, "oversampleY", 1, "Oversampling along Y"),
+  m_OversampleZ(m_Application->saver(), this, "oversampleZ", 1, "Oversampling along Z"),
+  m_ProjectX(m_Application->saver(), this, "projectX", true, "Project along X"),
+  m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
+  m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
+  m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images")
 {
-  m_ChunksUsed = new int[m_ChunksTotal];
 }
 
 CctwTransformer::~CctwTransformer()
 {
-  delete [] m_ChunksUsed;
 }
 
-void CctwTransformer::markInputChunkNeeded(CctwIntVector3D idx)
+void CctwTransformer::writeSettings(QSettings *set, QString section)
 {
-  static int errCount = 0;
-  static int chnkCount = 0;
-
-  if (idx.x() >= 0 && idx.x() < m_ChunkCount.x() &&
-      idx.y() >= 0 && idx.y() < m_ChunkCount.y() &&
-      idx.z() >= 0 && idx.z() < m_ChunkCount.z()) {
-    int n = XYZtoID(m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z(),
-                    idx.x(), idx.y(), idx.z());
-
-    if (n >= 0 && n < m_ChunksTotal) {
-      if (m_ChunksUsed) {
-        if (m_ChunksUsed[n] == false) {
-          m_ChunksUsed[n] = true;
-
-          if (chnkCount++ < 100) {
-            printf("Chunk %d used\n", n);
-          }
-        }
-      }
-    } else {
-      if (errCount++ < 100) {
-        printf("n (%d) out of range [0..%d)\n", n, m_ChunksTotal);
-      }
-    }
-  } else {
-    if (errCount++ < 100) {
-      printf("idx (%d,%d,%d) out of range [[0,0,0]..[%d,%d,%d])\n",
-             idx.x(), idx.y(), idx.z(), m_ChunkCount.x(), m_ChunkCount.y(), m_ChunkCount.z());
-    }
-  }
+  CctwObject::writeSettings(set, section);
 }
 
-int CctwTransformer::XYZtoID(int max_x, int max_y, int max_z,
-                             int x, int y, int z)
+void CctwTransformer::readSettings(QSettings *set, QString section)
 {
-  return x*max_y*max_z + y*max_z + z;
-}
-
-void CctwTransformer::performTests()
-{
-  printf("Performing tests\n");
-
-#ifndef WIN32
-  for (int i=0; i<m_Tests; i++) {
-    {
-      double rot1 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-      double rot2 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-      double rot3 = 2.0*M_PI*(double)random()/(double)RAND_MAX;
-
-      bool invertible;
-
-      CctwDoubleMatrix3x3 m1 = CctwDoubleMatrix3x3::rotationMatrix(rot1, rot2, rot3);
-      CctwDoubleMatrix3x3 m2 = m1.inverted(&invertible);
-      CctwDoubleMatrix3x3 m3 = m1*m2;
-
-      double det = m3.determinant();
-
-      double sum1 = fabs(m3(0,0)) + fabs(m3(1,1)) + fabs(m3(2,2));
-      double sum2 = fabs(m3(0,1)) + fabs(m3(0,2)) + fabs(m3(1,2));
-      double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
-
-      printf("Iter %d.0: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
-
-      double x = (double)random();
-      double y = (double)random();
-      double z = (double)random();
-
-      CctwDoubleVector3D v1(x,y,z);
-      CctwDoubleVector3D v2 = m1*v1;
-      CctwDoubleVector3D v3 = m2*v2;
-
-      double sum4 = (v1 - v3).length();
-
-      printf("Iter %d.1: Len %g\n", i, sum4);
-    }
-
-    {
-      double a = (double)random();
-      double b = (double)random();
-      double c = (double)random();
-      double d = (double)random();
-      double e = (double)random();
-      double f = (double)random();
-      double g = (double)random();
-      double h = (double)random();
-      double k = (double)random();
-
-      bool invertible;
-
-      CctwDoubleMatrix3x3 m1(a,b,c,d,e,f,g,h,k);
-      CctwDoubleMatrix3x3 m2 = m1.inverted(&invertible);
-      CctwDoubleMatrix3x3 m3 = m1*m2;
-
-      double det = m3.determinant();
-
-      double sum1 = fabs(m3(0,0)) + fabs(m3(1,1)) + fabs(m3(2,2));
-      double sum2 = fabs(m3(0,1)) + fabs(m3(0,2)) + fabs(m3(1,2));
-      double sum3 = fabs(m3(1,0)) + fabs(m3(2,0)) + fabs(m3(2,1));
-
-      printf("Iter %d.2: Det %g, Diag %g, Upper %g, Lower %g\n", i, det, sum1, sum2 ,sum3);
-    }
-  }
-#endif
+  CctwObject::readSettings(set, section);
 }
 
 void CctwTransformer::runTransformChunkNumber(int n)
@@ -167,77 +78,58 @@ void CctwTransformer::runTransformChunkNumber(int n)
   }
 }
 
-void CctwTransformer::transformChunkNumber(int n)
+
+void CctwTransformer::saveDependencies(QString path)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  QFile f(path);
 
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
-  CctwIntVector3D lastChunkIndex(-1, -1, -1);
-  CctwDataChunk *inputChunk = m_InputData->chunk(idx);
-  CctwDataChunk *lastChunk = NULL;
+  if (f.open(QFile::WriteOnly | QFile::Truncate)) {
+    QTextStream s(&f);
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+    int nchunk = m_InputData->chunkCount().volume();
 
-  if (inputChunk) {
-    inputChunk->waitForData();
+    for (int i=0; i<nchunk; i++) {
+      CctwDataChunk *chunk = m_InputData->chunk(i);
 
-    QMap<CctwIntVector3D, CctwDataChunk*> outputChunks;
+      chunk->sortDependencies();
 
-    inputChunk->readData();
-    inputChunk->readWeights();
+      int n = chunk->dependencyCount();
 
-    for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwIntVector3D iprelat(x,y,z);
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
-          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+      for (int j=0; j<n; j++) {
+        int o = chunk->dependency(j);
 
-          if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
-            CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
-
-            if (opchunk != lastChunkIndex) {
-
-              lastChunkIndex = opchunk;
-
-              if (!outputChunks.contains(lastChunkIndex)) {
-//                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
-//                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
-//                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
-
-                CctwDataChunk *chunk =
-                    new CctwDataChunk(m_OutputData, lastChunkIndex, NULL, NULL);
-
-                if (chunk) {
-                  chunk->allocateData();
-                  chunk->allocateWeights();
-                }
-
-                outputChunks[lastChunkIndex] = chunk;
-              }
-
-              lastChunk = outputChunks[lastChunkIndex];
-            }
-
-            if (lastChunk) {
-              double oval = lastChunk->data(oprelat);
-              double owgt = lastChunk->weight(oprelat);
-              double ival = inputChunk->data(iprelat);
-              double iwgt = inputChunk->weight(iprelat);
-
-              if (iwgt != 0) {
-                lastChunk->setData(oprelat, oval+ival);
-                lastChunk->setWeight(oprelat, owgt+iwgt);
-              }
-            }
-          }
-        }
+        s << i << "\t" << o << endl;
       }
     }
+  }
+}
+
+void CctwTransformer::loadDependencies(QString path)
+{
+  clearDependencies();
+
+  QFile f(path);
+
+  if (f.open(QFile::ReadOnly)) {
+    QTextStream s(&f);
+    int i,o;
+
+    while (!s.atEnd()) {
+      s >> i >> o;
+
+      addDependency(i, o);
+    }
+  }
+}
+
+void CctwTransformer::transformChunkNumber(int chunkId)
+{
+  CctwDataChunk *inputChunk = m_InputData->readChunk(chunkId);
+  QMap<int, CctwDataChunk*> outputChunks;
+
+  if (inputChunk) {
+
+    transformChunkData(chunkId, inputChunk, outputChunks);
 
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
@@ -257,8 +149,110 @@ void CctwTransformer::transformChunkNumber(int n)
       delete outputChunk;
     }
 
-    inputChunk->finishedWithData();
+    m_InputData->releaseChunkData(chunkId);
   }
+  else {
+    printMessage(tr("Could not read chunk: %1").arg(chunkId));
+    exit(1);
+  }
+}
+
+void CctwTransformer::transformChunkData(int chunkId,
+                                         CctwDataChunk *inputChunk,
+                                         QMap<int, CctwDataChunk*> &outputChunks)
+{
+#ifndef QT_NO_DEBUG_OUTPUT
+  QTime time;
+  time.start();
+//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+#endif
+
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(),
+                                           tr("transform-%1").arg(chunkId), NULL);
+
+  CctwDataChunk *lastChunk = NULL;
+
+  CctwIntVector3D chStart = inputChunk->chunkStart();
+  CctwIntVector3D chSize  = inputChunk->chunkSize();
+  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+
+  int lastChunkIndex = -1;
+
+  int osx = get_OversampleX();
+  int osy = get_OversampleY();
+  int osz = get_OversampleZ();
+
+  double osxstp = osx >= 1 ? 1.0/osx : 0;
+  double osystp = osy >= 1 ? 1.0/osy : 0;
+  double oszstp = osz >= 1 ? 1.0/osz : 0;
+
+  for (int z=0; z<chSize.z(); z++) {
+    for (int oz=0; oz<osz; oz++) {
+      for (int y=0; y<chSize.y(); y++) {
+        for (int oy=0; oy<osy; oy++) {
+          for (int x=0; x<chSize.x(); x++) {
+            CctwIntVector3D iprelat(x,y,z);
+            for (int ox=0; ox<osx; ox++) {
+              CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
+              CctwDoubleVector3D xfmcoord = transform.forward(coords);
+              CctwIntVector3D pixels(xfmcoord);
+
+              if (m_OutputData->containsPixel(pixels)) {
+                int opchunk = m_OutputData->chunkContaining(pixels);
+                CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
+
+                if (opchunk != lastChunkIndex) {
+
+                  lastChunkIndex = opchunk;
+
+                  if (!outputChunks.contains(lastChunkIndex)) {
+                    //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
+                    //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
+                    //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
+
+                    CctwDataChunk *chunk =
+                        new CctwDataChunk(m_OutputData, lastChunkIndex,
+                                          tr("chunk-%1").arg(lastChunkIndex), NULL);
+
+                    if (chunk) {
+                      chunk->allocateData();
+                      chunk->allocateWeights();
+                    }
+
+                    outputChunks[lastChunkIndex] = chunk;
+                  }
+
+                  lastChunk = outputChunks[lastChunkIndex];
+                }
+
+                if (lastChunk) {
+                  int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
+                  int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
+
+                  double oval = lastChunk->data(ox, oy, oz);
+                  double owgt = lastChunk->weight(ox, oy, oz);
+                  double ival = inputChunk->data(ix, iy, iz);
+                  double iwgt = inputChunk->weight(ix, iy, iz);
+
+                  if (iwgt != 0) {
+                    lastChunk->setData(ox, oy, oz, oval+ival);
+                    lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+#ifndef QT_NO_DEBUG_OUTPUT
+  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks")
+               .arg(chunkId)
+               .arg(time.elapsed()/1000.0,5)
+               .arg(outputChunks.count()));
+#endif
 }
 
 void CctwTransformer::transform()
@@ -275,12 +269,13 @@ void CctwTransformer::transform()
 
   printMessage("Starting Transform");
 
-  m_OutputData->beginTransform();
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
 
   m_MergeCounter.fetchAndStoreOrdered(0);
 
-  m_InputData->clearMergeCounters();
-  m_OutputData->clearMergeCounters();
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
 
   CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
@@ -297,7 +292,300 @@ void CctwTransformer::transform()
           int n = chunk->dependencyCount();
 
           for (int i=0; i<n; i++) {
-            int ckidx = m_InputData->chunkNumberFromIndex(chunk->dependency(i));
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+  if ((get_TransformOptions() & 2)) {
+    printMessage("Sorting input chunk list into input order");
+    qSort(inputChunks.begin(), inputChunks.end());
+  }
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+    if ((get_TransformOptions() & 1) == 0) {
+      QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
+    } else {
+      runTransformChunkNumber(ckidx);
+    }
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransformChunkNumber(int chk)
+{
+  CctwDataChunk *chunk = m_InputData->chunk(chk);
+
+  if (chunk) {
+    m_InputData->incChunksRead(1);
+
+    int ndeps = chunk->dependencyCount();
+
+    for (int i=0; i<ndeps; i++) {
+      int ochk = chunk->dependency(i);
+
+      CctwDataChunk *opchunk = m_OutputData->chunk(ochk);
+
+      if (opchunk) {
+        opchunk->incMergeCounters();
+
+        if (opchunk->mergeCount() == opchunk->dependencyCount()) {
+          m_OutputData->incChunksWritten(1);
+          m_OutputData->incChunksHeld(-1);
+        } else if (opchunk->mergeCount() == 1) {
+          m_OutputData->incChunksHeld(1);
+        }
+      }
+    }
+  }
+}
+
+void CctwTransformer::runDummyTransformChunkNumber(int n)
+{
+  if (m_Application && !m_Application->get_Halting()) {
+    dummyTransformChunkNumber(n);
+
+    m_MergeCounter.fetchAndAddOrdered(-1);
+  } else {
+    m_MergeCounter.fetchAndStoreOrdered(0);
+  }
+
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
+}
+
+void CctwTransformer::dummyTransform1()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 1");
+
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+  if ((get_TransformOptions() & 2)) {
+    printMessage("Sorting input chunk list into input order");
+    qSort(inputChunks.begin(), inputChunks.end());
+  }
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+    runDummyTransformChunkNumber(ckidx);
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransform2()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 2");
+
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
+
+            if (!inputChunks.contains(ckidx)) {
+              inputChunks.append(ckidx);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+
+//  qSort(inputChunks.begin(), inputChunks.end());
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(inputChunks.count());
+  }
+
+  foreach(int ckidx, inputChunks) {
+    m_MergeCounter.fetchAndAddOrdered(1);
+
+    if (m_Application) {
+      m_Application->addWorkOutstanding(1);
+    }
+
+    //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+    runDummyTransformChunkNumber(ckidx);
+  }
+
+  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+    CctwThread::msleep(10);
+    m_Application->processEvents();
+  }
+
+  set_WallTime(startAt.elapsed()/1000.0);
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+}
+
+void CctwTransformer::dummyTransform3()
+{
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Dummy Transform type 3");
+
+  m_InputData  -> beginTransform(true,  get_TransformOptions());
+  m_OutputData -> beginTransform(false, get_TransformOptions());
+
+  m_MergeCounter.fetchAndStoreOrdered(0);
+
+  m_InputData  -> clearMergeCounters();
+  m_OutputData -> clearMergeCounters();
+
+  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+
+  CctwIntVector3D chunks = m_OutputData->chunkCount();
+
+  QVector < int > inputChunks;
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+
+        if (chunk) {
+          int n = chunk->dependencyCount();
+
+          for (int i=0; i<n; i++) {
+            int ckidx = chunk->dependency(i);
 
             if (!inputChunks.contains(ckidx)) {
               inputChunks.append(ckidx);
@@ -312,28 +600,61 @@ void CctwTransformer::transform()
 
   qSort(inputChunks.begin(), inputChunks.end());
 
+  int minMaxHeld;
+
   if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count());
+    m_Application->set_ProgressLimit(inputChunks.count()*10);
   }
 
-  foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
+  if (inputChunks.count() > 10) {
+    for (int i=0; i<1000; i++) {
+      int s1, s2;
+      if (i>0) {
+        s1 = qrand()%inputChunks.count();
+        s2 = qrand()%inputChunks.count();
 
-    if (m_Application) {
-      m_Application->addWorkOutstanding(1);
+        int c1 = inputChunks[s1];
+        int c2 = inputChunks[s2];
+
+        inputChunks[s1] = c2;
+        inputChunks[s2] = c1;
+      }
+
+      m_InputData  -> clearMergeCounters();
+      m_OutputData -> clearMergeCounters();
+
+      foreach(int ckidx, inputChunks) {
+        m_MergeCounter.fetchAndAddOrdered(1);
+
+        if (m_Application) {
+          m_Application->addWorkOutstanding(1);
+        }
+
+        //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
+
+        runDummyTransformChunkNumber(ckidx);
+      }
+
+      int maxHeld = m_OutputData->get_ChunksHeldMax();
+
+      if (i==0 || maxHeld < minMaxHeld) {
+        minMaxHeld = maxHeld;
+      } else {
+
+      }
+
+      printMessage(tr("Iteration %1 : max %2").arg(i).arg(minMaxHeld));
+
+      while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+        CctwThread::msleep(10);
+        m_Application->processEvents();
+      }
     }
-
-    QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
-  }
-
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
-  set_BlocksMax(CctwDataChunk::maxAllocated());
 
+  m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
   printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
@@ -341,56 +662,65 @@ void CctwTransformer::transform()
 
 void CctwTransformer::checkTransform()
 {
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
+  int chunks = m_OutputData->chunkCount().volume();
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+  for (int i = 0; i<chunks; i++) {
+    CctwDataChunk *chunk = m_OutputData->chunk(i);
 
-        if (chunk) {
-          if (chunk->dependencyCount() != chunk->mergeCount()) {
-            printMessage(tr("Anomaly in chunk [%1,%2,%3] : deps %4, merge %5")
-                         .arg(x).arg(y).arg(z)
-                         .arg(chunk->dependencyCount())
-                         .arg(chunk->mergeCount()));
-          }
-        }
+    if (chunk) {
+      if (chunk->dependencyCount() != chunk->mergeCount()) {
+        printMessage(tr("Anomaly in chunk [%1] : deps %2, merge %3")
+                     .arg(i)
+                     .arg(chunk->dependencyCount())
+                     .arg(chunk->mergeCount()));
+      }
+
+      if (chunk->dataPointer()) {
+        printMessage(tr("Chunk [%1] still has allocated data").arg(i));
+      }
+
+      if (chunk->weightsPointer()) {
+        printMessage(tr("Chunk [%1] still has allocated weights").arg(i));
       }
     }
   }
 }
 
-QcepIntList CctwTransformer::dependencies(int chunkIdx)
+QcepIntList CctwTransformer::dependencies(int n)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
 
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
-  CctwIntVector3D lastChunkIndex(-1, -1, -1);
+  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
 
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+  int lastChunkIndex = -1;
 
-  QList<CctwIntVector3D> outputChunks;
-  QcepIntList            result;
+  CctwDataChunk   *chunk = m_InputData->chunk(n);
 
-  if (m_InputData->containsChunk(idx)) {
-    for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
-          CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+  QList<int>      outputChunks;
+  QcepIntList     result;
 
-          if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
+  if (chunk) {
+    CctwIntVector3D chStart = chunk->chunkStart();
+    CctwIntVector3D chSize  = chunk->chunkSize();
+    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
 
-            if (opchunk != lastChunkIndex) {
-              lastChunkIndex = opchunk;
+    if (m_InputData->containsChunk(idx.x(), idx.y(), idx.z())) {
+      for (int z=0; z<chSize.z(); z++) {
+        for (int y=0; y<chSize.y(); y++) {
+          for (int x=0; x<chSize.x(); x++) {
+            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+            CctwDoubleVector3D xfmcoord = transform.forward(coords);
+            CctwIntVector3D pixels(xfmcoord);
 
-              if (!outputChunks.contains(lastChunkIndex)) {
-                outputChunks.append(opchunk);
+            if (m_OutputData->containsPixel(pixels)) {
+              int opchunk = m_OutputData->chunkContaining(pixels);
+
+              if (opchunk != lastChunkIndex) {
+                lastChunkIndex = opchunk;
+
+                if (!outputChunks.contains(lastChunkIndex)) {
+                  outputChunks.append(opchunk);
+                }
               }
             }
           }
@@ -399,8 +729,8 @@ QcepIntList CctwTransformer::dependencies(int chunkIdx)
     }
   }
 
-  foreach(CctwIntVector3D chk, outputChunks) {
-    result.append(m_OutputData->chunkNumberFromIndex(chk));
+  foreach(int chk, outputChunks) {
+    result.append(chk);
   }
 
   qSort(result);
@@ -421,353 +751,234 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   return res;
 }
 
-void CctwTransformer::generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob)
+void CctwTransformer::clearDependencies()
 {
-  CctwIntVector3D start = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
-  CctwIntVector3D size  = m_InputData->chunkSize();
+  m_InputData->clearDependencies();
+  m_OutputData->clearDependencies();
+}
 
-  double *data = blob->data();
-  double *weight = blob->weight();
-  int dataLen = blob->dataLength();
-  int weightLen = blob->weightLength();
+void CctwTransformer::addDependency(int f, int t)
+{
+  m_InputData->addDependency(f, t);
+  m_OutputData->addDependency(t, f);
+}
 
-  for(int z = 0; z < size.z(); z++) {
-    for (int y=0; y < size.y(); y++) {
-      for (int x=0; x < size.x(); x++) {
-        CctwIntVector3D coords = start + CctwIntVector3D(x,y,z);
+#ifdef WANT_ANALYSIS_COMMANDS
 
-        int offset = blob->offset(x,y,z);
+void CctwTransformer::projectInput(QString path, int axes)
+{
+  projectDataset(path, m_InputData, axes);
+}
 
-        if (offset >= 0 && offset < dataLen) {
-          if (data) {
-            int val = ((start.x()+x)/16 & 1) ^ ((start.y()+y)/16 & 1) ^ ((start.z()+z)/16 & 1);
-            data[offset] = val;
-          }
-        }
+void CctwTransformer::projectOutput(QString path, int axes)
+{
+  projectDataset(path, m_OutputData, axes);
+}
 
-        if (offset >= 0 && offset < weightLen) {
-          if (weight) {
-            weight[offset] = 1;
-          }
-        }
+void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes)
+{
+  if (m_Application && !m_Application->get_Halting()) {
+    CctwDataChunk *chunk = data->readChunk(i);
+
+    if (chunk) {
+      CctwIntVector3D chStart = chunk->chunkStart();
+      CctwIntVector3D chSize  = chunk->chunkSize();
+
+      int cx = chStart.x(),
+          cy = chStart.y(),
+          cz = chStart.z();
+
+      QcepImageData<double> *imgx = NULL, *imgy = NULL, *imgz = NULL;
+
+      if (axes & 1) {
+        imgx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
       }
-    }
-  }
-}
 
-CctwInputDataBlob*               CctwTransformer::inputBlob(int blobIdx, QString location)
-{
-  CctwInputDataBlob* inputBlob = CctwInputDataBlob::newInputDataBlob(blobIdx, m_InputData->chunkSize());
+      if (axes & 2) {
+        imgy = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
+      }
 
-  printf("inputBlob[%d] %p\n", blobIdx, inputBlob);
+      if (axes & 4) {
+        imgz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
+      }
 
-  QUrl loc(location);
+      for (int z=0; z<chSize.z(); z++) {
+        for (int y=0; y<chSize.y(); y++) {
+          for (int x=0; x<chSize.x(); x++) {
+            double data = chunk->data(x,y,z);
+            double wgt  = chunk->weight(x,y,z);
 
-  printf("scheme:   %s\n", qPrintable(loc.scheme()));
-  printf("path:     %s\n", qPrintable(loc.path()));
-  printf("fragment: %s\n", qPrintable(loc.fragment()));
-
-  if (loc.scheme()=="test") {
-    // Generate a test dataset:
-    generateTestData(blobIdx, loc, inputBlob);
-  } else if (loc.scheme()=="h5") {
-    readHDF5InputBlob(blobIdx, loc, inputBlob);
-  } else if (loc.scheme()=="") {
-    readArbitraryInputBlob(blobIdx, loc, inputBlob);
-  } else {
-    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
-  }
-
-  return inputBlob;
-}
-
-static bool sortBlobs(CctwIntermediateDataBlob *a, CctwIntermediateDataBlob *b)
-{
-  return a->blobID() < b->blobID();
-}
-
-QList<CctwIntermediateDataBlob*> CctwTransformer::transformBlob(CctwInputDataBlob *blob)
-{
-  int chunkIdx = blob->blobID();
-
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), NULL);
-
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(chunkIdx);
-  CctwIntVector3D lastBlobIndex(-1, -1, -1);
-  CctwIntermediateDataBlob* lastBlob = NULL;
-
-  CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-  CctwIntVector3D chSize  = m_InputData->chunkSize();
-  CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-
-  QMap<CctwIntVector3D, CctwIntermediateDataBlob*> outputBlobs;
-
-  if (m_InputData->containsChunk(idx)) {
-    for (int z=0; z<chSize.z(); z++) {
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          int inpOffset = blob->offset(x, y, z);
-          double data = blob->data(inpOffset);
-          double wght = blob->weight(inpOffset);
-
-          if (wght) {
-            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-            CctwDoubleVector3D xfmcoord = transform.forward(coords);
-            CctwIntVector3D pixels(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
-
-            if (m_OutputData->containsPixel(pixels)) {
-              CctwIntVector3D opchunk = m_OutputData->chunkIndex(pixels);
-
-              if (opchunk != lastBlobIndex) {
-                lastBlobIndex = opchunk;
-
-                if (!outputBlobs.contains(lastBlobIndex)) {
-                  outputBlobs[lastBlobIndex] =
-                      CctwIntermediateDataBlob::newIntermediateDataBlob(
-                        m_InputData->chunkNumberFromIndex(lastBlobIndex),
-                        m_InputData->chunkSize());
-                }
-
-                lastBlob = outputBlobs[lastBlobIndex];
+            if (wgt != 0) {
+              if (imgx) {
+                imgx->addValue(y,z,data);
               }
 
-              CctwIntVector3D localPixel = pixels - opchunk*m_OutputData->chunkSize();
+              if (imgy) {
+                imgy->addValue(x,z,data);
+              }
 
-              if (lastBlob) {
-                int offset = lastBlob->offset(localPixel);
-
-                lastBlob->data(offset)   += data;
-                lastBlob->weight(offset) += wght;
-              } else {
-                printMessage(tr("lastBlob == NULL in CctwTransformer::transformBlob"));
+              if (imgz) {
+                imgz->addValue(x,y,data);
               }
             }
           }
         }
       }
-    }
-  }
 
-  QList<CctwIntermediateDataBlob*> res;
+      if (axes & 1) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
 
-  QMapIterator<CctwIntVector3D, CctwIntermediateDataBlob*> iter(outputBlobs);
-
-  while (iter.hasNext()) {
-    iter.next();
-
-    res.append(iter.value());
-  }
-
-  qSort(res.begin(), res.end(), sortBlobs);
-
-  return res;
-}
-
-CctwIntermediateDataBlob*        CctwTransformer::mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2)
-{
-  int chunkId = blob1->blobID();
-
-  CctwIntermediateDataBlob* res = CctwIntermediateDataBlob::newIntermediateDataBlob(chunkId, m_OutputData->chunkSize());
-
-  double *data = res->data();
-  double *weight = res->weight();
-
-  double *data1 = blob1->data();
-  double *weight1 = blob1->weight();
-
-  double *data2 = blob2->data();
-  double *weight2 = blob2->weight();
-
-  if (data && weight && data1 && weight1 && data2 && weight2) {
-    int len = res->dataLength();
-
-    if ((res->weightLength() == len) &&
-        (blob1->dataLength() == len) &&
-        (blob1->weightLength() == len) &&
-        (blob2->dataLength() == len) &&
-        (blob2->weightLength() == len))
-    {
-      for(int i=0; i<len; i++) {
-        data[i] = 0;
-        weight[i] = 0;
-
-        if (weight1[i]) {
-          data[i] += data1[i];
-          weight[i] += weight1[i];
+        if (m_ImageX && imgx) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int y=0; y<chSize.y(); y++) {
+              m_ImageX->addValue(cy+y, cz+z, imgx->value(y,z));
+            }
+          }
         }
 
-        if (weight2[i]) {
-          data[i] += data2[i];
-          weight[i] += weight2[i];
-        }
+        delete imgx;
       }
 
-      return res;
-    } else {
-      printMessage("Bad Merge Data Lengths");
+      if (axes & 2) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockY);
+
+        if (m_ImageY && imgy) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int x=0; x<chSize.x(); x++) {
+              m_ImageY->addValue(cx+x, cz+z, imgy->value(x,z));
+            }
+          }
+        }
+
+        delete imgy;
+      }
+
+      if (axes & 4) {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockZ);
+
+        if (m_ImageZ && imgz) {
+          for (int y=0; y<chSize.y(); y++) {
+            for (int x=0; x<chSize.x(); x++) {
+               m_ImageZ->addValue(cx+x, cy+y, imgz->value(x,y));
+            }
+          }
+        }
+
+        delete imgz;
+      }
+
+      data->releaseChunkData(i);
     }
+
+    m_MergeCounter.fetchAndAddOrdered(-1);
   } else {
-    printMessage("Bad Merge Data");
+    m_MergeCounter.fetchAndStoreOrdered(0);
   }
 
-  return res;
+  if (m_Application) {
+    m_Application->prop_Progress()->incValue(1);
+    m_Application->workCompleted(1);
+  }
 }
 
-CctwOutputDataBlob*              CctwTransformer::normalizeBlob(CctwIntermediateDataBlob *blob)
+void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
 {
-  int chunkId = blob->blobID();
-
-  CctwOutputDataBlob* res = CctwOutputDataBlob::newOutputDataBlob(chunkId, m_OutputData->chunkSize());
-
-  double *out = res->data();
-  double *data = blob->data();
-  double *weight = blob->weight();
-
-  if (out && data && weight) {
-    int len = res->dataLength();
-
-    if ((blob->dataLength() == len) && (blob->weightLength() == len)) {
-      for (int i=0; i<len; i++) {
-        if (weight[i]) {
-          out[i] = data[i]/weight[i];
-        } else {
-          out[i] = 0;
-        }
-      }
+  if (data) {
+    if (m_Application) {
+      m_Application->waitCompleted();
+      m_Application->set_Progress(0);
+      m_Application->set_Halting(false);
     }
-  }
 
-  return res;
+    QTime startAt;
+
+    startAt.start();
+
+    printMessage("Starting Projection");
+
+    m_MergeCounter.fetchAndStoreOrdered(0);
+
+    QcepImageDataFormatTiff<double> fmt("TIFF");
+
+    CctwIntVector3D dims = data->dimensions();
+
+    int px = axes & 1,
+        py = axes & 2,
+        pz = axes & 4;
+
+    delete m_ImageX;
+    delete m_ImageY;
+    delete m_ImageZ;
+
+    if (px) {
+      m_ImageX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
+    } else {
+      m_ImageX = NULL;
+    }
+
+    if (py) {
+      m_ImageY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
+    } else {
+      m_ImageY = NULL;
+    }
+
+    if (pz) {
+      m_ImageZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
+    } else {
+      m_ImageZ = NULL;
+    }
+
+    int nc = data->chunkCount().volume();
+
+    if (m_Application) {
+      m_Application->set_ProgressLimit(nc);
+    }
+
+    for (int i=0; i<nc; i++) {
+      m_MergeCounter.fetchAndAddOrdered(1);
+
+      if (m_Application) {
+        if (m_Application->get_Halting()) break;
+
+        m_Application->addWorkOutstanding(1);
+      }
+
+      QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes);
+    }
+
+    while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
+      CctwThread::msleep(10);
+      m_Application->processEvents();
+    }
+
+    if (m_ImageX) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
+
+      fmt.saveFile(path+".x.tif", m_ImageX, false);
+      delete m_ImageX;
+      m_ImageX = NULL;
+    }
+
+    if (m_ImageY) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockY);
+
+      fmt.saveFile(path+".y.tif", m_ImageY, false);
+      delete m_ImageY;
+      m_ImageY = NULL;
+    }
+
+    if (m_ImageZ) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_LockZ);
+
+      fmt.saveFile(path+".z.tif", m_ImageZ, false);
+      delete m_ImageZ;
+      m_ImageZ = NULL;
+    }
+
+    set_WallTime(startAt.elapsed()/1000.0);
+
+    printMessage(tr("Projection complete after %1 sec").arg(get_WallTime()));
+  }
 }
 
-void                             CctwTransformer::outputBlob(QString destination, CctwOutputDataBlob* blob)
-{
-  QUrl loc(destination);
-
-  printf("Destination: %s\n", qPrintable(destination));
-  printf("Scheme: %s\n",      qPrintable(loc.scheme()));
-  printf("Authority: %s\n",   qPrintable(loc.authority()));
-  printf("Host: %s\n",        qPrintable(loc.host()));
-  printf("Port: %d\n",        loc.port());
-  printf("Path: %s\n",        qPrintable(loc.path()));
-  printf("Fragment: %s\n",    qPrintable(loc.fragment()));
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5,0,0))
-  QUrlQuery urlQuery(loc);
-  QList< QPair <QString, QString> > query = urlQuery.queryItems();
-#else
-  QList< QPair <QString, QString> > query = loc.queryItems();
 #endif
-
-  printf("Query:\n");
-
-  QPair < QString, QString > pair;
-
-  foreach (pair, query) {
-    printf("%s = %s\n", qPrintable(pair.first), qPrintable(pair.second));
-  }
-
-  if (loc.scheme() == "h5") {
-    writeHDF5OutputBlob(blob->blobID(), loc, blob);
-  } else if (loc.scheme() == "") {
-    writeArbitraryOutputBlob(blob->blobID(), loc, blob);
-  } else {
-    printMessage(tr("Unrecognized blob URL scheme (%1)").arg(loc.scheme()));
-  }
-}
-
-void CctwTransformer::readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-  QString filePath = location.path();
-  QString dataset  = location.fragment();
-
-  printf("CctwTransformer::readHDF5InputBlob\n");
-
-  if (filePath.count() > 0) {
-    if (dataset.count() == 0) {
-      dataset = "data";
-    }
-
-    hid_t fileId = H5Fopen(qPrintable(filePath), H5F_ACC_RDONLY, H5P_DEFAULT);
-
-    if (fileId < 0) {
-      printMessage(tr("File open of %1 failed").arg(filePath));
-    } else {
-      hid_t datasetId = H5Dopen(fileId, qPrintable(dataset), H5P_DEFAULT);
-
-      if (datasetId < 0) {
-        printMessage(tr("Dataset %1 not opened").arg(dataset));
-      } else {
-        hid_t dataspaceId = H5Dget_space(datasetId);
-
-        if (dataspaceId < 0) {
-          printMessage(tr("Couldn't get data space"));
-        } else {
-          int ndims = H5Sget_simple_extent_ndims(dataspaceId);
-
-          if (ndims != 3) {
-            printMessage(tr("Data dimensionality != 3 (%1)").arg(ndims));
-          } else {
-            hsize_t dims[3], maxdims[3];
-            int n = H5Sget_simple_extent_dims(dataspaceId, dims, maxdims);
-
-            if (n != 3) {
-              printMessage("Problems getting dataset dimensions");
-            } else {
-              printMessage(tr("Dimensions [%1,%2,%3]").arg(dims[0]).arg(dims[1]).arg(dims[2]));
-
-              printf("About to read data\n");
-
-              hid_t memspace_id;
-              hsize_t offset[3], count[3], stride[3], block[3];
-
-              CctwIntVector3D ckoffset = m_InputData->chunkStart(m_InputData->chunkIndexFromNumber(blobIdx));
-              CctwIntVector3D cksize   = m_InputData->chunkSize();
-
-              count[0] = cksize.z();
-              count[1] = cksize.y();
-              count[2] = cksize.x();
-
-              stride[0] = 1;
-              stride[1] = 1;
-              stride[2] = 1;
-
-              block[0] = 1;
-              block[1] = 1;
-              block[2] = 1;
-
-              offset[0] = ckoffset.z();
-              offset[1] = ckoffset.y();
-              offset[2] = ckoffset.x();
-
-              memspace_id = H5Screate_simple(3, count, NULL);
-
-              herr_t selerr = H5Sselect_hyperslab(dataspaceId, H5S_SELECT_SET, offset, stride, count, block);
-              herr_t rderr  = H5Dread(datasetId, H5T_NATIVE_DOUBLE, memspace_id, dataspaceId, H5P_DEFAULT, blob->data());
-
-              if (selerr || rderr) {
-                printMessage(tr("Error reading x:%1, y:%2, z:%3, selerr = %4, wrterr = %5")
-                             .arg(ckoffset.x()).arg(ckoffset.y()).arg(ckoffset.z()).arg(selerr).arg(rderr));
-                printf("Failed to read data\n");
-              }
-            }
-          }
-        }
-      }
-
-      H5Fclose(fileId);
-    }
-  }
-}
-
-void CctwTransformer::writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
-{
-}
-
-void CctwTransformer::readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob)
-{
-}
-
-void CctwTransformer::writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob)
-{
-}

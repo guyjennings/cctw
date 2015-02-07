@@ -21,13 +21,13 @@ template <typename T>
 CctwMatrix3x3<T>::CctwMatrix3x3(T a11, T a12, T a13, T a21, T a22, T a23, T a31, T a32, T a33)
 {
   m_Matrix[0][0] = a11;
-  m_Matrix[0][1] = a21;
-  m_Matrix[0][2] = a31;
-  m_Matrix[1][0] = a12;
+  m_Matrix[0][1] = a12;
+  m_Matrix[0][2] = a13;
+  m_Matrix[1][0] = a21;
   m_Matrix[1][1] = a22;
-  m_Matrix[1][2] = a32;
-  m_Matrix[2][0] = a13;
-  m_Matrix[2][1] = a23;
+  m_Matrix[1][2] = a23;
+  m_Matrix[2][0] = a31;
+  m_Matrix[2][1] = a32;
   m_Matrix[2][2] = a33;
 }
 
@@ -253,17 +253,10 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::rotX(double r)
   T cosr = ::cos(r),
     sinr = ::sin(r);
 
-  res.m_Matrix[0][0] = 1;
-  res.m_Matrix[1][0] = 0;
-  res.m_Matrix[2][0] = 0;
-
-  res.m_Matrix[0][1] = 0;
-  res.m_Matrix[1][1] = cosr;
-  res.m_Matrix[2][1] = sinr;
-
-  res.m_Matrix[0][2] = 0;
-  res.m_Matrix[1][2] = -sinr;
-  res.m_Matrix[2][2] = cosr;
+  res(1,1) = cosr;
+  res(1,2) = -sinr;
+  res(2,1) = sinr;
+  res(2,2) = cosr;
 
   return res;
 }
@@ -275,17 +268,10 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::rotY(double r)
   T cosr = ::cos(r),
     sinr = ::sin(r);
 
-  res.m_Matrix[0][0] = cosr;
-  res.m_Matrix[1][0] = 0;
-  res.m_Matrix[2][0] = -sinr;
-
-  res.m_Matrix[0][1] = 0;
-  res.m_Matrix[1][1] = 1;
-  res.m_Matrix[2][1] = 0;
-
-  res.m_Matrix[0][2] = sinr;
-  res.m_Matrix[1][2] = 0;
-  res.m_Matrix[2][2] = cosr;
+  res(0,0) = cosr;
+  res(0,2) = sinr;
+  res(2,0) = -sinr;
+  res(2,2) = cosr;
 
   return res;
 }
@@ -297,17 +283,10 @@ CctwMatrix3x3<T> CctwMatrix3x3<T>::rotZ(double r)
   T cosr = ::cos(r),
     sinr = ::sin(r);
 
-  res.m_Matrix[0][0] = cosr;
-  res.m_Matrix[1][0] = sinr;
-  res.m_Matrix[2][0] = 0;
-
-  res.m_Matrix[0][1] = -sinr;
-  res.m_Matrix[1][1] = cosr;
-  res.m_Matrix[2][1] = 0;
-
-  res.m_Matrix[0][2] = 0;
-  res.m_Matrix[1][2] = 0;
-  res.m_Matrix[2][2] = 1;
+  res(0,0) = cosr;
+  res(0,1) = -sinr;
+  res(1,0) = sinr;
+  res(1,1) = cosr;
 
   return res;
 }

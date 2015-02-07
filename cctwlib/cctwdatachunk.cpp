@@ -1,37 +1,71 @@
 #include "cctwdatachunk.h"
-#include "cctwchunkeddatainterface.h"
 #include <stdio.h>
 #include <QSemaphore>
 #include "cctwthread.h"
 
-CctwDataChunk::CctwDataChunk(CctwChunkedData *data, CctwIntVector3D index, CctwDataFrameManager *manager, QObject *parent) :
-  CctwObject(parent),
+CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QObject *parent) :
+  CctwObject(name, parent),
   m_Data(data),
-  m_Manager(manager),
   m_ChunkIndex(index),
+  m_ChunkStart(calculateChunkStart()),
+  m_ChunkSize(calculateChunkSize()),
   m_ChunkData(NULL),
   m_ChunkWeights(NULL),
   m_Normalized(0),
   m_DataWritten(0),
   m_WeightsWritten(0),
-  m_MergeCounter(0)
+  m_MergeCounter(0),
+  m_OwnData(true)
 {
-  int n = m_Data->chunkCount().z();
+}
 
-  m_DataFrames.resize(n);
+CctwIntVector3D CctwDataChunk::calculateChunkStart()
+{
+//  printMessage(tr("calculateChunkStart(): %1").arg(m_ChunkIndex));
+  if (m_Data) {
+    return m_Data -> chunkStart(m_ChunkIndex);
+  } else {
+    printMessage(tr("Chunk %1, m_Data == NULL").arg(m_ChunkIndex));
+    return CctwIntVector3D(0,0,0);
+  }
+}
+
+CctwIntVector3D CctwDataChunk::calculateChunkSize()
+{
+  if (m_Data) {
+    CctwIntVector3D chksize = m_Data->chunkSize();
+    CctwIntVector3D chkend = m_ChunkStart + chksize;
+    CctwIntVector3D dim    = m_Data->dimensions();
+
+    if (chkend.x() > dim.x()) {
+      chksize.x() = dim.x() - m_ChunkStart.x();
+    }
+
+    if (chkend.y() > dim.y()) {
+      chksize.y() = dim.y() - m_ChunkStart.y();
+    }
+
+    if (chkend.z() > dim.z()) {
+      chksize.z() = dim.z() - m_ChunkStart.z();
+    }
+
+    return chksize;
+  } else {
+    printMessage(tr("Chunk %1, m_Data == NULL").arg(m_ChunkIndex));
+    return CctwIntVector3D(0,0,0);
+  }
 }
 
 CctwDataChunk::~CctwDataChunk()
 {
-  if (m_ChunkData || m_ChunkWeights) {
-    printf("Anomaly\n");
+  if (dependencyCount()) {
+    printMessage("Deleting chunk with deps");
   }
 
-//  delete [] m_ChunkData;
-//  delete [] m_ChunkWeights;
-
-  releaseBuffer(m_ChunkData);
-  releaseBuffer(m_ChunkWeights);
+  if (m_OwnData) {
+    releaseBuffer(m_ChunkData);
+    releaseBuffer(m_ChunkWeights);
+  }
 
   m_ChunkData = NULL;
   m_ChunkWeights = NULL;
@@ -42,12 +76,12 @@ static QAtomicInt g_Allocated(0);
 static QAtomicInt g_AllocationLimit(1000);
 static QSemaphore g_Available(1000);
 
-double *CctwDataChunk::dataPointer()
+CctwChunkedData::MergeDataType *CctwDataChunk::dataPointer()
 {
   return m_ChunkData;
 }
 
-double *CctwDataChunk::weightsPointer()
+CctwChunkedData::MergeDataType *CctwDataChunk::weightsPointer()
 {
   return m_ChunkWeights;
 }
@@ -62,118 +96,56 @@ bool CctwDataChunk::weightsAllocated() const
   return m_ChunkWeights;
 }
 
+CctwIntVector3D CctwDataChunk::chunkStart()
+{
+  return m_ChunkStart;
+}
+
+void CctwDataChunk::resetChunkStart()
+{
+  m_ChunkStart = calculateChunkStart();
+  qDebug("CctwDataChunk::resetChunkStart(): %s", qPrintable(m_ChunkStart.toString()));
+}
+
 CctwIntVector3D CctwDataChunk::chunkSize()
 {
-  return m_Data->chunkSize();
+  return m_ChunkSize;
 }
 
-int CctwDataChunk::readData()
+void CctwDataChunk::setChunkSize(CctwIntVector3D size)
 {
-  int res = allocateData();
-
-  CctwIntVector3D size = m_Data->chunkSize();
-  CctwIntVector3D start = m_ChunkIndex * size;
-
-  for (int k=0; k<size.z(); k++) {
-    for (int j=0; j<size.y(); j++) {
-      for (int i=0; i<size.x(); i++) {
-        CctwIntVector3D coords(i,j,k);
-
-        int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
-
-        setData(coords, val+0.75);
-      }
-    }
-  }
-
-  return res;
-}
-
-int CctwDataChunk::readWeights()
-{
-  int res = allocateWeights();
-
-  CctwIntVector3D size = m_Data->chunkSize();
-
-  for (int k=0; k<size.z(); k++) {
-    for (int j=0; j<size.y(); j++) {
-      for (int i=0; i<size.x(); i++) {
-        CctwIntVector3D coords(i,j,k);
-
-        int val = 1;
-
-        setWeight(coords, val);
-      }
-    }
-  }
-
-  return res;
-}
-
-int CctwDataChunk::normalize()
-{
-  if (m_Normalized) {
-    printf("Already normalized\n");
-  } else if (m_ChunkData && m_ChunkWeights) {
-    int cksz = m_Data->chunkSize().volume();
-
-    for (int i=0; i<cksz; i++) {
-      if (m_ChunkWeights[i] != 0) {
-        m_ChunkData[i] /= m_ChunkWeights[i];
-      }
-    }
-  }
-
-  m_Normalized = true;
-
-  return 0;
-}
-
-int CctwDataChunk::writeData()
-{
-  normalize();
-
-  if (m_Manager) {
-    m_Manager->writeChunk(this);
-  }
-
-  return chunkSize().volume()*sizeof(double);
-}
-
-int CctwDataChunk::writeWeights()
-{
-  return chunkSize().volume()*sizeof(double);
+  m_ChunkSize = size;
 }
 
 int CctwDataChunk::allocateData()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
-  double *newData = allocateBuffer();
+  CctwChunkedData::MergeDataType *newData = allocateBuffer();
 
   releaseBuffer(m_ChunkData);
 
   m_ChunkData = newData;
 
-  return cksz*sizeof(double);
+  return cksz*sizeof(CctwChunkedData::MergeDataType);
 }
 
 int CctwDataChunk::allocateWeights()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
-  double *newWeights = allocateBuffer();
+  CctwChunkedData::MergeDataType *newWeights = allocateBuffer();
 
   releaseBuffer(m_ChunkWeights);
 
   m_ChunkWeights = newWeights;
 
-  return cksz*sizeof(double);
+  return cksz*sizeof(CctwChunkedData::MergeDataType);
 }
 
 int CctwDataChunk::deallocateData()
 {
-  int res = m_ChunkData ? m_Data->chunkSize().volume()*sizeof(double) : 0;
+  int res = m_ChunkData ? m_ChunkSize.volume()*sizeof(CctwChunkedData::MergeDataType) : 0;
 
   releaseBuffer(m_ChunkData);
 
@@ -184,7 +156,7 @@ int CctwDataChunk::deallocateData()
 
 int CctwDataChunk::deallocateWeights()
 {
-  int res = m_ChunkWeights ? m_Data->chunkSize().volume()*sizeof(double) : 0;
+  int res = m_ChunkWeights ? m_ChunkSize.volume()*sizeof(CctwChunkedData::MergeDataType) : 0;
 
   releaseBuffer(m_ChunkWeights);
 
@@ -193,21 +165,37 @@ int CctwDataChunk::deallocateWeights()
   return res;
 }
 
-int CctwDataChunk::pixelOffset(CctwIntVector3D localcoords)
+int CctwDataChunk::detachData()
 {
-  CctwIntVector3D cksz = m_Data->chunkSize();
+  m_ChunkData = NULL;
 
-  if (localcoords >= CctwIntVector3D(0,0,0) && localcoords < cksz) {
-    int offset = (localcoords.z() * cksz.y() + localcoords.y())*cksz.x() + localcoords.x();
-    return offset;
-  } else {
+  return 0;
+}
+
+int CctwDataChunk::detachWeights()
+{
+  m_ChunkWeights = NULL;
+
+  return 0;
+}
+
+int CctwDataChunk::pixelOffset(int lx, int ly, int lz)
+{
+  if (lx < 0 || lx >= m_ChunkSize.x()) {
     return -1;
+  } else if (ly < 0 || ly >= m_ChunkSize.y()) {
+    return -1;
+  } else if (lz < 0 || lz >= m_ChunkSize.z()) {
+    return -1;
+  } else {
+    int offset = (lz * m_ChunkSize.y() + ly)*m_ChunkSize.x() + lx;
+    return offset;
   }
 }
 
-double CctwDataChunk::data(CctwIntVector3D localcoords)
+CctwChunkedData::MergeDataType CctwDataChunk::data(int lx, int ly, int lz)
 {
-  int offset = pixelOffset(localcoords);
+  int offset = pixelOffset(lx, ly, lz);
 
   if (offset >= 0 && m_ChunkData) {
     return m_ChunkData[offset];
@@ -216,9 +204,9 @@ double CctwDataChunk::data(CctwIntVector3D localcoords)
   }
 }
 
-double CctwDataChunk::weight(CctwIntVector3D localcoords)
+CctwChunkedData::MergeDataType CctwDataChunk::weight(int lx, int ly, int lz)
 {
-  int offset = pixelOffset(localcoords);
+  int offset = pixelOffset(lx, ly, lz);
 
   if (offset >= 0 && m_ChunkWeights) {
     return m_ChunkWeights[offset];
@@ -227,18 +215,18 @@ double CctwDataChunk::weight(CctwIntVector3D localcoords)
   }
 }
 
-void CctwDataChunk::setData(CctwIntVector3D localcoords, double val)
+void CctwDataChunk::setData(int lx, int ly, int lz, CctwChunkedData::MergeDataType val)
 {
-  int offset = pixelOffset(localcoords);
+  int offset = pixelOffset(lx, ly, lz);
 
   if (offset >= 0 && m_ChunkData) {
     m_ChunkData[offset] = val;
   }
 }
 
-void CctwDataChunk::setWeight(CctwIntVector3D localcoords, double val)
+void CctwDataChunk::setWeight(int lx, int ly, int lz, CctwChunkedData::MergeDataType val)
 {
-  int offset = pixelOffset(localcoords);
+  int offset = pixelOffset(lx, ly, lz);
 
   if (offset >= 0 && m_ChunkWeights) {
     m_ChunkWeights[offset] = val;
@@ -259,9 +247,9 @@ int CctwDataChunk::maxAllocated()
   return g_MaxAllocated.fetchAndAddOrdered(0);
 }
 
-double *CctwDataChunk::allocateBuffer()
+CctwChunkedData::MergeDataType *CctwDataChunk::allocateBuffer()
 {
-  int cksz = m_Data->chunkSize().volume();
+  int cksz = m_ChunkSize.volume();
 
   int nalloc = g_Allocated.fetchAndAddOrdered(1);
 
@@ -272,59 +260,38 @@ double *CctwDataChunk::allocateBuffer()
 //  printMessage(tr("Acquired 1 blocks, %1 allocated, %2 max")
 //               .arg(nalloc).arg(g_MaxAllocated.fetchAndAddOrdered(0)));
 
-  double *res = new double[cksz];
+//  CctwChunkedData::MergeDataType *res = new CctwChunkedData::MergeDataType[cksz];
 
-  for (int i=0; i<cksz; i++) {
-    res[i] = 0;
-  }
+//  for (int i=0; i<cksz; i++) {
+//    res[i] = 0;
+//  }
+
+  CctwChunkedData::MergeDataType *res = (CctwChunkedData::MergeDataType*) calloc(sizeof(CctwChunkedData::MergeDataType), cksz);
 
   return res;
 }
 
-void CctwDataChunk::releaseBuffer(double *buffer)
+void CctwDataChunk::setBuffer(void *buffer)
+{
+  printMessage(tr("Setting buffer to: %1").arg((long long) buffer));
+  m_ChunkData = (CctwChunkedData::MergeDataType*) buffer;
+  m_OwnData = false;
+}
+
+void CctwDataChunk::releaseBuffer(CctwChunkedData::MergeDataType *buffer)
 {
   if (buffer) {
     int nalloc = g_Allocated.fetchAndAddOrdered(-1);
 
 //    printMessage(tr("Releasing 1 blocks, %1 allocated").arg(nalloc));
 
-    delete [] buffer;
+//    delete [] buffer;
+
+    free(buffer);
   }
 }
 
-void CctwDataChunk::waitForData()
-{
-  int nbuff = dependencyCount();
-
-  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
-    printMessage(tr("Trying to allocate too many blocks - will sleep 5 secs then proceed anyway"));
-
-    CctwThread::sleep(5);
-  } else {
-//    printMessage(tr("Trying to acquire %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
-
-    if (!g_Available.tryAcquire(nbuff)) {
-      printMessage(tr("Failed to acquire %1 blocks").arg(nbuff));
-
-      g_Available.acquire(nbuff);
-    }
-  }
-}
-
-void CctwDataChunk::finishedWithData()
-{
-  int nbuff = dependencyCount();
-
-  if (nbuff > g_AllocationLimit.fetchAndAddOrdered(0)) {
-    printMessage(tr("Skipped release"));
-  } else {
-    g_Available.release(nbuff);
-
-//    printMessage(tr("Releasing %1 blocks, %2 available").arg(nbuff).arg(g_Available.available()));
-  }
-}
-
-CctwIntVector3D CctwDataChunk::index() const
+int CctwDataChunk::index() const
 {
   return m_ChunkIndex;
 }
@@ -338,20 +305,26 @@ void CctwDataChunk::clearDependencies()
 
 void CctwDataChunk::sortDependencies()
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   qSort(m_Dependencies.begin(), m_Dependencies.end());
 }
 
 int  CctwDataChunk::dependencyCount() const
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   return m_Dependencies.count();
 }
 
-CctwIntVector3D CctwDataChunk::dependency(int n) const
+int CctwDataChunk::dependency(int n) const
 {
+  QMutexLocker lock(&m_DependenciesLock);
+
   return m_Dependencies.value(n);
 }
 
-void CctwDataChunk::addDependency(CctwIntVector3D dep)
+void CctwDataChunk::addDependency(int dep)
 {
   QMutexLocker lock(&m_DependenciesLock);
 
@@ -368,30 +341,69 @@ void CctwDataChunk::reportDependencies()
 {
   QMutexLocker lock(&m_DependenciesLock);
 
-  QString msg(tr("[%1,%2,%3] ->").arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z()));
+  QString msg(tr("[%1] ->").arg(m_ChunkIndex));
 
   sortDependencies();
 
-  foreach (CctwIntVector3D dep, m_Dependencies) {
-    msg += tr(" [%4,%5,%6]").arg(dep.x()).arg(dep.y()).arg(dep.z());
+  foreach (int dep, m_Dependencies) {
+    msg += tr(" [%1]").arg(dep);
   }
 
   printMessage(msg);
 }
 
+void CctwDataChunk::mergeData(CctwChunkedData::MergeDataType *id,
+                              CctwChunkedData::MergeDataType *iw,
+                              int n)
+{
+  QMutexLocker lock(&m_MergeLock);
+
+  if (m_ChunkData == NULL) {
+    allocateData();
+  }
+
+  if (m_ChunkWeights == NULL) {
+    allocateWeights();
+  }
+
+  CctwChunkedData::MergeDataType *d = m_ChunkData, *w = m_ChunkWeights;
+
+  if (d && id) {
+    for (int i=0; i<n; i++) {
+      if ((iw && iw[i] != 0 && iw[i] == iw[i]) || !iw) {
+        d[i] += id[i];
+      }
+    }
+  } else {
+    printMessage(tr("Couldn't merge data for chunk [%1]").arg(index()));
+  }
+
+  if (w && iw) {
+    for (int i=0; i<n; i++) {
+      if ((iw && iw[i] != 0 && iw[i] == iw[i]) || !iw) {
+        w[i] += iw[i];
+      }
+    }
+  }
+}
+
 void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 {
-//  printMessage(tr("Merging chunk [%1,%2,%3]")
-//               .arg(index().x()).arg(index().y()).arg(index().z()));
+//  printMessage(tr("Merging chunk [%1]")
+//               .arg(index()));
 
   if (c) {
-    if (c->index() != index()) {
-      printMessage(tr("Merging anomaly [%1,%2,%3] != [%4,%5,%6]")
-                   .arg(index().x()).arg(index().y()).arg(index().z())
-                   .arg(c->index().x()).arg(c->index().y()).arg(c->index().z()));
+    if (mergeCount() == 0) {
+//      printMessage(tr("Output chunk [%1] started")
+//                   .arg(index()));
     }
 
-    double *d, *w, *id, *iw;
+    if (c->index() != index()) {
+      printMessage(tr("Merging anomaly [%1] != [%2]")
+                   .arg(index()).arg(c->index()));
+    }
+
+    CctwChunkedData::MergeDataType *d, *w, *id, *iw;
     c -> popMergeData(&id, &iw);
 
     while (popMergeData(&d, &w))  {
@@ -422,6 +434,8 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
           iw = w;
           w = NULL;
         }
+      } else {
+        printMessage(tr("Anomaly merging data chunk %1").arg(m_ChunkIndex));
       }
 
       releaseBuffer(d);
@@ -433,18 +447,21 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
     incMergeCounters();
 
     if (mergeCount() == dependencyCount()) {
-      printMessage(tr("Output chunk [%1,%2,%3] completed")
-                   .arg(index().x()).arg(index().y()).arg(index().z()));
-      writeData();
-      writeWeights();
-      deallocateData();
-      deallocateWeights();
+//      printMessage(tr("Output chunk [%1] completed")
+//                   .arg(index()));
+
+      if (m_Data) {
+        m_Data->writeChunk(index());
+        m_Data->incChunksWritten(1);
+        m_Data->incChunksHeld(-1);
+      }
+    } else if (mergeCount() == 1) {
+      if (m_Data) {
+        m_Data->incChunksHeld(1);
+      }
     } else if (mergeCount() > dependencyCount()) {
-      printMessage(tr("Exceeded expected number of merges for chunk [%1,%2,%3] %4 > %5")
-                   .arg(index().x()).arg(index().y()).arg(index().z())
-                   .arg(mergeCount()).arg(dependencyCount()));
-      deallocateData();
-      deallocateWeights();
+      printMessage(tr("Exceeded expected number of merges for chunk [%1] %2 > %3")
+                   .arg(index()).arg(mergeCount()).arg(dependencyCount()));
     }
   }
 }
@@ -452,6 +469,7 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 void CctwDataChunk::clearMergeCounters()
 {
   m_MergeCounter = 0;
+  m_Normalized   = 0;
 }
 
 void CctwDataChunk::incMergeCounters()
@@ -464,7 +482,8 @@ int CctwDataChunk::mergeCount()
   return m_MergeCounter;
 }
 
-bool CctwDataChunk::popMergeData(double **data, double **weights)
+bool CctwDataChunk::popMergeData(CctwChunkedData::MergeDataType **data,
+                                 CctwChunkedData::MergeDataType **weights)
 {
   QMutexLocker lock(&m_MergeLock);
 
@@ -491,7 +510,8 @@ bool CctwDataChunk::popMergeData(double **data, double **weights)
   }
 }
 
-void CctwDataChunk::pushMergeData(double *data, double *weights)
+void CctwDataChunk::pushMergeData(CctwChunkedData::MergeDataType *data,
+                                  CctwChunkedData::MergeDataType *weights)
 {
   QMutexLocker lock(&m_MergeLock);
 
@@ -506,4 +526,23 @@ void CctwDataChunk::pushMergeData(double *data, double *weights)
   } else {
     m_MergeWeights.push_back(weights);
   }
+}
+
+void CctwDataChunk::normalizeChunk()
+{
+  if (m_Normalized) {
+    printMessage(tr("Chunk %1 - Already normalized").arg(index()));
+  } else if (m_ChunkData && m_ChunkWeights) {
+    int cksz = m_ChunkSize.volume();
+
+    for (int i=0; i<cksz; i++) {
+      if (m_ChunkWeights[i] != 0.0) {
+        m_ChunkData[i] /= m_ChunkWeights[i];
+      }
+    }
+
+    deallocateWeights();
+  }
+
+  m_Normalized = true;
 }

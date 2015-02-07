@@ -3,6 +3,7 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include <stdio.h>
 
 CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
                                                              QObject *parent, const char *name,
@@ -55,6 +56,13 @@ CctwDoubleMatrix3x3 CctwDoubleMatrix3x3Property::defaultValue() const
   return m_Default;
 }
 
+double CctwDoubleMatrix3x3Property::subValue(int row, int col) const
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
+
+  return m_Value(row, col);
+}
+
 void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val, int index)
 {
   if (debug()) {
@@ -69,22 +77,29 @@ void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val, int index)
 
 void CctwDoubleMatrix3x3Property::incValue(CctwDoubleMatrix3x3 step)
 {
+  setValue(m_Value + step);
+}
+
+void CctwDoubleMatrix3x3Property::setSubValue(int row, int col, double value, int index)
+{
+  if (index == this->index()) {
+    setSubValue(row, col, value);
+  }
+}
+
+void CctwDoubleMatrix3x3Property::setSubValue(int row, int col, double value)
+{
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
-  if (qcepDebug(DEBUG_PROPERTIES) || debug()) {
-    printMessage(tr("%1: CctwqtDoubleMatrix3x3Property::incValue(CctwDoubleMatrix3x3 %2...)")
-                 .arg(name()).arg(toString(step)));
+  if (value != m_Value(row, col)) {
+    int newIndex = incIndex(1);
+
+    emit subValueChanged(row, col, value, newIndex);
+
+    m_Value(row, col) = value;
+
+    emit valueChanged(m_Value, newIndex);
   }
-
-  m_Value += step;
-
-  QcepSettingsSaverPtr saver(m_Saver);
-
-  if (saver) {
-    saver->changed(this);
-  }
-
-  emit valueChanged(m_Value, incIndex(1));
 }
 
 QString CctwDoubleMatrix3x3Property::toString(const CctwDoubleMatrix3x3 &val)
@@ -116,9 +131,19 @@ void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
   }
 
   if (val != m_Value) {
+    int newIndex = incIndex(1);
+
     if (debug()) {
       printMessage(tr("%1: CctwqtDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 %2) [%3]")
                    .arg(name()).arg(toString(val)).arg(index()));
+    }
+
+    for (int row=0; row<3; row++) {
+      for (int col=0; col<3; col++) {
+        if(val(row,col) != m_Value(row,col)) {
+          emit subValueChanged(row, col, val(row,col), newIndex);
+        }
+      }
     }
 
     m_Value = val;
@@ -129,7 +154,7 @@ void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
       saver->changed(this);
     }
 
-    emit valueChanged(m_Value, incIndex(1));
+    emit valueChanged(m_Value, newIndex);
   }
 }
 
@@ -180,5 +205,72 @@ void CctwDoubleMatrix3x3Property::fromScriptValue(const QScriptValue &obj, CctwD
 //      mat(r,c) = obj.property(tr("r%1c%2").arg(r).arg(c)).toNumber();
     }
   }
+}
+
+//void CctwDoubleMatrix3x3Property::linkTo(QDoubleSpinBox *xSpinBox, QDoubleSpinBox *ySpinBox, QDoubleSpinBox *zSpinBox)
+//{
+//  if (xSpinBox) {
+//    linkTo(0, xSpinBox);
+//  }
+
+//  if (ySpinBox) {
+//    linkTo(1, ySpinBox);
+//  }
+
+//  if (zSpinBox) {
+//    linkTo(2, zSpinBox);
+//  }
+//}
+
+void CctwDoubleMatrix3x3Property::linkTo(int row, int col, QDoubleSpinBox *spinBox)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
+
+  CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper *helper
+      = new CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper(spinBox, this, row, col);
+
+  helper->moveToThread(spinBox->thread());
+  helper->connect();
+
+  spinBox -> setValue(subValue(row, col));
+  spinBox -> setKeyboardTracking(false);
+
+  setWidgetToolTip(spinBox);
+
+  connect(this, SIGNAL(subValueChanged(int,int,double,int)), helper, SLOT(setSubValue(int,int,double,int)));
+  connect(helper, SIGNAL(subValueChanged(int,int,double,int)), this, SLOT(setSubValue(int,int,double,int)));
+}
+
+CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper::CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper
+  (QDoubleSpinBox *spinBox, CctwDoubleMatrix3x3Property *property, int row, int col)
+  : QObject(spinBox),
+    m_DoubleSpinBox(spinBox),
+    m_Property(property),
+    m_Row(row),
+    m_Col(col)
+{
+}
+
+void CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper::connect()
+{
+  CONNECT_CHECK(QObject::connect(m_DoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)), Qt::DirectConnection));
+}
+
+void CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper::setSubValue(int row, int col, double value, int index)
+{
+  if (m_Property->index() == index) {
+    if (m_Row == row && m_Col == col) {
+      if (m_DoubleSpinBox->value() != value) {
+        bool block = m_DoubleSpinBox->blockSignals(true);
+        m_DoubleSpinBox->setValue(value);
+        m_DoubleSpinBox->blockSignals(block);
+      }
+    }
+  }
+}
+
+void CctwDoubleMatrix3x3PropertyDoubleSpinBoxHelper::setValue(double value)
+{
+  emit subValueChanged(m_Row, m_Col, value, m_Property->incIndex(1));
 }
 

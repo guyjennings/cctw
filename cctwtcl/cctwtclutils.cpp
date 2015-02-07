@@ -25,6 +25,3 @@ void tcl_condition_failed(Tcl_Interp* interp, Tcl_Obj* command,
   va_end(va);
   Tcl_AddErrorInfo(interp, buffer);
 }
-
-
-

@@ -1,0 +1,57 @@
+#!/bin/bash -eu 
+
+# CCTW-TRANSFORM
+# Wrapper script for cctwcli transform capability
+
+CCTW_BIN=$( cd $( dirname $0 ) ; /bin/pwd )
+
+usage()
+{
+  echo "CCTW-TRANSFORM"
+  echo
+  echo "usage: cctw-transform <SETTINGS> <INPUT> <OUTPUT>"
+}
+
+VERBOSE=0
+  
+while getopts "hv" OPTION
+do
+  case ${OPTION} in 
+    h) 
+      usage 
+      exit 0
+      ;;
+    v) 
+      (( ++VERBOSE )) 
+      ;;
+  esac
+done
+
+shift $(( OPTIND-1 )) 
+
+if [[ ${#*} != 3 ]] 
+then
+  usage 
+  exit 1
+fi
+
+if (( VERBOSE )) 
+then 
+  set -x 
+fi
+
+SETTINGS=$1
+INPUT=$2
+OUTPUT=$3
+
+# TODO: Figure out how to set input and output locations with QScript
+
+${CCTW_BIN}/cctwcli -p ${SETTINGS}  \
+  --input  ${INPUT}                 \
+  --output ${OUTPUT}                \
+  -c "cctw.calculateDependencies()" \
+  -c "transformer.transform()"
+
+# Local Variables: 
+# mode: sh
+# End:

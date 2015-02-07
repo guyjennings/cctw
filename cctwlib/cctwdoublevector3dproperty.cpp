@@ -3,6 +3,7 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include <stdio.h>
 
 CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
   QcepProperty(saver, parent, name, toolTip),
@@ -41,6 +42,13 @@ CctwDoubleVector3D CctwDoubleVector3DProperty::defaultValue() const
   return m_Default;
 }
 
+double CctwDoubleVector3DProperty::subValue(int axis) const
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
+
+  return m_Value(axis);
+}
+
 void CctwDoubleVector3DProperty::setValue(CctwDoubleVector3D val, int index)
 {
   if (debug()) {
@@ -55,22 +63,29 @@ void CctwDoubleVector3DProperty::setValue(CctwDoubleVector3D val, int index)
 
 void CctwDoubleVector3DProperty::incValue(CctwDoubleVector3D step)
 {
+  setValue(m_Value + step);
+}
+
+void CctwDoubleVector3DProperty::setSubValue(int axis, double value, int index)
+{
+  if (index == this->index()) {
+    setSubValue(axis, value);
+  }
+}
+
+void CctwDoubleVector3DProperty::setSubValue(int axis, double value)
+{
   QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
 
-  if (qcepDebug(DEBUG_PROPERTIES) || debug()) {
-    printMessage(tr("%1: CctwqtDoubleVector3DProperty::incValue(CctwDoubleVector3D %2...)")
-                 .arg(name()).arg(toString(step)));
+  if (value != m_Value(axis)) {
+    int newIndex = incIndex(1);
+
+    emit subValueChanged(axis, value, newIndex);
+
+    m_Value(axis) = value;
+
+    emit valueChanged(m_Value, newIndex);
   }
-
-  m_Value += step;
-
-  QcepSettingsSaverPtr saver(m_Saver);
-
-  if (saver) {
-    saver->changed(this);
-  }
-
-  emit valueChanged(m_Value, incIndex(1));
 }
 
 QString CctwDoubleVector3DProperty::toString(const CctwDoubleVector3D &val)
@@ -92,9 +107,17 @@ void CctwDoubleVector3DProperty::setValue(CctwDoubleVector3D val)
   }
 
   if (val != m_Value) {
+    int newIndex = incIndex(1);
+
     if (debug()) {
       printMessage(tr("%1: CctwqtDoubleVector3DProperty::setValue(CctwDoubleVector3D %2) [%3]")
                    .arg(name()).arg(toString(val)).arg(index()));
+    }
+
+    for (int axis=0; axis<3; axis++) {
+      if (val(axis) != m_Value(axis)) {
+        emit subValueChanged(axis, val(axis), newIndex);
+      }
     }
 
     m_Value = val;
@@ -105,7 +128,7 @@ void CctwDoubleVector3DProperty::setValue(CctwDoubleVector3D val)
       saver->changed(this);
     }
 
-    emit valueChanged(m_Value, incIndex(1));
+    emit valueChanged(m_Value, newIndex);
   }
 }
 
@@ -143,6 +166,71 @@ void CctwDoubleVector3DProperty::fromScriptValue(const QScriptValue &obj, CctwDo
   vec.z() = obj.property(2).toNumber();
 }
 
+void CctwDoubleVector3DProperty::linkTo(QDoubleSpinBox *xSpinBox, QDoubleSpinBox *ySpinBox, QDoubleSpinBox *zSpinBox)
+{
+  if (xSpinBox) {
+    linkTo(0, xSpinBox);
+  }
+
+  if (ySpinBox) {
+    linkTo(1, ySpinBox);
+  }
+
+  if (zSpinBox) {
+    linkTo(2, zSpinBox);
+  }
+}
+
+void CctwDoubleVector3DProperty::linkTo(int axis, QDoubleSpinBox *spinBox)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_Mutex);
+
+  CctwDoubleVector3DPropertyDoubleSpinBoxHelper *helper
+      = new CctwDoubleVector3DPropertyDoubleSpinBoxHelper(spinBox, this, axis);
+
+  helper->moveToThread(spinBox->thread());
+  helper->connect();
+
+  spinBox -> setValue(subValue(axis));
+  spinBox -> setKeyboardTracking(false);
+
+  setWidgetToolTip(spinBox);
+
+  connect(this, SIGNAL(subValueChanged(int,double,int)), helper, SLOT(setSubValue(int,double,int)));
+  connect(helper, SIGNAL(subValueChanged(int,double,int)), this, SLOT(setSubValue(int,double,int)));
+}
+
+CctwDoubleVector3DPropertyDoubleSpinBoxHelper::CctwDoubleVector3DPropertyDoubleSpinBoxHelper
+  (QDoubleSpinBox *spinBox, CctwDoubleVector3DProperty *property, int axis)
+  : QObject(spinBox),
+    m_DoubleSpinBox(spinBox),
+    m_Property(property),
+    m_Axis(axis)
+{
+}
+
+void CctwDoubleVector3DPropertyDoubleSpinBoxHelper::connect()
+{
+  CONNECT_CHECK(QObject::connect(m_DoubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)), Qt::DirectConnection));
+}
+
+void CctwDoubleVector3DPropertyDoubleSpinBoxHelper::setSubValue(int axis, double value, int index)
+{
+  if (m_Property->index() == index) {
+    if (m_Axis == axis) {
+      if (m_DoubleSpinBox->value() != value) {
+        bool block = m_DoubleSpinBox->blockSignals(true);
+        m_DoubleSpinBox->setValue(value);
+        m_DoubleSpinBox->blockSignals(block);
+      }
+    }
+  }
+}
+
+void CctwDoubleVector3DPropertyDoubleSpinBoxHelper::setValue(double value)
+{
+  emit subValueChanged(m_Axis, value, m_Property->incIndex(1));
+}
 
 #ifndef QT_NO_DATASTREAM
 

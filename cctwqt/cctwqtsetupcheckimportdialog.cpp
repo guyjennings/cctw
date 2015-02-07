@@ -1,11 +1,11 @@
 #include "cctwqtsetupcheckimportdialog.h"
 #include "ui_cctwqtsetupcheckimportdialog.h"
 #include "cctwqtmainwindow.h"
-#include "cctwimportdata.h"
+#include "cctwimporter.h"
 #include <QDir>
 #include <QtConcurrentRun>
 
-CctwqtSetupCheckImportDialog::CctwqtSetupCheckImportDialog(CctwqtMainWindow *parent, CctwImportData *data) :
+CctwqtSetupCheckImportDialog::CctwqtSetupCheckImportDialog(CctwqtMainWindow *parent, CctwImporter *data) :
   QDialog(parent),
   ui(new Ui::CctwqtSetupCheckImportDialog),
   m_Window(parent),
@@ -38,7 +38,7 @@ void CctwqtSetupCheckImportDialog::accept()
     m_Data->set_CheckApproximately(ui->m_CheckApproximately->isChecked());
   }
 
-  QtConcurrent::run(m_Data, &CctwImportData::checkImportedData);
+  QtConcurrent::run(m_Data, &CctwImporter::checkImportedData);
 //  QMetaObject::invokeMethod(m_Data, "checkImportedData", Qt::QueuedConnection);
 
   QDialog::accept();

@@ -14,7 +14,7 @@
    <string>CCTW Setup Data Import...</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="14" column="0" colspan="4">
+   <item row="16" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -24,7 +24,24 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="2">
+   <item row="14" column="3">
+    <widget class="QSpinBox" name="m_OutputChunkZ">
+     <property name="toolTip">
+      <string>Output HDF Chunk Size in Z</string>
+     </property>
+     <property name="maximum">
+      <number>999999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Output Dataset:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="2">
     <widget class="QSpinBox" name="m_OutputChunkY">
      <property name="toolTip">
       <string>Output HDF Chunk Size in Y</string>
@@ -44,20 +61,10 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
+   <item row="14" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>Output Chunk Size (X,Y,Z)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="3">
-    <widget class="QSpinBox" name="m_OutputChunkZ">
-     <property name="toolTip">
-      <string>Output HDF Chunk Size in Z</string>
-     </property>
-     <property name="maximum">
-      <number>999999</number>
      </property>
     </widget>
    </item>
@@ -167,7 +174,7 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
+   <item row="14" column="1">
     <widget class="QSpinBox" name="m_OutputChunkX">
      <property name="toolTip">
       <string>Output HDF Chunk Size in X</string>
@@ -177,14 +184,14 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="0">
+   <item row="15" column="0">
     <widget class="QLabel" name="label_9">
      <property name="text">
       <string>Output Compression: (0=none)</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="15" column="1">
     <widget class="QSpinBox" name="m_OutputCompression">
      <property name="toolTip">
       <string>Output HDF Chunk Size in X</string>
@@ -193,6 +200,9 @@
       <number>999999</number>
      </property>
     </widget>
+   </item>
+   <item row="13" column="0" colspan="3">
+    <widget class="QLineEdit" name="m_OutputDataset"/>
    </item>
   </layout>
  </widget>

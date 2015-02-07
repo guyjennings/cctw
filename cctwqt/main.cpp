@@ -1,9 +1,4 @@
 #include <stdio.h>
-#include "cctwcrystalcoordinatetransform.h"
-#include "cctwrotationtransform.h"
-#include "cctwcompoundtransform.h"
-#include "cctwtransformer.h"
-#include "cctwoutputchunkindex.h"
 
 #include "cctwdebug.h"
 #include "qcepdocumentationdictionary.h"

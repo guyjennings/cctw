@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-class CctwImportData;
+class CctwImporter;
 class CctwqtMainWindow;
 
 namespace Ui {
@@ -15,7 +15,7 @@ class CctwqtSetupCheckImportDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit CctwqtSetupCheckImportDialog(CctwqtMainWindow *parent, CctwImportData *data);
+  explicit CctwqtSetupCheckImportDialog(CctwqtMainWindow *parent, CctwImporter *data);
   ~CctwqtSetupCheckImportDialog();
 
 public slots:
@@ -27,7 +27,7 @@ private:
 private:
   Ui::CctwqtSetupCheckImportDialog *ui;
   CctwqtMainWindow   *m_Window;
-  CctwImportData     *m_Data;
+  CctwImporter     *m_Data;
 };
 
 #endif // CCTWQTSETUPCHECKIMPORTDIALOG_H

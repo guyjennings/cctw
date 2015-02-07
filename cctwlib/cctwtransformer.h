@@ -2,12 +2,12 @@
 #define CCTWTRANSFORMER_H
 
 #include "cctwobject.h"
-#include "cctwinputdatainterface.h"
-#include "cctwoutputdatainterface.h"
+#include "cctwchunkeddata.h"
 #include "cctwtransforminterface.h"
-#include "cctwinputchunkindex.h"
-#include "cctwdatablobs.h"
 #include <QUrl>
+
+template <class T>
+class QcepImageData;
 
 class CctwApplication;
 
@@ -15,81 +15,106 @@ class CctwTransformer : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwTransformer(CctwApplication *application,
-                  CctwInputDataInterface *input,    // The input data
-                  CctwOutputDataInterface *output,  // The output data
+  CctwTransformer(CctwApplication        *application,
+                  CctwChunkedData        *input,    // The input data
+                  CctwChunkedData        *output,  // The output data
                   CctwTransformInterface *xform,    // The transform
-                  int osx, int osy, int osz,        // Oversampling factors
-                  int nTests,
+//                  int osx, int osy, int osz,        // Oversampling factors
+                  QString name,
                   QObject *parent);
 
   virtual ~CctwTransformer();
 
-  static const int MAX_CHUNK = 8*1024*1024; // Maximal size of a disk-resident chunk
-
-  static const int MAX_REQUISITES = 128; // Maximal number of chunks required to produce an output chunk
-
 public slots:
-
-  static int XYZtoID(int max_x, int max_y, int max_z,
-                     int x, int y, int z);
-
-  void performTests();
-
   void transform();
   void checkTransform();
 
-  QcepIntList dependencies(int chunkIdx);
+  void saveDependencies(QString path);
+  void loadDependencies(QString path);
+
+  QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void transformChunkNumber(int chunkId);
+  void transformChunkData(int chunkId,
+                          CctwDataChunk *inputChunk,
+                          QMap<int, CctwDataChunk*> &outputChunks);
+  void dummyTransformChunkNumber(int n);
+
+  void clearDependencies();
+  void addDependency(int f, int t);
+
+  void dummyTransform1();
+  void dummyTransform2();
+  void dummyTransform3();
+
+#ifdef WANT_ANALYSIS_COMMANDS
+  void projectInput(QString path, int axes);
+  void projectOutput(QString path, int axes);
+#endif
+
 public:
-  CctwInputDataBlob*               inputBlob(int blobIdx, QString location);
-  QList<CctwIntermediateDataBlob*> transformBlob(CctwInputDataBlob *blob);
-  CctwIntermediateDataBlob*        mergeBlobs(CctwIntermediateDataBlob *blob1, CctwIntermediateDataBlob *blob2);
-  CctwOutputDataBlob*              normalizeBlob(CctwIntermediateDataBlob *blob);
-  void                             outputBlob(QString destination, CctwOutputDataBlob* blob);
+  virtual void writeSettings(QSettings *set, QString section);
+  virtual void readSettings(QSettings *set, QString section);
 
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
-  void transformChunkNumber(int n);
   void runTransformChunkNumber(int n);
+  void runDummyTransformChunkNumber(int n);
 
-  void generateTestData(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-  void readHDF5InputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-  void readArbitraryInputBlob(int blobIdx, QUrl location, CctwInputDataBlob *blob);
-
-  void writeHDF5OutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
-  void writeArbitraryOutputBlob(int blobIdx, QUrl location, CctwOutputDataBlob *blob);
+#ifdef WANT_ANALYSIS_COMMANDS
+  void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
+  void projectDataset(QString path, CctwChunkedData *data, int axes);
+#endif
 
 private:
   CctwApplication         *m_Application;
   QAtomicInt               m_MergeCounter;
-  CctwInputDataInterface  *m_InputData;
-  CctwOutputDataInterface *m_OutputData;
+  CctwChunkedData         *m_InputData;
+  CctwChunkedData         *m_OutputData;
   CctwTransformInterface  *m_Transform;
-  int                      m_OversampleX;
-  int                      m_OversampleY;
-  int                      m_OversampleZ;
-  int                      m_Tests;
-  CctwIntVector3D          m_ChunkCount;
-  int                      m_ChunksTotal;
-  int                     *m_ChunksUsed;
+//  int                      m_OversampleX;
+//  int                      m_OversampleY;
+//  int                      m_OversampleZ;
+
+  QMutex                   m_LockX;
+  QMutex                   m_LockY;
+  QMutex                   m_LockZ;
+
+  QcepImageData<double>   *m_ImageX;
+  QcepImageData<double>   *m_ImageY;
+  QcepImageData<double>   *m_ImageZ;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)
   QCEP_DOUBLE_PROPERTY(WallTime)
 
-//  Q_PROPERTY(int blocksAvailable READ get_BlocksAvailable WRITE set_BlocksAvailable STORED false)
-//  QCEP_INTEGER_PROPERTY(BlocksAvailable)
-
-//  Q_PROPERTY(int blocksAllocated READ get_BlocksAllocated WRITE set_BlocksAllocated STORED false)
-//  QCEP_INTEGER_PROPERTY(BlocksAllocated)
-
   Q_PROPERTY(int blocksLimit READ get_BlocksLimit WRITE set_BlocksLimit)
   QCEP_INTEGER_PROPERTY(BlocksLimit)
 
-  Q_PROPERTY(int blocksMax READ get_BlocksMax WRITE set_BlocksMax STORED false)
-  QCEP_INTEGER_PROPERTY(BlocksMax)
+  Q_PROPERTY(int transformOptions READ get_TransformOptions WRITE set_TransformOptions)
+  QCEP_INTEGER_PROPERTY(TransformOptions)
+
+  Q_PROPERTY(int oversampleX READ get_OversampleX WRITE set_OversampleX)
+  QCEP_INTEGER_PROPERTY(OversampleX)
+
+  Q_PROPERTY(int oversampleY READ get_OversampleY WRITE set_OversampleY)
+  QCEP_INTEGER_PROPERTY(OversampleY)
+
+  Q_PROPERTY(int oversampleZ READ get_OversampleZ WRITE set_OversampleZ)
+  QCEP_INTEGER_PROPERTY(OversampleZ)
+
+  Q_PROPERTY(bool projectX READ get_ProjectX WRITE set_ProjectX)
+  QCEP_BOOLEAN_PROPERTY(ProjectX)
+
+  Q_PROPERTY(bool projectY READ get_ProjectY WRITE set_ProjectY)
+  QCEP_BOOLEAN_PROPERTY(ProjectY)
+
+  Q_PROPERTY(bool projectZ READ get_ProjectZ WRITE set_ProjectZ)
+  QCEP_BOOLEAN_PROPERTY(ProjectZ)
+
+  Q_PROPERTY(QString projectDestination READ get_ProjectDestination WRITE set_ProjectDestination)
+  QCEP_STRING_PROPERTY(ProjectDestination)
 };
 
 #endif // CCTWTRANSFORMER_H

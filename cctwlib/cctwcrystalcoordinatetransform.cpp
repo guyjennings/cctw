@@ -1,8 +1,8 @@
 #include "cctwcrystalcoordinatetransform.h"
 #include <cmath>
 
-CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QObject *parent) :
-  CctwTransformInterface(parent),
+CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, QObject *parent) :
+  CctwTransformInterface(name, parent),
   m_Parms(parms),
   m_CurrentFrame(-1),
   m_CurrentFrameChangeCount(0)
@@ -18,11 +18,10 @@ void CctwCrystalCoordinateTransform::updateFromParameters()
   m_ChiAngle      = m_Parms->chiNom() + m_Parms->chiCorrection();
 
   m_GridBasisInv  = m_Parms->gridBasis().inverted();
-  m_OMat          = CctwDoubleMatrix3x3(1.0, 0.0, 0.0,
-                                        0.0, 0.0, 1.0,
-                                        -1.0, 0.0, 0.0);
 
+  m_OMat          = m_Parms->oMat();
   m_OMatInv       = m_OMat.inverted();
+  m_OVec          = m_Parms->oVec();
 
   m_UBMatInv      = m_Parms->ubMat().inverted();
 
@@ -145,8 +144,13 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPos(double x, double y)
 {
   double pixelSize = m_Parms->pixelSize();
 
-  return CctwDoubleVector3D((x+0.5 - m_Parms->det0x())*pixelSize,
-                            (y+0.5 - m_Parms->det0y())*pixelSize, 0.0);
+  if (m_Parms->get_ExtraFlip()) {
+    return CctwDoubleVector3D(((2048-y)+0.5 - m_Parms->det0x())*pixelSize,
+                              ((2048-x)+0.5 - m_Parms->det0y())*pixelSize, 0.0);
+  } else {
+    return CctwDoubleVector3D((x+0.5 - m_Parms->det0x())*pixelSize,
+                              (y+0.5 - m_Parms->det0y())*pixelSize, 0.0);
+  }
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(double x, double y, double z)
@@ -160,6 +164,8 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::pixel2qlab(CctwDoubleVector3D
   double scale = 1.0/m_Parms->wavelength();
 
   xyz = m_OMatInv*xyz;
+  xyz = xyz - m_OVec;
+
   xyz = m_DMatInv*xyz;
   xyz = xyz - m_CD;
   xyz = xyz.normalized();
@@ -195,10 +201,10 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::hkl2grid(CctwDoubleVector3D h
   xyz = m_GridBasisInv*xyz;
 
   for (int i=0; i<3; i++) {
-    xyz(i) *= qMax(m_Parms->gridDim()(i)-1,1.0);
+    xyz(i) *= qMax(m_Parms->gridDim()(i),0.0);
   }
 
-  return xyz;
+  return xyz+m_Parms->gridOffset();
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(double gx, double gy, double gz)
@@ -208,10 +214,10 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(double gx, double gy
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::grid2hkl(CctwDoubleVector3D grid)
 {
-  CctwDoubleVector3D xyz = grid;
+  CctwDoubleVector3D xyz = grid - m_Parms->gridOffset();
 
   for (int i=0; i<3; i++) {
-    xyz(i) /= qMax(m_Parms->gridDim()(i)-1,1.0);
+    xyz(i) /= qMax(m_Parms->gridDim()(i),0.0);
   }
 
   xyz = m_Parms->gridBasis()*xyz;
@@ -253,6 +259,9 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::qlab2pixel(CctwDoubleVector3D
   xyz = xyz + m_CD;
 
   xyz = m_DMat*xyz;
+
+  xyz = xyz + m_OVec;
+
   xyz = m_OMat*xyz;
 
   return xyz;
@@ -269,6 +278,14 @@ CctwDoubleVector3D CctwCrystalCoordinateTransform::getDetPix(CctwDoubleVector3D 
 
   detpix.x() = (int)(xyz.x()/m_Parms->pixelSize() + m_Parms->det0x() - 0.5);
   detpix.y() = (int)(xyz.y()/m_Parms->pixelSize() + m_Parms->det0y() - 0.5);
+
+  if (m_Parms->get_ExtraFlip()) {
+    double x = detpix.x();
+    double y = detpix.y();
+
+    detpix.x() = 2048-y;
+    detpix.y() = 2048-x;
+  }
 
   return detpix;
 }

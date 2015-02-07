@@ -12,16 +12,15 @@
 #include "qwt_plot_zoomer.h"
 #include "qwt_symbol.h"
 #include "QtConcurrentRun"
+#include "cctwdatachunk.h"
 
 CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::CctwqtMainWindow),
   m_Application(app),
-  m_SetupInputDialog(NULL),
+  m_TransformTester(NULL),
   m_SetupOutputDialog(NULL),
   m_SetupTransformDialog(NULL),
-  m_SetupSliceDialog(NULL),
-  m_TransformOneDialog(NULL),
   m_Legend(NULL),
   m_Panner(NULL),
   m_Magnifier(NULL),
@@ -31,45 +30,183 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_CommandInput, SIGNAL(returnPressed()), this, SLOT(doEvaluateCommand()));
 
-  connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
+#ifdef WANT_IMPORT_COMMANDS
   connect(ui->m_ActionSetupDataImport, SIGNAL(triggered()), this, SLOT(doSetupImport()));
+  connect(ui->m_SetupImportButton, SIGNAL(clicked()), this, SLOT(doSetupImport()));
 
-  connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
   connect(ui->m_ActionImportData, SIGNAL(triggered()), this, SLOT(doImport()));
+  connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
+#endif
 
-  connect(ui->m_SetupInputButton, SIGNAL(clicked()), this, SLOT(doSetupInput()));
+  connect(ui->m_ActionSetupOutputData, SIGNAL(triggered()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
+
+  connect(ui->m_ActionSetupTransform, SIGNAL(triggered()), this, SLOT(doSetupTransform()));
   connect(ui->m_SetupTransformButton, SIGNAL(clicked()), this, SLOT(doSetupTransform()));
-  connect(ui->m_SetupSliceButton, SIGNAL(clicked()), this, SLOT(doSetupSlice()));
-  connect(ui->m_TransformAllButton, SIGNAL(clicked()), this, SLOT(doTransformAll()));
-  connect(ui->m_TransformOneButton, SIGNAL(clicked()), this, SLOT(doTransformOne()));
-  connect(ui->m_TransformSliceButton, SIGNAL(clicked()), this, SLOT(doTransformSlice()));
+
+  connect(ui->m_ActionPerformTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
+  connect(ui->m_TransformButton, SIGNAL(clicked()), this, SLOT(doTransform()));
+
+  connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
+  connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
+
+  connect(ui->m_ActionDummyTransform, SIGNAL(triggered()), this, SLOT(doDummyTransform()));
+  connect(ui->m_DummyTransformButton, SIGNAL(clicked()), this, SLOT(doDummyTransform()));
+
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
-  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
-  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
-  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
-  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
-  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
 
   connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
-  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
-  connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
-  connect(ui->m_ActionReportDependencies, SIGNAL(triggered()), m_Application, SLOT(reportDependencies()));
-  connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
-  connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
+  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
 
-  connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
+  connect(ui->m_ActionReportInputDependencies, SIGNAL(triggered()), this, SLOT(reportInputDependencies()));
+  connect(ui->m_ReportInputDepsButton, SIGNAL(clicked()), this, SLOT(reportInputDependencies()));
+
+  connect(ui->m_ActionReportOutputDependencies, SIGNAL(triggered()), this, SLOT(reportOutputDependencies()));
+  connect(ui->m_ReportOutputDepsButton, SIGNAL(clicked()), this, SLOT(reportOutputDependencies()));
+
+  connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
+  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
+
+  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
+  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
+
+
+#ifdef WANT_IMPORT_COMMANDS
   connect(ui->m_ActionCheckImportedData, SIGNAL(triggered()), this, SLOT(doCheckImportedData()));
+#endif
 
   connect(ui->m_ActionLoadSettings, SIGNAL(triggered()), this, SLOT(doLoadSettings()));
   connect(ui->m_ActionSaveSettings, SIGNAL(triggered()), this, SLOT(doSaveSettings()));
+  connect(ui->m_ActionSaveCurrentSettings, SIGNAL(triggered()), m_Application, SLOT(writeSettings()));
+
   connect(ui->m_ActionQuit, SIGNAL(triggered()), this, SLOT(possiblyClose()));
 
   app->prop_Halting()->linkTo(ui->m_Halting);
-  app->prop_InputDataDescriptor()->linkTo(ui->m_InputData);
-  app->prop_OutputDataDescriptor()->linkTo(ui->m_OutputData);
-  app->prop_OutputSliceDataDescriptor()->linkTo(ui->m_OutputSliceData);
-  app->prop_InverseAvailable()->linkTo(ui->m_InverseAvailable);
+
+#ifdef WANT_ANALYSIS_COMMANDS
+  connect(ui->m_ActionAnalyzePEMetaData, SIGNAL(triggered()), this, SLOT(doAnalyzePEMetaData()));
+  connect(ui->m_PEMetaDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzePEMetaData()));
+
+  connect(ui->m_ActionAnalyseSpecDataFile, SIGNAL(triggered()), this, SLOT(doAnalyzeSpecDataFile()));
+  connect(ui->m_AnalyzeSpecDataButton, SIGNAL(clicked()), this, SLOT(doAnalyzeSpecDataFile()));
+
+  connect(ui->m_ActionCompareTwoHDF5, SIGNAL(triggered()), this, SLOT(doCompareHDF5()));
+#else
+  ui->m_ParametersTabs->removeTab(5);
+  ui->m_Menubar->removeAction(ui->m_AnalysisMenu->menuAction());
+#endif
+
+#ifdef WANT_IMPORT_COMMANDS
+  CctwImporter *import = app->m_ImportData;
+
+  if (import) {
+    import->prop_DarkImagePath()->linkTo(ui->m_ImportDarkImagePath);
+    import->prop_ImageDirectory()->linkTo(ui->m_ImportDataDirectory);
+    import->prop_OutputPath()->linkTo(ui->m_ImportOutputPath);
+    import->prop_OutputDataset()->linkTo(ui->m_ImportOutputDataset);
+    import->prop_Compression()->linkTo(ui->m_ImportOutputCompression);
+
+    connect(import->prop_ImagePaths(), SIGNAL(valueChanged(QStringList,int)), this, SLOT(updateImportImagePaths(QStringList)));
+
+    import->prop_ChunkSize()->linkTo(ui->m_ImportOutputChunkX,
+                                     ui->m_ImportOutputChunkY,
+                                     ui->m_ImportOutputChunkZ);
+
+    updateImportImagePaths(import->get_ImagePaths());
+  }
+#else
+  ui->m_ParametersTabs->removeTab(0);
+  ui->m_FileMenu->removeAction(ui->m_ActionSetupDataImport);
+  ui->m_FileMenu->removeAction(ui->m_ActionImportData);
+#endif
+
+  CctwChunkedData *inputData = app->m_InputData;
+
+  if (inputData) {
+    inputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
+    inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
+    inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
+
+    inputData->prop_Compression()->linkTo(ui->m_InputCompression);
+    inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
+
+    inputData->prop_Dimensions()->linkTo(ui->m_InputDimensionsX,
+                                         ui->m_InputDimensionsY,
+                                         ui->m_InputDimensionsZ);
+
+    inputData->prop_ChunkSize()->linkTo(ui->m_InputChunkX,
+                                        ui->m_InputChunkY,
+                                        ui->m_InputChunkZ);
+
+    inputData->prop_ChunkCount()->linkTo(ui->m_InputCountX,
+                                         ui->m_InputCountY,
+                                         ui->m_InputCountZ);
+
+    inputData->prop_HDFChunkSize()->linkTo(ui->m_InputHDFChunkX,
+                                           ui->m_InputHDFChunkY,
+                                           ui->m_InputHDFChunkZ);
+  }
+
+  connect(ui->m_BrowseInputFile, SIGNAL(clicked()), this, SLOT(doBrowseInputFile()));
+  connect(ui->m_InputDataFileName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataFile(QString)));
+  connect(ui->m_BrowseInputDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowseInputDataset(QString)));
+  connect(ui->m_InputDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataset(QString)));
+
+  CctwChunkedData *outputData = app->m_OutputData;
+
+  if (outputData) {
+    outputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
+    outputData->prop_DataSetName()->linkTo(ui->m_OutputDataSetName);
+    outputData->prop_ChunksWritten()->linkTo(ui->m_ChunksWritten);
+    outputData->prop_ChunksHeld()->linkTo(ui->m_ChunksHeld);
+    outputData->prop_ChunksHeldMax()->linkTo(ui->m_ChunksHeldMax);
+
+    outputData->prop_Compression()->linkTo(ui->m_OutputCompression);
+    outputData->prop_ChunksWritten()->linkTo(ui->m_ChunksWritten);
+
+    outputData->prop_Dimensions()->linkTo(ui->m_OutputDimensionsX,
+                                          ui->m_OutputDimensionsY,
+                                          ui->m_OutputDimensionsZ);
+
+    outputData->prop_ChunkSize()->linkTo(ui->m_OutputChunkX,
+                                         ui->m_OutputChunkY,
+                                         ui->m_OutputChunkZ);
+
+    outputData->prop_ChunkCount()->linkTo(ui->m_OutputCountX,
+                                          ui->m_OutputCountY,
+                                          ui->m_OutputCountZ);
+
+    outputData->prop_HDFChunkSize()->linkTo(ui->m_OutputHDFChunkX,
+                                            ui->m_OutputHDFChunkY,
+                                            ui->m_OutputHDFChunkZ);
+  }
+
+  CctwTransformer *xform = app->m_Transformer;
+
+  if (xform) {
+    xform->prop_ProjectX()->linkTo(ui->m_ProjectX);
+    xform->prop_ProjectY()->linkTo(ui->m_ProjectY);
+    xform->prop_ProjectZ()->linkTo(ui->m_ProjectZ);
+    xform->prop_ProjectDestination()->linkTo(ui->m_ProjectDestination);
+    xform->prop_OversampleX()->linkTo(ui->m_OversampleX);
+    xform->prop_OversampleY()->linkTo(ui->m_OversampleY);
+    xform->prop_OversampleZ()->linkTo(ui->m_OversampleZ);
+  }
+
+  CctwCrystalCoordinateParameters *parms= app->parameters();
+
+  if (parms) {
+    parms->prop_ExtraFlip()->linkTo(ui->m_ExtraFlip);
+  }
+
+  connect(ui->m_ActionProjectBrowse, SIGNAL(triggered()), this, SLOT(doBrowseProject()));
+  connect(ui->m_ProjectBrowseButton, SIGNAL(clicked()), this, SLOT(doBrowseProject()));
+
+  connect(ui->m_ActionProjectInput, SIGNAL(triggered()), this, SLOT(doProjectInput()));
+  connect(ui->m_ProjectInputButton, SIGNAL(clicked()), this, SLOT(doProjectInput()));
+
+  connect(ui->m_ActionProjectOutput, SIGNAL(triggered()), this, SLOT(doProjectOutput()));
+  connect(ui->m_ProjectOutputButton, SIGNAL(clicked()), this, SLOT(doProjectOutput()));
 
   connect(app->prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
   connect(app->prop_ProgressLimit(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgressUpdate()));
@@ -96,11 +233,18 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 //  m_Legend -> setItemMode(QwtLegend::CheckableItem);
 
   ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
+
+  m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, this);
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
 {
   delete ui;
+}
+
+CctwApplication *CctwqtMainWindow::cctwApplication()
+{
+  return m_Application;
 }
 
 void CctwqtMainWindow::closeEvent ( QCloseEvent * event )
@@ -151,6 +295,13 @@ void CctwqtMainWindow::doEvaluateCommand()
   QMetaObject::invokeMethod(m_Application, "evaluateCommand", Q_ARG(QString, cmd));
 }
 
+#ifdef WANT_IMPORT_COMMANDS
+void CctwqtMainWindow::updateImportImagePaths(QStringList p)
+{
+  ui->m_ImportDataImages->clear();
+  ui->m_ImportDataImages->addItems(p);
+}
+
 void CctwqtMainWindow::doSetupImport()
 {
   if (m_SetupImportDialog == NULL) {
@@ -164,24 +315,110 @@ void CctwqtMainWindow::doSetupImport()
 
 void CctwqtMainWindow::doImport()
 {
-  QtConcurrent::run(m_Application->m_ImportData, &CctwImportData::importData);
+  QtConcurrent::run(m_Application->m_ImportData, &CctwImporter::importData);
+}
+#endif
+
+void CctwqtMainWindow::doBrowseInputFile()
+{
+  CctwChunkedData *inputData = m_Application->m_InputData;
+
+  if (inputData) {
+    QString path = QFileDialog::getOpenFileName(this, "Input File",
+                                                inputData->get_DataFileName());
+
+    if (path.length() > 0) {
+      inputData->set_DataFileName(path);
+    }
+  }
 }
 
-void CctwqtMainWindow::doSetupInput()
+static herr_t iterate_objects(hid_t o_id,
+                              const char *name,
+                              const H5O_info_t *object_info,
+                              void *op_data)
 {
-  if (m_SetupInputDialog == NULL) {
-    m_SetupInputDialog = new CctwqtSetupInputDialog(this);
-    m_SetupInputDialog -> show();
-  }
+//  printf("Object: %s\n", name);
 
-  m_SetupInputDialog->raise();
-  m_SetupInputDialog->activateWindow();
+  if (object_info) {
+    switch (object_info->type) {
+    case H5O_TYPE_DATASET:
+      if (op_data) {
+        QStringList *sl = (QStringList*)(op_data);
+
+        if (sl) {
+          sl->append(QString("/%1").arg(name));
+        }
+      }
+      break;
+    }
+  }
+  return 0;
+}
+
+static QStringList iterateHDF5datasets(QString path)
+{
+  /* Save old error handler */
+  H5E_auto2_t  old_func;
+  void *old_client_data;
+
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  QStringList paths;
+
+  hid_t file = H5Fopen(qPrintable(path), H5F_ACC_RDONLY, H5P_DEFAULT);
+
+//  H5Giterate(file, "/", NULL, dataset, &paths);
+
+//  H5Lvisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_links, &paths);
+
+  H5Ovisit(file, H5_INDEX_NAME, H5_ITER_INC, iterate_objects, &paths);
+
+  /* Close file */
+  herr_t ret = H5Fclose(file);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return paths;
+}
+
+void CctwqtMainWindow::doCheckDataFile(QString path)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataFile(\"%1\")").arg(path));
+//  }
+
+  QStringList paths = iterateHDF5datasets(path);
+
+  ui->m_BrowseInputDataset->clear();
+  ui->m_BrowseInputDataset->addItem("");
+  ui->m_BrowseInputDataset->addItems(paths);
+}
+
+void CctwqtMainWindow::doBrowseInputDataset(QString entry)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doBrowseInputDataset(%1)").arg(entry));
+//  }
+
+  ui->m_InputDataSetName->setText(entry);
+}
+
+void CctwqtMainWindow::doCheckDataset(QString name)
+{
+//  if (m_Window) {
+//    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataset(\"%1\")").arg(name));
+//  }
 }
 
 void CctwqtMainWindow::doSetupOutput()
 {
   if (m_SetupOutputDialog == NULL) {
-    m_SetupOutputDialog = new CctwqtSetupOutputDialog(this);
+    m_SetupOutputDialog = new CctwqtSetupOutputDialog(this, m_Application->m_OutputData);
     m_SetupOutputDialog -> show();
   }
 
@@ -200,35 +437,19 @@ void CctwqtMainWindow::doSetupTransform()
   m_SetupTransformDialog->activateWindow();
 }
 
-void CctwqtMainWindow::doSetupSlice()
+void CctwqtMainWindow::doTransform()
 {
-  if (m_SetupSliceDialog == NULL) {
-    m_SetupSliceDialog = new CctwqtSetupSliceDialog(this);
-    m_SetupSliceDialog -> show();
-  }
-
-  m_SetupSliceDialog->raise();
-  m_SetupSliceDialog->activateWindow();
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform);
 }
 
-void CctwqtMainWindow::doTransformAll()
+void CctwqtMainWindow::doCheckTransform()
 {
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
 }
 
-void CctwqtMainWindow::doTransformOne()
+void CctwqtMainWindow::doDummyTransform()
 {
-  if (m_TransformOneDialog == NULL) {
-    m_TransformOneDialog = new CctwqtTransformOneDialog(this);
-    m_TransformOneDialog -> show();
-  }
-
-  m_TransformOneDialog->raise();
-  m_TransformOneDialog->activateWindow();
-}
-
-void CctwqtMainWindow::doTransformSlice()
-{
-
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::dummyTransform1);
 }
 
 void CctwqtMainWindow::doHalt()
@@ -243,6 +464,7 @@ void CctwqtMainWindow::doSaveSettings()
 
   if (path.length()) {
     m_Application->writeSettings(path);
+    m_Application->set_SettingsPath(path);
   }
 }
 
@@ -253,6 +475,7 @@ void CctwqtMainWindow::doLoadSettings()
 
   if (path.length()) {
     m_Application->readSettings(path);
+    m_Application->set_SettingsPath(path);
   }
 }
 
@@ -263,6 +486,7 @@ void CctwqtMainWindow::doSaveDependencies()
 
   if (path.length()) {
     m_Application->saveDependencies(path);
+    m_Application->set_DependenciesPath(path);
   }
 }
 
@@ -273,7 +497,77 @@ void CctwqtMainWindow::doLoadDependencies()
 
   if (path.length()) {
     m_Application->loadDependencies(path);
+    m_Application->set_DependenciesPath(path);
   }
+}
+
+void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
+{
+  if (data) {
+    int maxdeps = 0;
+    int ndeps   = 0;
+    int sumdeps = 0;
+    int nchnk   = data->chunkCount().volume();
+
+    for (int i=0; i < nchnk; i++) {
+      CctwDataChunk *chunk = data->chunk(i);
+
+      if (chunk) {
+        int ct = chunk->dependencyCount();
+
+        if (ct >= 1) {
+          ndeps++;
+        }
+
+        if (ct > maxdeps) {
+          maxdeps = ct;
+        }
+
+        sumdeps += ct;
+      }
+    }
+
+    ui->m_DependenciesTable->clear();
+    ui->m_DependenciesTable->setRowCount(ndeps + 3);
+    ui->m_DependenciesTable->setColumnCount((maxdeps+1)>4 ? (maxdeps+1):4);
+
+    ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(title));
+    ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
+    ui->m_DependenciesTable->setItem(1, 1, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
+    ui->m_DependenciesTable->setItem(1, 2, new QTableWidgetItem(tr("%1 Sum").arg(sumdeps)));
+    ui->m_DependenciesTable->setItem(1, 3, new QTableWidgetItem(tr("%1 Avg").arg(double(sumdeps)/double(nchnk))));
+    ui->m_DependenciesTable->setItem(1, 4, new QTableWidgetItem(tr("%1 Avg-NZ").arg(double(sumdeps)/double(ndeps))));
+
+    int r = 0;
+
+    for (int i=0; i < nchnk; i++) {
+      CctwDataChunk *chunk = data->chunk(i);
+
+      if (chunk) {
+        int ct = chunk->dependencyCount();
+
+        if (ct >= 1) {
+          ui->m_DependenciesTable->setItem(r+3, 0, new QTableWidgetItem(tr("%1->[%2]").arg(i).arg(ct)));
+
+          for (int i=0; i<ct; i++) {
+            ui->m_DependenciesTable->setItem(r+3, 1+i, new QTableWidgetItem(tr("%1").arg(chunk->dependency(i))));
+          }
+
+          r++;
+        }
+      }
+    }
+  }
+}
+
+void CctwqtMainWindow::reportInputDependencies()
+{
+  reportDependencies(m_Application->m_InputData, "Input Dependencies");
+}
+
+void CctwqtMainWindow::reportOutputDependencies()
+{
+  reportDependencies(m_Application->m_OutputData, "Output Dependencies");
 }
 
 void CctwqtMainWindow::doAnalyzePEMetaData()
@@ -355,6 +649,7 @@ void CctwqtMainWindow::doCompareHDF5()
   m_SetupCompareDialog->activateWindow();
 }
 
+#ifdef WANT_IMPORT_COMMANDS
 void CctwqtMainWindow::doCheckImportedData()
 {
   if (m_SetupCheckImportDialog == NULL) {
@@ -364,4 +659,58 @@ void CctwqtMainWindow::doCheckImportedData()
 
   m_SetupCheckImportDialog->raise();
   m_SetupCheckImportDialog->activateWindow();
+}
+#endif
+
+void CctwqtMainWindow::doBrowseProject()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    QString s = QFileDialog::getExistingDirectory(this, "Destination", xform->get_ProjectDestination());
+
+    if (s.length()) {
+      xform->set_ProjectDestination(s);
+    }
+  }
+}
+
+void CctwqtMainWindow::doProjectInput()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    int flags = (xform->get_ProjectX() ? 1 : 0) +
+                (xform->get_ProjectY() ? 2 : 0) +
+                (xform->get_ProjectZ() ? 4 : 0);
+
+    QString inputPath = m_Application->m_InputData->get_DataFileName();
+
+    QFileInfo info(inputPath);
+
+    QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
+    QString cmd = tr("transformer.projectInput(\"%1\", %2)").arg(dst).arg(flags);
+
+    m_Application->evaluateCommand(cmd);
+  }
+}
+
+void CctwqtMainWindow::doProjectOutput()
+{
+  CctwTransformer *xform = m_Application->m_Transformer;
+
+  if (xform) {
+    int flags = (xform->get_ProjectX() ? 1 : 0) +
+                (xform->get_ProjectY() ? 2 : 0) +
+                (xform->get_ProjectZ() ? 4 : 0);
+
+    QString outputPath = m_Application->m_OutputData->get_DataFileName();
+
+    QFileInfo info(outputPath);
+
+    QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
+    QString cmd = tr("transformer.projectOutput(\"%1\", %2)").arg(dst).arg(flags);
+
+    m_Application->evaluateCommand(cmd);
+  }
 }

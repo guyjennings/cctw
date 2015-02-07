@@ -44,7 +44,7 @@ void CctwqtSetupTransformDialog::accept()
 void CctwqtSetupTransformDialog::copyParametersToDialog()
 {
   CctwCrystalCoordinateParameters *parms = m_Application->m_Parameters;
-  CctwInputData *input = m_Application->m_InputData;
+  CctwChunkedData *input = m_Application->m_InputData;
 
   ui->m_PixelDimensionX->setValue(input->dimensions().x());
   ui->m_PixelDimensionY->setValue(input->dimensions().y());
@@ -73,6 +73,24 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_UBMat20->setValue(ubMat(2,0));
   ui->m_UBMat21->setValue(ubMat(2,1));
   ui->m_UBMat22->setValue(ubMat(2,2));
+
+  CctwDoubleMatrix3x3 oMat = parms->oMat();
+
+  ui->m_OMat00->setValue(oMat(0,0));
+  ui->m_OMat01->setValue(oMat(0,1));
+  ui->m_OMat02->setValue(oMat(0,2));
+  ui->m_OMat10->setValue(oMat(1,0));
+  ui->m_OMat11->setValue(oMat(1,1));
+  ui->m_OMat12->setValue(oMat(1,2));
+  ui->m_OMat20->setValue(oMat(2,0));
+  ui->m_OMat21->setValue(oMat(2,1));
+  ui->m_OMat22->setValue(oMat(2,2));
+
+  CctwDoubleVector3D oVec = parms->oVec();
+
+  ui->m_OVec0->setValue(oVec(0));
+  ui->m_OVec1->setValue(oVec(1));
+  ui->m_OVec2->setValue(oVec(2));
 
   ui->m_Det0x->setValue(parms->det0x());
   ui->m_Det0y->setValue(parms->det0y());
@@ -123,6 +141,12 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_GridDimX->setValue(gridDim.x());
   ui->m_GridDimY->setValue(gridDim.y());
   ui->m_GridDimZ->setValue(gridDim.z());
+
+  CctwDoubleVector3D gridOffset = parms->gridOffset();
+
+  ui->m_GridOffsetX->setValue(gridOffset.x());
+  ui->m_GridOffsetY->setValue(gridOffset.y());
+  ui->m_GridOffsetZ->setValue(gridOffset.z());
 }
 
 void CctwqtSetupTransformDialog::updateTwoTheta()
@@ -177,6 +201,28 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   ubMat(2,2) = ui->m_UBMat22->value();
 
   parms->setUBMat(ubMat);
+
+  CctwDoubleMatrix3x3 oMat;
+
+  oMat(0,0) = ui->m_OMat00->value();
+  oMat(0,1) = ui->m_OMat01->value();
+  oMat(0,2) = ui->m_OMat02->value();
+  oMat(1,0) = ui->m_OMat10->value();
+  oMat(1,1) = ui->m_OMat11->value();
+  oMat(1,2) = ui->m_OMat12->value();
+  oMat(2,0) = ui->m_OMat20->value();
+  oMat(2,1) = ui->m_OMat21->value();
+  oMat(2,2) = ui->m_OMat22->value();
+
+  parms->setOMat(oMat);
+
+  CctwDoubleVector3D oVec;
+
+  oVec(0) = ui->m_OVec0->value();
+  oVec(1) = ui->m_OVec1->value();
+  oVec(2) = ui->m_OVec2->value();
+
+  parms->setOVec(oVec);
 
   parms->setDet0x(ui->m_Det0x->value());
   parms->setDet0y(ui->m_Det0y->value());
@@ -235,6 +281,14 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   gridDim.z() = ui->m_GridDimZ->value();
 
   parms->setGridDim(gridDim);
+
+  CctwDoubleVector3D gridOffset;
+
+  gridOffset.x() = ui->m_GridOffsetX->value();
+  gridOffset.y() = ui->m_GridOffsetY->value();
+  gridOffset.z() = ui->m_GridOffsetZ->value();
+
+  parms->setGridOffset(gridOffset);
 }
 
 double CctwqtSetupTransformDialog::rad2deg(double rad)

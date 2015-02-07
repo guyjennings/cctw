@@ -13,7 +13,8 @@ public:
 signals:
   
 public slots:
-  
+  void checkForExceptions();
+
 public:
   CctwApplication* application() const;
 
@@ -22,6 +23,23 @@ private:
   static QScriptValue waitFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue loadPreferencesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue executeScriptFileFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue showHelpFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue showVersionFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setThreadsFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setInputDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setInputChunksFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOutputDimsFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOutputChunksFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
+
+//  typedef QObject *QObjectP;
+
+//  static QScriptValue QObjectToScriptValue(QScriptEngine *engine, const QObjectP &object);
+//  static void         QObjectFromScriptValue(const QScriptValue& value, QObjectP &object);
 
 private:
   CctwApplication *m_Application;

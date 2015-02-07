@@ -6,21 +6,20 @@
 #ifndef NO_GUI
 #include "cctwqtmainwindow.h"
 #endif
-#include "cctwinputdata.h"
-#include "cctwoutputdata.h"
-#include "cctwoutputslicedata.h"
-#include "cctwinputdataframemanager.h"
-#include "cctwoutputdataframemanager.h"
+#include "cctwchunkeddata.h"
 #include "cctwtransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwcrystalcoordinatetransform.h"
 #include "qcepsettingssaver-ptr.h"
 #include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
-#include "cctwqtpeingresscommand.h"
-#include "cctwdatablobs.h"
-#include "cctwimportdata.h"
-#include "cctwcomparedata.h"
+#include "cctwpeingresscommand.h"
+
+#ifdef WANT_IMPORT_COMMANDS
+#include "cctwimporter.h"
+#endif
+
+#include "cctwcomparer.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
@@ -48,16 +47,36 @@ public slots:
   void printLine(QString line);
   void printMessage(QString msg, QDateTime dt=QDateTime::currentDateTime());
   void wait(QString msg);
+  void evaluateStartupCommand(QString cmd);
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 
+  void showHelp(QString about);
+  void showVersion();
+
+  void setThreads(QString desc);
+
+  void clearWriteSettings();
   void writeSettings();
   void readSettings();
   void writeSettings(QString path);
   void readSettings(QString path);
 
+  QString settingsScript();
+
+  void setInputData(QString data);
+  void setInputChunks(QString data);
+  void setInputDataset(QString data);
+  void setOutputData(QString data);
+  void setOutputDims(QString data);
+  void setOutputChunks(QString data);
+  void setOutputDataset(QString data);
+
+  void partialTransform(QString desc);
+  void partialDependencies(QString desc);
+
   void calculateDependencies();
-  void calculateChunkDependencies(CctwIntVector3D idx);
+  void calculateChunkDependencies(int n);
 
   void saveDependencies(QString path);
   void loadDependencies(QString path);
@@ -65,9 +84,6 @@ public slots:
   void reportDependencies();
 
   void doAboutToQuit();
-
-  void dummyInputRun();
-  void dummyInputRunChunk(CctwIntVector3D idx);
 
   void reportInputDependencies();
   void reportInputDependencies(CctwIntVector3D idx);
@@ -80,8 +96,6 @@ public slots:
 
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path);
-
-  int inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords);
 
   CctwCrystalCoordinateParameters *parameters() const;
 
@@ -96,27 +110,27 @@ public slots:
   QcepIntList dependencies(int chunkId);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void testing();
+
 public:
 #ifndef NO_GUI
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 #endif
 
-  CctwInputDataBlob*                input     (int chunkId, QString inputDataURL);
-  QList<CctwIntermediateDataBlob*>  transform (int chunkId, CctwInputDataBlob *chunk);
-  CctwIntermediateDataBlob*         merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2);
-  CctwOutputDataBlob*               normalize (int chunkId, CctwIntermediateDataBlob *chunk);
-  void                              output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk);
-  void                              deleteBlob(int chunkId, CctwDataBlob *blob);
-
   QcepSettingsSaverWPtr saver() const;
 
   QScriptValue evaluate(QString cmd);
+  void printHDF5errors();
+
+  static QString addSlashes(QString str);
 
 private slots:
   void onDebugChanged(int dbg);
   void onProgress(int prg);
 
 private:
+  void startupCommand(QString cmd);
+
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
 
@@ -124,26 +138,24 @@ private:
   void decodeCommandLineArgsForUnix(int &argc, char *argv[]);
   void decodeCommandLineArgsForWindows(int &argc, char *argv[]);
 
+  void installHDF5ErrorHandler();
+
 public:
   QcepObjectNamer                     m_ObjectNamer;
 #ifndef NO_GUI
   CctwqtMainWindow                   *m_Window;
 #endif
   CctwCrystalCoordinateParameters    *m_Parameters;
-  CctwImportData                     *m_ImportData;
-  CctwCompareData                    *m_CompareData;
-  CctwInputDataFrameManager          *m_InputDataManager;
-  CctwInputData                      *m_InputData;
-  CctwOutputDataFrameManager         *m_OutputDataManager;
-  CctwOutputData                     *m_OutputData;
-  CctwOutputDataFrameManager         *m_OutputSliceDataManager;
-  CctwOutputSliceData                *m_OutputSliceData;
+#ifdef WANT_IMPORT_COMMANDS
+  CctwImporter                       *m_ImportData;
+#endif
+  CctwComparer                       *m_CompareData;
+  CctwChunkedData                    *m_InputData;
+  CctwChunkedData                    *m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
-  CctwCrystalCoordinateTransform     *m_SliceTransform;
-  CctwTransformer                    *m_SliceTransformer;
   CctwScriptEngine                   *m_ScriptEngine;
-  CctwqtPEIngressCommand             *m_PEIngressCommand;
+  CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
 private:
@@ -161,20 +173,8 @@ public:
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
 
-  Q_PROPERTY(QString inputDataDescriptor READ get_InputDataDescriptor WRITE set_InputDataDescriptor)
-  QCEP_STRING_PROPERTY(InputDataDescriptor)
-
-  Q_PROPERTY(QString outputDataDescriptor READ get_OutputDataDescriptor WRITE set_OutputDataDescriptor)
-  QCEP_STRING_PROPERTY(OutputDataDescriptor)
-
-  Q_PROPERTY(QString outputSliceDataDescriptor READ get_OutputSliceDataDescriptor WRITE set_OutputSliceDataDescriptor)
-  QCEP_STRING_PROPERTY(OutputSliceDataDescriptor)
-
   Q_PROPERTY(bool halting READ get_Halting WRITE set_Halting STORED false)
   QCEP_BOOLEAN_PROPERTY(Halting)
-
-  Q_PROPERTY(bool inverseAvailable READ get_InverseAvailable WRITE set_InverseAvailable)
-  QCEP_BOOLEAN_PROPERTY(InverseAvailable)
 
   Q_PROPERTY(int progress READ get_Progress WRITE set_Progress STORED false)
   QCEP_INTEGER_PROPERTY(Progress)
@@ -190,6 +190,12 @@ public:
 
   Q_PROPERTY(QString specDataFilePath READ get_SpecDataFilePath WRITE set_SpecDataFilePath)
   QCEP_STRING_PROPERTY(SpecDataFilePath)
+
+  Q_PROPERTY(int mpiRank READ get_MpiRank WRITE set_MpiRank STORED false)
+  QCEP_INTEGER_PROPERTY(MpiRank)
+
+  Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
+  QCEP_INTEGER_PROPERTY(MpiSize)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

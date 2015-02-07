@@ -10,6 +10,7 @@ class CctwVector3D
 {
 public:
   CctwVector3D(T x, T y, T z);
+  template <typename T2> CctwVector3D(const CctwVector3D<T2> &v);
   CctwVector3D();
 
 public:

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-INCLUDEPATH += $${PWD}
+INCLUDEPATH += $${PWD} $${PWD}/lzf/
 
 SOURCES += \
     $${PWD}/cctwdebug.cpp \
@@ -15,37 +15,24 @@ SOURCES += \
     $${PWD}/cctwdoublevector3dproperty.cpp \
     $${PWD}/cctwdoublematrix3x3property.cpp \
     $${PWD}/cctwunitcellproperty.cpp \
-    $${PWD}/cctwinputdatainterface.cpp \
-    $${PWD}/cctwoutputdatainterface.cpp \
-    $${PWD}/cctwdataframe.cpp \
-    $${PWD}/cctwdataframemanager.cpp \
-    $${PWD}/cctwinputdataframemanager.cpp \
-    $${PWD}/cctwoutputdataframemanager.cpp \
     $${PWD}/cctwtransforminterface.cpp \
     $${PWD}/cctwtransformer.cpp \
     $${PWD}/cctwvector3d.cpp \
     $${PWD}/cctwmatrix3x3.cpp \
     $${PWD}/cctwcrystalcoordinatetransform.cpp \
-    $${PWD}/cctwrotationtransform.cpp \
-    $${PWD}/cctwcompoundtransform.cpp \
-    $${PWD}/cctwoutputchunkindex.cpp \
-    $${PWD}/cctwcommandline.cpp \
-    $${PWD}/cctwchunkeddatainterface.cpp \
     $${PWD}/cctwchunkeddata.cpp \
-    $${PWD}/cctwinputdata.cpp \
-    $${PWD}/cctwoutputdata.cpp \
-    $${PWD}/cctwoutputslicedata.cpp \
-    $${PWD}/cctwinputchunkindex.cpp \
-    $${PWD}/cctwchunkindex.cpp \
     $${PWD}/cctwunitcell.cpp \
     $${PWD}/cctwcrystalcoordinateparameters.cpp \
     $${PWD}/cctwdatachunk.cpp \
     $${PWD}/cctwlinearfitter.cpp \
-    $${PWD}/cctwdatablobs.cpp \
+    $${PWD}/cctwpeingresscommand.cpp \
     $${PWD}/cctwapplication.cpp \
-    ../cctwlib/cctwimportdata.cpp \
-    ../cctwlib/cctwcomparedata.cpp \
-    ../cctwlib/cctwinputdatah5.cpp
+    $${PWD}/cctwimporter.cpp \
+    $${PWD}/cctwcomparer.cpp \
+    $${PWD}/cctwinputdatah5.cpp \
+    $${PWD}/lzf/lzf_filter.c \
+    $${PWD}/lzf/lzf/lzf_c.c \
+    $${PWD}/lzf/lzf/lzf_d.c
 
 HEADERS += \
     $${PWD}/cctwdebug.h \
@@ -56,34 +43,22 @@ HEADERS += \
     $${PWD}/cctwdoublevector3dproperty.h \
     $${PWD}/cctwdoublematrix3x3property.h \
     $${PWD}/cctwunitcellproperty.h \
-    $${PWD}/cctwinputdatainterface.h \
-    $${PWD}/cctwoutputdatainterface.h \
-    $${PWD}/cctwdataframe.h \
-    $${PWD}/cctwdataframemanager.h \
-    $${PWD}/cctwinputdataframemanager.h \
-    $${PWD}/cctwoutputdataframemanager.h \
     $${PWD}/cctwtransforminterface.h \
     $${PWD}/cctwtransformer.h \
     $${PWD}/cctwvector3d.h \
     $${PWD}/cctwmatrix3x3.h \
     $${PWD}/cctwcrystalcoordinatetransform.h \
-    $${PWD}/cctwrotationtransform.h \
-    $${PWD}/cctwcompoundtransform.h \
-    $${PWD}/cctwoutputchunkindex.h \
-    $${PWD}/cctwcommandline.h \
-    $${PWD}/cctwchunkeddatainterface.h \
     $${PWD}/cctwchunkeddata.h \
-    $${PWD}/cctwinputdata.h \
-    $${PWD}/cctwoutputdata.h \
-    $${PWD}/cctwoutputslicedata.h \
-    $${PWD}/cctwinputchunkindex.h \
-    $${PWD}/cctwchunkindex.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
     $${PWD}/cctwdatachunk.h \
     $${PWD}/cctwlinearfitter.h \
-    $${PWD}/cctwdatablobs.h \
+    $${PWD}/cctwpeingresscommand.h \
     $${PWD}/cctwapplication.h \
-    ../cctwlib/cctwimportdata.h \
-    ../cctwlib/cctwcomparedata.h \
-    ../cctwlib/cctwinputdatah5.h
+    $${PWD}/cctwimporter.h \
+    $${PWD}/cctwcomparer.h \
+    $${PWD}/cctwinputdatah5.h \
+    $${PWD}/lzf/lzf_filter.h \
+    $${PWD}/lzf/lzf/lzf.h \
+    $${PWD}/lzf/lzf/lzfP.h
+

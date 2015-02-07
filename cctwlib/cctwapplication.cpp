@@ -14,9 +14,15 @@
 #include "cctwunitcellproperty.h"
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
+
+#ifdef WANT_IMPORT_COMMANDS
 #include "qcepimagedataformatcbf.h"
 #include "qcepimagedataformatmar345.h"
 #include "qcepimagedataformattiff.h"
+#endif
+
+#include <hdf5.h>
+#include "lzf_filter.h"
 
 #ifdef Q_OS_UNIX
 #include "getopt.h"
@@ -24,9 +30,11 @@
 
 QcepSettingsSaverPtr g_Saver;
 
+#ifdef WANT_IMPORT_COMMANDS
 QcepImageDataFormatCBF<double> cbfImg("cbf");
 QcepImageDataFormatTiff<double> tiffImg("tiff");
 QcepImageDataFormatMar345<double> mar345Img("mar345");
+#endif
 
 CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
@@ -38,34 +46,33 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifndef NO_GUI
   m_Window(NULL),
 #endif
-  m_InputDataManager(NULL),
-  m_InputData(NULL),
-  m_OutputDataManager(NULL),
-  m_OutputData(NULL),
-  m_OutputSliceDataManager(NULL),
-  m_OutputSliceData(NULL),
   m_Parameters(NULL),
+#ifdef WANT_IMPORT_COMMANDS
   m_ImportData(NULL),
+#endif
+  m_CompareData(NULL),
+  m_InputData(NULL),
+  m_OutputData(NULL),
   m_Transform(NULL),
   m_Transformer(NULL),
-  m_SliceTransform(NULL),
-  m_SliceTransformer(NULL),
   m_ScriptEngine(NULL),
   m_PEIngressCommand(NULL),
+#ifdef NO_GUI
+  m_Saver(NULL),
+#else
   m_Saver(new QcepSettingsSaver(this)),
+#endif
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
-  m_InputDataDescriptor(m_Saver, this, "inputDataDescriptor", "", "Input Data Descriptor"),
-  m_OutputDataDescriptor(m_Saver, this, "outputDataDescriptor", "", "Output Data Descriptor"),
-  m_OutputSliceDataDescriptor(m_Saver, this, "outputSliceDataDescriptor", "", "Output Slice Data Descriptor"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
-  m_InverseAvailable(m_Saver, this, "inverseAvailable", false, "Is inverse transform available?"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
-  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file")
+  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
+  m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -79,6 +86,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   connect(prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgress(int)));
 
   connect(this, SIGNAL(aboutToQuit()), this, SLOT(doAboutToQuit()));
+
+  register_lzf();
 }
 
 QcepSettingsSaverWPtr CctwApplication::saver() const
@@ -121,14 +130,65 @@ void CctwApplication::decodeCommandLineArgs(int &argc, char *argv[])
 #endif
 }
 
+void CctwApplication::startupCommand(QString cmd)
+{
+  prop_StartupCommands()->appendValue(cmd);
+}
+
+QString CctwApplication::addSlashes(QString str)
+{
+
+  QString newStr;
+
+  for(int i=0;i<str.length();i++) {
+    if(str[i] == '\0') {
+      newStr.append('\\');
+      newStr.append('0');
+    } else if(str[i] == '\'') {
+      newStr.append('\\');
+      newStr.append('\'');
+    } else if(str[i] == '\"') {
+      newStr.append('\\');
+      newStr.append('\"');
+    } else if(str[i] == '\\') {
+      newStr.append('\\');
+      newStr.append('\\');
+    } else {
+      newStr.append(str[i]);
+    }
+  }
+
+  return newStr;
+}
+
 void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 {
 #ifdef Q_OS_UNIX
   int c;
 
+  enum {
+    argInputChunks = 10,
+    argInputDataset,
+    argOutputDims,
+    argOutputChunks,
+    argOutputDataset
+  };
+
   while (1) {
     static struct option long_options[] = {
-      {"debug", required_argument, 0, 'd'},
+      {"help", no_argument, 0, 'h'},
+      {"version", no_argument, 0, 'v'},
+      {"threads", required_argument, 0, 'j'},
+      {"input", required_argument, 0, 'i'},
+      {"inputchunks", required_argument, 0, argInputChunks},
+      {"inputdataset", required_argument, 0, argInputDataset},
+      {"output", required_argument, 0, 'o'},
+      {"outputdims", required_argument, 0, argOutputDims},
+      {"outputchunks", required_argument, 0, argOutputChunks},
+      {"outputdataset", required_argument, 0, argOutputDataset},
+      {"transform", optional_argument, 0, 't'},
+      {"depends", optional_argument, 0, 'd'},
+      {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
@@ -140,13 +200,61 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "d:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:o:t::d::D:p:gnc:w:s:", long_options, &option_index);
 
     if (c == -1) {
       break;
     }
 
     switch (c) {
+    case 'h':
+      startupCommand("showHelp();");
+      break;
+
+    case 'v':
+      startupCommand("showVersion();");
+      break;
+
+    case 'j':
+      startupCommand(tr("setThreads(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'i':
+      startupCommand(tr("setInputData(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argInputChunks:
+      startupCommand(tr("setInputChunks(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argInputDataset:
+      startupCommand(tr("setInputDataset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'o':
+      startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOutputDims:
+      startupCommand(tr("setOutputDims(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOutputChunks:
+      startupCommand(tr("setOutputChunks(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOutputDataset:
+      startupCommand(tr("setOutputDataset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 't':
+      startupCommand(tr("partialTransform(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'd':
+      startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case 'g': /* want gui */
       set_GuiWanted(true);
       break;
@@ -156,22 +264,22 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'c': /* command line command */
-      prop_StartupCommands()->appendValue(tr("%1;").arg(optarg));
+      startupCommand(tr("%1;").arg(optarg));
       break;
 
     case 'w': /* wait */
-      prop_StartupCommands()->appendValue(tr("wait(\"%1\");").arg(optarg));
+      startupCommand(tr("wait(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 's': /* script file */
-      prop_StartupCommands()->appendValue(tr("executeScriptFile(\"%1\");").arg(optarg));
+      startupCommand(tr("executeScriptFile(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'p': /* preferences file */
-      prop_StartupCommands()->appendValue(tr("loadPreferences(\"%1\");").arg(optarg));
+      startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
       break;
 
-    case 'd': /* change debug level */
+    case 'D': /* change debug level */
       {
         char *a = optarg;
         int lvl = atoi(a);
@@ -193,9 +301,104 @@ void CctwApplication::decodeCommandLineArgsForWindows(int &argc, char *argv[])
 {
 }
 
+static herr_t cctwH5print(unsigned n, const H5E_error2_t *eptr, void *data)
+{
+  CctwApplication *app = (CctwApplication*) data;
+
+  if (app) {
+    app->printMessage(QObject::tr("%1:%2 : %3").arg(eptr->file_name).arg(eptr->line).arg(eptr->desc));
+  }
+
+  return 0;
+}
+
+void CctwApplication::printHDF5errors()
+{
+  printMessage("HDF5 Error occurred");
+
+  H5Ewalk(H5E_DEFAULT, H5E_WALK_DOWNWARD, &cctwH5print, this);
+}
+
+static herr_t cctwH5error(hid_t h, void *data)
+{
+  CctwApplication *app = (CctwApplication*) data;
+
+  if (app) {
+    app->printHDF5errors();
+  }
+
+  return 0;
+}
+
+void CctwApplication::installHDF5ErrorHandler()
+{
+  H5Eset_auto(H5E_DEFAULT, &cctwH5error, (void*) this);
+}
+
 void CctwApplication::initialize(int &argc, char *argv[])
 {
+  installHDF5ErrorHandler();
+
   decodeCommandLineArgs(argc, argv);
+
+#ifdef WANT_IMPORT_COMMANDS
+  m_ImportData       = new CctwImporter(this, "importData", this);
+#endif
+
+  m_CompareData      = new CctwComparer(this, "compareData", this);
+
+  m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
+
+  m_InputData        = new CctwChunkedData(this,
+                                           CctwIntVector3D(256,256,256),
+                                           CctwIntVector3D(32, 32, 32),
+                                            true,
+                                           "inputData",
+                                           this);
+  m_InputData        -> allocateChunks();
+
+  m_OutputData       = new CctwChunkedData(this,
+                                           CctwIntVector3D(256,256,256),
+                                           CctwIntVector3D(32, 32, 32),
+                                           false,
+                                           "outputData",
+                                           this);
+  m_OutputData              -> allocateChunks();
+
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
+
+  m_Transformer      = new CctwTransformer(this,
+                                           m_InputData,
+                                           m_OutputData,
+                                           m_Transform, /*1, 1, 1,*/
+                                           "transformer",
+                                           this);
+
+  m_PEIngressCommand = new CctwPEIngressCommand(this, "peingress", this);
+
+  m_ScriptEngine     = new CctwScriptEngine(this, this);
+
+#ifdef WANT_IMPORT_COMMANDS
+  m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
+#endif
+
+  m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
+  m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
+  m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
+  m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
+  m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
+  m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
+  m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
+  m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
+  m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
+
+#ifndef NO_GUI
+  readSettings();
+#endif
+
+  if (m_Saver) {
+    m_Saver->start();
+  }
 
 #ifdef NO_GUI
   set_GuiWanted(false);
@@ -205,75 +408,6 @@ void CctwApplication::initialize(int &argc, char *argv[])
   }
 #endif
 
-//  QMainWindow *win = new QMainWindow();
-//  win -> show();
-
-  m_ImportData       = new CctwImportData(this, this);
-
-  m_CompareData      = new CctwCompareData(this, this);
-
-  m_Parameters       = new CctwCrystalCoordinateParameters(this);
-
-  m_InputDataManager        = new CctwInputDataFrameManager(this);
-  m_InputData               = new CctwInputData(CctwIntVector3D(2048,2048,2048),
-                                                  CctwIntVector3D(128, 128, 128),
-//                                                  CctwDoubleVector3D(-5,-5,-5),
-//                                                  CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
-                                                  m_InputDataManager, this);
-  m_InputDataManager        -> setData(m_InputData);
-  m_InputData               -> allocateChunks();
-
-  m_OutputDataManager       = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputData              = new CctwOutputData(CctwIntVector3D(2048,2048,2048),
-                                                   CctwIntVector3D(128, 128, 128),
-//                                                   CctwDoubleVector3D(-5,-5,-5),
-//                                                   CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,10.0/2048.0),
-                                                   m_OutputDataManager, this);
-  m_OutputDataManager       -> setData(m_OutputData);
-  m_OutputData              -> allocateChunks();
-
-  m_OutputSliceDataManager        = new CctwOutputDataFrameManager(m_Saver, this);
-  m_OutputSliceData               = new CctwOutputSliceData(CctwIntVector3D(2048,2048,1),
-                                                              CctwIntVector3D(128, 128, 1),
-//                                                              CctwDoubleVector3D(-5,-5, 0),
-//                                                              CctwDoubleVector3D(10.0/2048.0,10.0/2048.0,1),
-                                                              m_OutputSliceDataManager, this);
-
-  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, this);
-  m_Transformer      = new CctwTransformer(this,
-                                             m_InputData,
-                                             m_OutputData,
-                                             m_Transform, 1, 1, 1, 0, this);
-  m_SliceTransform   = new CctwCrystalCoordinateTransform(m_Parameters, this);
-  m_SliceTransformer = new CctwTransformer(this,
-                                             m_InputData,
-                                             m_OutputSliceData,
-                                             m_SliceTransform, 1, 1, 1, 0, this);
-
-  m_PEIngressCommand = new CctwqtPEIngressCommand(this, this);
-  m_ScriptEngine     = new CctwScriptEngine(this, this);
-
-  m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
-  m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
-  m_ScriptEngine->globalObject().setProperty("inputDataManager", m_ScriptEngine->newQObject(m_InputDataManager));
-  m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
-  m_ScriptEngine->globalObject().setProperty("outputDataManager", m_ScriptEngine->newQObject(m_OutputDataManager));
-  m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
-  m_ScriptEngine->globalObject().setProperty("outputSliceDataManager", m_ScriptEngine->newQObject(m_OutputSliceDataManager));
-  m_ScriptEngine->globalObject().setProperty("outputSliceData", m_ScriptEngine->newQObject(m_OutputSliceData));
-  m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
-  m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
-  m_ScriptEngine->globalObject().setProperty("sliceTransform", m_ScriptEngine->newQObject(m_SliceTransform));
-  m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
-  m_ScriptEngine->globalObject().setProperty("sliceTransformer", m_ScriptEngine->newQObject(m_SliceTransformer));
-  m_ScriptEngine->globalObject().setProperty("peingress", m_ScriptEngine->newQObject(m_PEIngressCommand));
-  m_ScriptEngine->globalObject().setProperty("application", m_ScriptEngine->newQObject(this));
-  m_ScriptEngine->globalObject().setProperty("globals", m_ScriptEngine->globalObject());
-
-  readSettings();
-
-  m_Saver->start();
-
 #ifndef NO_GUI
   if (m_Window) {
     m_Window->show();
@@ -281,7 +415,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
 #endif
 
   foreach(QString cmd, get_StartupCommands()) {
-    QMetaObject::invokeMethod(this, "evaluateCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
+    QMetaObject::invokeMethod(this, "evaluateStartupCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
   }
 
   if (!get_GuiWanted()) {
@@ -291,7 +425,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
 
 void CctwApplication::doAboutToQuit()
 {
+#ifndef NO_GUI
   writeSettings();
+#endif
 }
 
 void CctwApplication::printLine(QString msg)
@@ -327,19 +463,42 @@ void CctwApplication::wait(QString msg)
 //  printMessage(tr("Wait: %1").arg(msg));
 }
 
+void CctwApplication::evaluateStartupCommand(QString cmd)
+{
+  if (m_ScriptEngine) {
+    QScriptValue val = m_ScriptEngine->evaluate(cmd);
+
+    m_ScriptEngine->checkForExceptions();
+
+    if (!val.isUndefined()) {
+      printMessage(tr("%1").arg(val.toString()));
+    }
+  }
+}
+
 void CctwApplication::evaluateCommand(QString cmd)
 {
   if (m_ScriptEngine) {
     QScriptValue val = m_ScriptEngine->evaluate(cmd);
 
-    printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+    m_ScriptEngine->checkForExceptions();
+
+    if (val.isUndefined()) {
+      printMessage(tr("%1").arg(cmd));
+    } else {
+      printMessage(tr("%1 -> %2").arg(cmd).arg(val.toString()));
+    }
   }
 }
 
 QScriptValue CctwApplication::evaluate(QString cmd)
 {
   if (m_ScriptEngine) {
-    return m_ScriptEngine->evaluate(cmd);
+    QScriptValue result = m_ScriptEngine->evaluate(cmd);
+
+    m_ScriptEngine->checkForExceptions();
+
+    return result;
   } else {
     return QScriptValue();
   }
@@ -355,9 +514,150 @@ void CctwApplication::executeScriptFile(QString path)
 
       QScriptValue val = m_ScriptEngine->evaluate(script, path, 1);
 
+      m_ScriptEngine->checkForExceptions();
+
       printMessage(tr("Result -> %1").arg(val.toString()));
     }
   }
+}
+
+void CctwApplication::showHelp(QString about)
+{
+  printLine(tr(
+              "\n"
+              "usage: %1 <options>\n"
+              "\n"
+              "where options are:\n"
+              "\n"
+              "--help, -h                       display this text\n"
+              "--version, -v                    display version info\n"
+              "--threads <n>, -j <n>            set number of worker threads\n"
+              "--input <f>, -i <f>              specify input data (url format)\n"
+              "--inputchunks <cks>              specify input chunk size (e.g. 32x32x32 or 32)\n"
+              "--inputdataset <dsn>             specify input dataset path\n"
+              "--output <f>, -o <f>             specify output data (url format)\n"
+              "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
+              "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
+              "--outputdataset <dsn>            specify output dataset path\n"
+              "--transform {<n/m>}, -t {<n/m>}  transform all or part of the data\n"
+              "--depends {<n/m>}, -d {<n/m>}    calculate dependencies for all or part of the data\n"
+              "--debug <n>, -D <n>              set debug level\n"
+              "--preferences <f>, -p <f>        read settings from file <f>\n"
+              "--gui, -g                        use GUI interface if available\n"
+              "--nogui, -n                      no GUI interface\n"
+              "--command <cmd>, -c <cmd>        execute command <cmd>\n"
+              "--wait <msg>, -w                 wait for previous commands to finish\n"
+              "--script <f>, -s <f>             run script in file <f>\n"
+              ).arg(arguments().at(0)));
+}
+
+void CctwApplication::showVersion()
+{
+  printLine(tr("cctw   version " STR(CCTW_VERSION)));
+  printLine(tr("qt     version %1").arg(qVersion()));
+  printLine(tr("ceplib version " STR(QCEPLIB_VERSION)));
+  printLine(tr("hdf5   version " STR(QCEPLIB_HDF5_VERSION)));
+#ifndef NO_GUI
+  printLine(tr("qwt    version " STR(QCEPLIB_QWT_VERSION)));
+#endif
+  printLine(tr("tiff   version " STR(QCEPLIB_TIFF_VERSION)));
+  printLine(tr("cbf    version " STR(QCEPLIB_CBF_VERSION)));
+}
+
+void CctwApplication::setThreads(QString desc)
+{
+  printMessage(tr("Set number of pool threads to %1").arg(desc));
+
+  bool ok;
+
+  int n = desc.toInt(&ok);
+
+  if (ok) {
+    if (n == 0) {
+      QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount());
+    } else {
+      QThreadPool::globalInstance()->setMaxThreadCount(n);
+    }
+  }
+}
+
+void CctwApplication::setInputData(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set input data to %1").arg(data));
+
+    m_InputData->setDataSource(data);
+  }
+}
+
+void CctwApplication::setInputChunks(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set input chunk size to %1").arg(data));
+
+    m_InputData->setChunks(data);
+  }
+}
+
+void CctwApplication::setInputDataset(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set input data set name to %1").arg(data));
+
+    m_InputData->setDataset(data);
+  }
+}
+
+void CctwApplication::setOutputData(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output data to %1").arg(data));
+
+    m_OutputData->setDataSource(data);
+  }
+}
+
+void CctwApplication::setOutputDims(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output dataset dimensions to %1").arg(data));
+
+    m_OutputData->setDims(data);
+  }
+}
+
+void CctwApplication::setOutputChunks(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output chunk size to %1").arg(data));
+
+    m_OutputData->setChunks(data);
+  }
+}
+
+void CctwApplication::setOutputDataset(QString data)
+{
+  if (m_OutputData) {
+    printMessage(tr("Set output data set name to %1").arg(data));
+
+    m_OutputData->setDataset(data);
+  }
+}
+
+void CctwApplication::partialTransform(QString desc)
+{
+//  printMessage(tr("Partial transform of %1").arg(desc));
+
+  if (m_Transformer) {
+    m_Transformer->transform();
+  }
+}
+
+void CctwApplication::partialDependencies(QString desc)
+{
+//  printMessage(tr("Partial dependencies of %1").arg(desc));
+
+  calculateDependencies();
 }
 
 void CctwApplication::readSettings()
@@ -374,8 +674,6 @@ void CctwApplication::readSettings(QString path)
   printMessage(tr("Reading settings from %1").arg(path));
 
   readSettings(&settings);
-
-  set_SettingsPath(path);
 }
 
 void CctwApplication::readSettings(QSettings *settings)
@@ -386,36 +684,22 @@ void CctwApplication::readSettings(QSettings *settings)
     m_Parameters->readSettings(settings, "parameters");
   }
 
+#ifdef WANT_IMPORT_COMMANDS
   if (m_ImportData) {
     m_ImportData->readSettings(settings, "importData");
   }
+#endif
 
   if (m_CompareData) {
     m_CompareData->readSettings(settings, "compareData");
-  }
-
-  if (m_InputDataManager) {
-    m_InputDataManager->readSettings(settings, "inputDataManager");
   }
 
   if (m_InputData) {
     m_InputData->readSettings(settings, "inputData");
   }
 
-  if (m_OutputDataManager) {
-    m_OutputDataManager->readSettings(settings, "outputDataManager");
-  }
-
   if (m_OutputData) {
     m_OutputData->readSettings(settings, "outputData");
-  }
-
-  if (m_OutputSliceDataManager) {
-    m_OutputSliceDataManager->readSettings(settings, "outputSliceDataManager");
-  }
-
-  if (m_OutputSliceData) {
-    m_OutputSliceData->readSettings(settings, "outputSliceData");
   }
 
   if (m_Transform) {
@@ -424,14 +708,6 @@ void CctwApplication::readSettings(QSettings *settings)
 
   if (m_Transformer) {
     m_Transformer->readSettings(settings, "transformer");
-  }
-
-  if (m_SliceTransform) {
-    m_SliceTransform->readSettings(settings, "sliceTransform");
-  }
-
-  if (m_SliceTransformer) {
-    m_SliceTransformer->readSettings(settings, "sliceTransformer");
   }
 
   if (m_PEIngressCommand) {
@@ -448,13 +724,22 @@ void CctwApplication::writeSettings()
   writeSettings(&settings);
 }
 
+void CctwApplication::clearWriteSettings()
+{
+  QSettings settings("xray.aps.anl.gov", "cctw");
+
+  printMessage(tr("Writing default settings"));
+
+  settings.clear();
+
+  writeSettings(&settings);
+}
+
 void CctwApplication::writeSettings(QString path)
 {
   QSettings settings(path, QSettings::IniFormat);
 
   printMessage(tr("Writing settings to %1").arg(path));
-
-  set_SettingsPath(path);
 
   writeSettings(&settings);
 }
@@ -467,36 +752,22 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_Parameters->writeSettings(settings, "parameters");
   }
 
+#ifdef WANT_IMPORT_COMMANDS
   if (m_ImportData) {
     m_ImportData->writeSettings(settings, "importData");
   }
+#endif
 
   if (m_CompareData) {
     m_CompareData->writeSettings(settings, "compareData");
-  }
-
-  if (m_InputDataManager) {
-    m_InputDataManager->writeSettings(settings, "inputDataManager");
   }
 
   if (m_InputData) {
     m_InputData->writeSettings(settings, "inputData");
   }
 
-  if (m_OutputDataManager) {
-    m_OutputDataManager->writeSettings(settings, "outputDataManager");
-  }
-
   if (m_OutputData) {
     m_OutputData->writeSettings(settings, "outputData");
-  }
-
-  if (m_OutputSliceDataManager) {
-    m_OutputSliceDataManager->writeSettings(settings, "outputSliceDataManager");
-  }
-
-  if (m_OutputSliceData) {
-    m_OutputSliceData->writeSettings(settings, "outputSliceData");
   }
 
   if (m_Transform) {
@@ -507,54 +778,97 @@ void CctwApplication::writeSettings(QSettings *settings)
     m_Transformer->writeSettings(settings, "transformer");
   }
 
-  if (m_SliceTransform) {
-    m_SliceTransform->writeSettings(settings, "sliceTransform");
-  }
-
-  if (m_SliceTransformer) {
-    m_SliceTransformer->writeSettings(settings, "sliceTransformer");
-  }
-
   if (m_PEIngressCommand) {
     m_PEIngressCommand->writeSettings(settings, "peingress");
   }
 }
 
-//QAtomicInt dependencyCounter;
+QString CctwApplication::settingsScript()
+{
+  QString res;
 
-void CctwApplication::calculateChunkDependencies(CctwIntVector3D idx)
+  if (m_Parameters) {
+    res += m_Parameters->settingsScript();
+  }
+
+//  if (m_ImportData) {
+//    res += m_ImportData->settingsScript();
+//  }
+
+//  if (m_CompareData) {
+//    res += m_CompareData->settingsScript();
+//  }
+
+  if (m_InputData) {
+    res += m_InputData->settingsScript();
+  }
+
+  if (m_OutputData) {
+    res += m_OutputData->settingsScript();
+  }
+
+  if (m_Transform) {
+    res += m_Transform->settingsScript();
+  }
+
+  if (m_Transformer) {
+    res += m_Transformer->settingsScript();
+  }
+
+  if (m_PEIngressCommand) {
+    res += m_PEIngressCommand->settingsScript();
+  }
+
+  return res;
+}
+
+void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {
-    CctwCrystalCoordinateTransform transform(m_Parameters, NULL);
+    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), NULL);
 
-//    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
+    //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
-    CctwIntVector3D chStart = m_InputData->chunkStart(idx);
-    CctwIntVector3D chSize  = m_InputData->chunkSize();
-    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-    CctwIntVector3D lastChunk(-1,-1,-1);
+    CctwDataChunk  *chunk   = m_InputData->chunk(n);
 
-    for (int z=0; z<chSize.z(); z++) {
+    if (chunk) {
+      CctwIntVector3D chStart = chunk->chunkStart();
+      CctwIntVector3D chSize  = chunk->chunkSize();
+      CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
+      int lastChunk = -1;
 
-      for (int y=0; y<chSize.y(); y++) {
-        for (int x=0; x<chSize.x(); x++) {
-          CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
+      int osx = m_Transformer->get_OversampleX();
+      int osy = m_Transformer->get_OversampleY();
+      int osz = m_Transformer->get_OversampleZ();
 
-//          CctwDoubleVector3D coords = /*m_InputData->origin()+index*m_InputData->scale();*/
-//              CctwDoubleVector3D(index.x(), index.y(), index.z());
+      double osxstp = osx >= 1 ? 1.0/osx : 0;
+      double osystp = osy >= 1 ? 1.0/osy : 0;
+      double oszstp = osz >= 1 ? 1.0/osz : 0;
 
-          CctwDoubleVector3D xfmcoord = transform.forward(coords);
+      for (int z=0; z<chSize.z(); z++) {
+        for (int oz=0; oz<osz; oz++) {
+          for (int y=0; y<chSize.y(); y++) {
+            for (int oy=0; oy<osy; oy++) {
+              for (int x=0; x<chSize.x(); x++) {
+                for (int ox=0; ox<osx; ox++) {
+                  CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
 
-          CctwIntVector3D    pixels   = /*m_OutputData->toPixel(xfmcoord);*/
-              CctwIntVector3D(xfmcoord.x(), xfmcoord.y(), xfmcoord.z());
+                  CctwDoubleVector3D xfmcoord = transform.forward(coords);
 
-          if (m_OutputData->containsPixel(pixels)) {
-            CctwIntVector3D    opchunk  = m_OutputData->chunkIndex(pixels);
+                  CctwIntVector3D    pixels(xfmcoord);
 
-            if (opchunk != lastChunk) {
-              lastChunk = opchunk;
-              m_InputData->addDependency(idx, opchunk);
-              m_OutputData->addDependency(opchunk, idx);
+                  if (m_OutputData->containsPixel(pixels)) {
+                    int opchunk  = m_OutputData->chunkContaining(pixels);
+
+                    if (opchunk != lastChunk) {
+                      lastChunk = opchunk;
+                      //              m_InputData->addDependency(n, opchunk);
+                      //              m_OutputData->addDependency(opchunk, n);
+                      m_Transformer->addDependency(n, opchunk);
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -578,8 +892,10 @@ void CctwApplication::calculateDependencies()
 //  QVector < QFuture < void > > futures;
   waitCompleted();
 
-  m_InputData->clearDependencies();
-  m_OutputData->clearDependencies();
+//  m_InputData->clearDependencies();
+//  m_OutputData->clearDependencies();
+
+  m_Transformer->clearDependencies();
 
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -608,12 +924,13 @@ void CctwApplication::calculateDependencies()
           goto abort;
         } else {
           CctwIntVector3D idx(x,y,z);
+          int n = m_InputData->chunkNumberFromIndex(idx);
 
           m_DependencyCounter.fetchAndAddOrdered(1);
 
           addWorkOutstanding(1);
 //          futures.append(
-                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, idx)/*)*/;
+                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n)/*)*/;
 //          calculateChunkDependencies(idx);
         }
       }
@@ -630,6 +947,8 @@ abort:
 //    f.waitForFinished();
 //  }
 
+//  m_Transformer -> completedDependencies();
+
   int msec = startAt.elapsed();
 
   printMessage(tr("finished calculate dependencies after %1 msec").arg(msec));
@@ -637,87 +956,16 @@ abort:
 
 void CctwApplication::saveDependencies(QString path)
 {
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  QSettings settings(path, QSettings::IniFormat);
-
-  settings.beginWriteArray("dependencies");
-  int n=0;
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwIntVector3D idx(x,y,z);
-
-        CctwDataChunk *chunk = m_InputData->chunk(idx);
-
-        chunk->sortDependencies();
-
-        int nDeps = chunk->dependencyCount();
-
-        if (nDeps > 0) {
-          settings.setArrayIndex(n++);
-          settings.setValue("x", x);
-          settings.setValue("y", y);
-          settings.setValue("z", z);
-
-          settings.beginWriteArray("deps");
-
-          for (int i=0; i<nDeps; i++) {
-            settings.setArrayIndex(i);
-            CctwIntVector3D dep = chunk->dependency(i);
-
-            settings.setValue("x", dep.x());
-            settings.setValue("y", dep.y());
-            settings.setValue("z", dep.z());
-          }
-
-          settings.endArray();
-        }
-      }
-    }
+  if (m_Transformer) {
+    m_Transformer->saveDependencies(path);
   }
-
-  settings.endArray();
 }
 
 void CctwApplication::loadDependencies(QString path)
 {
-  m_InputData -> clearDependencies();
-  m_OutputData -> clearDependencies();
-
-  QSettings settings(path, QSettings::IniFormat);
-
-  int n = settings.beginReadArray("dependencies");
-
-  for (int i=0; i<n; i++) {
-    settings.setArrayIndex(i);
-
-    int ix = settings.value("x").toInt();
-    int iy = settings.value("y").toInt();
-    int iz = settings.value("z").toInt();
-
-    CctwIntVector3D ichnk(ix, iy, iz);
-
-    int nd = settings.beginReadArray("deps");
-
-    for (int j=0; j<nd; j++) {
-      settings.setArrayIndex(j);
-
-      int idx = settings.value("x").toInt();
-      int idy = settings.value("y").toInt();
-      int idz = settings.value("z").toInt();
-
-      CctwIntVector3D ochnk(idx, idy, idz);
-
-      m_InputData->addDependency(ichnk, ochnk);
-      m_OutputData->addDependency(ochnk, ichnk);
-    }
-
-    settings.endArray();
+  if (m_Transformer) {
+    m_Transformer->loadDependencies(path);
   }
-
-  settings.endArray();
 }
 
 void CctwApplication::reportDependencies()
@@ -762,46 +1010,6 @@ void CctwApplication::reportDependencies()
     }
   }
 
-//  printMessage(tr("Example transformations"));
-
-//  for (int z=0; z<chunks.z(); z++) {
-//    for (int y=0; y<chunks.y(); y++) {
-//      for (int x=0; x<chunks.x(); x++) {
-//        if (get_Halting()) {
-//          break;
-//        } else {
-//          CctwIntVector3D idx(x,y,z);
-//          CctwIntVector3D start = m_InputData->chunkStart(idx);
-//          CctwDoubleVector3D dblstart(start.x(), start.y(), start.z());
-
-//          CctwDoubleVector3D coords = m_InputData->origin()+dblstart*m_InputData->scale();
-//          CctwDoubleVector3D xfmcoord = m_Transform->forward(coords);
-
-//          CctwIntVector3D crdpixel = m_InputData->toPixel(coords);
-//          CctwIntVector3D xfmpixel = m_OutputData->toPixel(xfmcoord);
-
-//          bool ok = m_OutputData->containsPixel(xfmpixel);
-
-//          CctwIntVector3D ipchunk = m_InputData->findChunkIndexContaining(coords);
-//          CctwIntVector3D opchunk = m_OutputData->findChunkIndexContaining(xfmcoord);
-
-//          int inchnk = m_InputData->chunkNumberFromIndex(ipchunk);
-//          int opchnk = m_OutputData->chunkNumberFromIndex(opchunk);
-
-//          printMessage(tr("Chunk:[%1](%2,%3,%4) => [%5](%6,%7,%8)")
-//                       .arg(inchnk).arg(coords.x()).arg(coords.y()).arg(coords.z())
-//                       .arg(opchnk).arg(xfmcoord.x()).arg(xfmcoord.y()).arg(xfmcoord.z())
-//                       );
-
-//          printMessage(tr("Pixel:[%1,%2,%3] => [%4,%5,%6], ok:%7")
-//                       .arg(crdpixel.x()).arg(crdpixel.y()).arg(crdpixel.z())
-//                       .arg(xfmpixel.x()).arg(xfmpixel.y()).arg(xfmpixel.z()).arg(ok)
-//                       );
-//        }
-//      }
-//    }
-//  }
-
   printMessage(tr("Input Data Dependencies"));
 
   for (int z=0; z<chunks.z(); z++) {
@@ -823,42 +1031,6 @@ void CctwApplication::reportDependencies()
   }
 }
 
-void CctwApplication::dummyInputRun()
-{
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          QtConcurrent::run(this, &CctwApplication::dummyInputRunChunk, idx);
-//          calculateChunkDependencies(idx);
-        }
-      }
-    }
-  }
-}
-
-void CctwApplication::dummyInputRunChunk(CctwIntVector3D idx)
-{
-  if (!get_Halting()) {
-    int chunkId = m_InputData->useChunk(idx.x(), idx.y(), idx.z());
-    printMessage(tr("Loaded chunk [%1,%2,%3] = %4").arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(chunkId));
-
-    m_InputData->releaseChunk(chunkId);
-
-    prop_Progress()->incValue(1);
-  }
-}
-
 void CctwApplication::reportOutputDependencies()
 {
   CctwIntVector3D chunks = m_OutputData->chunkCount();
@@ -875,7 +1047,7 @@ void CctwApplication::reportOutputDependencies()
         } else {
           CctwIntVector3D idx(x,y,z);
 
-          reportInputDependencies(idx);
+          reportOutputDependencies(idx);
         }
       }
     }
@@ -1009,19 +1181,6 @@ void CctwApplication::reportOutputChunkCounts()
   }
 }
 
-int CctwApplication::inputChunkOffset(CctwIntVector3D index, CctwIntVector3D localcoords)
-{
-  CctwIntVector3D idx(index.x(), index.y(), index.z());
-
-  CctwDataChunk *chunk = new CctwDataChunk(m_InputData, idx, NULL, this);
-
-  int offset = chunk->pixelOffset(localcoords);
-
-  delete chunk;
-
-  return offset;
-}
-
 CctwCrystalCoordinateParameters *CctwApplication::parameters() const
 {
   return m_Parameters;
@@ -1064,14 +1223,14 @@ void CctwApplication::analyzePEMetaData(QString path)
 {
   set_SpecDataFilePath(path);
 
-  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzePEMetaData, path);
+  QtConcurrent::run(m_PEIngressCommand, &CctwPEIngressCommand::analyzePEMetaData, path);
 }
 
 void CctwApplication::analyzeSpecDataFile(QString path)
 {
   set_SpecDataFilePath(path);
 
-  QtConcurrent::run(m_PEIngressCommand, &CctwqtPEIngressCommand::analyzeSpecDataFile, path);
+  QtConcurrent::run(m_PEIngressCommand, &CctwPEIngressCommand::analyzeSpecDataFile, path);
 }
 
 #ifndef NO_GUI
@@ -1083,41 +1242,6 @@ void CctwApplication::plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurv
 }
 #endif
 
-CctwInputDataBlob*
-CctwApplication::input     (int chunkId, QString inputDataURL)
-{
-  return m_Transformer->inputBlob(chunkId, inputDataURL);
-}
-
-QList<CctwIntermediateDataBlob*>
-CctwApplication::transform (int chunkId, CctwInputDataBlob *chunk)
-{
-  return m_Transformer->transformBlob(chunk);
-}
-
-CctwIntermediateDataBlob*
-CctwApplication::merge     (int chunkId, CctwIntermediateDataBlob *chunk1, CctwIntermediateDataBlob *chunk2)
-{
-  return m_Transformer->mergeBlobs(chunk1, chunk2);
-}
-
-CctwOutputDataBlob*
-CctwApplication::normalize (int chunkId, CctwIntermediateDataBlob *chunk)
-{
-  return m_Transformer->normalizeBlob(chunk);
-}
-
-void
-CctwApplication::output    (int chunkId, QString outputDataURL, CctwOutputDataBlob *chunk)
-{
-  m_Transformer->outputBlob(outputDataURL, chunk);
-}
-
-void CctwApplication::deleteBlob(int chunkId, CctwDataBlob *blob)
-{
-  CctwDataBlob::deleteBlob(chunkId, blob);
-}
-
 int CctwApplication::inputChunkCount()
 {
   return m_InputData->chunkCount().volume();
@@ -1126,4 +1250,13 @@ int CctwApplication::inputChunkCount()
 int CctwApplication::outputChunkCount()
 {
   return m_OutputData->chunkCount().volume();
+}
+
+void CctwApplication::testing()
+{
+  CctwDoubleVector3D dv1(1.2,2.2,3.2), dv2(-1.2,-2.2,-3.2);
+
+  CctwIntVector3D iv1(dv1), iv2(dv2);
+
+  printMessage(tr("iv1 = %1, iv2 = %2").arg(iv1.toString()).arg(iv2.toString()));
 }

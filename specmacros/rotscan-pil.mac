@@ -1,1 +1,28 @@
 # rotscan macros for pilatus detector
+
+def _rotscan_start_detector() '{
+  global _fn _ctime _n1 _n2 _n3
+#  printf("remote eval acquire(\"%s\", %g, %d, %d, 0)\n", _fn, _ctime, _n3, _n1+_n2)
+  pilatus_exptime(_ctime-0.003)
+  pilatus_expperiod(_ctime)
+  pilatus_nexpframe(_n3)
+  pilatus_nimages(_n1+_n2)
+  pilatus_exposure(_fn)
+}'
+
+def _rotscan_check_detector() '{
+  local a
+  global _started
+  
+  a[0] = 0; a[1] = 0; a[2] = 0;
+  
+  if (_started) {
+    if (wait(33)==0) a[2]=1
+  }
+  
+  return a;
+}'
+
+def _rotscan_stop_detector() '{
+}'
+

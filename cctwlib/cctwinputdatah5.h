@@ -9,7 +9,7 @@ class CctwInputDataH5 : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwInputDataH5(QString filePath, QString datasetName, CctwObject *parent);
+  explicit CctwInputDataH5(QString filePath, QString datasetName, QString name, CctwObject *parent);
 
 signals:
 
