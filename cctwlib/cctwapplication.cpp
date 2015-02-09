@@ -169,6 +169,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
   enum {
     argInputChunks = 10,
     argInputDataset,
+    argMaskDataset,
+    argAnglesDataset,
     argOutputDims,
     argOutputChunks,
     argOutputDataset
@@ -182,6 +184,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"input", required_argument, 0, 'i'},
       {"inputchunks", required_argument, 0, argInputChunks},
       {"inputdataset", required_argument, 0, argInputDataset},
+      {"mask", required_argument, 0, 'm'},
+      {"maskdataset", required_argument, 0, argMaskDataset},
+      {"angles", required_argument, 0, 'a'},
+      {"anglesdataset", required_argument, 0, argAnglesDataset},
       {"output", required_argument, 0, 'o'},
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
@@ -200,7 +206,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:i:o:t::d::D:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:m:a:o:t::d::D:p:gnc:w:s:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -229,6 +235,22 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case argInputDataset:
       startupCommand(tr("setInputDataset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'm':
+      startupCommand(tr("setMaskData(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argMaskDataset:
+      startupCommand(tr("setMaskDataset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'a':
+      startupCommand(tr("setAnglesData(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argAnglesDataset:
+      startupCommand(tr("setAnglesDataset(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'o':
@@ -535,6 +557,10 @@ void CctwApplication::showHelp(QString about)
               "--input <f>, -i <f>              specify input data (url format)\n"
               "--inputchunks <cks>              specify input chunk size (e.g. 32x32x32 or 32)\n"
               "--inputdataset <dsn>             specify input dataset path\n"
+              "--mask <f>, -m <f>               specify mask data (url format)\n"
+              "--maskdataset <dsn>              specify mask dataset path\n"
+              "--angles <f>, -a <f>             specify angles data (url format\n"
+              "--anglesdataset <f>              specify angles dataset path\n"
               "--output <f>, -o <f>             specify output data (url format)\n"
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
@@ -605,6 +631,42 @@ void CctwApplication::setInputDataset(QString data)
     printMessage(tr("Set input data set name to %1").arg(data));
 
     m_InputData->setDataset(data);
+  }
+}
+
+void CctwApplication::setMaskData(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set mask to %1").arg(data));
+
+    m_InputData->setMaskSource(data);
+  }
+}
+
+void CctwApplication::setMaskDataset(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set mask dataset to %1").arg(data));
+
+    m_InputData->setMaskDataset(data);
+  }
+}
+
+void CctwApplication::setAnglesData(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set Angles to %1").arg(data));
+
+    m_InputData->setAnglesSource(data);
+  }
+}
+
+void CctwApplication::setAnglesDataset(QString data)
+{
+  if (m_InputData) {
+    printMessage(tr("Set Angles dataset to %1").arg(data));
+
+    m_InputData->setAnglesDataset(data);
   }
 }
 

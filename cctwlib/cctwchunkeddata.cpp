@@ -20,11 +20,16 @@ CctwChunkedData::CctwChunkedData
    QString          name,
    QObject         *parent)
   :CctwObject(name, parent),
+    m_IsNeXus(false),
     m_DimensionsCache(dim),
     m_ChunkSizeCache(chunkSize),
     m_ChunkCountCache((dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1)),
     m_DataFileName(application->saver(), this, "dataFileName", "input.h5", "HDF5 Data File Name"),
     m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
+    m_MaskDataFileName(application->saver(), this, "maskDataFileName", "", "Mask Data File Name"),
+    m_MaskDataSetName(application->saver(), this, "maskDataSetName", "", "Mask Dataset Name"),
+    m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
+    m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
     m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
@@ -39,11 +44,20 @@ CctwChunkedData::CctwChunkedData
     m_FileId(-1),
     m_DatasetId(-1),
     m_DataspaceId(-1),
-    m_IsNeXus(false)
+    m_MaskFileId(-1),
+    m_MaskDatasetId(-1),
+    m_MaskDataspaceId(-1),
+    m_AnglesFileId(-1),
+    m_AnglesDatasetId(-1),
+    m_AnglesDataspaceId(-1)
 {
   allocateChunks();
   connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
   connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+  connect(prop_MaskDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+  connect(prop_MaskDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+  connect(prop_AnglesDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
+  connect(prop_AnglesDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
   connect(this, SIGNAL(dimensionsChanged(CctwIntVector3D)), prop_Dimensions(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkSizeChanged(CctwIntVector3D)), prop_ChunkSize(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkCountChanged(CctwIntVector3D)), prop_ChunkCount(), SLOT(setValue(CctwIntVector3D)));
@@ -97,6 +111,16 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
     emit chunkSizeChanged(m_ChunkSizeCache);
     emit chunkCountChanged(m_ChunkCountCache);
   }
+}
+
+void CctwChunkedData::setMaskDimensions(int mx, int my)
+{
+
+}
+
+void CctwChunkedData::setAnglesDimensions(int n)
+{
+
 }
 
 void CctwChunkedData::sizingChanged()
@@ -169,6 +193,20 @@ void CctwChunkedData::onDataFileNameChanged()
   }
 }
 
+void CctwChunkedData::onMaskFileNameChanged()
+{
+  if (m_IsInput) {
+    checkMaskFile();
+  }
+}
+
+void CctwChunkedData::onAnglesChanged()
+{
+  if (m_IsInput) {
+    checkAnglesFile();
+  }
+}
+
 void CctwChunkedData::setDims(QString desc)
 {
   QRegExp r("(\\d+)[Xx,](\\d+)[Xx,](\\d+)", Qt::CaseInsensitive);
@@ -220,6 +258,116 @@ void CctwChunkedData::setChunks(QString desc)
 void CctwChunkedData::setDataset(QString desc)
 {
   set_DataSetName(desc);
+}
+
+void CctwChunkedData::setMaskSource(QString desc)
+{
+  printMessage(tr("%1:setMaskSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+  QUrl url(desc);
+
+  printMessage(tr("scheme:   %1").arg(url.scheme()));
+  printMessage(tr("host:     %1").arg(url.host()));
+  printMessage(tr("path:     %1").arg(url.path()));
+//  printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+  printMessage(tr("query:    %1").arg(url.query()));
+#endif
+  printMessage(tr("fragment: %1").arg(url.fragment()));
+
+  set_MaskDataFileName(url.path());
+  set_MaskDataSetName(url.fragment());
+
+#if QT_VERSION >= 0x050000
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+//      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+//      }
+    }
+
+//    if (qry.hasQueryItem("size")) {
+//      QString chunkSize = qry.queryItemValue("size");
+//      setChunks(chunkSize);
+//    }
+
+//    if (qry.hasQueryItem("dim")) {
+//      QString dims      = qry.queryItemValue("dim");
+//      setDims(dims);
+//    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      setMaskDataset(dset);
+    }
+  }
+#endif
+}
+
+void CctwChunkedData::setMaskDataset(QString desc)
+{
+  set_MaskDataSetName(desc);
+}
+
+void CctwChunkedData::setAnglesSource(QString desc)
+{
+  printMessage(tr("%1:setAnglesSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+  QUrl url(desc);
+
+  printMessage(tr("scheme:   %1").arg(url.scheme()));
+  printMessage(tr("host:     %1").arg(url.host()));
+  printMessage(tr("path:     %1").arg(url.path()));
+//  printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+  printMessage(tr("query:    %1").arg(url.query()));
+#endif
+  printMessage(tr("fragment: %1").arg(url.fragment()));
+
+  set_AnglesDataFileName(url.path());
+  set_AnglesDataSetName(url.fragment());
+
+#if QT_VERSION >= 0x050000
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+//      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+//      }
+    }
+
+//    if (qry.hasQueryItem("size")) {
+//      QString chunkSize = qry.queryItemValue("size");
+//      setChunks(chunkSize);
+//    }
+
+//    if (qry.hasQueryItem("dim")) {
+//      QString dims      = qry.queryItemValue("dim");
+//      setDims(dims);
+//    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      setAnglesDataset(dset);
+    }
+  }
+#endif
+}
+
+void CctwChunkedData::setAnglesDataset(QString desc)
+{
+  set_AnglesDataSetName(desc);
 }
 
 bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
@@ -774,6 +922,244 @@ void CctwChunkedData::closeOutputFile()
   }
 
   printMessage("Closed output file");
+}
+
+bool CctwChunkedData::checkMaskFile()
+{
+  /* Save old error handler */
+  herr_t (*old_func)(hid_t, void*);
+  void *old_client_data;
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  bool res = openMaskFile(true);
+  closeMaskFile(true);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return res;
+}
+
+bool CctwChunkedData::openMaskFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_FileId >= 0) {
+    return true;
+  }
+
+  QString fileName    = get_MaskDataFileName();
+  QString dataSetName = get_MaskDataSetName();
+
+  if (!quietly) {
+    printMessage(tr("About to open mask input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
+  }
+
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+
+  try
+  {
+    if (!f.exists())
+      throw tr("File %1 does not exist").arg(fileName);
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
+      throw tr("File %1 exists but is not an hdf file").arg(fileName);
+
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (fileId < 0)
+      throw tr("File %1 could not be opened").arg(fileName);
+
+    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (dsetId <= 0)
+      throw tr("Could not open dataset!");
+
+    dspcId = H5Dget_space(dsetId);
+    if (dspcId < 0)
+      throw tr("Could not get dataspace of existing dataset");
+
+    hsize_t dims[3];
+    int ndims = H5Sget_simple_extent_ndims(dspcId);
+    if (ndims != 2)
+      throw tr("Dataspace is not 2-dimensional");
+
+    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+    if (ndims2 != 2)
+      throw tr("Could not get dataspace dimensions");
+
+    setMaskDimensions(dims[1], dims[0]);
+
+    m_MaskFileId      = fileId;
+    m_MaskDatasetId   = dsetId;
+    m_MaskDataspaceId = dspcId;
+
+    if (!quietly) {
+      printMessage(tr("Opened mask input file OK"));
+    }
+  }
+  catch (QString &msg )
+  {
+    if (!quietly) {
+      printMessage(tr("Anomaly in CctwChunkedData::openMaskFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+    return false;
+  }
+  return true;
+}
+
+void CctwChunkedData::closeMaskFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_MaskDataspaceId >= 0) {
+    H5Sclose(m_MaskDataspaceId);
+    m_MaskDataspaceId = -1;
+  }
+
+  if (m_MaskDatasetId >= 0) {
+    H5Dclose(m_MaskDatasetId);
+    m_MaskDatasetId = -1;
+  }
+
+  if (m_MaskFileId >= 0) {
+    H5Fclose(m_MaskFileId);
+    m_MaskFileId = -1;
+  }
+
+  if (!quietly) {
+    printMessage("Closed mask input file");
+  }
+}
+
+bool CctwChunkedData::checkAnglesFile()
+{
+  /* Save old error handler */
+  herr_t (*old_func)(hid_t, void*);
+  void *old_client_data;
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  bool res = openAnglesFile(true);
+  closeAnglesFile(true);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return res;
+}
+
+bool CctwChunkedData::openAnglesFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_FileId >= 0) {
+    return true;
+  }
+
+  QString fileName    = get_AnglesDataFileName();
+  QString dataSetName = get_AnglesDataSetName();
+
+  if (!quietly) {
+    printMessage(tr("About to open angles input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
+  }
+
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+
+  try
+  {
+    if (!f.exists())
+      throw tr("File %1 does not exist").arg(fileName);
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
+      throw tr("File %1 exists but is not an hdf file").arg(fileName);
+
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (fileId < 0)
+      throw tr("File %1 could not be opened").arg(fileName);
+
+    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (dsetId <= 0)
+      throw tr("Could not open dataset!");
+
+    dspcId = H5Dget_space(dsetId);
+    if (dspcId < 0)
+      throw tr("Could not get dataspace of existing dataset");
+
+    hsize_t dims[3];
+    int ndims = H5Sget_simple_extent_ndims(dspcId);
+    if (ndims != 1)
+      throw tr("Dataspace is not 1-dimensional");
+
+    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+    if (ndims2 != 1)
+      throw tr("Could not get dataspace dimensions");
+
+    setAnglesDimensions(dims[0]);
+
+    m_AnglesFileId      = fileId;
+    m_AnglesDatasetId   = dsetId;
+    m_AnglesDataspaceId = dspcId;
+
+    if (!quietly) {
+      printMessage(tr("Opened Angles input file OK"));
+    }
+  }
+  catch (QString &msg )
+  {
+    if (!quietly) {
+      printMessage(tr("Anomaly in CctwChunkedData::openAnglesFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+    return false;
+  }
+  return true;
+}
+
+void CctwChunkedData::closeAnglesFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_AnglesDataspaceId >= 0) {
+    H5Sclose(m_AnglesDataspaceId);
+    m_AnglesDataspaceId = -1;
+  }
+
+  if (m_AnglesDatasetId >= 0) {
+    H5Dclose(m_AnglesDatasetId);
+    m_AnglesDatasetId = -1;
+  }
+
+  if (m_AnglesFileId >= 0) {
+    H5Fclose(m_AnglesFileId);
+    m_AnglesFileId = -1;
+  }
+
+  if (!quietly) {
+    printMessage("Closed Angles file");
+  }
 }
 
 //CctwDataChunk *CctwChunkedData::readChunk(int n)
