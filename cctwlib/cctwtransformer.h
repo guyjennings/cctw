@@ -115,6 +115,9 @@ public:
 
   Q_PROPERTY(QString projectDestination READ get_ProjectDestination WRITE set_ProjectDestination)
   QCEP_STRING_PROPERTY(ProjectDestination)
+
+  Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
+  QCEP_INTEGER_PROPERTY(Normalization)
 };
 
 #endif // CCTWTRANSFORMER_H

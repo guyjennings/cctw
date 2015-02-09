@@ -82,6 +82,8 @@ public slots:
   void partialTransform(QString desc);
   void partialDependencies(QString desc);
 
+  void setNormalization(QString data);
+
   void calculateDependencies();
   void calculateChunkDependencies(int n);
 

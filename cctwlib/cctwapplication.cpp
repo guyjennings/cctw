@@ -192,6 +192,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
+      {"normalization", optional_argument, 0, 'N'},
       {"transform", optional_argument, 0, 't'},
       {"depends", optional_argument, 0, 'd'},
       {"debug", required_argument, 0, 'D'},
@@ -206,7 +207,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:t::d::D:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:m:a:o:N:t::d::D:p:gnc:w:s:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -275,6 +276,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'd':
       startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'N':
+      startupCommand(tr("normalization(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'g': /* want gui */
@@ -1321,4 +1326,15 @@ void CctwApplication::testing()
   CctwIntVector3D iv1(dv1), iv2(dv2);
 
   printMessage(tr("iv1 = %1, iv2 = %2").arg(iv1.toString()).arg(iv2.toString()));
+}
+
+void CctwApplication::setNormalization(QString data)
+{
+  int v = data.toInt();
+
+  if (m_Transformer) {
+    printMessage(tr("Set normalization to %1").arg(v));
+
+    m_Transformer->set_Normalization(v);
+  }
 }

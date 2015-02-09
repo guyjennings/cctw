@@ -44,7 +44,8 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ProjectX(m_Application->saver(), this, "projectX", true, "Project along X"),
   m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
   m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
-  m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images")
+  m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images"),
+  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?")
 {
 }
 

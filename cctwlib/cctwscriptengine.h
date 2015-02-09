@@ -39,6 +39,7 @@ private:
   static QScriptValue setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue normalizationFunc(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 
