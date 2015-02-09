@@ -138,7 +138,7 @@ void CctwChunkedData::sizingChanged()
 
 void CctwChunkedData::setDataSource(QString desc)
 {
-  printMessage(tr("%1:setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+  printMessage(tr("%1.setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
 
   QUrl url(desc);
 
@@ -262,7 +262,7 @@ void CctwChunkedData::setDataset(QString desc)
 
 void CctwChunkedData::setMaskSource(QString desc)
 {
-  printMessage(tr("%1:setMaskSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+  printMessage(tr("%1.setMaskSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
 
   QUrl url(desc);
 
@@ -317,7 +317,7 @@ void CctwChunkedData::setMaskDataset(QString desc)
 
 void CctwChunkedData::setAnglesSource(QString desc)
 {
-  printMessage(tr("%1:setAnglesSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+  printMessage(tr("%1.setAnglesSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
 
   QUrl url(desc);
 

@@ -20,6 +20,10 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputData",  newFunction(setInputDataFunc));
   globalObject().setProperty("setInputChunks",  newFunction(setInputChunksFunc));
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
+  globalObject().setProperty("setMaskData", newFunction(setMaskDataFunc));
+  globalObject().setProperty("setMaskDataset", newFunction(setMaskDatasetFunc));
+  globalObject().setProperty("setAnglesData", newFunction(setAnglesDataFunc));
+  globalObject().setProperty("setAnglesDataset", newFunction(setAnglesDatasetFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
   globalObject().setProperty("setOutputDims",  newFunction(setOutputDimsFunc));
   globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
@@ -293,6 +297,110 @@ QScriptValue CctwScriptEngine::setInputDatasetFunc(QScriptContext *context, QScr
 
     if (app) {
       app->setInputDataset(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setMaskDataFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setMaskData(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setMaskDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setMaskDataset(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setAnglesDataFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setAnglesData(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setAnglesDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setAnglesDataset(msg);
     }
   }
 
