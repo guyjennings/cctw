@@ -64,6 +64,9 @@ public slots:
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
 
+  void                setAngle(int n, double v);
+  double              angle(int n);
+
   CctwIntVector3D     chunkStart(int n);    // Return pixel coords of start of chunk chunkIdx
   int                 chunkContaining(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
   int                 chunkContaining(CctwDoubleVector3D fracPixelCoord);  // Return index of chunk containing fractional pixel coords
@@ -136,11 +139,17 @@ private:
   Q_PROPERTY(QString maskDataSetName READ get_MaskDataSetName WRITE set_MaskDataSetName)
   QCEP_STRING_PROPERTY(MaskDataSetName)
 
+  Q_PROPERTY(QcepIntVector mask READ get_Mask WRITE set_Mask STORED false)
+  QCEP_INTEGER_VECTOR_PROPERTY(Mask)
+
   Q_PROPERTY(QString anglesDataFileName READ get_AnglesDataFileName WRITE set_AnglesDataFileName)
   QCEP_STRING_PROPERTY(AnglesDataFileName)
 
   Q_PROPERTY(QString anglesDataSetName READ get_AnglesDataSetName WRITE set_AnglesDataSetName)
   QCEP_STRING_PROPERTY(AnglesDataSetName)
+
+  Q_PROPERTY(QcepDoubleVector angles READ get_Angles WRITE set_Angles STORED false)
+  QCEP_DOUBLE_VECTOR_PROPERTY(Angles)
 
   Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
   CCTW_INTVECTOR3D_PROPERTY(Dimensions)

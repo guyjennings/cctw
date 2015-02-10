@@ -28,8 +28,10 @@ CctwChunkedData::CctwChunkedData
     m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
     m_MaskDataFileName(application->saver(), this, "maskDataFileName", "", "Mask Data File Name"),
     m_MaskDataSetName(application->saver(), this, "maskDataSetName", "", "Mask Dataset Name"),
+    m_Mask(QcepSettingsSaverWPtr(), this, "mask", QcepIntVector(), "Mask Image"),
     m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
     m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
+    m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
     m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
@@ -115,12 +117,36 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 
 void CctwChunkedData::setMaskDimensions(int mx, int my)
 {
+  QcepIntVector m = get_Mask();
 
+  m.resize(mx*my);
+
+  set_Mask(m);
 }
 
 void CctwChunkedData::setAnglesDimensions(int n)
 {
+  QcepDoubleVector a = get_Angles();
 
+  a.resize(n);
+
+  set_Angles(a);
+}
+
+void CctwChunkedData::setAngle(int n, double v)
+{
+  QcepDoubleVector a = get_Angles();
+
+  if (n >= 0 && n < a.size()) {
+    a.replace(n, v);
+  }
+
+  set_Angles(a);
+}
+
+double CctwChunkedData::angle(int n)
+{
+  return get_Angles().value(n);
 }
 
 void CctwChunkedData::sizingChanged()
