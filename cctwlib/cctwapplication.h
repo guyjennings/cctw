@@ -67,6 +67,13 @@ public slots:
   void setInputData(QString data);
   void setInputChunks(QString data);
   void setInputDataset(QString data);
+
+  void setMaskData(QString data);
+  void setMaskDataset(QString data);
+
+  void setAnglesData(QString data);
+  void setAnglesDataset(QString data);
+
   void setOutputData(QString data);
   void setOutputDims(QString data);
   void setOutputChunks(QString data);
@@ -74,6 +81,8 @@ public slots:
 
   void partialTransform(QString desc);
   void partialDependencies(QString desc);
+
+  void setNormalization(QString data);
 
   void calculateDependencies();
   void calculateChunkDependencies(int n);

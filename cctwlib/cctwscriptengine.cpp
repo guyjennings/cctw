@@ -20,12 +20,17 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputData",  newFunction(setInputDataFunc));
   globalObject().setProperty("setInputChunks",  newFunction(setInputChunksFunc));
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
+  globalObject().setProperty("setMaskData", newFunction(setMaskDataFunc));
+  globalObject().setProperty("setMaskDataset", newFunction(setMaskDatasetFunc));
+  globalObject().setProperty("setAnglesData", newFunction(setAnglesDataFunc));
+  globalObject().setProperty("setAnglesDataset", newFunction(setAnglesDatasetFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
   globalObject().setProperty("setOutputDims",  newFunction(setOutputDimsFunc));
   globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
   globalObject().setProperty("setOutputDataset",  newFunction(setOutputDatasetFunc));
   globalObject().setProperty("partialTransform",  newFunction(partialTransformFunc));
   globalObject().setProperty("partialDependencies",  newFunction(partialDependenciesFunc));
+  globalObject().setProperty("normalization",  newFunction(normalizationFunc));
 
   qScriptRegisterMetaType(this, CctwDoubleVector3DProperty::toScriptValue, CctwDoubleVector3DProperty::fromScriptValue);
   qScriptRegisterMetaType(this, CctwIntVector3DProperty::toScriptValue, CctwIntVector3DProperty::fromScriptValue);
@@ -299,6 +304,110 @@ QScriptValue CctwScriptEngine::setInputDatasetFunc(QScriptContext *context, QScr
   return QScriptValue(engine, "");
 }
 
+QScriptValue CctwScriptEngine::setMaskDataFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setMaskData(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setMaskDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setMaskDataset(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setAnglesDataFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setAnglesData(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setAnglesDatasetFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setAnglesDataset(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
 QScriptValue CctwScriptEngine::setOutputDataFunc(QScriptContext *context, QScriptEngine *engine)
 {
   CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
@@ -449,6 +558,32 @@ QScriptValue CctwScriptEngine::partialDependenciesFunc(QScriptContext *context, 
 
     if (app) {
       app->partialDependencies(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::normalizationFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setNormalization(msg);
     }
   }
 

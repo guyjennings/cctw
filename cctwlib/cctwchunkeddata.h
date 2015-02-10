@@ -44,6 +44,9 @@ public:
   void                setDimensions(CctwIntVector3D dim);
   void                setChunkSize(CctwIntVector3D cksz);
 
+  void                setMaskDimensions(int mx, int my);
+  void                setAnglesDimensions(int n);
+
   void                incChunksRead(int n);
   void                incChunksWritten(int n);
   void                incChunksHeld(int n);
@@ -54,6 +57,10 @@ public slots:
   virtual void        setDims(QString desc);
   virtual void        setChunks(QString desc);
   virtual void        setDataset(QString desc);
+  virtual void        setMaskSource(QString desc);
+  virtual void        setMaskDataset(QString desc);
+  virtual void        setAnglesSource(QString desc);
+  virtual void        setAnglesDataset(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
 
@@ -90,8 +97,18 @@ public slots:
   void                closeInputFile(bool quietly = false);
   void                closeInputNeXusFile();
 
+  bool                checkMaskFile();
+  bool                openMaskFile(bool quietly = false);
+  void                closeMaskFile(bool quietly = false);
+
+  bool                checkAnglesFile();
+  bool                openAnglesFile(bool quietly = false);
+  void                closeAnglesFile(bool quietly = false);
+
 private slots:
   void                onDataFileNameChanged();
+  void                onMaskFileNameChanged();
+  void                onAnglesChanged();
 
 protected:
   QVector< CctwDataChunk* >  m_DataChunks;
@@ -112,6 +129,18 @@ private:
 
   Q_PROPERTY(QString dataSetName READ get_DataSetName WRITE set_DataSetName)
   QCEP_STRING_PROPERTY(DataSetName)
+
+  Q_PROPERTY(QString maskDataFileName READ get_MaskDataFileName WRITE set_MaskDataFileName)
+  QCEP_STRING_PROPERTY(MaskDataFileName)
+
+  Q_PROPERTY(QString maskDataSetName READ get_MaskDataSetName WRITE set_MaskDataSetName)
+  QCEP_STRING_PROPERTY(MaskDataSetName)
+
+  Q_PROPERTY(QString anglesDataFileName READ get_AnglesDataFileName WRITE set_AnglesDataFileName)
+  QCEP_STRING_PROPERTY(AnglesDataFileName)
+
+  Q_PROPERTY(QString anglesDataSetName READ get_AnglesDataSetName WRITE set_AnglesDataSetName)
+  QCEP_STRING_PROPERTY(AnglesDataSetName)
 
   Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
   CCTW_INTVECTOR3D_PROPERTY(Dimensions)
@@ -145,6 +174,14 @@ private:
   hid_t               m_FileId;
   hid_t               m_DatasetId;
   hid_t               m_DataspaceId;
+
+  hid_t               m_MaskFileId;
+  hid_t               m_MaskDatasetId;
+  hid_t               m_MaskDataspaceId;
+
+  hid_t               m_AnglesFileId;
+  hid_t               m_AnglesDatasetId;
+  hid_t               m_AnglesDataspaceId;
 
   static QMutex       m_FileAccessMutex;
 };

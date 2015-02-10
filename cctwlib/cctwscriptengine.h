@@ -29,12 +29,17 @@ private:
   static QScriptValue setInputDataFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setInputChunksFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setMaskDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setMaskDatasetFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setAnglesDataFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setAnglesDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDimsFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputChunksFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue normalizationFunc(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 
