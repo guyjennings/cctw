@@ -25,6 +25,8 @@ BUILD_CCTWCLI: SUBDIRS += cctwcli
 #}
 
 OTHER_FILES += Doxyfile \
+    cctw.spec.in \
+    cctw-qt4.spec.in \
     cctw.dox \
     doc/Doxyfile \
     doc/findphi.nb \
@@ -162,7 +164,7 @@ upload-dox.commands = rsync -e ssh -av --del dox/html/ guyjennings,$${TARGET}@we
 
 QMAKE_EXTRA_TARGETS += tarball
 
-tarball.depends = FORCE $${TARGET}.spec
+tarball.depends = FORCE $${TARGET}.spec $${TARGET}-qt4.spec
 
 tarball.commands += \
       rm -rf $${TARGET}-$${VERSION} ; \
@@ -170,13 +172,18 @@ tarball.commands += \
 
 tarball.commands += \
       $(COPY_FILE) -R $${PWD}/* $${TARGET}-$${VERSION}/ && \
-      $(COPY_FILE) $${TARGET}.spec -t $${TARGET}-$${VERSION} &&
+      $(COPY_FILE) $${TARGET}.spec -t $${TARGET}-$${VERSION} && \
+      $(COPY_FILE) $${TARGET}-qt4.spec -t $${TARGET}-$${VERSION} &&
 
 tarball.commands += \
   tar -czf $${TARGET}-$${VERSION}.tar.gz $${TARGET}-$${VERSION} ; rm -rf $${TARGET}-$${VERSION}
 
-QMAKE_EXTRA_TARGETS += specfile
+QMAKE_EXTRA_TARGETS += specfile specfile-qt4
 
 specfile.target = $${TARGET}.spec
 specfile.depends = $${PWD}/$${TARGET}.spec.in $${PWD}/$${TARGET}-version.pri
 specfile.commands = perl -p -e '\'s/Version:.*/Version: $${VERSION}/\'' $${PWD}/$${TARGET}.spec.in > $${TARGET}.spec
+
+specfile-qt4.target = $${TARGET}-qt4.spec
+specfile-qt4.depends = $${PWD}/$${TARGET}-qt4.spec.in $${PWD}/$${TARGET}-version.pri
+specfile-qt4.commands = perl -p -e '\'s/Version:.*/Version: $${VERSION}/\'' $${PWD}/$${TARGET}-qt4.spec.in > $${TARGET}-qt4.spec
