@@ -197,6 +197,9 @@ public:
   Q_PROPERTY(QString settingsPath READ get_SettingsPath WRITE set_SettingsPath)
   QCEP_STRING_PROPERTY(SettingsPath)
 
+  Q_PROPERTY(QString scriptPath READ get_ScriptPath WRITE set_ScriptPath)
+  QCEP_STRING_PROPERTY(ScriptPath)
+
   Q_PROPERTY(QString specDataFilePath READ get_SpecDataFilePath WRITE set_SpecDataFilePath)
   QCEP_STRING_PROPERTY(SpecDataFilePath)
 

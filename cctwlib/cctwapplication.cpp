@@ -70,6 +70,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
+  m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
   m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")

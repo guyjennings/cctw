@@ -41,6 +41,7 @@ public slots:
   void doSetupImport();
   void doImport();
 #endif
+  void doExecuteScriptFile();
   void doBrowseInputFile();
   void doCheckDataFile(QString path);
   void doBrowseInputDataset(QString entry);
