@@ -87,6 +87,11 @@ void CctwChunkedData::allocateChunks()
 //  }
 }
 
+int CctwChunkedData::allocatedChunkCount()
+{
+  return CctwDataChunk::allocatedChunkCount();
+}
+
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
   if (m_DimensionsCache != dim) {

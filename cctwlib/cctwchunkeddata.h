@@ -63,6 +63,7 @@ public slots:
   virtual void        setAnglesDataset(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
+  int                 allocatedChunkCount();
 
   void                setAngle(int n, double v);
   double              angle(int n);

@@ -249,10 +249,11 @@ void CctwTransformer::transformChunkData(int chunkId,
   }
 
 #ifndef QT_NO_DEBUG_OUTPUT
-  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks")
+  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated")
                .arg(chunkId)
                .arg(time.elapsed()/1000.0,5)
-               .arg(outputChunks.count()));
+               .arg(outputChunks.count())
+               .arg(CctwDataChunk::allocatedChunkCount()));
 #endif
 }
 
@@ -339,7 +340,9 @@ void CctwTransformer::transform()
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+  printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
+               .arg(get_WallTime())
+               .arg(CctwDataChunk::allocatedChunkCount()));
 }
 
 void CctwTransformer::dummyTransformChunkNumber(int chk)
