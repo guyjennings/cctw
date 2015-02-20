@@ -79,8 +79,10 @@ public slots:
   void setOutputChunks(QString data);
   void setOutputDataset(QString data);
 
+  void setSubset(QString desc);
   void partialTransform(QString desc);
   void partialDependencies(QString desc);
+  void noDependencies();
 
   void setNormalization(QString data);
 

@@ -41,7 +41,7 @@ public slots:
                           QMap<int, CctwDataChunk*> &outputChunks);
   void dummyTransformChunkNumber(int n);
 
-  void clearDependencies();
+  void clearDependencies(int use);
   void addDependency(int f, int t);
 
   void dummyTransform1();
@@ -118,6 +118,12 @@ public:
 
   Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
   QCEP_INTEGER_PROPERTY(Normalization)
+
+  Q_PROPERTY(QString subset READ get_Subset WRITE set_Subset STORED false)
+  QCEP_STRING_PROPERTY(Subset)
+
+  Q_PROPERTY(int useDependencies READ get_UseDependencies WRITE set_UseDependencies STORED false)
+  QCEP_INTEGER_PROPERTY(UseDependencies)
 };
 
 #endif // CCTWTRANSFORMER_H

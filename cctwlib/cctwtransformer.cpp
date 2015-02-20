@@ -45,7 +45,9 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
   m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
   m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images"),
-  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?")
+  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
+  m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
+  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform")
 {
 }
 
@@ -107,7 +109,7 @@ void CctwTransformer::saveDependencies(QString path)
 
 void CctwTransformer::loadDependencies(QString path)
 {
-  clearDependencies();
+  clearDependencies(1);
 
   QFile f(path);
 
@@ -755,10 +757,12 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   return res;
 }
 
-void CctwTransformer::clearDependencies()
+void CctwTransformer::clearDependencies(int use)
 {
   m_InputData->clearDependencies();
   m_OutputData->clearDependencies();
+
+  set_UseDependencies(use);
 }
 
 void CctwTransformer::addDependency(int f, int t)

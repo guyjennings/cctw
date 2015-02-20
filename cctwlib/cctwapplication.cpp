@@ -194,21 +194,23 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
       {"normalization", optional_argument, 0, 'N'},
-      {"transform", optional_argument, 0, 't'},
-      {"depends", optional_argument, 0, 'd'},
+      {"subset", optional_argument, 0, 'S'},
+      {"transform", no_argument, 0, 't'},
+      {"depends", no_argument, 0, 'd'},
+      {"nodepends", no_argument, 0, 'x'},
       {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
       {"command", required_argument, 0, 'c'},
-      {"wait", required_argument, 0, 'w'},
+      {"wait", optional_argument, 0, 'w'},
       {"script", required_argument, 0, 's'},
       {0,0,0,0}
     };
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:N:t::d::D:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:m:a:o:N::S::tdxD:p:gnc:w::s:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -259,6 +261,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case 'S':
+      startupCommand(tr("setSubset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case argOutputDims:
       startupCommand(tr("setOutputDims(\"%1\");").arg(addSlashes(optarg)));
       break;
@@ -277,6 +283,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'd':
       startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'x':
+      startupCommand(tr("noDependencies()"));
       break;
 
     case 'N':
@@ -316,6 +326,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case '?': /* unknown option, or missing optional argument */
+      printMessage("Unrecognized command line option");
       break;
 
     default:
@@ -571,8 +582,10 @@ void CctwApplication::showHelp(QString about)
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
               "--outputdataset <dsn>            specify output dataset path\n"
-              "--transform {<n/m>}, -t {<n/m>}  transform all or part of the data\n"
-              "--depends {<n/m>}, -d {<n/m>}    calculate dependencies for all or part of the data\n"
+              "--subset {<n/m>}, -S {<n/m>}     specify subset of input data to operate on (or all if blank)\n"
+              "--transform, -t                  transform all or part of the data\n"
+              "--depends, -d                    calculate dependencies for all or part of the data\n"
+              "--nodepends, -x                  clear dependencies"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
@@ -712,12 +725,24 @@ void CctwApplication::setOutputDataset(QString data)
   }
 }
 
+void CctwApplication::setSubset(QString desc)
+{
+  if (m_Transformer) {
+    m_Transformer->set_Subset(desc);
+  }
+}
+
 void CctwApplication::partialTransform(QString desc)
 {
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
   if (m_Transformer) {
-    m_Transformer->transform();
+
+    if (m_Transformer->get_UseDependencies()) {
+      m_Transformer->transform();
+    } else {
+      printMessage(tr("Dependencies not available"));
+    }
   }
 }
 
@@ -726,6 +751,13 @@ void CctwApplication::partialDependencies(QString desc)
 //  printMessage(tr("Partial dependencies of %1").arg(desc));
 
   calculateDependencies();
+}
+
+void CctwApplication::noDependencies()
+{
+  if (m_Transformer) {
+    m_Transformer->clearDependencies(0);
+  }
 }
 
 void CctwApplication::readSettings()
@@ -957,13 +989,13 @@ void CctwApplication::calculateChunkDependencies(int n)
 
 void CctwApplication::calculateDependencies()
 {
-//  QVector < QFuture < void > > futures;
+  QVector < QFuture < void > > futures;
   waitCompleted();
 
 //  m_InputData->clearDependencies();
 //  m_OutputData->clearDependencies();
 
-  m_Transformer->clearDependencies();
+  m_Transformer->clearDependencies(1);
 
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -997,8 +1029,8 @@ void CctwApplication::calculateDependencies()
           m_DependencyCounter.fetchAndAddOrdered(1);
 
           addWorkOutstanding(1);
-//          futures.append(
-                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n)/*)*/;
+          futures.append(
+                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n));
 //          calculateChunkDependencies(idx);
         }
       }
@@ -1011,9 +1043,9 @@ abort:
     processEvents();
   }
 
-//  foreach (QFuture<void> f, futures) {
-//    f.waitForFinished();
-//  }
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
+  }
 
 //  m_Transformer -> completedDependencies();
 
