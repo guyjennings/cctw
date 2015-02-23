@@ -1074,6 +1074,58 @@ void CctwChunkedData::closeMaskFile(bool quietly)
   }
 }
 
+bool CctwChunkedData::readMaskFile()
+{
+  bool res = false;
+
+  if (openMaskFile()) {
+
+    if (m_MaskFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[2], count[2], stride[2], block[2];
+
+      QcepIntVector a= get_Mask();
+
+      offset[0] = 0;
+      offset[1] = 0;
+
+      count[0]  = get_Dimensions().x();
+      count[1]  = get_Dimensions().y();
+
+      stride[0] = 1;
+      stride[1] = 1;
+
+      block[0]  = 1;
+      block[1]  = 1;
+
+      int *msk = a.data();
+
+      memspace_id = H5Screate_simple(2, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_MaskDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_MaskDatasetId, H5T_NATIVE_INT, memspace_id, m_MaskDataspaceId, H5P_DEFAULT, msk);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading mask, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeMaskFile();
+  }
+
+  return res;
+}
+
 bool CctwChunkedData::checkAnglesFile()
 {
   /* Save old error handler */
@@ -1191,6 +1243,51 @@ void CctwChunkedData::closeAnglesFile(bool quietly)
   if (!quietly) {
     printMessage("Closed Angles file");
   }
+}
+
+bool CctwChunkedData::readAnglesFile()
+{
+  bool res = false;
+
+  if (openAnglesFile()) {
+
+    if (m_AnglesFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[1], count[1], stride[1], block[1];
+
+      QcepDoubleVector a= get_Angles();
+
+      offset[0] = 0;
+      count[0]  = a.size();
+      stride[0] = 1;
+      block[0]  = 1;
+
+      double *angles = a.data();
+
+      memspace_id = H5Screate_simple(1, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_AnglesDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_AnglesDatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_AnglesDataspaceId, H5P_DEFAULT, angles);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading angles, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeAnglesFile();
+  }
+
+  return res;
 }
 
 //CctwDataChunk *CctwChunkedData::readChunk(int n)

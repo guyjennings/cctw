@@ -404,7 +404,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
                                            this);
   m_OutputData              -> allocateChunks();
 
-  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, this);
 
   m_Transformer      = new CctwTransformer(this,
                                            m_InputData,
@@ -925,7 +925,10 @@ QString CctwApplication::settingsScript()
 void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {
-    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), NULL);
+    QcepDoubleVector anglesvec = m_InputData->get_Angles();
+    double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
+
+    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), angs, NULL);
 
     //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 

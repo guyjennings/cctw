@@ -104,10 +104,12 @@ public slots:
   bool                checkMaskFile();
   bool                openMaskFile(bool quietly = false);
   void                closeMaskFile(bool quietly = false);
+  bool                readMaskFile();
 
   bool                checkAnglesFile();
   bool                openAnglesFile(bool quietly = false);
   void                closeAnglesFile(bool quietly = false);
+  bool                readAnglesFile();
 
 private slots:
   void                onDataFileNameChanged();

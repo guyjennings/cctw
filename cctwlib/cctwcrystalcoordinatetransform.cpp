@@ -1,11 +1,12 @@
 #include "cctwcrystalcoordinatetransform.h"
 #include <cmath>
 
-CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, QObject *parent) :
+CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, double *angles, QObject *parent) :
   CctwTransformInterface(name, parent),
   m_Parms(parms),
   m_CurrentFrame(-1),
-  m_CurrentFrameChangeCount(0)
+  m_CurrentFrameChangeCount(0),
+  m_Angles(angles)
 {
   updateFromParameters();
   setCurrentFrame(0.0);
@@ -37,7 +38,14 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
   if (frame != m_CurrentFrame) {
     m_CurrentFrame = frame;
 
-    m_OmegaAngle = frame*m_Parms->omegaStep() + m_Parms->omegaCorrection();
+    if (m_Angles == NULL) {
+      m_OmegaAngle = frame*m_Parms->omegaStep() + m_Parms->omegaCorrection();
+    } else {
+      int f0 = ::floor(frame);
+      int f1 = f0+1;
+      double df = frame-f0;
+      m_OmegaAngle = m_Angles[f0]+df*(m_Angles[f1]-m_Angles[f0]);
+    }
 
     CctwDoubleMatrix3x3 dimat = CctwDoubleMatrix3x3::identity();
 
