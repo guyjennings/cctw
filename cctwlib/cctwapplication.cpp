@@ -741,9 +741,63 @@ void CctwApplication::partialTransform(QString desc)
     if (m_Transformer->get_UseDependencies()) {
       m_Transformer->transform();
     } else {
-      printMessage(tr("Dependencies not available"));
+      transform();
     }
   }
+}
+
+void CctwApplication::transform()
+{
+  QVector < QFuture < void > > futures;
+  waitCompleted();
+
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Transform");
+
+  m_InputData  -> beginTransform(true,  0);
+  m_OutputData -> beginTransform(false, 0);
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          goto abort;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          int n = m_InputData->chunkNumberFromIndex(idx);
+
+          addWorkOutstanding(1);
+
+          futures.append(
+                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
+        }
+      }
+    }
+  }
+
+abort:
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
+  }
+
+  int msec = startAt.elapsed();
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+               .arg(msec)
+               .arg(CctwDataChunk::allocatedChunkCount()));
 }
 
 void CctwApplication::partialDependencies(QString desc)

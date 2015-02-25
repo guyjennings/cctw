@@ -84,6 +84,8 @@ public slots:
   void partialDependencies(QString desc);
   void noDependencies();
 
+  void transform();
+
   void setNormalization(QString data);
 
   void calculateDependencies();
