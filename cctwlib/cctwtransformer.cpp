@@ -76,7 +76,7 @@ void CctwTransformer::runTransformChunkNumber(int n)
     m_Application->workCompleted(1);
     int nchunks = m_InputData->chunkCount().volume();
 
-    m_Application->printMessage(tr("Chunk %1/%2 transform complete").arg(n).arg(nchunks));
+//    m_Application->printMessage(tr("Chunk %1/%2 transform complete").arg(n).arg(nchunks));
   }
 }
 
@@ -136,12 +136,12 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
 
-    m_Application->printMessage(tr("Need to merge %1 output chunks from input chunk [%2]")
-                       .arg(outputChunks.count())
-                       .arg(chunkId));
+//    printMessage(tr("Need to merge %1 output chunks from input chunk [%2]")
+//                       .arg(outputChunks.count())
+//                       .arg(chunkId));
 
-    if (inputChunk->dependencyCount() != outputChunks.count()) {
-      m_Application->printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
+    if (inputChunk->dependencyCount() && inputChunk->dependencyCount() != outputChunks.count()) {
+      printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
                    .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
     }
 
@@ -165,7 +165,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 #ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
   QcepDoubleVector anglesvec = m_InputData->get_Angles();

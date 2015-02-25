@@ -1450,7 +1450,6 @@ void CctwChunkedData::writeChunk(int n)
 
       if (m_FileId >= 0) {
 
-        hid_t memspace_id = -1;
         hsize_t offset[3], count[3], stride[3], block[3];
 
         CctwIntVector3D st = chk -> chunkStart();
@@ -1487,6 +1486,7 @@ void CctwChunkedData::writeChunk(int n)
         if (chunkData == NULL) {
           printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
         } else if ((m_TransformOptions & 8) == 0){
+          hid_t memspace_id = -1;
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t wrterr = H5Dwrite(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);

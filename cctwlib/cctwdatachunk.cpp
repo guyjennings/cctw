@@ -469,7 +469,7 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
       if (m_Data) {
         m_Data->incChunksHeld(1);
       }
-    } else if (mergeCount() > dependencyCount()) {
+    } else if (mergeCount() > dependencyCount() && dependencyCount()) {
       printMessage(tr("Exceeded expected number of merges for chunk [%1] %2 > %3")
                    .arg(index()).arg(mergeCount()).arg(dependencyCount()));
     }
