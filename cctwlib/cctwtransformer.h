@@ -63,13 +63,9 @@ private:
 
 private:
   CctwApplication         *m_Application;
-  QAtomicInt               m_MergeCounter;
   CctwChunkedData         *m_InputData;
   CctwChunkedData         *m_OutputData;
   CctwTransformInterface  *m_Transform;
-//  int                      m_OversampleX;
-//  int                      m_OversampleY;
-//  int                      m_OversampleZ;
 
   QMutex                   m_LockX;
   QMutex                   m_LockY;

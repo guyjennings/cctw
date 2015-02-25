@@ -69,10 +69,6 @@ void CctwTransformer::runTransformChunkNumber(int n)
 {
   if (m_Application && !m_Application->get_Halting()) {
     transformChunkNumber(n);
-
-    m_MergeCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_MergeCounter.fetchAndStoreOrdered(0);
   }
 
   if (m_Application) {
@@ -277,6 +273,8 @@ void CctwTransformer::transformChunkData(int chunkId,
 
 void CctwTransformer::transform()
 {
+  QVector < QFuture < void > > futures;
+
   if (m_Application) {
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
@@ -291,8 +289,6 @@ void CctwTransformer::transform()
 
   m_InputData  -> beginTransform(true,  get_TransformOptions());
   m_OutputData -> beginTransform(false, get_TransformOptions());
-
-  m_MergeCounter.fetchAndStoreOrdered(0);
 
   m_InputData  -> clearMergeCounters();
   m_OutputData -> clearMergeCounters();
@@ -335,22 +331,20 @@ void CctwTransformer::transform()
   }
 
   foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
-
     if (m_Application) {
       m_Application->addWorkOutstanding(1);
     }
 
     if ((get_TransformOptions() & 1) == 0) {
-      QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
+      futures.append(
+        QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx));
     } else {
       runTransformChunkNumber(ckidx);
     }
   }
 
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
@@ -577,10 +571,6 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
 
       data->releaseChunkData(i);
     }
-
-    m_MergeCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_MergeCounter.fetchAndStoreOrdered(0);
   }
 
   if (m_Application) {
@@ -592,6 +582,8 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
 void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
 {
   if (data) {
+    QVector < QFuture < void > > futures;
+
     if (m_Application) {
       m_Application->waitCompleted();
       m_Application->set_Progress(0);
@@ -603,8 +595,6 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     startAt.start();
 
     printMessage("Starting Projection");
-
-    m_MergeCounter.fetchAndStoreOrdered(0);
 
     QcepImageDataFormatTiff<double> fmt("TIFF");
 
@@ -643,20 +633,18 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     }
 
     for (int i=0; i<nc; i++) {
-      m_MergeCounter.fetchAndAddOrdered(1);
-
       if (m_Application) {
         if (m_Application->get_Halting()) break;
 
         m_Application->addWorkOutstanding(1);
       }
 
-      QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes);
+      futures.append(
+            QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes));
     }
 
-    while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-      CctwThread::msleep(10);
-      m_Application->processEvents();
+    foreach (QFuture<void> f, futures) {
+      f.waitForFinished();
     }
 
     if (m_ImageX) {
