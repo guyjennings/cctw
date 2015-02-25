@@ -97,6 +97,7 @@ public slots:
   bool                checkInputFile();
   bool                openInputFile(bool quietly = false);
   bool                openInputNeXusFile();
+  void                flushOutputFile();
   void                closeOutputFile();
   void                closeInputFile(bool quietly = false);
   void                closeInputNeXusFile();

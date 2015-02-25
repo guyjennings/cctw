@@ -955,6 +955,13 @@ void CctwChunkedData::closeOutputFile()
   printMessage("Closed output file");
 }
 
+void CctwChunkedData::flushOutputFile()
+{
+  for (int i=0; i<m_DataChunks.count(); i++) {
+    writeChunk(i);
+  }
+}
+
 bool CctwChunkedData::checkMaskFile()
 {
   /* Save old error handler */

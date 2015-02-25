@@ -793,6 +793,8 @@ abort:
 
   int msec = startAt.elapsed();
 
+  m_OutputData -> flushOutputFile();
+
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
