@@ -136,12 +136,12 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
 
-    //      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
-    //                   .arg(outputChunks.count())
-    //                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
+    m_Application->printMessage(tr("Need to merge %1 output chunks from input chunk [%2]")
+                       .arg(outputChunks.count())
+                       .arg(chunkId));
 
     if (inputChunk->dependencyCount() != outputChunks.count()) {
-      printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
+      m_Application->printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
                    .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
     }
 
@@ -152,10 +152,9 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     }
 
     m_InputData->releaseChunkData(chunkId);
-  }
-  else {
+  } else {
     printMessage(tr("Could not read chunk: %1").arg(chunkId));
-    exit(1);
+//    exit(1);
   }
 }
 
@@ -166,7 +165,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 #ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
   QcepDoubleVector anglesvec = m_InputData->get_Angles();
@@ -345,6 +344,9 @@ void CctwTransformer::transform()
 
   foreach (QFuture<void> f, futures) {
     f.waitForFinished();
+    if (m_Application) {
+      m_Application->processEvents();
+    }
   }
 
   set_WallTime(startAt.elapsed()/1000.0);
@@ -645,6 +647,9 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
 
     foreach (QFuture<void> f, futures) {
       f.waitForFinished();
+      if (m_Application) {
+        m_Application->processEvents();
+      }
     }
 
     if (m_ImageX) {

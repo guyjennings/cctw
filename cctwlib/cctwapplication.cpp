@@ -788,6 +788,7 @@ void CctwApplication::transform()
 abort:
   foreach (QFuture<void> f, futures) {
     f.waitForFinished();
+    processEvents();
   }
 
   int msec = startAt.elapsed();
@@ -1102,6 +1103,7 @@ abort:
 
   foreach (QFuture<void> f, futures) {
     f.waitForFinished();
+    processEvents();
   }
 
 //  m_Transformer -> completedDependencies();
