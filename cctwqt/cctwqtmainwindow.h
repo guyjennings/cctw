@@ -50,7 +50,6 @@ public slots:
   void doSetupTransform();
   void doTransform();
   void doCheckTransform();
-  void doDummyTransform();
   void doHalt();
   void doLoadSettings();
   void doSaveSettings();

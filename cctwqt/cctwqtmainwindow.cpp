@@ -51,9 +51,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
   connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
 
-  connect(ui->m_ActionDummyTransform, SIGNAL(triggered()), this, SLOT(doDummyTransform()));
-  connect(ui->m_DummyTransformButton, SIGNAL(clicked()), this, SLOT(doDummyTransform()));
-
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
 
   connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
@@ -446,11 +443,6 @@ void CctwqtMainWindow::doTransform()
 void CctwqtMainWindow::doCheckTransform()
 {
   QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
-}
-
-void CctwqtMainWindow::doDummyTransform()
-{
-  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::dummyTransform1);
 }
 
 void CctwqtMainWindow::doHalt()

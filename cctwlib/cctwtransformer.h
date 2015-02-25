@@ -35,18 +35,14 @@ public slots:
   QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void runTransformChunkNumber(int n);
   void transformChunkNumber(int chunkId);
   void transformChunkData(int chunkId,
                           CctwDataChunk *inputChunk,
                           QMap<int, CctwDataChunk*> &outputChunks);
-  void dummyTransformChunkNumber(int n);
 
   void clearDependencies(int use);
   void addDependency(int f, int t);
-
-  void dummyTransform1();
-  void dummyTransform2();
-  void dummyTransform3();
 
 #ifdef WANT_ANALYSIS_COMMANDS
   void projectInput(QString path, int axes);
@@ -59,8 +55,6 @@ public:
 
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
-  void runTransformChunkNumber(int n);
-  void runDummyTransformChunkNumber(int n);
 
 #ifdef WANT_ANALYSIS_COMMANDS
   void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
