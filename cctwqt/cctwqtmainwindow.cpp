@@ -693,7 +693,7 @@ void CctwqtMainWindow::doProjectInput()
     QFileInfo info(inputPath);
 
     QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
-    QString cmd = tr("transformer.projectInput(\"%1\", %2)").arg(dst).arg(flags);
+    QString cmd = tr("transformer.inputProject(\"%1\", %2)").arg(dst).arg(flags);
 
     m_Application->evaluateCommand(cmd);
   }
@@ -713,7 +713,7 @@ void CctwqtMainWindow::doProjectOutput()
     QFileInfo info(outputPath);
 
     QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
-    QString cmd = tr("transformer.projectOutput(\"%1\", %2)").arg(dst).arg(flags);
+    QString cmd = tr("transformer.outputProject(\"%1\", %2)").arg(dst).arg(flags);
 
     m_Application->evaluateCommand(cmd);
   }

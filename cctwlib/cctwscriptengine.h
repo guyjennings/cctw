@@ -42,6 +42,9 @@ private:
   static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue noDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue normalizationFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue inputProjectFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue outputProjectFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setProjectOutputFunc(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 

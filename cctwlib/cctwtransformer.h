@@ -45,8 +45,8 @@ public slots:
   void addDependency(int f, int t);
 
 #ifdef WANT_ANALYSIS_COMMANDS
-  void projectInput(QString path, int axes);
-  void projectOutput(QString path, int axes);
+  void inputProject(QString path, int axes);
+  void outputProject(QString path, int axes);
 #endif
 
 public:

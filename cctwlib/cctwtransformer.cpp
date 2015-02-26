@@ -469,12 +469,12 @@ void CctwTransformer::addDependency(int f, int t)
 
 #ifdef WANT_ANALYSIS_COMMANDS
 
-void CctwTransformer::projectInput(QString path, int axes)
+void CctwTransformer::inputProject(QString path, int axes)
 {
   projectDataset(path, m_InputData, axes);
 }
 
-void CctwTransformer::projectOutput(QString path, int axes)
+void CctwTransformer::outputProject(QString path, int axes)
 {
   projectDataset(path, m_OutputData, axes);
 }

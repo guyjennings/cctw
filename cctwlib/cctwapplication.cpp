@@ -174,7 +174,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argAnglesDataset,
     argOutputDims,
     argOutputChunks,
-    argOutputDataset
+    argOutputDataset,
+    argInputProject,
+    argOutputProject,
+    argProjectOutput
   };
 
   while (1) {
@@ -205,6 +208,9 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"command", required_argument, 0, 'c'},
       {"wait", optional_argument, 0, 'w'},
       {"script", required_argument, 0, 's'},
+      {"iproject", optional_argument, 0, argInputProject},
+      {"oproject", optional_argument, 0, argOutputProject},
+      {"projectout", required_argument, 0, argProjectOutput},
       {0,0,0,0}
     };
 
@@ -286,11 +292,23 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'x':
-      startupCommand(tr("noDependencies()"));
+      startupCommand(tr("noDependencies();"));
       break;
 
     case 'N':
       startupCommand(tr("normalization(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argInputProject:
+      startupCommand(tr("inputProject(%1);").arg(optarg?atoi(optarg):7));
+      break;
+
+    case argOutputProject:
+      startupCommand(tr("outputProject(%1);").arg(optarg?atoi(optarg):7));
+      break;
+
+    case argProjectOutput:
+      startupCommand(tr("setProjectOutput(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'g': /* want gui */
@@ -585,7 +603,10 @@ void CctwApplication::showHelp(QString about)
               "--subset {<n/m>}, -S {<n/m>}     specify subset of input data to operate on (or all if blank)\n"
               "--transform, -t                  transform all or part of the data\n"
               "--depends, -d                    calculate dependencies for all or part of the data\n"
-              "--nodepends, -x                  clear dependencies"
+              "--nodepends, -x                  clear dependencies\n"
+              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
+              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
+              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
@@ -1430,5 +1451,26 @@ void CctwApplication::setNormalization(QString data)
     printMessage(tr("Set normalization to %1").arg(v));
 
     m_Transformer->set_Normalization(v);
+  }
+}
+
+void CctwApplication::inputProject(int axes)
+{
+  if (m_Transformer) {
+    m_Transformer->inputProject(m_Transformer->get_ProjectDestination(), axes);
+  }
+}
+
+void CctwApplication::outputProject(int axes)
+{
+  if (m_Transformer) {
+    m_Transformer->outputProject(m_Transformer->get_ProjectDestination(), axes);
+  }
+}
+
+void CctwApplication::setProjectOutput(QString dir)
+{
+  if (m_Transformer) {
+    m_Transformer->set_ProjectDestination(dir);
   }
 }

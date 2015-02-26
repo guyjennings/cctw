@@ -88,6 +88,10 @@ public slots:
 
   void setNormalization(QString data);
 
+  void inputProject(int axes);
+  void outputProject(int axes);
+  void setProjectOutput(QString dir);
+
   void calculateDependencies();
   void calculateChunkDependencies(int n);
 
