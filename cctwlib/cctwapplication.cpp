@@ -197,7 +197,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
       {"normalization", optional_argument, 0, 'N'},
-      {"subset", optional_argument, 0, 'S'},
+      {"subset", required_argument, 0, 'S'},
       {"transform", no_argument, 0, 't'},
       {"depends", no_argument, 0, 'd'},
       {"nodepends", no_argument, 0, 'x'},
@@ -600,7 +600,7 @@ void CctwApplication::showHelp(QString about)
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
               "--outputdataset <dsn>            specify output dataset path\n"
-              "--subset {<n/m>}, -S {<n/m>}     specify subset of input data to operate on (or all if blank)\n"
+              "--subset <n/m>, -S <n/m>         specify subset of input data to operate on (or all if blank)\n"
               "--transform, -t                  transform all or part of the data\n"
               "--depends, -d                    calculate dependencies for all or part of the data\n"
               "--nodepends, -x                  clear dependencies\n"
