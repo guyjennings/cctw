@@ -172,8 +172,17 @@ void CctwTransformer::transformChunkData(int chunkId,
   QcepIntVector    maskvec   = m_InputData->get_Mask();
   CctwIntVector3D  dims      = m_InputData->dimensions();
 
-  int *mask = (maskvec.count()<=0 ? NULL : maskvec.data());
-  double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
+  int nMask = maskvec.count();
+  int nAngs = anglesvec.count();
+
+//  int *mask    = ((nMask<=0) ? NULL : maskvec.data());
+//  double *angs = ((nAngs<=0) ? NULL : anglesvec.data());
+
+  const int    *mask = maskvec.constData();
+  const double *angs = anglesvec.constData();
+
+  if (nMask <= 0) mask = NULL;
+  if (nAngs <= 0) angs = NULL;
 
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
                                            tr("transform-%1").arg(chunkId),
@@ -203,7 +212,7 @@ void CctwTransformer::transformChunkData(int chunkId,
           for (int x=0; x<chSize.x(); x++) {
             CctwIntVector3D globalpix(chStart + CctwIntVector3D(x,y,z));
 
-            if (mask == NULL || mask[(globalpix.y())*dims.x() + globalpix.x()]) {
+            if (mask == NULL || mask[(globalpix.y())*dims.x() + globalpix.x()] == 0) {
               CctwIntVector3D iprelat(x,y,z);
               for (int ox=0; ox<osx; ox++) {
                 CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);

@@ -9,7 +9,7 @@ class CctwCrystalCoordinateTransform : public CctwTransformInterface
 {
   Q_OBJECT
 public:
-  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, double *angles, QObject *parent);
+  CctwCrystalCoordinateTransform(CctwCrystalCoordinateParameters *parms, QString name, const double *angles, QObject *parent);
 
 public slots:
 
@@ -74,7 +74,7 @@ private:
   double m_CurrentFrame;
   int    m_CurrentFrameChangeCount;
 
-  double *m_Angles;
+  const double *m_Angles;
 
 public:
   double m_TwoThetaAngle;

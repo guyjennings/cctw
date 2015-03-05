@@ -639,7 +639,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
     if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
       throw tr("File %1 exists but is not an hdf file").arg(fileName);
 
-    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDONLY, H5P_DEFAULT);
     if (fileId < 0)
       throw tr("File %1 could not be opened").arg(fileName);
 
@@ -985,7 +985,7 @@ bool CctwChunkedData::openMaskFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (m_FileId >= 0) {
+  if (m_MaskFileId >= 0) {
     return true;
   }
 
@@ -1098,8 +1098,8 @@ bool CctwChunkedData::readMaskFile()
       offset[0] = 0;
       offset[1] = 0;
 
-      count[0]  = get_Dimensions().x();
-      count[1]  = get_Dimensions().y();
+      count[0]  = get_Dimensions().y();
+      count[1]  = get_Dimensions().x();
 
       stride[0] = 1;
       stride[1] = 1;
@@ -1122,6 +1122,19 @@ bool CctwChunkedData::readMaskFile()
         printMessage(tr("Error reading mask, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
       } else {
         res = true;
+
+        if (msk) {
+          int sum=0;
+          for (int i=0; i<a.size(); i++) {
+            if (msk[i]) {
+              sum += 1;
+            }
+          }
+
+          printMessage(tr("Mask has %1 of %2 bits set").arg(sum).arg(a.size()));
+        }
+
+        set_Mask(a);
       }
 
       H5Sclose(memspace_id);
@@ -1156,7 +1169,7 @@ bool CctwChunkedData::openAnglesFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (m_FileId >= 0) {
+  if (m_AnglesFileId >= 0) {
     return true;
   }
 
@@ -1286,6 +1299,8 @@ bool CctwChunkedData::readAnglesFile()
         printMessage(tr("Error reading angles, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
       } else {
         res = true;
+
+        set_Angles(a);
       }
 
       H5Sclose(memspace_id);
@@ -1516,6 +1531,12 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
   if (m_IsInput) {
     openInputFile();
+
+    printMessage("Reading mask data");
+    readMaskFile();
+
+    printMessage("Reading angles data");
+    readAnglesFile();
   } else {
     openOutputFile();
   }
