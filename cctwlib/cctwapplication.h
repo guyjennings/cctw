@@ -84,6 +84,10 @@ public slots:
   void partialDependencies(QString desc);
   void noDependencies();
 
+  void mergeInput(QString path);
+  void mergeOutput(QString path);
+  void runMerge();
+
   void transform();
 
   void setNormalization(QString data);
@@ -174,6 +178,9 @@ public:
   CctwScriptEngine                   *m_ScriptEngine;
   CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
+
+  QStringList                         m_MergeInputs;
+  QString                             m_MergeOutput;
 
 private:
   QAtomicInt                          m_DependencyCounter;

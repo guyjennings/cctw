@@ -177,7 +177,9 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argOutputDataset,
     argInputProject,
     argOutputProject,
-    argProjectOutput
+    argProjectOutput,
+    argMergeInput,
+    argMergeOutput
   };
 
   while (1) {
@@ -211,6 +213,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"iproject", optional_argument, 0, argInputProject},
       {"oproject", optional_argument, 0, argOutputProject},
       {"projectout", required_argument, 0, argProjectOutput},
+      {"mergein", required_argument, 0, argMergeInput},
+      {"mergeout", required_argument, 0, argMergeOutput},
       {0,0,0,0}
     };
 
@@ -333,6 +337,14 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'p': /* preferences file */
       startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argMergeInput:
+      startupCommand(tr("mergeInput(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argMergeOutput:
+      startupCommand(tr("mergeOutput(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'D': /* change debug level */
@@ -614,6 +626,8 @@ void CctwApplication::showHelp(QString about)
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
               "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
+              "--mergein <f>                    specify an input dataset to merge (url format)\n"
+              "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
               ).arg(arguments().at(0)));
 }
 
@@ -1473,4 +1487,102 @@ void CctwApplication::setProjectOutput(QString dir)
   if (m_Transformer) {
     m_Transformer->set_ProjectDestination(dir);
   }
+}
+
+void CctwApplication::mergeInput(QString path)
+{
+  m_MergeInputs.append(path);
+}
+
+void CctwApplication::mergeOutput(QString path)
+{
+  m_MergeOutput = path;
+
+  QtConcurrent::run(this, &CctwApplication::runMerge);
+}
+
+void CctwApplication::runMerge()
+{
+  QVector < CctwChunkedData* > inputFiles;
+
+  CctwChunkedData* outputFile = NULL;
+
+  CctwIntVector3D hdfChunkSize(0,0,0);
+  CctwIntVector3D dims(0,0,0);
+
+  if (m_MergeInputs.count() < 1) {
+    printMessage("No merge inputs given");
+    goto exit;
+  }
+
+  foreach(QString path, m_MergeInputs) {
+    CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, NULL);
+
+    if (inputFile) {
+      inputFile->setDataSource(path);
+      if (inputFile->openInputFile()) {
+        printMessage(tr("Opened %1 successfully").arg(path));
+        inputFile->setChunkSize(inputFile->get_HDFChunkSize());
+      } else {
+        delete inputFile;
+        printMessage(tr("Failed to open %1").arg(path));
+        goto exit;
+      }
+    }
+
+    inputFiles.append(inputFile);
+  }
+
+  hdfChunkSize = inputFiles[0]->get_HDFChunkSize();
+  dims         = inputFiles[0]->dimensions();
+
+  foreach(CctwChunkedData* inputFile, inputFiles) {
+    if (inputFile->get_HDFChunkSize() != hdfChunkSize) {
+      printMessage("Input datasets do not have the same HDF chunk sizes");
+      goto exit;
+    }
+
+    if (inputFile->dimensions() != dims) {
+      printMessage("Input datasets do not have the same dimensions");
+    }
+  }
+
+  outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
+  outputFile->setDataSource(m_MergeOutput);
+  outputFile->set_HDFChunkSize(hdfChunkSize);
+  outputFile->set_Compression(2);
+  outputFile->setDimensions(dims);
+  outputFile->setChunkSize(hdfChunkSize);
+
+  if (outputFile->openOutputFile()) {
+    int nchunks = outputFile->chunkCount().volume();
+
+    set_ProgressLimit(nchunks);
+
+    for (int i=0; i<nchunks; i++) {
+      set_Progress(i);
+
+      foreach(CctwChunkedData* inputFile, inputFiles) {
+        CctwDataChunk *inChunk = inputFile->readChunk(i);
+        outputFile->mergeChunk(inChunk);
+
+        delete inChunk;
+      }
+
+      outputFile->writeChunk(i);
+    }
+  } else {
+    printMessage(tr("Could not open %1 for output").arg(m_MergeOutput));
+    goto exit;
+  }
+
+exit:
+
+  foreach(CctwChunkedData* inputFile, inputFiles) {
+    if (inputFile) {
+      delete inputFile;
+    }
+  }
+
+  delete outputFile;
 }

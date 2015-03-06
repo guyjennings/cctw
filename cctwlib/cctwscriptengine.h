@@ -45,6 +45,8 @@ private:
   static QScriptValue inputProjectFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue outputProjectFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setProjectOutputFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue mergeInputFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue mergeOutputFunc(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 

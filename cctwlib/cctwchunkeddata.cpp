@@ -510,8 +510,10 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
     if (chunk == NULL) {
       chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), NULL);
 
-      chunk->moveToThread(parent()->thread());
-      chunk->setParent(parent());
+      if (parent()) {
+        chunk->moveToThread(parent()->thread());
+        chunk->setParent(parent());
+      }
 
       m_DataChunks[n] = chunk;
     }
@@ -1454,7 +1456,7 @@ void CctwChunkedData::writeChunk(int n)
   if (openOutputFile()) {
     QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-    printMessage(tr("Writing chunk %1").arg(n));
+//    printMessage(tr("Writing chunk %1").arg(n));
 
     CctwDataChunk *chk = chunk(n);
 
