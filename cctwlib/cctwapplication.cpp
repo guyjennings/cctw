@@ -73,7 +73,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
-  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
+  m_MergeCompression(QcepSettingsSaverWPtr(), this, "mergeCompression", 6, "Merge Compression")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -1498,7 +1499,12 @@ void CctwApplication::mergeOutput(QString path)
 {
   m_MergeOutput = path;
 
-  QtConcurrent::run(this, &CctwApplication::runMerge);
+  QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
+
+  while (!f.isFinished()) {
+    CctwThread::msleep(100);
+    processEvents(QEventLoop::ExcludeUserInputEvents);
+  }
 }
 
 void CctwApplication::runMerge()
@@ -1550,13 +1556,14 @@ void CctwApplication::runMerge()
   outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
   outputFile->setDataSource(m_MergeOutput);
   outputFile->set_HDFChunkSize(hdfChunkSize);
-  outputFile->set_Compression(2);
+  outputFile->set_Compression(get_MergeCompression());
   outputFile->setDimensions(dims);
   outputFile->setChunkSize(hdfChunkSize);
 
   if (outputFile->openOutputFile()) {
     int nchunks = outputFile->chunkCount().volume();
 
+    set_Progress(0);
     set_ProgressLimit(nchunks);
 
     for (int i=0; i<nchunks; i++) {

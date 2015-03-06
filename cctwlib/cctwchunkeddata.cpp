@@ -2,6 +2,8 @@
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
 #include <QDir>
+#include "lzf_filter.h"
+
 
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
@@ -882,9 +884,14 @@ bool CctwChunkedData::openOutputFile()
         } else if (H5Pset_fill_value(plist, H5T_NATIVE_FLOAT, &zero)) {
           printMessage("Failed to set fill value");
           res = false;
-        } else if (cmprs) {
+        } else if (cmprs > 0) {
           if (H5Pset_deflate(plist, cmprs) < 0) {
             printMessage("Set deflate failed");
+            res = false;
+          }
+        } else if (cmprs) {
+          if (H5Pset_filter(plist, H5PY_FILTER_LZF, H5Z_FLAG_OPTIONAL, 0, NULL) < 0) {
+            printMessage("Set LZF Compress failed");
             res = false;
           }
         }

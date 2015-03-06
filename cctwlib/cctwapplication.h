@@ -223,6 +223,9 @@ public:
 
   Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
   QCEP_INTEGER_PROPERTY(MpiSize)
+
+  Q_PROPERTY(int mergeCompression READ get_MergeCompression WRITE set_MergeCompression STORED false)
+  QCEP_INTEGER_PROPERTY(MergeCompression)
 };
 
 extern QcepSettingsSaverPtr g_Saver;
