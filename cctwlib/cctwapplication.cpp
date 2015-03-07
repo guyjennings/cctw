@@ -70,9 +70,11 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
   m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
+  m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
-  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
+  m_MergeCompression(QcepSettingsSaverWPtr(), this, "mergeCompression", 6, "Merge Compression")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -173,7 +175,12 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argAnglesDataset,
     argOutputDims,
     argOutputChunks,
-    argOutputDataset
+    argOutputDataset,
+    argInputProject,
+    argOutputProject,
+    argProjectOutput,
+    argMergeInput,
+    argMergeOutput
   };
 
   while (1) {
@@ -193,21 +200,28 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
       {"normalization", optional_argument, 0, 'N'},
-      {"transform", optional_argument, 0, 't'},
-      {"depends", optional_argument, 0, 'd'},
+      {"subset", required_argument, 0, 'S'},
+      {"transform", no_argument, 0, 't'},
+      {"depends", no_argument, 0, 'd'},
+      {"nodepends", no_argument, 0, 'x'},
       {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
       {"command", required_argument, 0, 'c'},
-      {"wait", required_argument, 0, 'w'},
+      {"wait", optional_argument, 0, 'w'},
       {"script", required_argument, 0, 's'},
+      {"iproject", optional_argument, 0, argInputProject},
+      {"oproject", optional_argument, 0, argOutputProject},
+      {"projectout", required_argument, 0, argProjectOutput},
+      {"mergein", required_argument, 0, argMergeInput},
+      {"mergeout", required_argument, 0, argMergeOutput},
       {0,0,0,0}
     };
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:N:t::d::D:p:gnc:w:s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:m:a:o:N::S::tdxD:p:gnc:w::s:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -258,6 +272,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case 'S':
+      startupCommand(tr("setSubset(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case argOutputDims:
       startupCommand(tr("setOutputDims(\"%1\");").arg(addSlashes(optarg)));
       break;
@@ -278,8 +296,24 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case 'x':
+      startupCommand(tr("noDependencies();"));
+      break;
+
     case 'N':
       startupCommand(tr("normalization(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argInputProject:
+      startupCommand(tr("inputProject(%1);").arg(optarg?atoi(optarg):7));
+      break;
+
+    case argOutputProject:
+      startupCommand(tr("outputProject(%1);").arg(optarg?atoi(optarg):7));
+      break;
+
+    case argProjectOutput:
+      startupCommand(tr("setProjectOutput(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'g': /* want gui */
@@ -306,6 +340,14 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case argMergeInput:
+      startupCommand(tr("mergeInput(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argMergeOutput:
+      startupCommand(tr("mergeOutput(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case 'D': /* change debug level */
       {
         char *a = optarg;
@@ -315,6 +357,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case '?': /* unknown option, or missing optional argument */
+      printMessage("Unrecognized command line option");
       break;
 
     default:
@@ -392,7 +435,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
                                            this);
   m_OutputData              -> allocateChunks();
 
-  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", this);
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, this);
 
   m_Transformer      = new CctwTransformer(this,
                                            m_InputData,
@@ -570,8 +613,13 @@ void CctwApplication::showHelp(QString about)
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
               "--outputdataset <dsn>            specify output dataset path\n"
-              "--transform {<n/m>}, -t {<n/m>}  transform all or part of the data\n"
-              "--depends {<n/m>}, -d {<n/m>}    calculate dependencies for all or part of the data\n"
+              "--subset <n/m>, -S <n/m>         specify subset of input data to operate on (or all if blank)\n"
+              "--transform, -t                  transform all or part of the data\n"
+              "--depends, -d                    calculate dependencies for all or part of the data\n"
+              "--nodepends, -x                  clear dependencies\n"
+              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
+              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
+              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
@@ -579,6 +627,8 @@ void CctwApplication::showHelp(QString about)
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
               "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
+              "--mergein <f>                    specify an input dataset to merge (url format)\n"
+              "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
               ).arg(arguments().at(0)));
 }
 
@@ -711,13 +761,82 @@ void CctwApplication::setOutputDataset(QString data)
   }
 }
 
+void CctwApplication::setSubset(QString desc)
+{
+  if (m_Transformer) {
+    m_Transformer->set_Subset(desc);
+  }
+}
+
 void CctwApplication::partialTransform(QString desc)
 {
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
   if (m_Transformer) {
-    m_Transformer->transform();
+
+    if (m_Transformer->get_UseDependencies()) {
+      m_Transformer->transform();
+    } else {
+      transform();
+    }
   }
+}
+
+void CctwApplication::transform()
+{
+  QVector < QFuture < void > > futures;
+  waitCompleted();
+
+  CctwIntVector3D chunks = m_InputData->chunkCount();
+
+  set_Halting(false);
+  set_Progress(0);
+  set_ProgressLimit(chunks.volume());
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Transform");
+
+  m_InputData  -> beginTransform(true,  0);
+  m_OutputData -> beginTransform(false, 0);
+
+  for (int z=0; z<chunks.z(); z++) {
+    for (int y=0; y<chunks.y(); y++) {
+      for (int x=0; x<chunks.x(); x++) {
+        if (get_Halting()) {
+          goto abort;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          int n = m_InputData->chunkNumberFromIndex(idx);
+
+          addWorkOutstanding(1);
+
+          futures.append(
+                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
+        }
+      }
+    }
+  }
+
+abort:
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
+    processEvents();
+  }
+
+  int msec = startAt.elapsed();
+
+  m_OutputData -> flushOutputFile();
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+               .arg(msec)
+               .arg(CctwDataChunk::allocatedChunkCount()));
 }
 
 void CctwApplication::partialDependencies(QString desc)
@@ -725,6 +844,13 @@ void CctwApplication::partialDependencies(QString desc)
 //  printMessage(tr("Partial dependencies of %1").arg(desc));
 
   calculateDependencies();
+}
+
+void CctwApplication::noDependencies()
+{
+  if (m_Transformer) {
+    m_Transformer->clearDependencies(0);
+  }
 }
 
 void CctwApplication::readSettings()
@@ -892,7 +1018,10 @@ QString CctwApplication::settingsScript()
 void CctwApplication::calculateChunkDependencies(int n)
 {
   if (!get_Halting()) {
-    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), NULL);
+    QcepDoubleVector anglesvec = m_InputData->get_Angles();
+    double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
+
+    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), angs, NULL);
 
     //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
 
@@ -956,13 +1085,13 @@ void CctwApplication::calculateChunkDependencies(int n)
 
 void CctwApplication::calculateDependencies()
 {
-//  QVector < QFuture < void > > futures;
+  QVector < QFuture < void > > futures;
   waitCompleted();
 
 //  m_InputData->clearDependencies();
 //  m_OutputData->clearDependencies();
 
-  m_Transformer->clearDependencies();
+  m_Transformer->clearDependencies(1);
 
   CctwIntVector3D chunks = m_InputData->chunkCount();
 
@@ -996,8 +1125,8 @@ void CctwApplication::calculateDependencies()
           m_DependencyCounter.fetchAndAddOrdered(1);
 
           addWorkOutstanding(1);
-//          futures.append(
-                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n)/*)*/;
+          futures.append(
+                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n));
 //          calculateChunkDependencies(idx);
         }
       }
@@ -1010,9 +1139,10 @@ abort:
     processEvents();
   }
 
-//  foreach (QFuture<void> f, futures) {
-//    f.waitForFinished();
-//  }
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
+    processEvents();
+  }
 
 //  m_Transformer -> completedDependencies();
 
@@ -1337,4 +1467,129 @@ void CctwApplication::setNormalization(QString data)
 
     m_Transformer->set_Normalization(v);
   }
+}
+
+void CctwApplication::inputProject(int axes)
+{
+  if (m_Transformer) {
+    m_Transformer->inputProject(m_Transformer->get_ProjectDestination(), axes);
+  }
+}
+
+void CctwApplication::outputProject(int axes)
+{
+  if (m_Transformer) {
+    m_Transformer->outputProject(m_Transformer->get_ProjectDestination(), axes);
+  }
+}
+
+void CctwApplication::setProjectOutput(QString dir)
+{
+  if (m_Transformer) {
+    m_Transformer->set_ProjectDestination(dir);
+  }
+}
+
+void CctwApplication::mergeInput(QString path)
+{
+  m_MergeInputs.append(path);
+}
+
+void CctwApplication::mergeOutput(QString path)
+{
+  m_MergeOutput = path;
+
+  QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
+
+  while (!f.isFinished()) {
+    CctwThread::msleep(100);
+    processEvents(QEventLoop::ExcludeUserInputEvents);
+  }
+}
+
+void CctwApplication::runMerge()
+{
+  QVector < CctwChunkedData* > inputFiles;
+
+  CctwChunkedData* outputFile = NULL;
+
+  CctwIntVector3D hdfChunkSize(0,0,0);
+  CctwIntVector3D dims(0,0,0);
+
+  if (m_MergeInputs.count() < 1) {
+    printMessage("No merge inputs given");
+    goto exit;
+  }
+
+  foreach(QString path, m_MergeInputs) {
+    CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, NULL);
+
+    if (inputFile) {
+      inputFile->setDataSource(path);
+      if (inputFile->openInputFile()) {
+        printMessage(tr("Opened %1 successfully").arg(path));
+        inputFile->setChunkSize(inputFile->get_HDFChunkSize());
+      } else {
+        delete inputFile;
+        printMessage(tr("Failed to open %1").arg(path));
+        goto exit;
+      }
+    }
+
+    inputFiles.append(inputFile);
+  }
+
+  hdfChunkSize = inputFiles[0]->get_HDFChunkSize();
+  dims         = inputFiles[0]->dimensions();
+
+  foreach(CctwChunkedData* inputFile, inputFiles) {
+    if (inputFile->get_HDFChunkSize() != hdfChunkSize) {
+      printMessage("Input datasets do not have the same HDF chunk sizes");
+      goto exit;
+    }
+
+    if (inputFile->dimensions() != dims) {
+      printMessage("Input datasets do not have the same dimensions");
+    }
+  }
+
+  outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
+  outputFile->setDataSource(m_MergeOutput);
+  outputFile->set_HDFChunkSize(hdfChunkSize);
+  outputFile->set_Compression(get_MergeCompression());
+  outputFile->setDimensions(dims);
+  outputFile->setChunkSize(hdfChunkSize);
+
+  if (outputFile->openOutputFile()) {
+    int nchunks = outputFile->chunkCount().volume();
+
+    set_Progress(0);
+    set_ProgressLimit(nchunks);
+
+    for (int i=0; i<nchunks; i++) {
+      set_Progress(i);
+
+      foreach(CctwChunkedData* inputFile, inputFiles) {
+        CctwDataChunk *inChunk = inputFile->readChunk(i);
+        outputFile->mergeChunk(inChunk);
+
+        delete inChunk;
+      }
+
+      outputFile->writeChunk(i);
+    }
+  } else {
+    printMessage(tr("Could not open %1 for output").arg(m_MergeOutput));
+    goto exit;
+  }
+
+exit:
+
+  foreach(CctwChunkedData* inputFile, inputFiles) {
+    if (inputFile) {
+      delete inputFile;
+    }
+  }
+
+  delete outputFile;
 }

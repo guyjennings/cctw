@@ -38,6 +38,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ImportButton, SIGNAL(clicked()), this, SLOT(doImport()));
 #endif
 
+  connect(ui->m_ActionExecuteScriptFile, SIGNAL(triggered()), this, SLOT(doExecuteScriptFile()));
   connect(ui->m_ActionSetupOutputData, SIGNAL(triggered()), this, SLOT(doSetupOutput()));
   connect(ui->m_SetupOutputButton, SIGNAL(clicked()), this, SLOT(doSetupOutput()));
 
@@ -49,9 +50,6 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
   connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
-
-  connect(ui->m_ActionDummyTransform, SIGNAL(triggered()), this, SLOT(doDummyTransform()));
-  connect(ui->m_DummyTransformButton, SIGNAL(clicked()), this, SLOT(doDummyTransform()));
 
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
 
@@ -447,14 +445,20 @@ void CctwqtMainWindow::doCheckTransform()
   QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
 }
 
-void CctwqtMainWindow::doDummyTransform()
-{
-  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::dummyTransform1);
-}
-
 void CctwqtMainWindow::doHalt()
 {
   m_Application->set_Halting(true);
+}
+
+void CctwqtMainWindow::doExecuteScriptFile()
+{
+  QString path = QFileDialog::getOpenFileName(this, "Execute Script from...",
+                                              m_Application->get_ScriptPath());
+
+  if (path.length()) {
+    m_Application->executeScriptFile(path);
+    m_Application->set_ScriptPath(path);
+  }
 }
 
 void CctwqtMainWindow::doSaveSettings()
@@ -463,8 +467,8 @@ void CctwqtMainWindow::doSaveSettings()
                                               m_Application->get_SettingsPath());
 
   if (path.length()) {
-    m_Application->writeSettings(path);
     m_Application->set_SettingsPath(path);
+    m_Application->writeSettings(path);
   }
 }
 
@@ -485,8 +489,8 @@ void CctwqtMainWindow::doSaveDependencies()
                                               m_Application->get_DependenciesPath());
 
   if (path.length()) {
-    m_Application->saveDependencies(path);
     m_Application->set_DependenciesPath(path);
+    m_Application->saveDependencies(path);
   }
 }
 
@@ -496,8 +500,8 @@ void CctwqtMainWindow::doLoadDependencies()
                                               m_Application->get_DependenciesPath());
 
   if (path.length()) {
-    m_Application->loadDependencies(path);
     m_Application->set_DependenciesPath(path);
+    m_Application->loadDependencies(path);
   }
 }
 
@@ -689,7 +693,7 @@ void CctwqtMainWindow::doProjectInput()
     QFileInfo info(inputPath);
 
     QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
-    QString cmd = tr("transformer.projectInput(\"%1\", %2)").arg(dst).arg(flags);
+    QString cmd = tr("transformer.inputProject(\"%1\", %2)").arg(dst).arg(flags);
 
     m_Application->evaluateCommand(cmd);
   }
@@ -709,7 +713,7 @@ void CctwqtMainWindow::doProjectOutput()
     QFileInfo info(outputPath);
 
     QString dst = xform->get_ProjectDestination() + "/" + info.completeBaseName();
-    QString cmd = tr("transformer.projectOutput(\"%1\", %2)").arg(dst).arg(flags);
+    QString cmd = tr("transformer.outputProject(\"%1\", %2)").arg(dst).arg(flags);
 
     m_Application->evaluateCommand(cmd);
   }

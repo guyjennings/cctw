@@ -38,8 +38,15 @@ private:
   static QScriptValue setOutputChunksFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialTransformFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setSubsetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue noDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue normalizationFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue inputProjectFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue outputProjectFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setProjectOutputFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue mergeInputFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue mergeOutputFunc(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 

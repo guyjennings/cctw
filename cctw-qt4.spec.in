@@ -1,4 +1,4 @@
-Name:		cctw
+Name:		cctw-qt4
 Version: 0.0.0
 Release:        1%{?dist}
 Summary:        cctw - crystal coordinate transform workflow
@@ -6,16 +6,12 @@ Summary:        cctw - crystal coordinate transform workflow
 Group:       	Applications/Engineering   
 License:        GPL
 URL:            http://cctw.sourceforge.net/
-Source0:        %{name}-%{version}.tar.gz
+Source0:        cctw-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  desktop-file-utils
-#BuildRequires:  qt4 >= %{qtversion}, qt4-x11 qt4-devel
-BuildRequires:  qt5-qtbase-devel, qt5-qtscript-devel, qt5-qtwebkit-devel, qt5-qtsvg-devel
+BuildRequires:  desktop-file-utils qt4 >= %{qtversion}, qt4-x11 qt4-devel 
 BuildRequires:  libtiff-devel, CBFlib-devel, tcl-devel
-#Requires:       qt4 >= %{qtversion}, qt4-x11,
-Requires:       qt5-qtbase, qt5-qtscript, qt5-qtwebkit, qt5-qtsvg
-Requires:       libtiff, CBFlib, tcl
+Requires:       qt4 >= %{qtversion}, qt4-x11, libtiff, CBFlib, tcl
 Requires(post): desktop-file-utils
 Requires(postun): desktop-file-utils
 
@@ -23,11 +19,10 @@ Requires(postun): desktop-file-utils
 cctw - crystal coordinate transform workflow
 
 %prep
-%setup -n %{name}-%{version}
+%setup -n cctw-%{version}
 
 %build
-#/usr/bin/qmake-qt4 %{name}.pro -recursive
-/usr/bin/qmake-qt5 %{name}.pro -recursive
+/usr/bin/qmake-qt4 cctw.pro -recursive
 make clean
 make %{?_smp_mflags}
 
@@ -42,8 +37,8 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 #mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/128x128/apps/
 #mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps/
 
-install bin/cctwqt $RPM_BUILD_ROOT%{_bindir}
-install bin/cctwcli $RPM_BUILD_ROOT%{_bindir}
+install bin/cctwqt $RPM_BUILD_ROOT%{_bindir}/cctwqt4
+install bin/cctwcli $RPM_BUILD_ROOT%{_bindir}/cctwcli4
 
 #desktop-file-install --vendor=bessrc \
 #        --dir $RPM_BUILD_ROOT%{_datadir}/applications \
@@ -66,8 +61,8 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc
-%{_bindir}/cctwqt
-%{_bindir}/cctwcli
+%{_bindir}/cctwqt4
+%{_bindir}/cctwcli4
 #%{_libdir}/%{name}-%{version}/plugins/*.so
 #%{_datadir}/applications/*%{name}.desktop
 #%{_datadir}/icons/hicolor/*/*/*

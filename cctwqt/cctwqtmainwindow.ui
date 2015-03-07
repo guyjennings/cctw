@@ -54,7 +54,7 @@
       </property>
       <widget class="QTabWidget" name="m_ParametersTabs">
        <property name="currentIndex">
-        <number>1</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="m_ImportTab">
         <attribute name="title">
@@ -968,13 +968,6 @@
          <string>Transform</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="19" column="4">
-          <widget class="QPushButton" name="m_DummyTransformButton">
-           <property name="text">
-            <string>Dummy Transform</string>
-           </property>
-          </widget>
-         </item>
          <item row="11" column="0">
           <widget class="QLabel" name="label_33">
            <property name="text">
@@ -1537,33 +1530,6 @@
            </property>
           </widget>
          </item>
-         <item row="19" column="0" colspan="2">
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>346</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="19" column="2">
-          <widget class="QPushButton" name="m_CheckTransformButton">
-           <property name="text">
-            <string>Check Transform</string>
-           </property>
-          </widget>
-         </item>
-         <item row="19" column="3">
-          <widget class="QPushButton" name="m_SetupTransformButton">
-           <property name="text">
-            <string>Setup Transform...</string>
-           </property>
-          </widget>
-         </item>
          <item row="8" column="4">
           <widget class="QPushButton" name="m_GetDetPosButton">
            <property name="text">
@@ -1713,6 +1679,33 @@
            </property>
           </widget>
          </item>
+         <item row="19" column="4">
+          <widget class="QPushButton" name="m_SetupTransformButton">
+           <property name="text">
+            <string>Setup Transform...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="19" column="3">
+          <widget class="QPushButton" name="m_CheckTransformButton">
+           <property name="text">
+            <string>Check Transform</string>
+           </property>
+          </widget>
+         </item>
+         <item row="19" column="0" colspan="3">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>346</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </widget>
        <widget class="QWidget" name="tab_3">
@@ -1795,7 +1788,7 @@
      <x>0</x>
      <y>0</y>
      <width>1383</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="m_FileMenu">
@@ -1806,6 +1799,7 @@
     <addaction name="m_ActionSaveSettings"/>
     <addaction name="m_ActionSaveCurrentSettings"/>
     <addaction name="separator"/>
+    <addaction name="m_ActionExecuteScriptFile"/>
     <addaction name="m_ActionSetupDataImport"/>
     <addaction name="m_ActionImportData"/>
     <addaction name="separator"/>
@@ -1819,7 +1813,6 @@
     <addaction name="m_ActionSetupTransform"/>
     <addaction name="m_ActionPerformTransform"/>
     <addaction name="m_ActionCheckTransform"/>
-    <addaction name="m_ActionDummyTransform"/>
     <addaction name="m_ActionProjectBrowse"/>
     <addaction name="m_ActionProjectInput"/>
     <addaction name="m_ActionProjectOutput"/>
@@ -1975,11 +1968,6 @@
     <string>Transform Data</string>
    </property>
   </action>
-  <action name="m_ActionDummyTransform">
-   <property name="text">
-    <string>Run Dummy Transform</string>
-   </property>
-  </action>
   <action name="m_ActionCheckTransform">
    <property name="text">
     <string>Check Transform</string>
@@ -2015,6 +2003,11 @@
    </property>
    <property name="toolTip">
     <string>Browse Projection Destination</string>
+   </property>
+  </action>
+  <action name="m_ActionExecuteScriptFile">
+   <property name="text">
+    <string>Execute Script File...</string>
    </property>
   </action>
  </widget>

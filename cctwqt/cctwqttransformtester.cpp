@@ -210,7 +210,7 @@ void CctwqtTransformTester::testGetDetPos()
 
   CctwDoubleVector3D det = getDet();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setPixels(t.getDetPos(det));
@@ -222,7 +222,7 @@ void CctwqtTransformTester::testPixel2QLab()
 
   CctwDoubleVector3D pix = getPixels();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setQLab(t.pixel2qlab(pix));
@@ -234,7 +234,7 @@ void CctwqtTransformTester::testQLab2HKL()
 
   CctwDoubleVector3D qlab = getQLab();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setHKL(t.qlab2hkl(qlab));
@@ -246,7 +246,7 @@ void CctwqtTransformTester::testHKL2Grid()
 
   CctwDoubleVector3D hkl = getHKL();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setGrid(t.hkl2grid(hkl));
@@ -258,7 +258,7 @@ void CctwqtTransformTester::testGrid2HKL()
 
   CctwDoubleVector3D grid = getGrid();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setHKL(t.grid2hkl(grid));
@@ -270,7 +270,7 @@ void CctwqtTransformTester::testHKL2QLab()
 
   CctwDoubleVector3D hkl = getHKL();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setQLab(t.hkl2qlab(hkl));
@@ -282,7 +282,7 @@ void CctwqtTransformTester::testQLab2Pixel()
 
   CctwDoubleVector3D qlab = getQLab();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setPixels(t.qlab2pixel(qlab));
@@ -294,7 +294,7 @@ void CctwqtTransformTester::testGetDetPix()
 
   CctwDoubleVector3D pix = getPixels();
 
-  CctwCrystalCoordinateTransform t(m_Parameters, "test", this);
+  CctwCrystalCoordinateTransform t(m_Parameters, "test", NULL, this);
   t.setCurrentFrame(getRotation());
 
   setDet(t.getDetPix(pix));

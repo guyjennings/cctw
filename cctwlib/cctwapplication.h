@@ -79,10 +79,22 @@ public slots:
   void setOutputChunks(QString data);
   void setOutputDataset(QString data);
 
+  void setSubset(QString desc);
   void partialTransform(QString desc);
   void partialDependencies(QString desc);
+  void noDependencies();
+
+  void mergeInput(QString path);
+  void mergeOutput(QString path);
+  void runMerge();
+
+  void transform();
 
   void setNormalization(QString data);
+
+  void inputProject(int axes);
+  void outputProject(int axes);
+  void setProjectOutput(QString dir);
 
   void calculateDependencies();
   void calculateChunkDependencies(int n);
@@ -167,6 +179,9 @@ public:
   CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
+  QStringList                         m_MergeInputs;
+  QString                             m_MergeOutput;
+
 private:
   QAtomicInt                          m_DependencyCounter;
   QAtomicInt                          m_WorkOutstanding;
@@ -197,6 +212,9 @@ public:
   Q_PROPERTY(QString settingsPath READ get_SettingsPath WRITE set_SettingsPath)
   QCEP_STRING_PROPERTY(SettingsPath)
 
+  Q_PROPERTY(QString scriptPath READ get_ScriptPath WRITE set_ScriptPath)
+  QCEP_STRING_PROPERTY(ScriptPath)
+
   Q_PROPERTY(QString specDataFilePath READ get_SpecDataFilePath WRITE set_SpecDataFilePath)
   QCEP_STRING_PROPERTY(SpecDataFilePath)
 
@@ -205,6 +223,9 @@ public:
 
   Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
   QCEP_INTEGER_PROPERTY(MpiSize)
+
+  Q_PROPERTY(int mergeCompression READ get_MergeCompression WRITE set_MergeCompression STORED false)
+  QCEP_INTEGER_PROPERTY(MergeCompression)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

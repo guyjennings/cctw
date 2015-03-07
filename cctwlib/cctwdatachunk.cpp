@@ -3,6 +3,8 @@
 #include <QSemaphore>
 #include "cctwthread.h"
 
+static QAtomicInt g_ChunkCount;
+
 CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QObject *parent) :
   CctwObject(name, parent),
   m_Data(data),
@@ -17,6 +19,7 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
   m_MergeCounter(0),
   m_OwnData(true)
 {
+  g_ChunkCount.fetchAndAddOrdered(1);
 }
 
 CctwIntVector3D CctwDataChunk::calculateChunkStart()
@@ -69,6 +72,13 @@ CctwDataChunk::~CctwDataChunk()
 
   m_ChunkData = NULL;
   m_ChunkWeights = NULL;
+
+  g_ChunkCount.fetchAndAddOrdered(-1);
+}
+
+int CctwDataChunk::allocatedChunkCount()
+{
+  return g_ChunkCount.fetchAndAddOrdered(0);
 }
 
 static QAtomicInt g_MaxAllocated(0);
@@ -459,7 +469,7 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
       if (m_Data) {
         m_Data->incChunksHeld(1);
       }
-    } else if (mergeCount() > dependencyCount()) {
+    } else if (mergeCount() > dependencyCount() && dependencyCount()) {
       printMessage(tr("Exceeded expected number of merges for chunk [%1] %2 > %3")
                    .arg(index()).arg(mergeCount()).arg(dependencyCount()));
     }

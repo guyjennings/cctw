@@ -35,22 +35,18 @@ public slots:
   QcepIntList dependencies(int n);
   QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
+  void runTransformChunkNumber(int n);
   void transformChunkNumber(int chunkId);
   void transformChunkData(int chunkId,
                           CctwDataChunk *inputChunk,
                           QMap<int, CctwDataChunk*> &outputChunks);
-  void dummyTransformChunkNumber(int n);
 
-  void clearDependencies();
+  void clearDependencies(int use);
   void addDependency(int f, int t);
 
-  void dummyTransform1();
-  void dummyTransform2();
-  void dummyTransform3();
-
 #ifdef WANT_ANALYSIS_COMMANDS
-  void projectInput(QString path, int axes);
-  void projectOutput(QString path, int axes);
+  void inputProject(QString path, int axes);
+  void outputProject(QString path, int axes);
 #endif
 
 public:
@@ -59,8 +55,6 @@ public:
 
 private:
   void markInputChunkNeeded(CctwIntVector3D idx);
-  void runTransformChunkNumber(int n);
-  void runDummyTransformChunkNumber(int n);
 
 #ifdef WANT_ANALYSIS_COMMANDS
   void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
@@ -69,13 +63,9 @@ private:
 
 private:
   CctwApplication         *m_Application;
-  QAtomicInt               m_MergeCounter;
   CctwChunkedData         *m_InputData;
   CctwChunkedData         *m_OutputData;
   CctwTransformInterface  *m_Transform;
-//  int                      m_OversampleX;
-//  int                      m_OversampleY;
-//  int                      m_OversampleZ;
 
   QMutex                   m_LockX;
   QMutex                   m_LockY;
@@ -118,6 +108,12 @@ public:
 
   Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
   QCEP_INTEGER_PROPERTY(Normalization)
+
+  Q_PROPERTY(QString subset READ get_Subset WRITE set_Subset STORED false)
+  QCEP_STRING_PROPERTY(Subset)
+
+  Q_PROPERTY(int useDependencies READ get_UseDependencies WRITE set_UseDependencies STORED false)
+  QCEP_INTEGER_PROPERTY(UseDependencies)
 };
 
 #endif // CCTWTRANSFORMER_H

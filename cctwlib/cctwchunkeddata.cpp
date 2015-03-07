@@ -2,6 +2,8 @@
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
 #include <QDir>
+#include "lzf_filter.h"
+
 
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
@@ -28,8 +30,10 @@ CctwChunkedData::CctwChunkedData
     m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
     m_MaskDataFileName(application->saver(), this, "maskDataFileName", "", "Mask Data File Name"),
     m_MaskDataSetName(application->saver(), this, "maskDataSetName", "", "Mask Dataset Name"),
+    m_Mask(QcepSettingsSaverWPtr(), this, "mask", QcepIntVector(), "Mask Image"),
     m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
     m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
+    m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
     m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
@@ -85,6 +89,11 @@ void CctwChunkedData::allocateChunks()
 //  }
 }
 
+int CctwChunkedData::allocatedChunkCount()
+{
+  return CctwDataChunk::allocatedChunkCount();
+}
+
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
   if (m_DimensionsCache != dim) {
@@ -115,12 +124,36 @@ void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 
 void CctwChunkedData::setMaskDimensions(int mx, int my)
 {
+  QcepIntVector m = get_Mask();
 
+  m.resize(mx*my);
+
+  set_Mask(m);
 }
 
 void CctwChunkedData::setAnglesDimensions(int n)
 {
+  QcepDoubleVector a = get_Angles();
 
+  a.resize(n);
+
+  set_Angles(a);
+}
+
+void CctwChunkedData::setAngle(int n, double v)
+{
+  QcepDoubleVector a = get_Angles();
+
+  if (n >= 0 && n < a.size()) {
+    a.replace(n, v);
+  }
+
+  set_Angles(a);
+}
+
+double CctwChunkedData::angle(int n)
+{
+  return get_Angles().value(n);
 }
 
 void CctwChunkedData::sizingChanged()
@@ -479,8 +512,10 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
     if (chunk == NULL) {
       chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), NULL);
 
-      chunk->moveToThread(parent()->thread());
-      chunk->setParent(parent());
+      if (parent()) {
+        chunk->moveToThread(parent()->thread());
+        chunk->setParent(parent());
+      }
 
       m_DataChunks[n] = chunk;
     }
@@ -608,7 +643,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
     if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
       throw tr("File %1 exists but is not an hdf file").arg(fileName);
 
-    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDONLY, H5P_DEFAULT);
     if (fileId < 0)
       throw tr("File %1 could not be opened").arg(fileName);
 
@@ -849,9 +884,14 @@ bool CctwChunkedData::openOutputFile()
         } else if (H5Pset_fill_value(plist, H5T_NATIVE_FLOAT, &zero)) {
           printMessage("Failed to set fill value");
           res = false;
-        } else if (cmprs) {
+        } else if (cmprs > 0) {
           if (H5Pset_deflate(plist, cmprs) < 0) {
             printMessage("Set deflate failed");
+            res = false;
+          }
+        } else if (cmprs) {
+          if (H5Pset_filter(plist, H5PY_FILTER_LZF, H5Z_FLAG_OPTIONAL, 0, NULL) < 0) {
+            printMessage("Set LZF Compress failed");
             res = false;
           }
         }
@@ -924,6 +964,13 @@ void CctwChunkedData::closeOutputFile()
   printMessage("Closed output file");
 }
 
+void CctwChunkedData::flushOutputFile()
+{
+  for (int i=0; i<m_DataChunks.count(); i++) {
+    writeChunk(i);
+  }
+}
+
 bool CctwChunkedData::checkMaskFile()
 {
   /* Save old error handler */
@@ -947,7 +994,7 @@ bool CctwChunkedData::openMaskFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (m_FileId >= 0) {
+  if (m_MaskFileId >= 0) {
     return true;
   }
 
@@ -1043,6 +1090,71 @@ void CctwChunkedData::closeMaskFile(bool quietly)
   }
 }
 
+bool CctwChunkedData::readMaskFile()
+{
+  bool res = false;
+
+  if (openMaskFile()) {
+
+    if (m_MaskFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[2], count[2], stride[2], block[2];
+
+      QcepIntVector a= get_Mask();
+
+      offset[0] = 0;
+      offset[1] = 0;
+
+      count[0]  = get_Dimensions().y();
+      count[1]  = get_Dimensions().x();
+
+      stride[0] = 1;
+      stride[1] = 1;
+
+      block[0]  = 1;
+      block[1]  = 1;
+
+      int *msk = a.data();
+
+      memspace_id = H5Screate_simple(2, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_MaskDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_MaskDatasetId, H5T_NATIVE_INT, memspace_id, m_MaskDataspaceId, H5P_DEFAULT, msk);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading mask, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+
+        if (msk) {
+          int sum=0;
+          for (int i=0; i<a.size(); i++) {
+            if (msk[i]) {
+              sum += 1;
+            }
+          }
+
+          printMessage(tr("Mask has %1 of %2 bits set").arg(sum).arg(a.size()));
+        }
+
+        set_Mask(a);
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeMaskFile();
+  }
+
+  return res;
+}
+
 bool CctwChunkedData::checkAnglesFile()
 {
   /* Save old error handler */
@@ -1066,7 +1178,7 @@ bool CctwChunkedData::openAnglesFile(bool quietly)
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-  if (m_FileId >= 0) {
+  if (m_AnglesFileId >= 0) {
     return true;
   }
 
@@ -1160,6 +1272,53 @@ void CctwChunkedData::closeAnglesFile(bool quietly)
   if (!quietly) {
     printMessage("Closed Angles file");
   }
+}
+
+bool CctwChunkedData::readAnglesFile()
+{
+  bool res = false;
+
+  if (openAnglesFile()) {
+
+    if (m_AnglesFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[1], count[1], stride[1], block[1];
+
+      QcepDoubleVector a= get_Angles();
+
+      offset[0] = 0;
+      count[0]  = a.size();
+      stride[0] = 1;
+      block[0]  = 1;
+
+      double *angles = a.data();
+
+      memspace_id = H5Screate_simple(1, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_AnglesDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_AnglesDatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_AnglesDataspaceId, H5P_DEFAULT, angles);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading angles, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+
+        set_Angles(a);
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeAnglesFile();
+  }
+
+  return res;
 }
 
 //CctwDataChunk *CctwChunkedData::readChunk(int n)
@@ -1304,7 +1463,7 @@ void CctwChunkedData::writeChunk(int n)
   if (openOutputFile()) {
     QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
-    printMessage(tr("Writing chunk %1").arg(n));
+//    printMessage(tr("Writing chunk %1").arg(n));
 
     CctwDataChunk *chk = chunk(n);
 
@@ -1315,7 +1474,6 @@ void CctwChunkedData::writeChunk(int n)
 
       if (m_FileId >= 0) {
 
-        hid_t memspace_id = -1;
         hsize_t offset[3], count[3], stride[3], block[3];
 
         CctwIntVector3D st = chk -> chunkStart();
@@ -1352,6 +1510,7 @@ void CctwChunkedData::writeChunk(int n)
         if (chunkData == NULL) {
           printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
         } else if ((m_TransformOptions & 8) == 0){
+          hid_t memspace_id = -1;
           memspace_id   = H5Screate_simple(3, count, NULL);
           herr_t selerr = H5Sselect_hyperslab(m_DataspaceId, H5S_SELECT_SET, offset, stride, count, block);
           herr_t wrterr = H5Dwrite(m_DatasetId, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_DataspaceId, H5P_DEFAULT, chunkData);
@@ -1381,6 +1540,12 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
   if (m_IsInput) {
     openInputFile();
+
+    printMessage("Reading mask data");
+    readMaskFile();
+
+    printMessage("Reading angles data");
+    readAnglesFile();
   } else {
     openOutputFile();
   }

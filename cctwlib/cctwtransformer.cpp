@@ -45,7 +45,9 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
   m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
   m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images"),
-  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?")
+  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
+  m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
+  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform")
 {
 }
 
@@ -67,15 +69,14 @@ void CctwTransformer::runTransformChunkNumber(int n)
 {
   if (m_Application && !m_Application->get_Halting()) {
     transformChunkNumber(n);
-
-    m_MergeCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_MergeCounter.fetchAndStoreOrdered(0);
   }
 
   if (m_Application) {
     m_Application->prop_Progress()->incValue(1);
     m_Application->workCompleted(1);
+    int nchunks = m_InputData->chunkCount().volume();
+
+//    m_Application->printMessage(tr("Chunk %1/%2 transform complete").arg(n).arg(nchunks));
   }
 }
 
@@ -107,7 +108,7 @@ void CctwTransformer::saveDependencies(QString path)
 
 void CctwTransformer::loadDependencies(QString path)
 {
-  clearDependencies();
+  clearDependencies(1);
 
   QFile f(path);
 
@@ -135,11 +136,11 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
 
-    //      printMessage(tr("Need to merge %1 output chunks from input chunk [%2,%3,%4]")
-    //                   .arg(outputChunks.count())
-    //                   .arg(idx.x()).arg(idx.y()).arg(idx.z()));
+//    printMessage(tr("Need to merge %1 output chunks from input chunk [%2]")
+//                       .arg(outputChunks.count())
+//                       .arg(chunkId));
 
-    if (inputChunk->dependencyCount() != outputChunks.count()) {
+    if (inputChunk->dependencyCount() && inputChunk->dependencyCount() != outputChunks.count()) {
       printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
                    .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
     }
@@ -151,10 +152,9 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     }
 
     m_InputData->releaseChunkData(chunkId);
-  }
-  else {
+  } else {
     printMessage(tr("Could not read chunk: %1").arg(chunkId));
-    exit(1);
+//    exit(1);
   }
 }
 
@@ -168,8 +168,26 @@ void CctwTransformer::transformChunkData(int chunkId,
 //  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
 #endif
 
+  QcepDoubleVector anglesvec = m_InputData->get_Angles();
+  QcepIntVector    maskvec   = m_InputData->get_Mask();
+  CctwIntVector3D  dims      = m_InputData->dimensions();
+
+  int nMask = maskvec.count();
+  int nAngs = anglesvec.count();
+
+//  int *mask    = ((nMask<=0) ? NULL : maskvec.data());
+//  double *angs = ((nAngs<=0) ? NULL : anglesvec.data());
+
+  const int    *mask = maskvec.constData();
+  const double *angs = anglesvec.constData();
+
+  if (nMask <= 0) mask = NULL;
+  if (nAngs <= 0) angs = NULL;
+
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
-                                           tr("transform-%1").arg(chunkId), NULL);
+                                           tr("transform-%1").arg(chunkId),
+                                           angs,
+                                           NULL);
 
   CctwDataChunk *lastChunk = NULL;
 
@@ -192,52 +210,56 @@ void CctwTransformer::transformChunkData(int chunkId,
       for (int y=0; y<chSize.y(); y++) {
         for (int oy=0; oy<osy; oy++) {
           for (int x=0; x<chSize.x(); x++) {
-            CctwIntVector3D iprelat(x,y,z);
-            for (int ox=0; ox<osx; ox++) {
-              CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
-              CctwDoubleVector3D xfmcoord = transform.forward(coords);
-              CctwIntVector3D pixels(xfmcoord);
+            CctwIntVector3D globalpix(chStart + CctwIntVector3D(x,y,z));
 
-              if (m_OutputData->containsPixel(pixels)) {
-                int opchunk = m_OutputData->chunkContaining(pixels);
-                CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
+            if (mask == NULL || mask[(globalpix.y())*dims.x() + globalpix.x()] == 0) {
+              CctwIntVector3D iprelat(x,y,z);
+              for (int ox=0; ox<osx; ox++) {
+                CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
+                CctwDoubleVector3D xfmcoord = transform.forward(coords);
+                CctwIntVector3D pixels(xfmcoord);
 
-                if (opchunk != lastChunkIndex) {
+                if (m_OutputData->containsPixel(pixels)) {
+                  int opchunk = m_OutputData->chunkContaining(pixels);
+                  CctwIntVector3D oprelat = pixels - m_OutputData->chunkStart(opchunk);
 
-                  lastChunkIndex = opchunk;
+                  if (opchunk != lastChunkIndex) {
 
-                  if (!outputChunks.contains(lastChunkIndex)) {
-                    //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
-                    //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
-                    //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
+                    lastChunkIndex = opchunk;
 
-                    CctwDataChunk *chunk =
-                        new CctwDataChunk(m_OutputData, lastChunkIndex,
-                                          tr("chunk-%1").arg(lastChunkIndex), NULL);
+                    if (!outputChunks.contains(lastChunkIndex)) {
+                      //                printMessage(tr("Input Chunk [%1,%2,%3] -> Output Chunk [%4,%5,%6]")
+                      //                             .arg(idx.x()).arg(idx.y()).arg(idx.z())
+                      //                             .arg(opchunk.x()).arg(opchunk.y()).arg(opchunk.z()));
 
-                    if (chunk) {
-                      chunk->allocateData();
-                      chunk->allocateWeights();
+                      CctwDataChunk *chunk =
+                          new CctwDataChunk(m_OutputData, lastChunkIndex,
+                                            tr("chunk-%1").arg(lastChunkIndex), NULL);
+
+                      if (chunk) {
+                        chunk->allocateData();
+                        chunk->allocateWeights();
+                      }
+
+                      outputChunks[lastChunkIndex] = chunk;
                     }
 
-                    outputChunks[lastChunkIndex] = chunk;
+                    lastChunk = outputChunks[lastChunkIndex];
                   }
 
-                  lastChunk = outputChunks[lastChunkIndex];
-                }
+                  if (lastChunk) {
+                    int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
+                    int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
 
-                if (lastChunk) {
-                  int ox = oprelat.x(), oy = oprelat.y(), oz = oprelat.z();
-                  int ix = iprelat.x(), iy = iprelat.y(), iz = iprelat.z();
+                    double oval = lastChunk->data(ox, oy, oz);
+                    double owgt = lastChunk->weight(ox, oy, oz);
+                    double ival = inputChunk->data(ix, iy, iz);
+                    double iwgt = inputChunk->weight(ix, iy, iz);
 
-                  double oval = lastChunk->data(ox, oy, oz);
-                  double owgt = lastChunk->weight(ox, oy, oz);
-                  double ival = inputChunk->data(ix, iy, iz);
-                  double iwgt = inputChunk->weight(ix, iy, iz);
-
-                  if (iwgt != 0) {
-                    lastChunk->setData(ox, oy, oz, oval+ival);
-                    lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
+                    if (iwgt != 0) {
+                      lastChunk->setData(ox, oy, oz, oval+ival);
+                      lastChunk->setWeight(ox, oy, oz, owgt+iwgt);
+                    }
                   }
                 }
               }
@@ -249,15 +271,18 @@ void CctwTransformer::transformChunkData(int chunkId,
   }
 
 #ifndef QT_NO_DEBUG_OUTPUT
-  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks")
+  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated")
                .arg(chunkId)
                .arg(time.elapsed()/1000.0,5)
-               .arg(outputChunks.count()));
+               .arg(outputChunks.count())
+               .arg(CctwDataChunk::allocatedChunkCount()));
 #endif
 }
 
 void CctwTransformer::transform()
 {
+  QVector < QFuture < void > > futures;
+
   if (m_Application) {
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
@@ -273,8 +298,6 @@ void CctwTransformer::transform()
   m_InputData  -> beginTransform(true,  get_TransformOptions());
   m_OutputData -> beginTransform(false, get_TransformOptions());
 
-  m_MergeCounter.fetchAndStoreOrdered(0);
-
   m_InputData  -> clearMergeCounters();
   m_OutputData -> clearMergeCounters();
 
@@ -316,340 +339,22 @@ void CctwTransformer::transform()
   }
 
   foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
-
     if (m_Application) {
       m_Application->addWorkOutstanding(1);
     }
 
     if ((get_TransformOptions() & 1) == 0) {
-      QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx);
+      futures.append(
+        QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx));
     } else {
       runTransformChunkNumber(ckidx);
     }
   }
 
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
-  }
-
-  set_WallTime(startAt.elapsed()/1000.0);
-
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
-
-  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
-}
-
-void CctwTransformer::dummyTransformChunkNumber(int chk)
-{
-  CctwDataChunk *chunk = m_InputData->chunk(chk);
-
-  if (chunk) {
-    m_InputData->incChunksRead(1);
-
-    int ndeps = chunk->dependencyCount();
-
-    for (int i=0; i<ndeps; i++) {
-      int ochk = chunk->dependency(i);
-
-      CctwDataChunk *opchunk = m_OutputData->chunk(ochk);
-
-      if (opchunk) {
-        opchunk->incMergeCounters();
-
-        if (opchunk->mergeCount() == opchunk->dependencyCount()) {
-          m_OutputData->incChunksWritten(1);
-          m_OutputData->incChunksHeld(-1);
-        } else if (opchunk->mergeCount() == 1) {
-          m_OutputData->incChunksHeld(1);
-        }
-      }
-    }
-  }
-}
-
-void CctwTransformer::runDummyTransformChunkNumber(int n)
-{
-  if (m_Application && !m_Application->get_Halting()) {
-    dummyTransformChunkNumber(n);
-
-    m_MergeCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_MergeCounter.fetchAndStoreOrdered(0);
-  }
-
-  if (m_Application) {
-    m_Application->prop_Progress()->incValue(1);
-    m_Application->workCompleted(1);
-  }
-}
-
-void CctwTransformer::dummyTransform1()
-{
-  if (m_Application) {
-    m_Application->waitCompleted();
-    m_Application->set_Progress(0);
-    m_Application->set_Halting(false);
-  }
-
-  QTime startAt;
-
-  startAt.start();
-
-  printMessage("Starting Dummy Transform type 1");
-
-  m_InputData  -> beginTransform(true,  get_TransformOptions());
-  m_OutputData -> beginTransform(false, get_TransformOptions());
-
-  m_MergeCounter.fetchAndStoreOrdered(0);
-
-  m_InputData  -> clearMergeCounters();
-  m_OutputData -> clearMergeCounters();
-
-  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
-
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-  QVector < int > inputChunks;
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
-
-        if (chunk) {
-          int n = chunk->dependencyCount();
-
-          for (int i=0; i<n; i++) {
-            int ckidx = chunk->dependency(i);
-
-            if (!inputChunks.contains(ckidx)) {
-              inputChunks.append(ckidx);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
-
-  if ((get_TransformOptions() & 2)) {
-    printMessage("Sorting input chunk list into input order");
-    qSort(inputChunks.begin(), inputChunks.end());
-  }
-
-  if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count());
-  }
-
-  foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
-
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
     if (m_Application) {
-      m_Application->addWorkOutstanding(1);
-    }
-
-    runDummyTransformChunkNumber(ckidx);
-  }
-
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
-  }
-
-  set_WallTime(startAt.elapsed()/1000.0);
-
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
-
-  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
-}
-
-void CctwTransformer::dummyTransform2()
-{
-  if (m_Application) {
-    m_Application->waitCompleted();
-    m_Application->set_Progress(0);
-    m_Application->set_Halting(false);
-  }
-
-  QTime startAt;
-
-  startAt.start();
-
-  printMessage("Starting Dummy Transform type 2");
-
-  m_InputData  -> beginTransform(true,  get_TransformOptions());
-  m_OutputData -> beginTransform(false, get_TransformOptions());
-
-  m_MergeCounter.fetchAndStoreOrdered(0);
-
-  m_InputData  -> clearMergeCounters();
-  m_OutputData -> clearMergeCounters();
-
-  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
-
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-  QVector < int > inputChunks;
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
-
-        if (chunk) {
-          int n = chunk->dependencyCount();
-
-          for (int i=0; i<n; i++) {
-            int ckidx = chunk->dependency(i);
-
-            if (!inputChunks.contains(ckidx)) {
-              inputChunks.append(ckidx);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
-
-//  qSort(inputChunks.begin(), inputChunks.end());
-
-  if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count());
-  }
-
-  foreach(int ckidx, inputChunks) {
-    m_MergeCounter.fetchAndAddOrdered(1);
-
-    if (m_Application) {
-      m_Application->addWorkOutstanding(1);
-    }
-
-    //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
-
-    runDummyTransformChunkNumber(ckidx);
-  }
-
-  while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    m_Application->processEvents();
-  }
-
-  set_WallTime(startAt.elapsed()/1000.0);
-
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
-
-  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
-}
-
-void CctwTransformer::dummyTransform3()
-{
-  if (m_Application) {
-    m_Application->waitCompleted();
-    m_Application->set_Progress(0);
-    m_Application->set_Halting(false);
-  }
-
-  QTime startAt;
-
-  startAt.start();
-
-  printMessage("Starting Dummy Transform type 3");
-
-  m_InputData  -> beginTransform(true,  get_TransformOptions());
-  m_OutputData -> beginTransform(false, get_TransformOptions());
-
-  m_MergeCounter.fetchAndStoreOrdered(0);
-
-  m_InputData  -> clearMergeCounters();
-  m_OutputData -> clearMergeCounters();
-
-  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
-
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-  QVector < int > inputChunks;
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
-
-        if (chunk) {
-          int n = chunk->dependencyCount();
-
-          for (int i=0; i<n; i++) {
-            int ckidx = chunk->dependency(i);
-
-            if (!inputChunks.contains(ckidx)) {
-              inputChunks.append(ckidx);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
-
-  qSort(inputChunks.begin(), inputChunks.end());
-
-  int minMaxHeld;
-
-  if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count()*10);
-  }
-
-  if (inputChunks.count() > 10) {
-    for (int i=0; i<1000; i++) {
-      int s1, s2;
-      if (i>0) {
-        s1 = qrand()%inputChunks.count();
-        s2 = qrand()%inputChunks.count();
-
-        int c1 = inputChunks[s1];
-        int c2 = inputChunks[s2];
-
-        inputChunks[s1] = c2;
-        inputChunks[s2] = c1;
-      }
-
-      m_InputData  -> clearMergeCounters();
-      m_OutputData -> clearMergeCounters();
-
-      foreach(int ckidx, inputChunks) {
-        m_MergeCounter.fetchAndAddOrdered(1);
-
-        if (m_Application) {
-          m_Application->addWorkOutstanding(1);
-        }
-
-        //    QtConcurrent::run(this, &CctwTransformer::runDummyTransformChunkNumber, ckidx);
-
-        runDummyTransformChunkNumber(ckidx);
-      }
-
-      int maxHeld = m_OutputData->get_ChunksHeldMax();
-
-      if (i==0 || maxHeld < minMaxHeld) {
-        minMaxHeld = maxHeld;
-      } else {
-
-      }
-
-      printMessage(tr("Iteration %1 : max %2").arg(i).arg(minMaxHeld));
-
-      while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-        CctwThread::msleep(10);
-        m_Application->processEvents();
-      }
+      m_Application->processEvents();
     }
   }
 
@@ -658,7 +363,9 @@ void CctwTransformer::dummyTransform3()
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 sec").arg(get_WallTime()));
+  printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
+               .arg(get_WallTime())
+               .arg(CctwDataChunk::allocatedChunkCount()));
 }
 
 void CctwTransformer::checkTransform()
@@ -689,7 +396,10 @@ void CctwTransformer::checkTransform()
 
 QcepIntList CctwTransformer::dependencies(int n)
 {
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), NULL);
+  QcepDoubleVector anglesvec = m_InputData->get_Angles();
+  double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
+
+  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), angs, NULL);
 
   CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
 
@@ -752,10 +462,12 @@ QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
   return res;
 }
 
-void CctwTransformer::clearDependencies()
+void CctwTransformer::clearDependencies(int use)
 {
   m_InputData->clearDependencies();
   m_OutputData->clearDependencies();
+
+  set_UseDependencies(use);
 }
 
 void CctwTransformer::addDependency(int f, int t)
@@ -766,12 +478,12 @@ void CctwTransformer::addDependency(int f, int t)
 
 #ifdef WANT_ANALYSIS_COMMANDS
 
-void CctwTransformer::projectInput(QString path, int axes)
+void CctwTransformer::inputProject(QString path, int axes)
 {
   projectDataset(path, m_InputData, axes);
 }
 
-void CctwTransformer::projectOutput(QString path, int axes)
+void CctwTransformer::outputProject(QString path, int axes)
 {
   projectDataset(path, m_OutputData, axes);
 }
@@ -870,10 +582,6 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
 
       data->releaseChunkData(i);
     }
-
-    m_MergeCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_MergeCounter.fetchAndStoreOrdered(0);
   }
 
   if (m_Application) {
@@ -885,6 +593,8 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
 void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
 {
   if (data) {
+    QVector < QFuture < void > > futures;
+
     if (m_Application) {
       m_Application->waitCompleted();
       m_Application->set_Progress(0);
@@ -896,8 +606,6 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     startAt.start();
 
     printMessage("Starting Projection");
-
-    m_MergeCounter.fetchAndStoreOrdered(0);
 
     QcepImageDataFormatTiff<double> fmt("TIFF");
 
@@ -936,20 +644,21 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     }
 
     for (int i=0; i<nc; i++) {
-      m_MergeCounter.fetchAndAddOrdered(1);
-
       if (m_Application) {
         if (m_Application->get_Halting()) break;
 
         m_Application->addWorkOutstanding(1);
       }
 
-      QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes);
+      futures.append(
+            QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes));
     }
 
-    while (m_Application && m_MergeCounter.fetchAndAddOrdered(0) > 0) {
-      CctwThread::msleep(10);
-      m_Application->processEvents();
+    foreach (QFuture<void> f, futures) {
+      f.waitForFinished();
+      if (m_Application) {
+        m_Application->processEvents();
+      }
     }
 
     if (m_ImageX) {

@@ -73,6 +73,8 @@ public slots:
                  CctwChunkedData::MergeDataType *iw,
                  int n);
 
+  static int allocatedChunkCount();
+
 private:
   CctwChunkedData::MergeDataType *allocateBuffer();
   void releaseBuffer(CctwChunkedData::MergeDataType *);
