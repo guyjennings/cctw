@@ -80,7 +80,7 @@ public slots:
   void setOutputDataset(QString data);
 
   void setSubset(QString desc);
-  void partialTransform(QString desc);
+  void transform(QString desc);
   void partialDependencies(QString desc);
   void noDependencies();
 
@@ -88,7 +88,7 @@ public slots:
   void mergeOutput(QString path);
   void runMerge();
 
-  void transform();
+//  void transform();
 
   void setNormalization(QString data);
 

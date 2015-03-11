@@ -124,6 +124,137 @@ void CctwTransformer::loadDependencies(QString path)
   }
 }
 
+bool CctwTransformer::parseSubset()
+{
+  QString subset = get_Subset();
+
+  if (subset.length() == 0) {
+    m_SubsetStart = CctwIntVector3D(0,0,0);
+    m_SubsetEnd   = m_InputData->chunkCount();
+
+    return true;
+  } else {
+    m_SubsetStart = CctwIntVector3D(0,0,0);
+    m_SubsetEnd   = CctwIntVector3D(0,0,0);
+
+    CctwIntVector3D chunks = m_InputData->chunkCount();
+
+    QRegExp r("(\\d+)/(\\d+)");
+
+    if (r.exactMatch(subset)) {
+      int index = r.cap(1).toInt();
+      int nsubs = r.cap(2).toInt();
+      int nbest = 0, bestdx = 0, bestdy = 0, bestdz = 0;
+      int bestnx = 0, bestny = 0, bestnz = 0;
+
+      printMessage(tr("Subset matched : index = %1 of %2").arg(index).arg(nsubs));
+
+      int szx = chunks.x(), szy = chunks.y(), szz = chunks.z();
+
+      printMessage(tr("Size %1,%2,%3 - total %4")
+                   .arg(szx).arg(szy).arg(szz).arg(szx*szy*szz));
+
+      for (int dx=1; dx<=szx; dx++) {
+        int nx = (szx + dx - 1)/dx;
+
+//        printMessage(tr("DX:%1:NX:%2").arg(dx).arg(nx));
+
+        if (nx > 0) {
+
+          for (int dy=1; dy <= szy; dy++) {
+            int ny = (szy + dy - 1)/dy;
+
+//            printMessage(tr("DY:%1:NY:%2").arg(dy).arg(ny));
+
+            if (ny > 0) {
+              for (int dz=1; dz <= szz; dz++) {
+                int nz = (szz + dz - 1)/dz;
+
+//                printMessage(tr("DZ:%1:NZ:%2").arg(dz).arg(nz));
+
+                if (nz > 0) {
+                  int ntot = nx*ny*nz;
+
+//                  printMessage(tr("SZ:%1,%2,%3; NUM:%4,%5,%6; NSUB:%7; NTOT:%8; NBEST:%9")
+//                               .arg(dx).arg(dy).arg(dz)
+//                               .arg(nx).arg(ny).arg(nz)
+//                               .arg(nsubs).arg(ntot).arg(nbest));
+
+                  if (ntot <= nsubs) {
+                    if (ntot > nbest) {
+                      nbest  = ntot;
+                      bestdx = dx; bestnx = nx;
+                      bestdy = dy; bestny = ny;
+                      bestdz = dz; bestnz = nz;
+                    } else if (ntot == nbest) {
+                      int bestmax = qMax(qMax(bestdx,bestdy),bestdz);
+                      int newmax  = qMax(qMax(dx,dy),dz);
+
+                      if (newmax < bestmax) {
+                        bestdx = dx; bestnx = nx;
+                        bestdy = dy; bestny = ny;
+                        bestdz = dz; bestnz = nz;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (nbest > 0) {
+        printMessage(tr("Best subdivision found: %1,%2,%3 - total %4")
+                     .arg(bestdx).arg(bestdy).arg(bestdz).arg(bestnx*bestny*bestnz));
+
+        if ((index >= nbest) || (index < 0)) {
+          printMessage(tr("Skipping subset %1 of %2").arg(index).arg(nbest));
+          return false;
+        } else {
+          //          for (int index=0; index<nbest; index++) {
+          int xstride = 1,
+              ystride = bestnx,
+              zstride = bestnx*bestny;
+
+          int n = index;
+
+          int z = n / zstride;
+
+          n %= zstride;
+
+          int y = n / ystride;
+
+          n %= ystride;
+
+          int x = n / xstride;
+
+          int x0 = x*bestdx, x1 = x0+bestdx;
+          int y0 = y*bestdy, y1 = y0+bestdy;
+          int z0 = z*bestdz, z1 = z0+bestdz;
+
+          if (x1 > chunks.x()) x1 = chunks.x();
+          if (y1 > chunks.y()) y1 = chunks.y();
+          if (z1 > chunks.z()) z1 = chunks.z();
+
+          printMessage(tr("Subset %1 : [%2..%3) [%4..%5) [%6..%7)")
+                       .arg(index)
+                       .arg(x0).arg(x1).arg(y0).arg(y1).arg(z0).arg(z1));
+          //        }
+
+          m_SubsetStart = CctwIntVector3D(x0,y0,z0);
+          m_SubsetEnd   = CctwIntVector3D(x1,y1,z1);
+
+          return true;
+        }
+      }
+    } else {
+      printMessage("Subset mismatch");
+      return false;
+    }
+  }
+}
+
 void CctwTransformer::transformChunkNumber(int chunkId)
 {
   CctwDataChunk *inputChunk = m_InputData->readChunk(chunkId);
@@ -365,6 +496,76 @@ void CctwTransformer::transform()
 
   printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
                .arg(get_WallTime())
+               .arg(CctwDataChunk::allocatedChunkCount()));
+}
+
+void CctwTransformer::simpleTransform()
+{
+  QVector < QFuture < void > > futures;
+
+  if (m_Application) {
+    m_Application->waitCompleted();
+    m_Application->set_Progress(0);
+    m_Application->set_Halting(false);
+  }
+
+  parseSubset();
+
+  CctwIntVector3D chunkStart = m_SubsetStart;
+  CctwIntVector3D chunkEnd   = m_SubsetEnd;
+  CctwIntVector3D nChunks    = chunkEnd - chunkStart;
+
+  if (m_Application) {
+    m_Application->set_ProgressLimit(nChunks.volume());
+  }
+
+  QTime startAt;
+
+  startAt.start();
+
+  printMessage("Starting Transform");
+
+  m_InputData  -> beginTransform(true,  0);
+  m_OutputData -> beginTransform(false, 0);
+
+  for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
+    for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {
+      for (int x=chunkStart.x(); x<chunkEnd.x(); x++) {
+        if (m_Application && m_Application->get_Halting()) {
+          goto abort;
+        } else {
+          CctwIntVector3D idx(x,y,z);
+
+          int n = m_InputData->chunkNumberFromIndex(idx);
+
+          if (m_Application) {
+            m_Application->addWorkOutstanding(1);
+          }
+
+          futures.append(
+                QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, n));
+        }
+      }
+    }
+  }
+
+abort:
+  foreach (QFuture<void> f, futures) {
+    f.waitForFinished();
+    if (m_Application) {
+      m_Application->processEvents();
+    }
+  }
+
+  int msec = startAt.elapsed();
+
+  m_OutputData -> flushOutputFile();
+
+  m_InputData  -> endTransform();
+  m_OutputData -> endTransform();
+
+  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+               .arg(msec)
                .arg(CctwDataChunk::allocatedChunkCount()));
 }
 

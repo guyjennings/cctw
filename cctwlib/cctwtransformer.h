@@ -27,6 +27,7 @@ public:
 
 public slots:
   void transform();
+  void simpleTransform();
   void checkTransform();
 
   void saveDependencies(QString path);
@@ -61,6 +62,8 @@ private:
   void projectDataset(QString path, CctwChunkedData *data, int axes);
 #endif
 
+  bool parseSubset();
+
 private:
   CctwApplication         *m_Application;
   CctwChunkedData         *m_InputData;
@@ -74,6 +77,9 @@ private:
   QcepImageData<double>   *m_ImageX;
   QcepImageData<double>   *m_ImageY;
   QcepImageData<double>   *m_ImageZ;
+
+  CctwIntVector3D m_SubsetStart;
+  CctwIntVector3D m_SubsetEnd;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)

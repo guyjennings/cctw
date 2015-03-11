@@ -289,7 +289,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 't':
-      startupCommand(tr("partialTransform(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("doTransform(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'd':
@@ -768,7 +768,7 @@ void CctwApplication::setSubset(QString desc)
   }
 }
 
-void CctwApplication::partialTransform(QString desc)
+void CctwApplication::transform(QString desc)
 {
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
@@ -777,67 +777,67 @@ void CctwApplication::partialTransform(QString desc)
     if (m_Transformer->get_UseDependencies()) {
       m_Transformer->transform();
     } else {
-      transform();
+      m_Transformer->simpleTransform();
     }
   }
 }
 
-void CctwApplication::transform()
-{
-  QVector < QFuture < void > > futures;
-  waitCompleted();
+//void CctwApplication::transform()
+//{
+//  QVector < QFuture < void > > futures;
+//  waitCompleted();
 
-  CctwIntVector3D chunks = m_InputData->chunkCount();
+//  CctwIntVector3D chunks = m_InputData->chunkCount();
 
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
+//  set_Halting(false);
+//  set_Progress(0);
+//  set_ProgressLimit(chunks.volume());
 
-  QTime startAt;
+//  QTime startAt;
 
-  startAt.start();
+//  startAt.start();
 
-  printMessage("Starting Transform");
+//  printMessage("Starting Transform");
 
-  m_InputData  -> beginTransform(true,  0);
-  m_OutputData -> beginTransform(false, 0);
+//  m_InputData  -> beginTransform(true,  0);
+//  m_OutputData -> beginTransform(false, 0);
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          goto abort;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+//  for (int z=0; z<chunks.z(); z++) {
+//    for (int y=0; y<chunks.y(); y++) {
+//      for (int x=0; x<chunks.x(); x++) {
+//        if (get_Halting()) {
+//          goto abort;
+//        } else {
+//          CctwIntVector3D idx(x,y,z);
 
-          int n = m_InputData->chunkNumberFromIndex(idx);
+//          int n = m_InputData->chunkNumberFromIndex(idx);
 
-          addWorkOutstanding(1);
+//          addWorkOutstanding(1);
 
-          futures.append(
-                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
-        }
-      }
-    }
-  }
+//          futures.append(
+//                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
+//        }
+//      }
+//    }
+//  }
 
-abort:
-  foreach (QFuture<void> f, futures) {
-    f.waitForFinished();
-    processEvents();
-  }
+//abort:
+//  foreach (QFuture<void> f, futures) {
+//    f.waitForFinished();
+//    processEvents();
+//  }
 
-  int msec = startAt.elapsed();
+//  int msec = startAt.elapsed();
 
-  m_OutputData -> flushOutputFile();
+//  m_OutputData -> flushOutputFile();
 
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
+//  m_InputData  -> endTransform();
+//  m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
-               .arg(msec)
-               .arg(CctwDataChunk::allocatedChunkCount()));
-}
+//  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+//               .arg(msec)
+//               .arg(CctwDataChunk::allocatedChunkCount()));
+//}
 
 void CctwApplication::partialDependencies(QString desc)
 {

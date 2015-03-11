@@ -29,8 +29,8 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
   globalObject().setProperty("setOutputDataset",  newFunction(setOutputDatasetFunc));
   globalObject().setProperty("setSubset", newFunction(setSubsetFunc));
-  globalObject().setProperty("partialTransform",  newFunction(partialTransformFunc));
-  globalObject().setProperty("partialDependencies",  newFunction(partialDependenciesFunc));
+  globalObject().setProperty("doTransform",  newFunction(transformFunc));
+  globalObject().setProperty("dependencies",  newFunction(dependenciesFunc));
   globalObject().setProperty("noDependencies",  newFunction(noDependenciesFunc));
   globalObject().setProperty("normalization",  newFunction(normalizationFunc));
   globalObject().setProperty("inputProject",  newFunction(inputProjectFunc));
@@ -519,7 +519,7 @@ QScriptValue CctwScriptEngine::setOutputDatasetFunc(QScriptContext *context, QSc
   return QScriptValue(engine, "");
 }
 
-QScriptValue CctwScriptEngine::partialTransformFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::transformFunc(QScriptContext *context, QScriptEngine *engine)
 {
   CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 
@@ -538,7 +538,7 @@ QScriptValue CctwScriptEngine::partialTransformFunc(QScriptContext *context, QSc
     CctwApplication *app = eng->application();
 
     if (app) {
-      app->partialTransform(msg);
+      app->transform(msg);
     }
   }
 
@@ -571,7 +571,7 @@ QScriptValue CctwScriptEngine::setSubsetFunc(QScriptContext *context, QScriptEng
   return QScriptValue(engine, "");
 }
 
-QScriptValue CctwScriptEngine::partialDependenciesFunc(QScriptContext *context, QScriptEngine *engine)
+QScriptValue CctwScriptEngine::dependenciesFunc(QScriptContext *context, QScriptEngine *engine)
 {
   CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
 

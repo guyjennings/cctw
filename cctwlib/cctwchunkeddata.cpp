@@ -1508,7 +1508,7 @@ void CctwChunkedData::writeChunk(int n)
         CctwChunkedData::MergeDataType *chunkData = chk->dataPointer();
 
         if (chunkData == NULL) {
-          printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
+//          printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
         } else if ((m_TransformOptions & 8) == 0){
           hid_t memspace_id = -1;
           memspace_id   = H5Screate_simple(3, count, NULL);
