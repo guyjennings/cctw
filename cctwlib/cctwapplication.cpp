@@ -433,7 +433,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
                                            false,
                                            "outputData",
                                            this);
-  m_OutputData              -> allocateChunks();
+  m_OutputData       -> allocateChunks();
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, this);
 
@@ -1466,6 +1466,7 @@ void CctwApplication::setNormalization(QString data)
     printMessage(tr("Set normalization to %1").arg(v));
 
     m_Transformer->set_Normalization(v);
+    m_OutputData->set_Normalization(v);
   }
 }
 
@@ -1559,6 +1560,7 @@ void CctwApplication::runMerge()
   outputFile->set_Compression(get_MergeCompression());
   outputFile->setDimensions(dims);
   outputFile->setChunkSize(hdfChunkSize);
+  outputFile->set_Normalization(m_Transformer->get_Normalization());
 
   if (outputFile->openOutputFile()) {
     int nchunks = outputFile->chunkCount().volume();

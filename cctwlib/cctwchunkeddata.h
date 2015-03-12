@@ -167,6 +167,9 @@ private:
   Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
   QCEP_INTEGER_PROPERTY(Compression)
 
+  Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
+  QCEP_INTEGER_PROPERTY(Normalization)
+
   Q_PROPERTY(CctwIntVector3D hdfChunkSize READ get_HDFChunkSize WRITE set_HDFChunkSize)
   CCTW_INTVECTOR3D_PROPERTY(HDFChunkSize)
 
@@ -187,6 +190,8 @@ private:
   hid_t               m_FileId;
   hid_t               m_DatasetId;
   hid_t               m_DataspaceId;
+  hid_t               m_Dataset2Id;
+  hid_t               m_Dataspace2Id;
 
   hid_t               m_MaskFileId;
   hid_t               m_MaskDatasetId;
