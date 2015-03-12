@@ -174,18 +174,20 @@ void CctwChunkedData::sizingChanged()
 
 void CctwChunkedData::setDataSource(QString desc)
 {
-  printMessage(tr("%1.setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
-
   QUrl url(desc);
 
-  printMessage(tr("scheme:   %1").arg(url.scheme()));
-  printMessage(tr("host:     %1").arg(url.host()));
-  printMessage(tr("path:     %1").arg(url.path()));
-//  printMessage(tr("filename: %1").arg(url.fileName()));
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("%1.setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+    printMessage(tr("scheme:   %1").arg(url.scheme()));
+    printMessage(tr("host:     %1").arg(url.host()));
+    printMessage(tr("path:     %1").arg(url.path()));
+    printMessage(tr("filename: %1").arg(url.fileName()));
 #if QT_VERSION >= 0x050000
-  printMessage(tr("query:    %1").arg(url.query()));
+    printMessage(tr("query:    %1").arg(url.query()));
 #endif
-  printMessage(tr("fragment: %1").arg(url.fragment()));
+    printMessage(tr("fragment: %1").arg(url.fragment()));
+  }
 
   set_DataFileName(url.path());
   set_DataSetName(url.fragment());
@@ -198,10 +200,10 @@ void CctwChunkedData::setDataSource(QString desc)
 
     QPair<QString, QString> v;
     foreach (v, l) {
-//      if (qcepDebug(DEBUG_APP)) {
+      if (qcepDebug(DEBUG_APP)) {
         printMessage(tr(" key:     %1").arg(v.first));
         printMessage(tr(" val:     %1").arg(v.second));
-//      }
+      }
     }
 
     if (qry.hasQueryItem("size")) {
@@ -770,7 +772,10 @@ bool CctwChunkedData::openInputFile(bool quietly)
     m_Dataspace2Id= dspc2Id;
 
     if (!quietly) {
-      printMessage(tr("Opened input file OK"));
+      printMessage(tr("Opened input file \"%1\" OK, DS \"%2\", Norm %3, DSID %4, DS2ID %5, CMPRS %6")
+                   .arg(get_DataFileName()).arg(get_DataSetName())
+                   .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
+                   .arg(get_Compression()));
     }
   }
   catch (QString &msg )
@@ -1154,7 +1159,10 @@ bool CctwChunkedData::openOutputFile()
     m_Dataset2Id  = dset2Id;
     m_Dataspace2Id= dspc2Id;
 
-    printMessage("Opened output file OK");
+    printMessage(tr("Opened output file \"%1\" OK, DS \"%2\", Norm %3, DSID %4, DS2ID %5, CMPRS %6")
+                 .arg(get_DataFileName()).arg(get_DataSetName())
+                 .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
+                 .arg(get_Compression()));
   }
 
   return res;

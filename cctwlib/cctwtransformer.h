@@ -115,6 +115,9 @@ public:
   Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
   QCEP_INTEGER_PROPERTY(Normalization)
 
+  Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
+  QCEP_INTEGER_PROPERTY(Compression)
+
   Q_PROPERTY(QString subset READ get_Subset WRITE set_Subset STORED false)
   QCEP_STRING_PROPERTY(Subset)
 

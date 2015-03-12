@@ -46,6 +46,7 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
   m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images"),
   m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
+  m_Compression(m_Application->saver(), this, "compression", 2, "Compression level for output data"),
   m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
   m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform")
 {

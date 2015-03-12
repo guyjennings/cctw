@@ -73,8 +73,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
-  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
-  m_MergeCompression(QcepSettingsSaverWPtr(), this, "mergeCompression", 6, "Merge Compression")
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -199,7 +198,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
-      {"normalization", optional_argument, 0, 'N'},
+      {"normalization", required_argument, 0, 'N'},
+      {"compression", required_argument, 0, 'z'},
       {"subset", required_argument, 0, 'S'},
       {"transform", no_argument, 0, 't'},
       {"depends", no_argument, 0, 'd'},
@@ -221,7 +221,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     int option_index = 0;
 
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:N::S::tdxD:p:gnc:w::s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hvj:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -302,6 +302,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'N':
       startupCommand(tr("normalization(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'z':
+      startupCommand(tr("compression(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case argInputProject:
@@ -613,13 +617,12 @@ void CctwApplication::showHelp(QString about)
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
               "--outputdataset <dsn>            specify output dataset path\n"
+              "--normalization <n>, -N <n>      normalize output file(s) (0=no norm, 1=norm)\n"
+              "--compression <n>, -z <n>        compress output files (-ve = LZF, 0 = none, 1-9 = GZIP\n"
               "--subset <n/m>, -S <n/m>         specify subset of input data to operate on (or all if blank)\n"
               "--transform, -t                  transform all or part of the data\n"
               "--depends, -d                    calculate dependencies for all or part of the data\n"
               "--nodepends, -x                  clear dependencies\n"
-              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
-              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
-              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
@@ -627,6 +630,9 @@ void CctwApplication::showHelp(QString about)
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
               "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
+              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
+              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
+              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--mergein <f>                    specify an input dataset to merge (url format)\n"
               "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
               ).arg(arguments().at(0)));
@@ -1470,6 +1476,18 @@ void CctwApplication::setNormalization(QString data)
   }
 }
 
+void CctwApplication::setCompression(QString data)
+{
+  int v = data.toInt();
+
+  if (m_Transformer) {
+    printMessage(tr("Set compression to %1").arg(v));
+
+    m_Transformer->set_Compression(v);
+    m_OutputData->set_Compression(v);
+  }
+}
+
 void CctwApplication::inputProject(int axes)
 {
   if (m_Transformer) {
@@ -1557,7 +1575,7 @@ void CctwApplication::runMerge()
   outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
   outputFile->setDataSource(m_MergeOutput);
   outputFile->set_HDFChunkSize(hdfChunkSize);
-  outputFile->set_Compression(get_MergeCompression());
+  outputFile->set_Compression(m_Transformer->get_Compression());
   outputFile->setDimensions(dims);
   outputFile->setChunkSize(hdfChunkSize);
   outputFile->set_Normalization(m_Transformer->get_Normalization());
