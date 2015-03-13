@@ -35,6 +35,9 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_ImageX(NULL),
   m_ImageY(NULL),
   m_ImageZ(NULL),
+  m_WeightX(NULL),
+  m_WeightY(NULL),
+  m_WeightZ(NULL),
   m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
   m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
   m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options"),
@@ -254,6 +257,8 @@ bool CctwTransformer::parseSubset()
       return false;
     }
   }
+
+  return false;
 }
 
 void CctwTransformer::transformChunkNumber(int chunkId)
@@ -704,18 +709,27 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
           cz = chStart.z();
 
       QcepImageData<double> *imgx = NULL, *imgy = NULL, *imgz = NULL;
+      QcepImageData<double> *wgtx = NULL, *wgty = NULL, *wgtz = NULL;
 
       if (axes & 1) {
         imgx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
+        wgtx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
       }
 
       if (axes & 2) {
         imgy = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
+        wgty = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
       }
 
       if (axes & 4) {
         imgz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
+        wgtz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
       }
+
+      double mindata = chunk->data(0,0,0);
+      double maxdata = mindata;
+      double minwgt  = chunk->weight(0,0,0);
+      double maxwgt  = minwgt;
 
       for (int z=0; z<chSize.z(); z++) {
         for (int y=0; y<chSize.y(); y++) {
@@ -723,21 +737,40 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
             double data = chunk->data(x,y,z);
             double wgt  = chunk->weight(x,y,z);
 
-            if (wgt != 0) {
+            if (data < mindata) mindata = data;
+            if (data > maxdata) maxdata = data;
+            if (wgt < minwgt) minwgt = wgt;
+            if (wgt > maxwgt) maxwgt = wgt;
+
+            if (wgt > 0) {
               if (imgx) {
                 imgx->addValue(y,z,data);
+                wgtx->addValue(y,z,wgt);
               }
 
               if (imgy) {
                 imgy->addValue(x,z,data);
+                wgty->addValue(x,z,wgt);
               }
 
               if (imgz) {
                 imgz->addValue(x,y,data);
+                wgtz->addValue(x,y,wgt);
               }
+            } else if (data != 0){
+              printMessage(tr("Wgt: %1, Data %2").arg(wgt).arg(data));
             }
           }
         }
+      }
+
+      {
+        QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
+
+        if (minwgt < m_MinWeight) m_MinWeight = minwgt;
+        if (maxwgt > m_MaxWeight) m_MaxWeight = maxwgt;
+        if (mindata < m_MinData)  m_MinData = mindata;
+        if (maxdata > m_MaxData)  m_MaxData = maxdata;
       }
 
       if (axes & 1) {
@@ -751,7 +784,16 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
           }
         }
 
+        if (m_WeightX && wgtx) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int y=0; y<chSize.y(); y++) {
+              m_WeightX->addValue(cy+y, cz+z, wgtx->value(y,z));
+            }
+          }
+        }
+
         delete imgx;
+        delete wgtx;
       }
 
       if (axes & 2) {
@@ -765,7 +807,16 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
           }
         }
 
+        if (m_WeightY && wgty) {
+          for (int z=0; z<chSize.z(); z++) {
+            for (int x=0; x<chSize.x(); x++) {
+              m_WeightY->addValue(cx+x, cz+z, wgty->value(x,z));
+            }
+          }
+        }
+
         delete imgy;
+        delete wgty;
       }
 
       if (axes & 4) {
@@ -779,7 +830,16 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
           }
         }
 
+        if (m_WeightZ && wgtz) {
+          for (int y=0; y<chSize.y(); y++) {
+            for (int x=0; x<chSize.x(); x++) {
+               m_WeightZ->addValue(cx+x, cy+y, wgtz->value(x,y));
+            }
+          }
+        }
+
         delete imgz;
+        delete wgtz;
       }
 
       data->releaseChunkData(i);
@@ -794,7 +854,7 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
 
 void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
 {
-  if (data) {
+  if (data  && data->openInputFile()) {
     QVector < QFuture < void > > futures;
 
     if (m_Application) {
@@ -813,30 +873,44 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
 
     CctwIntVector3D dims = data->dimensions();
 
+    m_MinData = INFINITY;
+    m_MaxData = -INFINITY;
+    m_MinWeight = INFINITY;
+    m_MaxWeight = -INFINITY;
+
     int px = axes & 1,
         py = axes & 2,
         pz = axes & 4;
 
     delete m_ImageX;
+    delete m_WeightX;
     delete m_ImageY;
+    delete m_WeightY;
     delete m_ImageZ;
+    delete m_WeightZ;
 
     if (px) {
       m_ImageX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
+      m_WeightX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
     } else {
       m_ImageX = NULL;
+      m_WeightX = NULL;
     }
 
     if (py) {
       m_ImageY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
+      m_WeightY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
     } else {
       m_ImageY = NULL;
+      m_WeightY = NULL;
     }
 
     if (pz) {
       m_ImageZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
+      m_WeightZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
     } else {
       m_ImageZ = NULL;
+      m_WeightZ = NULL;
     }
 
     int nc = data->chunkCount().volume();
@@ -866,30 +940,82 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     if (m_ImageX) {
       QcepMutexLocker lock(__FILE__, __LINE__, &m_LockX);
 
+      if (m_WeightX) {
+        for (int y=0; y<(m_ImageX->get_Height()); y++) {
+          for (int x=0; x<(m_ImageX->get_Width()); x++) {
+            double val = m_ImageX->value(x,y);
+            double wgt = m_WeightX->value(x,y);
+
+            if (wgt > 0) {
+              m_ImageX->setValue(x,y, val/wgt);
+            } else {
+              m_ImageX->setValue(x,y, val);
+            }
+          }
+        }
+      }
+
       fmt.saveFile(path+".x.tif", m_ImageX, false);
       delete m_ImageX;
+      delete m_WeightX;
       m_ImageX = NULL;
+      m_WeightX = NULL;
     }
 
     if (m_ImageY) {
       QcepMutexLocker lock(__FILE__, __LINE__, &m_LockY);
 
+      if (m_WeightY) {
+        for (int y=0; y<(m_ImageY->get_Height()); y++) {
+          for (int x=0; x<(m_ImageY->get_Width()); x++) {
+            double val = m_ImageY->value(x,y);
+            double wgt = m_WeightY->value(x,y);
+
+            if (wgt > 0) {
+              m_ImageY->setValue(x,y, val/wgt);
+            } else {
+              m_ImageY->setValue(x,y, val);
+            }
+          }
+        }
+      }
+
       fmt.saveFile(path+".y.tif", m_ImageY, false);
       delete m_ImageY;
+      delete m_WeightY;
       m_ImageY = NULL;
+      m_WeightY = NULL;
     }
 
     if (m_ImageZ) {
       QcepMutexLocker lock(__FILE__, __LINE__, &m_LockZ);
 
+      if (m_WeightZ) {
+        for (int y=0; y<(m_ImageZ->get_Height()); y++) {
+          for (int x=0; x<(m_ImageZ->get_Width()); x++) {
+            double val = m_ImageZ->value(x,y);
+            double wgt = m_WeightZ->value(x,y);
+
+            if (wgt > 0) {
+              m_ImageZ->setValue(x,y, val/wgt);
+            } else {
+              m_ImageZ->setValue(x,y, val);
+            }
+          }
+        }
+      }
+
       fmt.saveFile(path+".z.tif", m_ImageZ, false);
       delete m_ImageZ;
+      delete m_WeightZ;
       m_ImageZ = NULL;
+      m_WeightZ = NULL;
     }
 
     set_WallTime(startAt.elapsed()/1000.0);
 
-    printMessage(tr("Projection complete after %1 sec").arg(get_WallTime()));
+    printMessage(tr("Projection complete after %1 sec, Min %2, Max %3, MinW %4, MaxW %5")
+                 .arg(get_WallTime()).arg(m_MinData).arg(m_MaxData).arg(m_MinWeight).arg(m_MaxWeight));
   }
 }
 

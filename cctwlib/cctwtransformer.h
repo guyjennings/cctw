@@ -77,6 +77,14 @@ private:
   QcepImageData<double>   *m_ImageX;
   QcepImageData<double>   *m_ImageY;
   QcepImageData<double>   *m_ImageZ;
+  QcepImageData<double>   *m_WeightX;
+  QcepImageData<double>   *m_WeightY;
+  QcepImageData<double>   *m_WeightZ;
+
+  double m_MinData;
+  double m_MaxData;
+  double m_MinWeight;
+  double m_MaxWeight;
 
   CctwIntVector3D m_SubsetStart;
   CctwIntVector3D m_SubsetEnd;
