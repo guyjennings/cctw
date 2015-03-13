@@ -1662,7 +1662,7 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
               printMessage(tr("ERROR: select_hyperslab failed!"));
             }
 
-            herr_t rderr = H5Dread(m_Dataset2Id, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_Dataspace2Id, H5P_DEFAULT, chunkData);
+            herr_t rderr = H5Dread(m_Dataset2Id, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_Dataspace2Id, H5P_DEFAULT, weightData);
 
             if (selerr || rderr) {
               printMessage(tr("Error reading weight chunk %1, selerr = %2, rderr = %3")
