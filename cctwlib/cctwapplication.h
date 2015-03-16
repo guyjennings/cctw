@@ -51,6 +51,12 @@ public slots:
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 
+  void execute();
+  void executeTransform();
+  void executeMerge();
+  void executeNorm();
+  void executeProject();
+
   void showHelp(QString about);
   void showVersion();
 
@@ -86,7 +92,11 @@ public slots:
 
   void mergeInput(QString path);
   void mergeOutput(QString path);
+
+  void runTransform();
   void runMerge();
+  void runNorm();
+  void runProject();
 
 //  void transform();
 
@@ -162,6 +172,10 @@ private:
 
   void installHDF5ErrorHandler();
 
+  void pushInputFile(QString path);
+  void autoChunkSizes();
+  void autoOutputFile(QString suffix);
+
 public:
   QcepObjectNamer                     m_ObjectNamer;
 #ifndef NO_GUI
@@ -180,8 +194,8 @@ public:
   CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
-  QStringList                         m_MergeInputs;
-  QString                             m_MergeOutput;
+//  QStringList                         m_MergeInputs;
+//  QString                             m_MergeOutput;
 
 private:
   QAtomicInt                          m_DependencyCounter;
@@ -192,8 +206,17 @@ public:
   Q_PROPERTY(bool guiWanted READ get_GuiWanted WRITE set_GuiWanted STORED false)
   QCEP_BOOLEAN_PROPERTY(GuiWanted)
 
+  Q_PROPERTY(int mode READ get_Mode WRITE set_Mode STORED false)
+  QCEP_INTEGER_PROPERTY(Mode)
+
   Q_PROPERTY(QcepStringList startupCommands READ get_StartupCommands WRITE set_StartupCommands STORED false)
   QCEP_STRING_LIST_PROPERTY(StartupCommands)
+
+  Q_PROPERTY(QcepStringList inputFiles READ get_InputFiles WRITE set_InputFiles STORED false)
+  QCEP_STRING_LIST_PROPERTY(InputFiles)
+
+  Q_PROPERTY(QString outputFile READ get_OutputFile WRITE set_OutputFile STORED false)
+  QCEP_STRING_PROPERTY(OutputFile)
 
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)

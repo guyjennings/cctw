@@ -36,6 +36,13 @@ QcepImageDataFormatTiff<double> tiffImg("tiff");
 QcepImageDataFormatMar345<double> mar345Img("mar345");
 #endif
 
+enum {
+  TransformMode = 1,
+  MergeMode     = 2,
+  NormMode      = 3,
+  ProjectMode   = 4
+};
+
 CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
   : QCoreApplication(argc, argv),
@@ -63,7 +70,10 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Saver(new QcepSettingsSaver(this)),
 #endif
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
+  m_Mode(QcepSettingsSaverWPtr(), this, "mode", 0, "Operation mode"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
+  m_InputFiles(QcepSettingsSaverWPtr(), this, "inputFiles", QcepStringList(), "Input files"),
+  m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
@@ -182,6 +192,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argMergeOutput
   };
 
+  int option_index = 0;
+
   while (1) {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
@@ -219,8 +231,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {0,0,0,0}
     };
 
-    int option_index = 0;
-
     c = getopt_long(argc, argv, "hvj:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
 
     if (c == -1) {
@@ -241,7 +251,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'i':
-      startupCommand(tr("setInputData(\"%1\");").arg(addSlashes(optarg)));
+      pushInputFile(optarg);
       break;
 
     case argInputChunks:
@@ -269,7 +279,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'o':
-      startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
+      set_OutputFile(optarg);
       break;
 
     case 'S':
@@ -345,11 +355,11 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case argMergeInput:
-      startupCommand(tr("mergeInput(\"%1\");").arg(addSlashes(optarg)));
+      pushInputFile(optarg);
       break;
 
     case argMergeOutput:
-      startupCommand(tr("mergeOutput(\"%1\");").arg(addSlashes(optarg)));
+      set_OutputFile(optarg);
       break;
 
     case 'D': /* change debug level */
@@ -367,6 +377,30 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     default:
       break;
     }
+  }
+
+  int first=true;
+
+  while (optind < argc) {
+    if (first) {
+      first = false;
+
+      if (strcasecmp(argv[optind], "transform") == 0) {
+        set_Mode(TransformMode);
+      } else if (strcasecmp(argv[optind], "merge") == 0) {
+        set_Mode(MergeMode);
+      } else if (strcasecmp(argv[optind], "norm") == 0) {
+        set_Mode(NormMode);
+      } else if (strcasecmp(argv[optind], "project") == 0) {
+        set_Mode(ProjectMode);
+      } else {
+        pushInputFile(argv[optind]);
+      }
+    } else {
+      pushInputFile(argv[optind]);
+    }
+
+    optind++;
   }
 #endif
 }
@@ -493,6 +527,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
   }
 
   if (!get_GuiWanted()) {
+    QMetaObject::invokeMethod(this, "execute", Qt::QueuedConnection);
     QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
   }
 }
@@ -711,6 +746,11 @@ void CctwApplication::setMaskDataset(QString data)
 
     m_InputData->setMaskDataset(data);
   }
+}
+
+void CctwApplication::pushInputFile(QString path)
+{
+  prop_InputFiles()->appendValue(path);
 }
 
 void CctwApplication::setAnglesData(QString data)
@@ -1511,12 +1551,12 @@ void CctwApplication::setProjectOutput(QString dir)
 
 void CctwApplication::mergeInput(QString path)
 {
-  m_MergeInputs.append(path);
+  pushInputFile(path);
 }
 
 void CctwApplication::mergeOutput(QString path)
 {
-  m_MergeOutput = path;
+  setOutputData(path);
 
   QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
 
@@ -1524,6 +1564,11 @@ void CctwApplication::mergeOutput(QString path)
     CctwThread::msleep(100);
     processEvents(QEventLoop::ExcludeUserInputEvents);
   }
+}
+
+void CctwApplication::runTransform()
+{
+  transform("");
 }
 
 void CctwApplication::runMerge()
@@ -1535,12 +1580,12 @@ void CctwApplication::runMerge()
   CctwIntVector3D hdfChunkSize(0,0,0);
   CctwIntVector3D dims(0,0,0);
 
-  if (m_MergeInputs.count() < 1) {
+  if (get_InputFiles().count() < 1) {
     printMessage("No merge inputs given");
     goto exit;
   }
 
-  foreach(QString path, m_MergeInputs) {
+  foreach(QString path, get_InputFiles()) {
     CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, NULL);
 
     if (inputFile) {
@@ -1572,16 +1617,18 @@ void CctwApplication::runMerge()
     }
   }
 
-  outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
-  outputFile->setDataSource(m_MergeOutput);
-  outputFile->set_HDFChunkSize(hdfChunkSize);
-  outputFile->set_Compression(m_Transformer->get_Compression());
-  outputFile->setDimensions(dims);
-  outputFile->setChunkSize(hdfChunkSize);
-  outputFile->set_Normalization(m_Transformer->get_Normalization());
+  autoOutputFile(".mrg.nxs#/entry/data");
+  autoChunkSizes();
 
-  if (outputFile->openOutputFile()) {
-    int nchunks = outputFile->chunkCount().volume();
+  m_OutputData->setDataSource(get_OutputFile());
+  m_OutputData->set_HDFChunkSize(hdfChunkSize);
+  m_OutputData->set_Compression(m_Transformer->get_Compression());
+  m_OutputData->setDimensions(dims);
+  m_OutputData->setChunkSize(hdfChunkSize);
+  m_OutputData->set_Normalization(m_Transformer->get_Normalization());
+
+  if (m_OutputData->openOutputFile()) {
+    int nchunks = m_OutputData->chunkCount().volume();
 
     set_Progress(0);
     set_ProgressLimit(nchunks);
@@ -1591,15 +1638,15 @@ void CctwApplication::runMerge()
 
       foreach(CctwChunkedData* inputFile, inputFiles) {
         CctwDataChunk *inChunk = inputFile->readChunk(i);
-        outputFile->mergeChunk(inChunk);
+        m_OutputData->mergeChunk(inChunk);
 
         delete inChunk;
       }
 
-      outputFile->writeChunk(i);
+      m_OutputData->writeChunk(i);
     }
   } else {
-    printMessage(tr("Could not open %1 for output").arg(m_MergeOutput));
+    printMessage(tr("Could not open %1 for output").arg(get_OutputFile()));
     goto exit;
   }
 
@@ -1610,6 +1657,154 @@ exit:
       delete inputFile;
     }
   }
+}
 
-  delete outputFile;
+void CctwApplication::runNorm()
+{
+}
+
+void CctwApplication::runProject()
+{
+}
+
+void CctwApplication::executeTransform()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw transform needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runTransform);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeMerge()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() < 1) {
+    printMessage(tr("cctw merge needs 1 or more input files, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeNorm()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw norm needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runNorm);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeProject()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw project needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runProject);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::execute()
+{
+  int m = get_Mode();
+
+  switch (m) {
+  case 0:
+    break;
+
+  case TransformMode:
+    executeTransform();
+    break;
+
+  case MergeMode:
+    executeMerge();
+    break;
+
+  case NormMode:
+    executeNorm();
+    break;
+
+  case ProjectMode:
+    executeProject();
+    break;
+  }
+
+  printMessage(tr("Mode : %1").arg(m));
+
+  foreach (QString s, get_InputFiles()) {
+    printMessage(tr("File: \"%1\"").arg(s));
+  }
+}
+
+void CctwApplication::autoOutputFile(QString suffix)
+{
+  if (get_OutputFile().length() == 0) {
+    QString commonBase = "";
+    int first = true;
+
+    foreach(QString f, get_InputFiles()) {
+      QUrl u(f);
+      QString fn = u.fileName();
+      QFileInfo fi(fn);
+      QString bn = fi.completeBaseName();
+
+      if (first) {
+        commonBase = bn;
+        first = false;
+      } else {
+        QString a;
+
+        for (int i=0; i<bn.length(); i++) {
+          if (commonBase[i] == bn[i]) {
+            a.append(bn[i]);
+          } else break;
+        }
+
+        if (a.length() >= 1) {
+          commonBase = a;
+        }
+      }
+
+      printMessage(tr("Common basename %1").arg(commonBase));
+    }
+
+    QString res = commonBase + suffix;
+
+    set_OutputFile(res);
+  }
+}
+
+void CctwApplication::autoChunkSizes()
+{
 }
