@@ -162,6 +162,8 @@ private slots:
 
 private:
   void startupCommand(QString cmd);
+  void preStartup();
+  void postStartup();
 
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);

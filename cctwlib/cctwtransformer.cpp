@@ -408,11 +408,11 @@ void CctwTransformer::transformChunkData(int chunkId,
   }
 
 #ifndef QT_NO_DEBUG_OUTPUT
-  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated")
-               .arg(chunkId)
-               .arg(time.elapsed()/1000.0,5)
-               .arg(outputChunks.count())
-               .arg(CctwDataChunk::allocatedChunkCount()));
+//  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated")
+//               .arg(chunkId)
+//               .arg(time.elapsed()/1000.0,5)
+//               .arg(outputChunks.count())
+//               .arg(CctwDataChunk::allocatedChunkCount()));
 #endif
 }
 
@@ -515,6 +515,9 @@ void CctwTransformer::simpleTransform()
     m_Application->set_Halting(false);
   }
 
+  m_InputData  -> beginTransform(true,  0);
+  m_OutputData -> beginTransform(false, 0);
+
   parseSubset();
 
   CctwIntVector3D chunkStart = m_SubsetStart;
@@ -530,9 +533,18 @@ void CctwTransformer::simpleTransform()
   startAt.start();
 
   printMessage("Starting Transform");
-
-  m_InputData  -> beginTransform(true,  0);
-  m_OutputData -> beginTransform(false, 0);
+  printMessage(tr("Input Dimensions %1, Output Dimensions %2")
+               .arg(m_InputData->dimensions().toString())
+               .arg(m_OutputData->dimensions().toString()));
+  printMessage(tr("Input Chunk Size %1, Output Chunk Size %2")
+               .arg(m_InputData->chunkSize().toString())
+               .arg(m_OutputData->chunkSize().toString()));
+  printMessage(tr("Input Chunk Count %1, Output Chunk Count %2")
+               .arg(m_InputData->chunkCount().toString())
+               .arg(m_OutputData->chunkCount().toString()));
+  printMessage(tr("Input HDF Chunk Size %1, Output HDF Chunk Size %2")
+               .arg(m_InputData->get_HDFChunkSize().toString())
+               .arg(m_OutputData->get_HDFChunkSize().toString()));
 
   for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
     for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {

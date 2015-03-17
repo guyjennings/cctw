@@ -59,12 +59,12 @@ CctwChunkedData::CctwChunkedData
     m_AnglesDataspaceId(-1)
 {
   allocateChunks();
-  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
-  connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
-  connect(prop_MaskDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
-  connect(prop_MaskDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
-  connect(prop_AnglesDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
-  connect(prop_AnglesDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
+//  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+//  connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+//  connect(prop_MaskDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+//  connect(prop_MaskDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+//  connect(prop_AnglesDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
+//  connect(prop_AnglesDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
   connect(this, SIGNAL(dimensionsChanged(CctwIntVector3D)), prop_Dimensions(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkSizeChanged(CctwIntVector3D)), prop_ChunkSize(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkCountChanged(CctwIntVector3D)), prop_ChunkCount(), SLOT(setValue(CctwIntVector3D)));
@@ -99,6 +99,8 @@ int CctwChunkedData::allocatedChunkCount()
 
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
+  printMessage(tr("Dimensions set to %1").arg(dim.toString()));
+
   if (m_DimensionsCache != dim) {
     m_DimensionsCache = dim;
 
@@ -113,6 +115,8 @@ void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 
 void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 {
+  printMessage(tr("Chunk Size set to %1").arg(cksz.toString()));
+
   if (m_ChunkSizeCache != cksz) {
     m_ChunkSizeCache = cksz;
 
@@ -776,6 +780,12 @@ bool CctwChunkedData::openInputFile(bool quietly)
                    .arg(get_DataFileName()).arg(get_DataSetName())
                    .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
                    .arg(get_Compression()));
+
+      CctwIntVector3D hdfChunkSize = get_HDFChunkSize();
+
+      printMessage(tr("Dimensions %1, HDF Chunk size %2")
+                   .arg(get_Dimensions().toString())
+                   .arg(hdfChunkSize.toString()));
     }
   }
   catch (QString &msg )
@@ -1163,6 +1173,11 @@ bool CctwChunkedData::openOutputFile()
                  .arg(get_DataFileName()).arg(get_DataSetName())
                  .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
                  .arg(get_Compression()));
+
+    CctwIntVector3D hdfChunkSize = get_HDFChunkSize();
+
+    printMessage(tr("HDF Chunk size [%1,%2,%3]")
+                 .arg(hdfChunkSize.x()).arg(hdfChunkSize.y()).arg(hdfChunkSize.z()));
   }
 
   return res;

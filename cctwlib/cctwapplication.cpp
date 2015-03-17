@@ -514,17 +514,19 @@ void CctwApplication::initialize(int &argc, char *argv[])
   if (get_GuiWanted()) {
     m_Window                  = new CctwqtMainWindow(this);
   }
-#endif
 
-#ifndef NO_GUI
   if (m_Window) {
     m_Window->show();
   }
 #endif
 
+  preStartup();
+
   foreach(QString cmd, get_StartupCommands()) {
     QMetaObject::invokeMethod(this, "evaluateStartupCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
   }
+
+  postStartup();
 
   if (!get_GuiWanted()) {
     QMetaObject::invokeMethod(this, "execute", Qt::QueuedConnection);
@@ -819,7 +821,6 @@ void CctwApplication::transform(QString desc)
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
   if (m_Transformer) {
-
     if (m_Transformer->get_UseDependencies()) {
       m_Transformer->transform();
     } else {
@@ -1568,6 +1569,12 @@ void CctwApplication::mergeOutput(QString path)
 
 void CctwApplication::runTransform()
 {
+  m_InputData->setDataSource(get_InputFiles().at(0));
+
+  autoOutputFile(".nxs");
+
+  m_OutputData->setDataSource(get_OutputFile());
+
   transform("");
 }
 
@@ -1614,7 +1621,10 @@ void CctwApplication::runMerge()
 
     if (inputFile->dimensions() != dims) {
       printMessage("Input datasets do not have the same dimensions");
+      goto exit;
     }
+
+    inputFile->setChunkSize(hdfChunkSize);
   }
 
   autoOutputFile(".mrg.nxs#/entry/data");
@@ -1760,11 +1770,33 @@ void CctwApplication::execute()
     break;
   }
 
-  printMessage(tr("Mode : %1").arg(m));
+//  printMessage(tr("Mode : %1").arg(m));
 
-  foreach (QString s, get_InputFiles()) {
-    printMessage(tr("File: \"%1\"").arg(s));
+//  foreach (QString s, get_InputFiles()) {
+//    printMessage(tr("File: \"%1\"").arg(s));
+//  }
+}
+
+void CctwApplication::preStartup()
+{
+  int m = get_Mode();
+
+  if (m == TransformMode) {
+    m_InputData -> setDataSource(get_InputFiles().at(0));
+    m_OutputData -> setDataSource(get_OutputFile());
   }
+
+  if (m == MergeMode) {
+    m_OutputData->set_Normalization(0);
+  }
+
+  if (m == NormMode) {
+    m_OutputData->set_Normalization(1);
+  }
+}
+
+void CctwApplication::postStartup()
+{
 }
 
 void CctwApplication::autoOutputFile(QString suffix)
