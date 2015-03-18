@@ -220,6 +220,12 @@ public:
   Q_PROPERTY(QString outputFile READ get_OutputFile WRITE set_OutputFile STORED false)
   QCEP_STRING_PROPERTY(OutputFile)
 
+  Q_PROPERTY(QString maskFile READ get_MaskFile WRITE set_MaskFile STORED false)
+  QCEP_STRING_PROPERTY(MaskFile)
+
+  Q_PROPERTY(QString anglesFile READ get_AnglesFile WRITE set_AnglesFile STORED false)
+  QCEP_STRING_PROPERTY(AnglesFile)
+
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
 
@@ -249,6 +255,9 @@ public:
 
   Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
   QCEP_INTEGER_PROPERTY(MpiSize)
+
+  Q_PROPERTY(int verbosity READ get_Verbosity WRITE set_Verbosity STORED false)
+  QCEP_INTEGER_PROPERTY(Verbosity)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

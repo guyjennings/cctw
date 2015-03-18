@@ -74,6 +74,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
   m_InputFiles(QcepSettingsSaverWPtr(), this, "inputFiles", QcepStringList(), "Input files"),
   m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
+  m_MaskFile(QcepSettingsSaverWPtr(), this, "maskFile", "", "Mask file"),
+  m_AnglesFile(QcepSettingsSaverWPtr(), this, "anglesFile", "", "Angles File"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
@@ -83,7 +85,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
-  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size")
+  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
+  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -179,9 +182,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
   enum {
     argInputChunks = 10,
+    argVersion,
     argInputDataset,
-    argMaskDataset,
-    argAnglesDataset,
     argOutputDims,
     argOutputChunks,
     argOutputDataset,
@@ -197,15 +199,14 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
   while (1) {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
-      {"version", no_argument, 0, 'v'},
+      {"version", no_argument, 0, argVersion},
+      {"verbosity", optional_argument, 0, 'v'},
       {"threads", required_argument, 0, 'j'},
       {"input", required_argument, 0, 'i'},
       {"inputchunks", required_argument, 0, argInputChunks},
       {"inputdataset", required_argument, 0, argInputDataset},
       {"mask", required_argument, 0, 'm'},
-      {"maskdataset", required_argument, 0, argMaskDataset},
       {"angles", required_argument, 0, 'a'},
-      {"anglesdataset", required_argument, 0, argAnglesDataset},
       {"output", required_argument, 0, 'o'},
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
@@ -231,7 +232,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {0,0,0,0}
     };
 
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hv::j:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -242,8 +243,16 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand("showHelp();");
       break;
 
-    case 'v':
+    case argVersion:
       startupCommand("showVersion();");
+      break;
+
+    case 'v':
+      if (optarg) {
+        set_Verbosity(atoi(optarg));
+      } else {
+        prop_Verbosity()->incValue(1);
+      }
       break;
 
     case 'j':
@@ -263,19 +272,11 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'm':
-      startupCommand(tr("setMaskData(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
-    case argMaskDataset:
-      startupCommand(tr("setMaskDataset(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("setMask(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'a':
-      startupCommand(tr("setAnglesData(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
-    case argAnglesDataset:
-      startupCommand(tr("setAnglesDataset(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("setAngles(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'o':
@@ -636,12 +637,17 @@ void CctwApplication::showHelp(QString about)
 {
   printLine(tr(
               "\n"
-              "usage: %1 <options>\n"
+              "usage: %1 transform|merge|norm|project <inputs> <options>\n"
+              "\n"
+              "where inputs are one or more hdf dataset refs (in url format)\n"
+              "the file part of the URL gives the hdf/nexus file, and the 'fragment'\n"
+              "(separated by a # character) gives the hdfdataset path\n"
               "\n"
               "where options are:\n"
               "\n"
               "--help, -h                       display this text\n"
-              "--version, -v                    display version info\n"
+              "--version                        display version info\n"
+              "--verbosity[=n], -v[=n]          set verbosity to 'n', or increment it if 'n' not given\n"
               "--threads <n>, -j <n>            set number of worker threads\n"
               "--input <f>, -i <f>              specify input data (url format)\n"
               "--inputchunks <cks>              specify input chunk size (e.g. 32x32x32 or 32)\n"
@@ -672,6 +678,10 @@ void CctwApplication::showHelp(QString about)
               "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--mergein <f>                    specify an input dataset to merge (url format)\n"
               "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
+              "\n"
+              "Examples:\n"
+              "cctwcli transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
+              "cctwcli merge file1.nxs\\#/data/entry/v file2.nxs\\#/data/entry/v -o merge.nxs\\#/data/entry/v\n"
               ).arg(arguments().at(0)));
 }
 
@@ -737,7 +747,7 @@ void CctwApplication::setMaskData(QString data)
   if (m_InputData) {
     printMessage(tr("Set mask to %1").arg(data));
 
-    m_InputData->setMaskSource(data);
+    set_MaskFile(data);
   }
 }
 
@@ -1570,6 +1580,8 @@ void CctwApplication::mergeOutput(QString path)
 void CctwApplication::runTransform()
 {
   m_InputData->setDataSource(get_InputFiles().at(0));
+  m_InputData->setMaskSource(get_MaskFile());
+  m_InputData->setAnglesSource(get_AnglesFile());
 
   autoOutputFile(".nxs");
 
@@ -1671,10 +1683,16 @@ exit:
 
 void CctwApplication::runNorm()
 {
+  runMerge();
 }
 
 void CctwApplication::runProject()
 {
+  m_InputData->setDataSource(get_InputFiles().at(0));
+
+  if (m_Transformer) {
+    m_Transformer->inputProject(get_OutputFile(), 7);
+  }
 }
 
 void CctwApplication::executeTransform()

@@ -209,11 +209,15 @@ bool CctwTransformer::parseSubset()
       }
 
       if (nbest > 0) {
-        printMessage(tr("Best subdivision found: %1,%2,%3 - total %4")
-                     .arg(bestdx).arg(bestdy).arg(bestdz).arg(bestnx*bestny*bestnz));
+        if (m_Application->get_Verbosity() >= 2) {
+          printMessage(tr("Best subdivision found: %1,%2,%3 - total %4")
+                       .arg(bestdx).arg(bestdy).arg(bestdz).arg(bestnx*bestny*bestnz));
+        }
 
         if ((index >= nbest) || (index < 0)) {
-          printMessage(tr("Skipping subset %1 of %2").arg(index).arg(nbest));
+          if (m_Application->get_Verbosity() >= 2) {
+            printMessage(tr("Skipping subset %1 of %2").arg(index).arg(nbest));
+          }
           return false;
         } else {
           //          for (int index=0; index<nbest; index++) {
@@ -241,10 +245,11 @@ bool CctwTransformer::parseSubset()
           if (y1 > chunks.y()) y1 = chunks.y();
           if (z1 > chunks.z()) z1 = chunks.z();
 
-          printMessage(tr("Subset %1 : [%2..%3) [%4..%5) [%6..%7)")
-                       .arg(index)
-                       .arg(x0).arg(x1).arg(y0).arg(y1).arg(z0).arg(z1));
-          //        }
+          if (m_Application->get_Verbosity() >= 2) {
+            printMessage(tr("Subset %1 : [%2..%3) [%4..%5) [%6..%7)")
+                         .arg(index)
+                         .arg(x0).arg(x1).arg(y0).arg(y1).arg(z0).arg(z1));
+          }
 
           m_SubsetStart = CctwIntVector3D(x0,y0,z0);
           m_SubsetEnd   = CctwIntVector3D(x1,y1,z1);
@@ -299,11 +304,12 @@ void CctwTransformer::transformChunkData(int chunkId,
                                          CctwDataChunk *inputChunk,
                                          QMap<int, CctwDataChunk*> &outputChunks)
 {
-#ifndef QT_NO_DEBUG_OUTPUT
   QTime time;
   time.start();
-//  printMessage(tr("Transforming chunk data: %1").arg(chunkId));
-#endif
+
+  if (m_Application->get_Verbosity() >= 3) {
+    printMessage(tr("Transforming chunk data: %1").arg(chunkId));
+  }
 
   QcepDoubleVector anglesvec = m_InputData->get_Angles();
   QcepIntVector    maskvec   = m_InputData->get_Mask();
@@ -338,6 +344,8 @@ void CctwTransformer::transformChunkData(int chunkId,
   int osy = get_OversampleY();
   int osz = get_OversampleZ();
 
+  int nused = 0, nskipped = 0;
+
   double osxstp = osx >= 1 ? 1.0/osx : 0;
   double osystp = osy >= 1 ? 1.0/osy : 0;
   double oszstp = osz >= 1 ? 1.0/osz : 0;
@@ -350,6 +358,7 @@ void CctwTransformer::transformChunkData(int chunkId,
             CctwIntVector3D globalpix(chStart + CctwIntVector3D(x,y,z));
 
             if (mask == NULL || mask[(globalpix.y())*dims.x() + globalpix.x()] == 0) {
+              nused++;
               CctwIntVector3D iprelat(x,y,z);
               for (int ox=0; ox<osx; ox++) {
                 CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
@@ -400,6 +409,8 @@ void CctwTransformer::transformChunkData(int chunkId,
                   }
                 }
               }
+            } else {
+              nskipped++;
             }
           }
         }
@@ -407,13 +418,16 @@ void CctwTransformer::transformChunkData(int chunkId,
     }
   }
 
-#ifndef QT_NO_DEBUG_OUTPUT
-//  printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated")
-//               .arg(chunkId)
-//               .arg(time.elapsed()/1000.0,5)
-//               .arg(outputChunks.count())
-//               .arg(CctwDataChunk::allocatedChunkCount()));
-#endif
+  if (m_Application->get_Verbosity() >= 3) {
+    printMessage(tr("Transform chunk data: %1: done. Time %2 s, %3 output chunks, %4 allocated, used %5, skipped %6")
+                 .arg(chunkId)
+                 .arg(time.elapsed()/1000.0,5)
+                 .arg(outputChunks.count())
+                 .arg(CctwDataChunk::allocatedChunkCount())
+                 .arg(nused)
+                 .arg(nskipped)
+                 );
+  }
 }
 
 void CctwTransformer::transform()
@@ -430,7 +444,9 @@ void CctwTransformer::transform()
 
   startAt.start();
 
-  printMessage("Starting Transform");
+  if (m_Application->get_Verbosity() >= 1) {
+    printMessage("Starting Transform");
+  }
 
   m_InputData  -> beginTransform(true,  get_TransformOptions());
   m_OutputData -> beginTransform(false, get_TransformOptions());
@@ -464,7 +480,9 @@ void CctwTransformer::transform()
     }
   }
 
-  printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+  if (m_Application->get_Verbosity() >= 1) {
+    printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+  }
 
   if ((get_TransformOptions() & 2)) {
     printMessage("Sorting input chunk list into input order");

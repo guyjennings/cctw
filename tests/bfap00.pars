@@ -25,15 +25,11 @@ parameters.gridBasis = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 parameters.gridDim = [101, 101, 20];
 parameters.gridOffset =  [0,0,0];
 parameters.extraFlip =  false;
-//inputData.dataFileName =  "/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs";
-//inputData.dataSetName = "/f1/data/v";
-//inputData.chunkSize =  [32,32,32];
-//outputData.dataFileName =  "/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/170K/bfap00_170K.nxs";
-//outputData.dataSetName = "/entry/data/v";
-//outputData.dimensions = [1001, 1001, 601];
-//outputData.chunkSize =  [32,32,32];
-//outputData.compression = 0;
-//outputData.hdfChunkSize = [32, 32, 38];
+
+outputData.dimensions   = [1000,1000,600];
+outputData.chunkSize    = [100,100,60];
+outputData.hdfChunkSize = [50,50,30];
+
 transformer.transformOptions =  0;
 transformer.oversampleX = 1;
 transformer.oversampleY =  1;
