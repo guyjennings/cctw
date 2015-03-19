@@ -17,7 +17,7 @@ BUILD_CCTWQT:  SUBDIRS  = cctwqt
 unix {
 BUILD_CCTWLIB: SUBDIRS += cctwlib
 BUILD_CCTWTCL: SUBDIRS += cctwtcl
-BUILD_CCTWCLI: SUBDIRS += cctwcli
+BUILD_CCTWCLI: SUBDIRS += cctw
 }
 
 #unix:!macx {
