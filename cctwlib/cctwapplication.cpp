@@ -76,6 +76,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
   m_MaskFile(QcepSettingsSaverWPtr(), this, "maskFile", "", "Mask file"),
   m_AnglesFile(QcepSettingsSaverWPtr(), this, "anglesFile", "", "Angles File"),
+  m_WeightsFile(QcepSettingsSaverWPtr(), this, "weightsFile", "", "Weights File"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
@@ -207,6 +208,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"inputdataset", required_argument, 0, argInputDataset},
       {"mask", required_argument, 0, 'm'},
       {"angles", required_argument, 0, 'a'},
+      {"weights", required_argument, 0, 'w'},
       {"output", required_argument, 0, 'o'},
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
@@ -222,7 +224,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
       {"command", required_argument, 0, 'c'},
-      {"wait", optional_argument, 0, 'w'},
       {"script", required_argument, 0, 's'},
       {"iproject", optional_argument, 0, argInputProject},
       {"oproject", optional_argument, 0, argOutputProject},
@@ -277,6 +278,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'a':
       startupCommand(tr("setAngles(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'w':
+      startupCommand(tr("setWeights(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'o':
@@ -341,10 +346,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'c': /* command line command */
       startupCommand(tr("%1;").arg(optarg));
-      break;
-
-    case 'w': /* wait */
-      startupCommand(tr("wait(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 's': /* script file */
@@ -641,7 +642,7 @@ void CctwApplication::showHelp(QString about)
               "\n"
               "where inputs are one or more hdf dataset refs (in url format)\n"
               "the file part of the URL gives the hdf/nexus file, and the 'fragment'\n"
-              "(separated by a # character) gives the hdfdataset path\n"
+              "(separated by a # character) gives the hdf dataset path\n"
               "\n"
               "where options are:\n"
               "\n"
@@ -656,6 +657,7 @@ void CctwApplication::showHelp(QString about)
               "--maskdataset <dsn>              specify mask dataset path\n"
               "--angles <f>, -a <f>             specify angles data (url format\n"
               "--anglesdataset <f>              specify angles dataset path\n"
+              "--weights <f>, -w <f>            specify weights data (url format)\n"
               "--output <f>, -o <f>             specify output data (url format)\n"
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
@@ -671,7 +673,6 @@ void CctwApplication::showHelp(QString about)
               "--gui, -g                        use GUI interface if available\n"
               "--nogui, -n                      no GUI interface\n"
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
-              "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
               "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
               "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
@@ -1582,6 +1583,7 @@ void CctwApplication::runTransform()
   m_InputData->setDataSource(get_InputFiles().at(0));
   m_InputData->setMaskSource(get_MaskFile());
   m_InputData->setAnglesSource(get_AnglesFile());
+  m_InputData->setWeightsSource(get_WeightsFile());
 
   autoOutputFile(".nxs");
 

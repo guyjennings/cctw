@@ -34,6 +34,9 @@ CctwChunkedData::CctwChunkedData
     m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
     m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
     m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
+    m_WeightsDataFileName(application->saver(), this, "weightsDataFileName", "", "Weights Data File Name"),
+    m_WeightsDataSetName(application->saver(), this, "weightsDataSetName", "", "Weights Dataset Name"),
+    m_Weights(QcepSettingsSaverWPtr(), this, "weights", QcepDoubleVector(), "Weights"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
     m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
@@ -56,7 +59,10 @@ CctwChunkedData::CctwChunkedData
     m_MaskDataspaceId(-1),
     m_AnglesFileId(-1),
     m_AnglesDatasetId(-1),
-    m_AnglesDataspaceId(-1)
+    m_AnglesDataspaceId(-1),
+    m_WeightsFileId(-1),
+    m_WeightsDatasetId(-1),
+    m_WeightsDataspaceId(-1)
 {
   allocateChunks();
 //  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
@@ -147,6 +153,15 @@ void CctwChunkedData::setAnglesDimensions(int n)
   set_Angles(a);
 }
 
+void CctwChunkedData::setWeightsDimensions(int n)
+{
+  QcepDoubleVector a = get_Weights();
+
+  a.resize(n);
+
+  set_Weights(a);
+}
+
 void CctwChunkedData::setAngle(int n, double v)
 {
   QcepDoubleVector a = get_Angles();
@@ -161,6 +176,23 @@ void CctwChunkedData::setAngle(int n, double v)
 double CctwChunkedData::angle(int n)
 {
   return get_Angles().value(n);
+}
+
+double CctwChunkedData::weight(int n)
+{
+  return get_Weights().value(n);
+}
+
+
+void CctwChunkedData::setWeight(int n, double v)
+{
+  QcepDoubleVector a = get_Weights();
+
+  if (n >= 0 && n < a.size()) {
+    a.replace(n, v);
+  }
+
+  set_Weights(a);
 }
 
 void CctwChunkedData::sizingChanged()
@@ -410,6 +442,61 @@ void CctwChunkedData::setAnglesSource(QString desc)
 void CctwChunkedData::setAnglesDataset(QString desc)
 {
   set_AnglesDataSetName(desc);
+}
+
+void CctwChunkedData::setWeightsSource(QString desc)
+{
+  printMessage(tr("%1.setWeightsSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+  QUrl url(desc);
+
+  printMessage(tr("scheme:   %1").arg(url.scheme()));
+  printMessage(tr("host:     %1").arg(url.host()));
+  printMessage(tr("path:     %1").arg(url.path()));
+//  printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+  printMessage(tr("query:    %1").arg(url.query()));
+#endif
+  printMessage(tr("fragment: %1").arg(url.fragment()));
+
+  set_WeightsDataFileName(url.path());
+  set_WeightsDataSetName(url.fragment());
+
+#if QT_VERSION >= 0x050000
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+//      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+//      }
+    }
+
+//    if (qry.hasQueryItem("size")) {
+//      QString chunkSize = qry.queryItemValue("size");
+//      setChunks(chunkSize);
+//    }
+
+//    if (qry.hasQueryItem("dim")) {
+//      QString dims      = qry.queryItemValue("dim");
+//      setDims(dims);
+//    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      setWeightsDataset(dset);
+    }
+  }
+#endif
+}
+
+void CctwChunkedData::setWeightsDataset(QString desc)
+{
+  set_WeightsDataSetName(desc);
 }
 
 bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
@@ -1572,6 +1659,172 @@ bool CctwChunkedData::readAnglesFile()
   return res;
 }
 
+bool CctwChunkedData::checkWeightsFile()
+{
+  /* Save old error handler */
+  herr_t (*old_func)(hid_t, void*);
+  void *old_client_data;
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  bool res = openWeightsFile(true);
+  closeWeightsFile(true);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return res;
+}
+
+bool CctwChunkedData::openWeightsFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_WeightsFileId >= 0) {
+    return true;
+  }
+
+  QString fileName    = get_WeightsDataFileName();
+  QString dataSetName = get_WeightsDataSetName();
+
+  if (!quietly) {
+    printMessage(tr("About to open Weights input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
+  }
+
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+
+  try
+  {
+    if (!f.exists())
+      throw tr("File %1 does not exist").arg(fileName);
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
+      throw tr("File %1 exists but is not an hdf file").arg(fileName);
+
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (fileId < 0)
+      throw tr("File %1 could not be opened").arg(fileName);
+
+    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (dsetId <= 0)
+      throw tr("Could not open dataset!");
+
+    dspcId = H5Dget_space(dsetId);
+    if (dspcId < 0)
+      throw tr("Could not get dataspace of existing dataset");
+
+    hsize_t dims[3];
+    int ndims = H5Sget_simple_extent_ndims(dspcId);
+    if (ndims != 1)
+      throw tr("Dataspace is not 1-dimensional");
+
+    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+    if (ndims2 != 1)
+      throw tr("Could not get dataspace dimensions");
+
+    setWeightsDimensions(dims[0]);
+
+    m_WeightsFileId      = fileId;
+    m_WeightsDatasetId   = dsetId;
+    m_WeightsDataspaceId = dspcId;
+
+    if (!quietly) {
+      printMessage(tr("Opened Weights input file OK"));
+    }
+  }
+  catch (QString &msg )
+  {
+    if (!quietly) {
+      printMessage(tr("Anomaly in CctwChunkedData::openWeightsFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+    return false;
+  }
+  return true;
+}
+
+void CctwChunkedData::closeWeightsFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_WeightsDataspaceId >= 0) {
+    H5Sclose(m_WeightsDataspaceId);
+    m_WeightsDataspaceId = -1;
+  }
+
+  if (m_WeightsDatasetId >= 0) {
+    H5Dclose(m_WeightsDatasetId);
+    m_WeightsDatasetId = -1;
+  }
+
+  if (m_WeightsFileId >= 0) {
+    H5Fclose(m_WeightsFileId);
+    m_WeightsFileId = -1;
+  }
+
+  if (!quietly) {
+    printMessage("Closed Weights file");
+  }
+}
+
+bool CctwChunkedData::readWeightsFile()
+{
+  bool res = false;
+
+  if (openWeightsFile()) {
+
+    if (m_WeightsFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[1], count[1], stride[1], block[1];
+
+      QcepDoubleVector a= get_Weights();
+
+      offset[0] = 0;
+      count[0]  = a.size();
+      stride[0] = 1;
+      block[0]  = 1;
+
+      double *Weights = a.data();
+
+      memspace_id = H5Screate_simple(1, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_WeightsDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_WeightsDatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_WeightsDataspaceId, H5P_DEFAULT, Weights);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading Weights, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+
+        set_Weights(a);
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeWeightsFile();
+  }
+
+  return res;
+}
+
 //CctwDataChunk *CctwChunkedData::readChunk(int n)
 //{
 //  CctwDataChunk *chk = chunk(n);
@@ -1815,6 +2068,10 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
     printMessage("Reading angles data");
     readAnglesFile();
+
+    printMessage("Reading weights data");
+    readWeightsFile();
+
   } else {
     openOutputFile();
   }

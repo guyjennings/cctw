@@ -131,11 +131,11 @@ bool CctwCrystalCoordinateTransform::hasInverse() const
   return false;
 }
 
-CctwDoubleVector3D CctwCrystalCoordinateTransform::forward(CctwDoubleVector3D a)
+CctwDoubleVector3D CctwCrystalCoordinateTransform::forward(CctwDoubleVector3D d)
 {
-  setCurrentFrame(a.z());
+  setCurrentFrame(d.z());
 
-  return hkl2grid(qlab2hkl(pixel2qlab(getDetPos(a.x(), a.y()))));
+  return hkl2grid(qlab2hkl(pixel2qlab(getDetPos(d.x(), d.y()))));
 }
 
 CctwDoubleVector3D CctwCrystalCoordinateTransform::inverse(CctwDoubleVector3D q)

@@ -1,4 +1,4 @@
-CCTW=../../cctw-release-5.2/bin/cctwcli
+CCTW=../../cctw-release-5.2/bin/cctw
 
 all:	project project-mrg project-0 project-1 project-2 project-3
 

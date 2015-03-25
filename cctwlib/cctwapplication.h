@@ -226,6 +226,9 @@ public:
   Q_PROPERTY(QString anglesFile READ get_AnglesFile WRITE set_AnglesFile STORED false)
   QCEP_STRING_PROPERTY(AnglesFile)
 
+  Q_PROPERTY(QString weightsFile READ get_WeightsFile WRITE set_WeightsFile STORED false)
+  QCEP_STRING_PROPERTY(WeightsFile)
+
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
 

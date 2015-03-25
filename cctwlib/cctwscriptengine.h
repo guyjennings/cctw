@@ -31,6 +31,7 @@ private:
   static QScriptValue setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setMaskFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setAnglesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setWeightsFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDimsFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputChunksFunc(QScriptContext *context, QScriptEngine *engine);

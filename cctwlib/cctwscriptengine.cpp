@@ -22,6 +22,7 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
   globalObject().setProperty("setMask", newFunction(setMaskFunc));
   globalObject().setProperty("setAngles", newFunction(setAnglesFunc));
+  globalObject().setProperty("setWeights", newFunction(setWeightsFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
   globalObject().setProperty("setOutputDims",  newFunction(setOutputDimsFunc));
   globalObject().setProperty("setOutputChunks",  newFunction(setOutputChunksFunc));
@@ -356,6 +357,32 @@ QScriptValue CctwScriptEngine::setAnglesFunc(QScriptContext *context, QScriptEng
 
     if (app) {
       app->set_AnglesFile(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setWeightsFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->set_WeightsFile(msg);
     }
   }
 
