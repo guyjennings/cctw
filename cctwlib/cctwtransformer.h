@@ -62,7 +62,7 @@ private:
   void projectDataset(QString path, CctwChunkedData *data, int axes);
 #endif
 
-  bool parseSubset();
+  bool parseSubset(CctwChunkedData *data = NULL);
 
 private:
   CctwApplication         *m_Application;

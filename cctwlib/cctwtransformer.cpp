@@ -128,20 +128,22 @@ void CctwTransformer::loadDependencies(QString path)
   }
 }
 
-bool CctwTransformer::parseSubset()
+bool CctwTransformer::parseSubset(CctwChunkedData *data)
 {
+  if (data == NULL) data = m_InputData;
+
   QString subset = get_Subset();
 
   if (subset.length() == 0) {
     m_SubsetStart = CctwIntVector3D(0,0,0);
-    m_SubsetEnd   = m_InputData->chunkCount();
+    m_SubsetEnd   = data->chunkCount();
 
     return true;
   } else {
     m_SubsetStart = CctwIntVector3D(0,0,0);
     m_SubsetEnd   = CctwIntVector3D(0,0,0);
 
-    CctwIntVector3D chunks = m_InputData->chunkCount();
+    CctwIntVector3D chunks = data->chunkCount();
 
     QRegExp r("(\\d+)/(\\d+)");
 
@@ -151,38 +153,50 @@ bool CctwTransformer::parseSubset()
       int nbest = 0, bestdx = 0, bestdy = 0, bestdz = 0;
       int bestnx = 0, bestny = 0, bestnz = 0;
 
-      printMessage(tr("Subset matched : index = %1 of %2").arg(index).arg(nsubs));
+      if (m_Application->get_Verbosity() >= 2) {
+        printMessage(tr("Subset matched : index = %1 of %2").arg(index).arg(nsubs));
+      }
 
       int szx = chunks.x(), szy = chunks.y(), szz = chunks.z();
 
-      printMessage(tr("Size %1,%2,%3 - total %4")
-                   .arg(szx).arg(szy).arg(szz).arg(szx*szy*szz));
+      if (m_Application->get_Verbosity() >= 2) {
+        printMessage(tr("Size %1,%2,%3 - total %4")
+                     .arg(szx).arg(szy).arg(szz).arg(szx*szy*szz));
+      }
 
       for (int dx=1; dx<=szx; dx++) {
         int nx = (szx + dx - 1)/dx;
 
-//        printMessage(tr("DX:%1:NX:%2").arg(dx).arg(nx));
+        if (m_Application->get_Verbosity() >= 3) {
+        printMessage(tr("DX:%1:NX:%2").arg(dx).arg(nx));
+    }
 
         if (nx > 0) {
 
           for (int dy=1; dy <= szy; dy++) {
             int ny = (szy + dy - 1)/dy;
 
-//            printMessage(tr("DY:%1:NY:%2").arg(dy).arg(ny));
+            if (m_Application->get_Verbosity() >= 3) {
+              printMessage(tr("DY:%1:NY:%2").arg(dy).arg(ny));
+            }
 
             if (ny > 0) {
               for (int dz=1; dz <= szz; dz++) {
                 int nz = (szz + dz - 1)/dz;
 
-//                printMessage(tr("DZ:%1:NZ:%2").arg(dz).arg(nz));
+                if (m_Application->get_Verbosity() >= 3) {
+                  printMessage(tr("DZ:%1:NZ:%2").arg(dz).arg(nz));
+                }
 
                 if (nz > 0) {
                   int ntot = nx*ny*nz;
 
-//                  printMessage(tr("SZ:%1,%2,%3; NUM:%4,%5,%6; NSUB:%7; NTOT:%8; NBEST:%9")
-//                               .arg(dx).arg(dy).arg(dz)
-//                               .arg(nx).arg(ny).arg(nz)
-//                               .arg(nsubs).arg(ntot).arg(nbest));
+                  if (m_Application->get_Verbosity() >= 3) {
+                    printMessage(tr("SZ:%1,%2,%3; NUM:%4,%5,%6; NSUB:%7; NTOT:%8; NBEST:%9")
+                                 .arg(dx).arg(dy).arg(dz)
+                                 .arg(nx).arg(ny).arg(nz)
+                                 .arg(nsubs).arg(ntot).arg(nbest));
+                  }
 
                   if (ntot <= nsubs) {
                     if (ntot > nbest) {
@@ -491,12 +505,15 @@ void CctwTransformer::transform()
     }
   }
 
-  if (m_Application->get_Verbosity() >= 1) {
+  if (m_Application->get_Verbosity() >= 2) {
     printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
   }
 
   if ((get_TransformOptions() & 2)) {
-    printMessage("Sorting input chunk list into input order");
+    if (m_Application->get_Verbosity() >= 2) {
+      printMessage("Sorting input chunk list into input order");
+    }
+
     qSort(inputChunks.begin(), inputChunks.end());
   }
 
@@ -529,9 +546,11 @@ void CctwTransformer::transform()
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
-               .arg(get_WallTime())
-               .arg(CctwDataChunk::allocatedChunkCount()));
+  if (m_Application->get_Verbosity() >= 1) {
+    printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
+                 .arg(get_WallTime())
+                 .arg(CctwDataChunk::allocatedChunkCount()));
+  }
 }
 
 void CctwTransformer::simpleTransform()
@@ -561,19 +580,24 @@ void CctwTransformer::simpleTransform()
 
   startAt.start();
 
-  printMessage("Starting Transform");
-  printMessage(tr("Input Dimensions %1, Output Dimensions %2")
-               .arg(m_InputData->dimensions().toString())
-               .arg(m_OutputData->dimensions().toString()));
-  printMessage(tr("Input Chunk Size %1, Output Chunk Size %2")
-               .arg(m_InputData->chunkSize().toString())
-               .arg(m_OutputData->chunkSize().toString()));
-  printMessage(tr("Input Chunk Count %1, Output Chunk Count %2")
-               .arg(m_InputData->chunkCount().toString())
-               .arg(m_OutputData->chunkCount().toString()));
-  printMessage(tr("Input HDF Chunk Size %1, Output HDF Chunk Size %2")
-               .arg(m_InputData->get_HDFChunkSize().toString())
-               .arg(m_OutputData->get_HDFChunkSize().toString()));
+  if (m_Application->get_Verbosity() >= 1) {
+    printMessage("Starting Transform");
+  }
+
+  if (m_Application->get_Verbosity() >= 2) {
+    printMessage(tr("Input Dimensions %1, Output Dimensions %2")
+                 .arg(m_InputData->dimensions().toString())
+                 .arg(m_OutputData->dimensions().toString()));
+    printMessage(tr("Input Chunk Size %1, Output Chunk Size %2")
+                 .arg(m_InputData->chunkSize().toString())
+                 .arg(m_OutputData->chunkSize().toString()));
+    printMessage(tr("Input Chunk Count %1, Output Chunk Count %2")
+                 .arg(m_InputData->chunkCount().toString())
+                 .arg(m_OutputData->chunkCount().toString()));
+    printMessage(tr("Input HDF Chunk Size %1, Output HDF Chunk Size %2")
+                 .arg(m_InputData->get_HDFChunkSize().toString())
+                 .arg(m_OutputData->get_HDFChunkSize().toString()));
+  }
 
   for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
     for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {
@@ -611,9 +635,11 @@ abort:
   m_InputData  -> endTransform();
   m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
-               .arg(msec)
-               .arg(CctwDataChunk::allocatedChunkCount()));
+  if (m_Application->get_Verbosity() >= 1) {
+    printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+                 .arg(msec)
+                 .arg(CctwDataChunk::allocatedChunkCount()));
+  }
 }
 
 void CctwTransformer::checkTransform()
@@ -954,23 +980,55 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
       m_WeightZ = NULL;
     }
 
-    int nc = data->chunkCount().volume();
+//    int nc = data->chunkCount().volume();
+
+//    if (m_Application) {
+//      m_Application->set_ProgressLimit(nc);
+//    }
+
+//    for (int i=0; i<nc; i++) {
+//      if (m_Application) {
+//        if (m_Application->get_Halting()) break;
+
+//        m_Application->addWorkOutstanding(1);
+//      }
+
+//      futures.append(
+//            QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes));
+//    }
+
+    parseSubset(data);
+
+    CctwIntVector3D chunkStart = m_SubsetStart;
+    CctwIntVector3D chunkEnd   = m_SubsetEnd;
+    CctwIntVector3D nChunks     = chunkEnd - chunkStart;
 
     if (m_Application) {
-      m_Application->set_ProgressLimit(nc);
+      m_Application->set_ProgressLimit(nChunks.volume());
     }
 
-    for (int i=0; i<nc; i++) {
-      if (m_Application) {
-        if (m_Application->get_Halting()) break;
+    for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
+      for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {
+        for (int x=chunkStart.x(); x<chunkEnd.x(); x++) {
+          if (m_Application && m_Application->get_Halting()) {
+            goto abort;
+          } else {
+            CctwIntVector3D idx(x,y,z);
 
-        m_Application->addWorkOutstanding(1);
+            int n = data->chunkNumberFromIndex(idx);
+
+            if (m_Application) {
+              m_Application->addWorkOutstanding(1);
+            }
+
+            futures.append(
+                  QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, n, axes));
+          }
+        }
       }
-
-      futures.append(
-            QtConcurrent::run(this, &CctwTransformer::projectDatasetChunk, data, i, axes));
     }
 
+abort:
     foreach (QFuture<void> f, futures) {
       f.waitForFinished();
       if (m_Application) {
