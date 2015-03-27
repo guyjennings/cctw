@@ -34,10 +34,14 @@ CctwChunkedData::CctwChunkedData
     m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
     m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
     m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
+    m_WeightsDataFileName(application->saver(), this, "weightsDataFileName", "", "Weights Data File Name"),
+    m_WeightsDataSetName(application->saver(), this, "weightsDataSetName", "", "Weights Dataset Name"),
+    m_Weights(QcepSettingsSaverWPtr(), this, "weights", QcepDoubleVector(), "Weights"),
     m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
     m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
     m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
     m_Compression(application->saver(), this, "compression", 0, "Compression Level"),
+    m_Normalization(QcepSettingsSaverWPtr(), this, "normalization", 1, "Normalization"),
     m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
     m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
     m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
@@ -48,20 +52,25 @@ CctwChunkedData::CctwChunkedData
     m_FileId(-1),
     m_DatasetId(-1),
     m_DataspaceId(-1),
+    m_Dataset2Id(-1),
+    m_Dataspace2Id(-1),
     m_MaskFileId(-1),
     m_MaskDatasetId(-1),
     m_MaskDataspaceId(-1),
     m_AnglesFileId(-1),
     m_AnglesDatasetId(-1),
-    m_AnglesDataspaceId(-1)
+    m_AnglesDataspaceId(-1),
+    m_WeightsFileId(-1),
+    m_WeightsDatasetId(-1),
+    m_WeightsDataspaceId(-1)
 {
   allocateChunks();
-  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
-  connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
-  connect(prop_MaskDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
-  connect(prop_MaskDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
-  connect(prop_AnglesDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
-  connect(prop_AnglesDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
+//  connect(prop_DataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+//  connect(prop_DataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onDataFileNameChanged()));
+//  connect(prop_MaskDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+//  connect(prop_MaskDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onMaskFileNameChanged()));
+//  connect(prop_AnglesDataFileName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
+//  connect(prop_AnglesDataSetName(), SIGNAL(valueChanged(QString,int)), this, SLOT(onAnglesChanged()));
   connect(this, SIGNAL(dimensionsChanged(CctwIntVector3D)), prop_Dimensions(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkSizeChanged(CctwIntVector3D)), prop_ChunkSize(), SLOT(setValue(CctwIntVector3D)));
   connect(this, SIGNAL(chunkCountChanged(CctwIntVector3D)), prop_ChunkCount(), SLOT(setValue(CctwIntVector3D)));
@@ -96,6 +105,8 @@ int CctwChunkedData::allocatedChunkCount()
 
 void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 {
+  printMessage(tr("Dimensions set to %1").arg(dim.toString()));
+
   if (m_DimensionsCache != dim) {
     m_DimensionsCache = dim;
 
@@ -110,6 +121,8 @@ void CctwChunkedData::setDimensions(CctwIntVector3D dim)
 
 void CctwChunkedData::setChunkSize(CctwIntVector3D cksz)
 {
+  printMessage(tr("Chunk Size set to %1").arg(cksz.toString()));
+
   if (m_ChunkSizeCache != cksz) {
     m_ChunkSizeCache = cksz;
 
@@ -140,6 +153,15 @@ void CctwChunkedData::setAnglesDimensions(int n)
   set_Angles(a);
 }
 
+void CctwChunkedData::setWeightsDimensions(int n)
+{
+  QcepDoubleVector a = get_Weights();
+
+  a.resize(n);
+
+  set_Weights(a);
+}
+
 void CctwChunkedData::setAngle(int n, double v)
 {
   QcepDoubleVector a = get_Angles();
@@ -154,6 +176,23 @@ void CctwChunkedData::setAngle(int n, double v)
 double CctwChunkedData::angle(int n)
 {
   return get_Angles().value(n);
+}
+
+double CctwChunkedData::weight(int n)
+{
+  return get_Weights().value(n);
+}
+
+
+void CctwChunkedData::setWeight(int n, double v)
+{
+  QcepDoubleVector a = get_Weights();
+
+  if (n >= 0 && n < a.size()) {
+    a.replace(n, v);
+  }
+
+  set_Weights(a);
 }
 
 void CctwChunkedData::sizingChanged()
@@ -171,18 +210,20 @@ void CctwChunkedData::sizingChanged()
 
 void CctwChunkedData::setDataSource(QString desc)
 {
-  printMessage(tr("%1.setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
-
   QUrl url(desc);
 
-  printMessage(tr("scheme:   %1").arg(url.scheme()));
-  printMessage(tr("host:     %1").arg(url.host()));
-  printMessage(tr("path:     %1").arg(url.path()));
-//  printMessage(tr("filename: %1").arg(url.fileName()));
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("%1.setDataSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+    printMessage(tr("scheme:   %1").arg(url.scheme()));
+    printMessage(tr("host:     %1").arg(url.host()));
+    printMessage(tr("path:     %1").arg(url.path()));
+    printMessage(tr("filename: %1").arg(url.fileName()));
 #if QT_VERSION >= 0x050000
-  printMessage(tr("query:    %1").arg(url.query()));
+    printMessage(tr("query:    %1").arg(url.query()));
 #endif
-  printMessage(tr("fragment: %1").arg(url.fragment()));
+    printMessage(tr("fragment: %1").arg(url.fragment()));
+  }
 
   set_DataFileName(url.path());
   set_DataSetName(url.fragment());
@@ -195,10 +236,10 @@ void CctwChunkedData::setDataSource(QString desc)
 
     QPair<QString, QString> v;
     foreach (v, l) {
-//      if (qcepDebug(DEBUG_APP)) {
+      if (qcepDebug(DEBUG_APP)) {
         printMessage(tr(" key:     %1").arg(v.first));
         printMessage(tr(" val:     %1").arg(v.second));
-//      }
+      }
     }
 
     if (qry.hasQueryItem("size")) {
@@ -401,6 +442,61 @@ void CctwChunkedData::setAnglesSource(QString desc)
 void CctwChunkedData::setAnglesDataset(QString desc)
 {
   set_AnglesDataSetName(desc);
+}
+
+void CctwChunkedData::setWeightsSource(QString desc)
+{
+  printMessage(tr("%1.setWeightsSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+  QUrl url(desc);
+
+  printMessage(tr("scheme:   %1").arg(url.scheme()));
+  printMessage(tr("host:     %1").arg(url.host()));
+  printMessage(tr("path:     %1").arg(url.path()));
+//  printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+  printMessage(tr("query:    %1").arg(url.query()));
+#endif
+  printMessage(tr("fragment: %1").arg(url.fragment()));
+
+  set_WeightsDataFileName(url.path());
+  set_WeightsDataSetName(url.fragment());
+
+#if QT_VERSION >= 0x050000
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+//      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+//      }
+    }
+
+//    if (qry.hasQueryItem("size")) {
+//      QString chunkSize = qry.queryItemValue("size");
+//      setChunks(chunkSize);
+//    }
+
+//    if (qry.hasQueryItem("dim")) {
+//      QString dims      = qry.queryItemValue("dim");
+//      setDims(dims);
+//    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      setWeightsDataset(dset);
+    }
+  }
+#endif
+}
+
+void CctwChunkedData::setWeightsDataset(QString desc)
+{
+  set_WeightsDataSetName(desc);
 }
 
 bool                CctwChunkedData::containsPixel(CctwIntVector3D pixelCoord)
@@ -615,6 +711,8 @@ bool CctwChunkedData::checkInputFile()
 
 bool CctwChunkedData::openInputFile(bool quietly)
 {
+  set_Normalization(1);
+
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
   if (m_FileId >= 0) {
@@ -632,9 +730,12 @@ bool CctwChunkedData::openInputFile(bool quietly)
   QFileInfo f(fileName);
 
   hid_t fileId = -1;
+  hid_t objId  = -1;
   hid_t dsetId = -1;
   hid_t dspcId = -1;
   hid_t plist  = -1;
+  hid_t dset2Id = -1;
+  hid_t dspc2Id = -1;
 
   try
   {
@@ -647,43 +748,131 @@ bool CctwChunkedData::openInputFile(bool quietly)
     if (fileId < 0)
       throw tr("File %1 could not be opened").arg(fileName);
 
-    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
-    if (dsetId <= 0)
-      throw tr("Could not open dataset!");
+    objId = H5Oopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (objId <= 0)
+      throw tr("Could not open data object!");
 
-    dspcId = H5Dget_space(dsetId);
-    if (dspcId < 0)
-      throw tr("Could not get dataspace of existing dataset");
+    H5O_info_t info;
+    if (H5Oget_info(objId, &info) < 0) {
+      throw tr("Could not get object info");
+    }
 
-    hsize_t dims[3];
-    int ndims = H5Sget_simple_extent_ndims(dspcId);
-    if (ndims != 3)
-      throw tr("Dataspace is not 3-dimensional");
+    H5Oclose(objId);
+    objId = -1;
 
-    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
-    if (ndims2 != 3)
-      throw tr("Could not get dataspace dimensions");
+    if (info.type == H5O_TYPE_DATASET) {
+      // Input descriptor names a dataset - normalized data...
 
-    setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
-    plist = H5Dget_create_plist(dsetId);
+      dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+      if (dsetId <= 0)
+        throw tr("Could not open dataset!");
 
-    if (plist < 0)
-      throw tr("Could not get dataset create plist");
+      dspcId = H5Dget_space(dsetId);
+      if (dspcId < 0)
+        throw tr("Could not get dataspace of existing dataset");
 
-    hsize_t cksz[3];
-    if (H5Pget_chunk(plist, 3, cksz) < 0) {
-      printMessage(("Could not get dataset chunk size"));
-      set_HDFChunkSize(CctwIntVector3D(0,0,0));
-    } else {
-      set_HDFChunkSize(CctwIntVector3D(cksz[2], cksz[1], cksz[0]));
+      hsize_t dims[3];
+      int ndims = H5Sget_simple_extent_ndims(dspcId);
+      if (ndims != 3)
+        throw tr("Dataspace is not 3-dimensional");
+
+      int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+      if (ndims2 != 3)
+        throw tr("Could not get dataspace dimensions");
+
+      setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
+      plist = H5Dget_create_plist(dsetId);
+
+      if (plist < 0)
+        throw tr("Could not get dataset create plist");
+
+      hsize_t cksz[3];
+      if (H5Pget_chunk(plist, 3, cksz) < 0) {
+        printMessage(("Could not get dataset chunk size"));
+        set_HDFChunkSize(CctwIntVector3D(0,0,0));
+      } else {
+        set_HDFChunkSize(CctwIntVector3D(cksz[2], cksz[1], cksz[0]));
+      }
+
+      H5Pclose(plist); plist = -1;
+    } else if (info.type == H5O_TYPE_GROUP) {
+      // Input descriptor names a group - intermediate data...
+
+      dsetId = H5Dopen(fileId, qPrintable(dataSetName+"/v"), H5P_DEFAULT);
+      if (dsetId <= 0)
+        throw tr("Could not open 'V' dataset!");
+
+      dspcId = H5Dget_space(dsetId);
+      if (dspcId < 0)
+        throw tr("Could not get dataspace of existing dataset");
+
+      hsize_t dims[3];
+      int ndims = H5Sget_simple_extent_ndims(dspcId);
+      if (ndims != 3)
+        throw tr("Dataspace is not 3-dimensional");
+
+      int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+      if (ndims2 != 3)
+        throw tr("Could not get dataspace dimensions");
+
+      setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
+      plist = H5Dget_create_plist(dsetId);
+
+      if (plist < 0)
+        throw tr("Could not get dataset create plist");
+
+      hsize_t cksz[3];
+      if (H5Pget_chunk(plist, 3, cksz) < 0) {
+        printMessage(("Could not get dataset chunk size"));
+        set_HDFChunkSize(CctwIntVector3D(0,0,0));
+      } else {
+        set_HDFChunkSize(CctwIntVector3D(cksz[2], cksz[1], cksz[0]));
+      }
+
+      H5Pclose(plist); plist = -1;
+
+      dset2Id = H5Dopen(fileId, qPrintable(dataSetName+"/n"), H5P_DEFAULT);
+      if (dset2Id < 0) {
+        printMessage(tr("Could not open 'N' dataset, assuming normalized"));
+      } else {
+        dspc2Id = H5Dget_space(dsetId);
+        if (dspc2Id < 0)
+          throw tr("Could not get dataspace of existing 'N' dataset");
+
+        hsize_t dims[3];
+        int ndims = H5Sget_simple_extent_ndims(dspc2Id);
+        if (ndims != 3)
+          throw tr("Dataspace is not 3-dimensional");
+
+        int ndims2 = H5Sget_simple_extent_dims(dspc2Id, dims, NULL);
+        if (ndims2 != 3)
+          throw tr("Could not get dataspace dimensions");
+
+        if (dimensions() != CctwIntVector3D(dims[2],dims[1],dims[0])) {
+          throw tr("Dimension mismatch between 'V' and 'N' datasets");
+        }
+
+        set_Normalization(0);
+      }
     }
 
     m_FileId      = fileId;
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
+    m_Dataset2Id  = dset2Id;
+    m_Dataspace2Id= dspc2Id;
 
     if (!quietly) {
-      printMessage(tr("Opened input file OK"));
+      printMessage(tr("Opened input file \"%1\" OK, DS \"%2\", Norm %3, DSID %4, DS2ID %5, CMPRS %6")
+                   .arg(get_DataFileName()).arg(get_DataSetName())
+                   .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
+                   .arg(get_Compression()));
+
+      CctwIntVector3D hdfChunkSize = get_HDFChunkSize();
+
+      printMessage(tr("Dimensions %1, HDF Chunk size %2")
+                   .arg(get_Dimensions().toString())
+                   .arg(hdfChunkSize.toString()));
     }
   }
   catch (QString &msg )
@@ -695,8 +884,13 @@ bool CctwChunkedData::openInputFile(bool quietly)
     }
 
     if (dspcId >= 0) H5Sclose(dspcId);
+    if (dspc2Id >= 0) H5Sclose(dspc2Id);
     if (dsetId >= 0) H5Dclose(dsetId);
+    if (dset2Id >= 0) H5Dclose(dset2Id);
+    if (objId >= 0) H5Oclose(objId);
     if (fileId >= 0) H5Fclose(fileId);
+    if (plist >= 0) H5Pclose(plist);
+
     return false;
   }
   return true;
@@ -714,9 +908,19 @@ void CctwChunkedData::closeInputFile(bool quietly)
     m_DataspaceId = -1;
   }
 
+  if (m_Dataspace2Id >= 0) {
+    H5Sclose(m_Dataspace2Id);
+    m_Dataspace2Id = -1;
+  }
+
   if (m_DatasetId >= 0) {
     H5Dclose(m_DatasetId);
     m_DatasetId = -1;
+  }
+
+  if (m_Dataset2Id >= 0) {
+    H5Dclose(m_Dataset2Id);
+    m_Dataset2Id = -1;
   }
 
   if (m_FileId >= 0) {
@@ -790,10 +994,14 @@ bool CctwChunkedData::openOutputFile()
   QFileInfo f(fileName);
 
   hid_t fileId = -1;
+  hid_t gplist2 = -1;
   hid_t gplist = -1;
   hid_t dsetId = -1;
   hid_t dspcId = -1;
+  hid_t dset2Id = -1;
+  hid_t dspc2Id = -1;
   hid_t plist  = -1;
+  hid_t plist2  = -1;
 
   if (!f.exists()) {
     fileId = H5Fcreate(qPrintable(fileName), H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT);
@@ -822,7 +1030,12 @@ bool CctwChunkedData::openOutputFile()
     /* Turn off error handling */
     H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
-    dsetId = H5Dopen(fileId, qPrintable(get_DataSetName()), H5P_DEFAULT);
+    if (get_Normalization()) {
+      dsetId = H5Dopen(fileId, qPrintable(get_DataSetName()), H5P_DEFAULT);
+    } else {
+      dsetId = H5Dopen(fileId, qPrintable(get_DataSetName()+"/v"), H5P_DEFAULT);
+      dset2Id = H5Dopen(fileId, qPrintable(get_DataSetName()+"/n"), H5P_DEFAULT);
+    }
 
     /* Restore previous error handler */
     H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -903,28 +1116,128 @@ bool CctwChunkedData::openOutputFile()
         printMessage(tr("Failed to set create intermediate groups"));
         res = false;
       } else {
-        dsetId = H5Dcreate(fileId,
-                           qPrintable(get_DataSetName()),
-                           H5T_NATIVE_FLOAT,
-                           dspcId,
-                           gplist,
-                           plist,
-                           H5P_DEFAULT);
+        if (get_Normalization()) {
+          dsetId = H5Dcreate(fileId,
+                             qPrintable(get_DataSetName()),
+                             H5T_NATIVE_FLOAT,
+                             dspcId,
+                             gplist,
+                             plist,
+                             H5P_DEFAULT);
+        } else {
+          dsetId = H5Dcreate(fileId,
+                             qPrintable(get_DataSetName()+"/v"),
+                             H5T_NATIVE_FLOAT,
+                             dspcId,
+                             gplist,
+                             plist,
+                             H5P_DEFAULT);
+        }
       }
     }
 
     if (dsetId < 0) {
       printMessage(tr("Could not create or find dataset %1").arg(get_DataSetName()));
       res = false;
+    } else if (!get_Normalization()) {
+      if (dset2Id >= 0) {
+        dspc2Id = H5Dget_space(dset2Id);
+
+        if (dspc2Id < 0) {
+          printMessage("Couldn't get dataspace of existing 'N' dataset");
+          res = false;
+        } else {
+          hsize_t dims[3];
+          int ndims = H5Sget_simple_extent_ndims(dspc2Id);
+
+          if (ndims != 3) {
+            printMessage("'N' Dataspace is not 3-dimensional");
+            res = false;
+          } else {
+            int ndims2 = H5Sget_simple_extent_dims(dspc2Id, dims, NULL);
+
+            if (ndims2 != 3) {
+              printMessage("Couldnt get 'N' dataspace dimensions");
+              res = false;
+            } else {
+              if (dims[0] != (hsize_t) dimensions().z() ||
+                  dims[1] != (hsize_t) dimensions().y() ||
+                  dims[2] != (hsize_t) dimensions().x()) {
+                printMessage("'N' Dataspace dimensions do not match output data");
+                res = false;
+              }
+            }
+          }
+        }
+      } else {
+        hsize_t dims[3];
+        dims[0] = dimensions().z();
+        dims[1] = dimensions().y();
+        dims[2] = dimensions().x();
+
+        dspc2Id = H5Screate_simple(3, dims, NULL);
+
+        CctwIntVector3D cksz = get_HDFChunkSize();
+        int cmprs = get_Compression();
+
+        plist2 = H5Pcreate(H5P_DATASET_CREATE);
+
+        if (cksz.volume() > 0) {
+          hsize_t c[3];
+
+          c[0] = cksz.z();
+          c[1] = cksz.y();
+          c[2] = cksz.x();
+
+          float zero = 0.0;
+
+          if (H5Pset_chunk(plist2, 3, c) < 0) {
+            printMessage("Failed to set chunk size");
+            res = false;
+          } else if (H5Pset_fill_value(plist2, H5T_NATIVE_FLOAT, &zero)) {
+            printMessage("Failed to set fill value");
+            res = false;
+          } else if (cmprs > 0) {
+            if (H5Pset_deflate(plist2, cmprs) < 0) {
+              printMessage("Set deflate failed");
+              res = false;
+            }
+          } else if (cmprs) {
+            if (H5Pset_filter(plist2, H5PY_FILTER_LZF, H5Z_FLAG_OPTIONAL, 0, NULL) < 0) {
+              printMessage("Set LZF Compress failed");
+              res = false;
+            }
+          }
+        }
+
+        gplist2 = H5Pcreate(H5P_LINK_CREATE);
+
+        if (H5Pset_create_intermediate_group(gplist2, 1) < 0) {
+          printMessage(tr("Failed to set create intermediate groups"));
+          res = false;
+        } else {
+          dset2Id = H5Dcreate(fileId,
+                             qPrintable(get_DataSetName()+"/n"),
+                             H5T_NATIVE_FLOAT,
+                             dspc2Id,
+                             gplist2,
+                             plist2,
+                             H5P_DEFAULT);
+        }
+      }
     }
   }
 
   if (plist  >= 0) H5Pclose(plist);
   if (gplist >= 0) H5Pclose(gplist);
+  if (plist2  >= 0) H5Pclose(plist2);
+  if (gplist2 >= 0) H5Pclose(gplist2);
 
   if (res == false) {
     if (dspcId >= 0) H5Sclose(dspcId);
     if (dsetId >= 0) H5Dclose(dsetId);
+    if (dspc2Id >= 0) H5Sclose(dspc2Id);
+    if (dset2Id >= 0) H5Dclose(dset2Id);
     if (fileId >= 0) H5Fclose(fileId);
   } else {
     if (fileId < 0 || dsetId < 0 || dspcId < 0) {
@@ -932,11 +1245,26 @@ bool CctwChunkedData::openOutputFile()
                    .arg(fileId).arg(dsetId).arg(dspcId));
     }
 
+    if (!get_Normalization() && (dset2Id < 0 || dspc2Id < 0)) {
+      printMessage(tr("Anomaly in CctwChunkedData::openOutputFile fileId=%1, dset2Id=%2, dspc2Id=%3")
+                   .arg(fileId).arg(dset2Id).arg(dspc2Id));
+    }
+
     m_FileId      = fileId;
     m_DatasetId   = dsetId;
     m_DataspaceId = dspcId;
+    m_Dataset2Id  = dset2Id;
+    m_Dataspace2Id= dspc2Id;
 
-    printMessage("Opened output file OK");
+    printMessage(tr("Opened output file \"%1\" OK, DS \"%2\", Norm %3, DSID %4, DS2ID %5, CMPRS %6")
+                 .arg(get_DataFileName()).arg(get_DataSetName())
+                 .arg(get_Normalization()).arg(m_DatasetId).arg(m_Dataset2Id)
+                 .arg(get_Compression()));
+
+    CctwIntVector3D hdfChunkSize = get_HDFChunkSize();
+
+    printMessage(tr("HDF Chunk size [%1,%2,%3]")
+                 .arg(hdfChunkSize.x()).arg(hdfChunkSize.y()).arg(hdfChunkSize.z()));
   }
 
   return res;
@@ -954,6 +1282,16 @@ void CctwChunkedData::closeOutputFile()
   if (m_DatasetId >= 0) {
     H5Dclose(m_DatasetId);
     m_DatasetId = -1;
+  }
+
+  if (m_Dataspace2Id >= 0) {
+    H5Sclose(m_Dataspace2Id);
+    m_Dataspace2Id = -1;
+  }
+
+  if (m_Dataset2Id >= 0) {
+    H5Dclose(m_Dataset2Id);
+    m_Dataset2Id = -1;
   }
 
   if (m_FileId >= 0) {
@@ -1321,6 +1659,172 @@ bool CctwChunkedData::readAnglesFile()
   return res;
 }
 
+bool CctwChunkedData::checkWeightsFile()
+{
+  /* Save old error handler */
+  herr_t (*old_func)(hid_t, void*);
+  void *old_client_data;
+  H5Eget_auto(H5E_DEFAULT, &old_func, &old_client_data);
+
+  /* Turn off error handling */
+  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+  bool res = openWeightsFile(true);
+  closeWeightsFile(true);
+
+  /* Restore previous error handler */
+  H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
+
+  return res;
+}
+
+bool CctwChunkedData::openWeightsFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_WeightsFileId >= 0) {
+    return true;
+  }
+
+  QString fileName    = get_WeightsDataFileName();
+  QString dataSetName = get_WeightsDataSetName();
+
+  if (!quietly) {
+    printMessage(tr("About to open Weights input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
+  }
+
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+
+  try
+  {
+    if (!f.exists())
+      throw tr("File %1 does not exist").arg(fileName);
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
+      throw tr("File %1 exists but is not an hdf file").arg(fileName);
+
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDWR, H5P_DEFAULT);
+    if (fileId < 0)
+      throw tr("File %1 could not be opened").arg(fileName);
+
+    dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (dsetId <= 0)
+      throw tr("Could not open dataset!");
+
+    dspcId = H5Dget_space(dsetId);
+    if (dspcId < 0)
+      throw tr("Could not get dataspace of existing dataset");
+
+    hsize_t dims[3];
+    int ndims = H5Sget_simple_extent_ndims(dspcId);
+    if (ndims != 1)
+      throw tr("Dataspace is not 1-dimensional");
+
+    int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+    if (ndims2 != 1)
+      throw tr("Could not get dataspace dimensions");
+
+    setWeightsDimensions(dims[0]);
+
+    m_WeightsFileId      = fileId;
+    m_WeightsDatasetId   = dsetId;
+    m_WeightsDataspaceId = dspcId;
+
+    if (!quietly) {
+      printMessage(tr("Opened Weights input file OK"));
+    }
+  }
+  catch (QString &msg )
+  {
+    if (!quietly) {
+      printMessage(tr("Anomaly in CctwChunkedData::openWeightsFile fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+    return false;
+  }
+  return true;
+}
+
+void CctwChunkedData::closeWeightsFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_WeightsDataspaceId >= 0) {
+    H5Sclose(m_WeightsDataspaceId);
+    m_WeightsDataspaceId = -1;
+  }
+
+  if (m_WeightsDatasetId >= 0) {
+    H5Dclose(m_WeightsDatasetId);
+    m_WeightsDatasetId = -1;
+  }
+
+  if (m_WeightsFileId >= 0) {
+    H5Fclose(m_WeightsFileId);
+    m_WeightsFileId = -1;
+  }
+
+  if (!quietly) {
+    printMessage("Closed Weights file");
+  }
+}
+
+bool CctwChunkedData::readWeightsFile()
+{
+  bool res = false;
+
+  if (openWeightsFile()) {
+
+    if (m_WeightsFileId >= 0) {
+      QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+      hid_t memspace_id = -1;
+      hsize_t offset[1], count[1], stride[1], block[1];
+
+      QcepDoubleVector a= get_Weights();
+
+      offset[0] = 0;
+      count[0]  = a.size();
+      stride[0] = 1;
+      block[0]  = 1;
+
+      double *Weights = a.data();
+
+      memspace_id = H5Screate_simple(1, count, NULL);
+      herr_t selerr = H5Sselect_hyperslab(m_WeightsDataspaceId, H5S_SELECT_SET, offset, stride, count, block);
+
+      if (selerr < 0) {
+        printMessage(tr("ERROR: select_hyperslab failed!"));
+      }
+
+      herr_t rderr = H5Dread(m_WeightsDatasetId, H5T_NATIVE_DOUBLE, memspace_id, m_WeightsDataspaceId, H5P_DEFAULT, Weights);
+
+      if (selerr || rderr) {
+        printMessage(tr("Error reading Weights, selerr = %1, rderr = %2").arg(selerr).arg(rderr));
+      } else {
+        res = true;
+
+        set_Weights(a);
+      }
+
+      H5Sclose(memspace_id);
+    }
+
+    closeWeightsFile();
+  }
+
+  return res;
+}
+
 //CctwDataChunk *CctwChunkedData::readChunk(int n)
 //{
 //  CctwDataChunk *chk = chunk(n);
@@ -1420,37 +1924,40 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
                          .arg(rderr));
           }
 
+          if ((m_Dataspace2Id >= 0) && (m_Dataset2Id >= 0)) {
+            herr_t selerr = H5Sselect_hyperslab(m_Dataspace2Id, H5S_SELECT_SET, offset, stride, count, block);
+            if (selerr < 0) {
+              printMessage(tr("ERROR: select_hyperslab failed!"));
+            }
+
+            herr_t rderr = H5Dread(m_Dataset2Id, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_Dataspace2Id, H5P_DEFAULT, weightData);
+
+            if (selerr || rderr) {
+              printMessage(tr("Error reading weight chunk %1, selerr = %2, rderr = %3")
+                           .arg(n)
+                           .arg(selerr)
+                           .arg(rderr));
+            }
+          }
+
           H5Sclose(memspace_id);
         }
 
-        if (weightData && chunkData) {
-          int s = sz.volume();
-
-          for (int i=0; i<s; i++) {
-            if (chunkData[i] == chunkData[i]) { // Test for NaN
-              weightData[i] = 1;
-            } else {
-              weightData[i] = 0;
+        if (m_Dataspace2Id < 0) {
+          if (weightData && chunkData) {
+            int s = sz.volume();
+            
+            for (int i=0; i<s; i++) {
+              if (chunkData[i] == chunkData[i]) { // Test for NaN
+                weightData[i] = 1;
+              } else {
+                weightData[i] = 0;
+              }
             }
           }
         }
       }
     }
-//    CctwIntVector3D size = chunkSize();
-//    CctwIntVector3D start = chunkStart(n);
-
-//    for (int k=0; k<size.z(); k++) {
-//      for (int j=0; j<size.y(); j++) {
-//        for (int i=0; i<size.x(); i++) {
-//          CctwIntVector3D coords(i,j,k);
-
-//          int val = ((start.x()+i)/16 & 1) ^ ((start.y()+j)/16 & 1) ^ ((start.z()+k)/16 & 1);
-
-//          chk -> setData(i, j, k, val+0.75);
-//          chk -> setWeight(i, j, k, 1.0);
-//        }
-//      }
-//    }
   }
 
 //  printMessage(tr("CctwChunkedData::readChunk(%1)").arg(n));
@@ -1470,7 +1977,9 @@ void CctwChunkedData::writeChunk(int n)
     if (chk) {
 //      prop_ChunksWritten()->incValue(1);
 
-      normalizeChunk(n);
+      if (get_Normalization()) {
+        normalizeChunk(n);
+      }
 
       if (m_FileId >= 0) {
 
@@ -1506,9 +2015,10 @@ void CctwChunkedData::writeChunk(int n)
         offset[2] = st.x();
 
         CctwChunkedData::MergeDataType *chunkData = chk->dataPointer();
+        CctwChunkedData::MergeDataType *weightData = chk->weightsPointer();
 
         if (chunkData == NULL) {
-          printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
+//          printMessage(tr("Anomaly writing chunk %1, data == NULL").arg(n));
         } else if ((m_TransformOptions & 8) == 0){
           hid_t memspace_id = -1;
           memspace_id   = H5Screate_simple(3, count, NULL);
@@ -1522,6 +2032,18 @@ void CctwChunkedData::writeChunk(int n)
                          .arg(wrterr));
           }
 
+          if ((m_Dataspace2Id >= 0) && (m_Dataset2Id >= 0)) {
+            // Write out the 'weight' chunk
+            herr_t selerr = H5Sselect_hyperslab(m_Dataspace2Id, H5S_SELECT_SET, offset, stride, count, block);
+            herr_t wrterr = H5Dwrite(m_Dataset2Id, CCTW_H5T_INTERNAL_TYPE, memspace_id, m_Dataspace2Id, H5P_DEFAULT, weightData);
+
+            if (selerr || wrterr) {
+              printMessage(tr("Error writing chunk %1, selerr = %2, wrterr = %3")
+                           .arg(n)
+                           .arg(selerr)
+                           .arg(wrterr));
+            }
+          }
           H5Sclose(memspace_id);
         }
       }
@@ -1546,6 +2068,10 @@ void CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
     printMessage("Reading angles data");
     readAnglesFile();
+
+    printMessage("Reading weights data");
+    readWeightsFile();
+
   } else {
     openOutputFile();
   }

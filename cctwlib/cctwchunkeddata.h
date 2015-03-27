@@ -46,6 +46,7 @@ public:
 
   void                setMaskDimensions(int mx, int my);
   void                setAnglesDimensions(int n);
+  void                setWeightsDimensions(int n);
 
   void                incChunksRead(int n);
   void                incChunksWritten(int n);
@@ -61,12 +62,17 @@ public slots:
   virtual void        setMaskDataset(QString desc);
   virtual void        setAnglesSource(QString desc);
   virtual void        setAnglesDataset(QString desc);
+  virtual void        setWeightsSource(QString desc);
+  virtual void        setWeightsDataset(QString desc);
   bool                containsPixel(CctwIntVector3D pixelCoord);
   bool                containsChunk(int ix, int iy, int iz);
   int                 allocatedChunkCount();
 
   void                setAngle(int n, double v);
   double              angle(int n);
+
+  void                setWeight(int n, double v);
+  double              weight(int n);
 
   CctwIntVector3D     chunkStart(int n);    // Return pixel coords of start of chunk chunkIdx
   int                 chunkContaining(CctwIntVector3D pixelCoord);  // Return index of chunk containing given pixel
@@ -112,6 +118,11 @@ public slots:
   void                closeAnglesFile(bool quietly = false);
   bool                readAnglesFile();
 
+  bool                checkWeightsFile();
+  bool                openWeightsFile(bool quietly = false);
+  void                closeWeightsFile(bool quietly = false);
+  bool                readWeightsFile();
+
 private slots:
   void                onDataFileNameChanged();
   void                onMaskFileNameChanged();
@@ -155,6 +166,15 @@ private:
   Q_PROPERTY(QcepDoubleVector angles READ get_Angles WRITE set_Angles STORED false)
   QCEP_DOUBLE_VECTOR_PROPERTY(Angles)
 
+  Q_PROPERTY(QString weightsDataFileName READ get_WeightsDataFileName WRITE set_WeightsDataFileName)
+  QCEP_STRING_PROPERTY(WeightsDataFileName)
+
+  Q_PROPERTY(QString weightsDataSetName READ get_WeightsDataSetName WRITE set_WeightsDataSetName)
+  QCEP_STRING_PROPERTY(WeightsDataSetName)
+
+  Q_PROPERTY(QcepDoubleVector weights READ get_Weights WRITE set_Weights STORED false)
+  QCEP_DOUBLE_VECTOR_PROPERTY(Weights)
+
   Q_PROPERTY(CctwIntVector3D dimensions READ get_Dimensions WRITE set_Dimensions)
   CCTW_INTVECTOR3D_PROPERTY(Dimensions)
 
@@ -166,6 +186,9 @@ private:
 
   Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
   QCEP_INTEGER_PROPERTY(Compression)
+
+  Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
+  QCEP_INTEGER_PROPERTY(Normalization)
 
   Q_PROPERTY(CctwIntVector3D hdfChunkSize READ get_HDFChunkSize WRITE set_HDFChunkSize)
   CCTW_INTVECTOR3D_PROPERTY(HDFChunkSize)
@@ -187,6 +210,8 @@ private:
   hid_t               m_FileId;
   hid_t               m_DatasetId;
   hid_t               m_DataspaceId;
+  hid_t               m_Dataset2Id;
+  hid_t               m_Dataspace2Id;
 
   hid_t               m_MaskFileId;
   hid_t               m_MaskDatasetId;
@@ -195,6 +220,10 @@ private:
   hid_t               m_AnglesFileId;
   hid_t               m_AnglesDatasetId;
   hid_t               m_AnglesDataspaceId;
+
+  hid_t               m_WeightsFileId;
+  hid_t               m_WeightsDatasetId;
+  hid_t               m_WeightsDataspaceId;
 
   static QMutex       m_FileAccessMutex;
 };

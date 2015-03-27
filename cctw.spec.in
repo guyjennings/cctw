@@ -43,7 +43,7 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 #mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps/
 
 install bin/cctwqt $RPM_BUILD_ROOT%{_bindir}
-install bin/cctwcli $RPM_BUILD_ROOT%{_bindir}
+install bin/cctw   $RPM_BUILD_ROOT%{_bindir}
 
 #desktop-file-install --vendor=bessrc \
 #        --dir $RPM_BUILD_ROOT%{_datadir}/applications \
@@ -67,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc
 %{_bindir}/cctwqt
-%{_bindir}/cctwcli
+%{_bindir}/cctw
 #%{_libdir}/%{name}-%{version}/plugins/*.so
 #%{_datadir}/applications/*%{name}.desktop
 #%{_datadir}/icons/hicolor/*/*/*

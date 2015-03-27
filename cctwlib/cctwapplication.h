@@ -51,6 +51,12 @@ public slots:
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 
+  void execute();
+  void executeTransform();
+  void executeMerge();
+  void executeNorm();
+  void executeProject();
+
   void showHelp(QString about);
   void showVersion();
 
@@ -80,17 +86,22 @@ public slots:
   void setOutputDataset(QString data);
 
   void setSubset(QString desc);
-  void partialTransform(QString desc);
+  void transform(QString desc);
   void partialDependencies(QString desc);
   void noDependencies();
 
   void mergeInput(QString path);
   void mergeOutput(QString path);
-  void runMerge();
 
-  void transform();
+  void runTransform();
+  void runMerge();
+  void runNorm();
+  void runProject();
+
+//  void transform();
 
   void setNormalization(QString data);
+  void setCompression(QString data);
 
   void inputProject(int axes);
   void outputProject(int axes);
@@ -151,6 +162,8 @@ private slots:
 
 private:
   void startupCommand(QString cmd);
+  void preStartup();
+  void postStartup();
 
   void readSettings(QSettings *settings);
   void writeSettings(QSettings *settings);
@@ -160,6 +173,10 @@ private:
   void decodeCommandLineArgsForWindows(int &argc, char *argv[]);
 
   void installHDF5ErrorHandler();
+
+  void pushInputFile(QString path);
+  void autoChunkSizes();
+  void autoOutputFile(QString suffix);
 
 public:
   QcepObjectNamer                     m_ObjectNamer;
@@ -179,8 +196,8 @@ public:
   CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
-  QStringList                         m_MergeInputs;
-  QString                             m_MergeOutput;
+//  QStringList                         m_MergeInputs;
+//  QString                             m_MergeOutput;
 
 private:
   QAtomicInt                          m_DependencyCounter;
@@ -191,8 +208,26 @@ public:
   Q_PROPERTY(bool guiWanted READ get_GuiWanted WRITE set_GuiWanted STORED false)
   QCEP_BOOLEAN_PROPERTY(GuiWanted)
 
+  Q_PROPERTY(int mode READ get_Mode WRITE set_Mode STORED false)
+  QCEP_INTEGER_PROPERTY(Mode)
+
   Q_PROPERTY(QcepStringList startupCommands READ get_StartupCommands WRITE set_StartupCommands STORED false)
   QCEP_STRING_LIST_PROPERTY(StartupCommands)
+
+  Q_PROPERTY(QcepStringList inputFiles READ get_InputFiles WRITE set_InputFiles STORED false)
+  QCEP_STRING_LIST_PROPERTY(InputFiles)
+
+  Q_PROPERTY(QString outputFile READ get_OutputFile WRITE set_OutputFile STORED false)
+  QCEP_STRING_PROPERTY(OutputFile)
+
+  Q_PROPERTY(QString maskFile READ get_MaskFile WRITE set_MaskFile STORED false)
+  QCEP_STRING_PROPERTY(MaskFile)
+
+  Q_PROPERTY(QString anglesFile READ get_AnglesFile WRITE set_AnglesFile STORED false)
+  QCEP_STRING_PROPERTY(AnglesFile)
+
+  Q_PROPERTY(QString weightsFile READ get_WeightsFile WRITE set_WeightsFile STORED false)
+  QCEP_STRING_PROPERTY(WeightsFile)
 
   Q_PROPERTY(int debug READ get_Debug WRITE set_Debug)
   QCEP_INTEGER_PROPERTY(Debug)
@@ -224,8 +259,8 @@ public:
   Q_PROPERTY(int mpiSize READ get_MpiSize WRITE set_MpiSize STORED false)
   QCEP_INTEGER_PROPERTY(MpiSize)
 
-  Q_PROPERTY(int mergeCompression READ get_MergeCompression WRITE set_MergeCompression STORED false)
-  QCEP_INTEGER_PROPERTY(MergeCompression)
+  Q_PROPERTY(int verbosity READ get_Verbosity WRITE set_Verbosity STORED false)
+  QCEP_INTEGER_PROPERTY(Verbosity)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

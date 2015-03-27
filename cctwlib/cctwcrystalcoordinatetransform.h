@@ -15,7 +15,7 @@ public slots:
 
   virtual bool hasInverse() const;
 
-  virtual CctwDoubleVector3D forward(CctwDoubleVector3D a);
+  virtual CctwDoubleVector3D forward(CctwDoubleVector3D d);
                                           // Transform from input to output space coordinates
   virtual CctwDoubleVector3D inverse(CctwDoubleVector3D q);
                                           // Back transform from output to input space coordinates

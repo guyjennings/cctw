@@ -4,7 +4,7 @@ include(../cctw-version.pri)
 
 QT += core script
 
-TARGET = cctwcli
+TARGET = cctw
 
 DEFINES     += NO_GUI
 
@@ -31,4 +31,4 @@ include(../submodules/qceplib/qceplib-mar345.pri)
 #include(../submodules/qceplib/qceplib-nexus.pri)
 include(../cctwlib/cctwlib.pri)
 
-include(cctwcli.pri)
+include(cctw.pri)

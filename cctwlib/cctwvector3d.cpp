@@ -53,12 +53,20 @@ CctwVector3D<T> CctwVector3D<T>::operator * (const CctwVector3D<T> &vec) const
   return CctwVector3D<T>(x()*vec.x(), y()*vec.y(), z()*vec.z());
 }
 
+template <>
+CctwVector3D<int> CctwVector3D<int>::operator / (const CctwVector3D<int> &vec) const
+{
+  return CctwVector3D<int>(floor((double)x()/(double)vec.x()),
+                         floor((double)y()/(double)vec.y()),
+                         floor((double)z()/(double)vec.z()));
+}
+
 template <typename T>
 CctwVector3D<T> CctwVector3D<T>::operator / (const CctwVector3D<T> &vec) const
 {
-  return CctwVector3D<T>(floor((double)x()/(double)vec.x()),
-                         floor((double)y()/(double)vec.y()),
-                         floor((double)z()/(double)vec.z()));
+  return CctwVector3D<T>(x()/vec.x(),
+                         y()/vec.y(),
+                         z()/vec.z());
 }
 
 template <typename T>
@@ -97,6 +105,14 @@ template <typename T>
 CctwVector3D<T> CctwVector3D<T>::operator * (const T val) const
 {
   return CctwVector3D<T>(x()*val, y()*val, z()*val);
+}
+
+template <>
+CctwVector3D<int> CctwVector3D<int>::operator / (const int val) const
+{
+  return CctwVector3D<int>(floor((double)x()/(double)val),
+                         floor((double)y()/(double)val),
+                         floor((double)z()/(double)val));
 }
 
 template <typename T>

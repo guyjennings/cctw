@@ -27,6 +27,7 @@ public:
 
 public slots:
   void transform();
+  void simpleTransform();
   void checkTransform();
 
   void saveDependencies(QString path);
@@ -61,6 +62,8 @@ private:
   void projectDataset(QString path, CctwChunkedData *data, int axes);
 #endif
 
+  bool parseSubset(CctwChunkedData *data = NULL);
+
 private:
   CctwApplication         *m_Application;
   CctwChunkedData         *m_InputData;
@@ -74,6 +77,17 @@ private:
   QcepImageData<double>   *m_ImageX;
   QcepImageData<double>   *m_ImageY;
   QcepImageData<double>   *m_ImageZ;
+  QcepImageData<double>   *m_WeightX;
+  QcepImageData<double>   *m_WeightY;
+  QcepImageData<double>   *m_WeightZ;
+
+  double m_MinData;
+  double m_MaxData;
+  double m_MinWeight;
+  double m_MaxWeight;
+
+  CctwIntVector3D m_SubsetStart;
+  CctwIntVector3D m_SubsetEnd;
 
 public:
   Q_PROPERTY(double wallTime READ get_WallTime WRITE set_WallTime STORED false)
@@ -108,6 +122,9 @@ public:
 
   Q_PROPERTY(int normalization READ get_Normalization WRITE set_Normalization)
   QCEP_INTEGER_PROPERTY(Normalization)
+
+  Q_PROPERTY(int compression READ get_Compression WRITE set_Compression)
+  QCEP_INTEGER_PROPERTY(Compression)
 
   Q_PROPERTY(QString subset READ get_Subset WRITE set_Subset STORED false)
   QCEP_STRING_PROPERTY(Subset)

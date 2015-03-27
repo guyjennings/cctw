@@ -36,6 +36,13 @@ QcepImageDataFormatTiff<double> tiffImg("tiff");
 QcepImageDataFormatMar345<double> mar345Img("mar345");
 #endif
 
+enum {
+  TransformMode = 1,
+  MergeMode     = 2,
+  NormMode      = 3,
+  ProjectMode   = 4
+};
+
 CctwApplication::CctwApplication(int &argc, char *argv[])
 #ifdef NO_GUI
   : QCoreApplication(argc, argv),
@@ -63,7 +70,13 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Saver(new QcepSettingsSaver(this)),
 #endif
   m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
+  m_Mode(QcepSettingsSaverWPtr(), this, "mode", 0, "Operation mode"),
   m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
+  m_InputFiles(QcepSettingsSaverWPtr(), this, "inputFiles", QcepStringList(), "Input files"),
+  m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
+  m_MaskFile(QcepSettingsSaverWPtr(), this, "maskFile", "", "Mask file"),
+  m_AnglesFile(QcepSettingsSaverWPtr(), this, "anglesFile", "", "Angles File"),
+  m_WeightsFile(QcepSettingsSaverWPtr(), this, "weightsFile", "", "Weights File"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
@@ -74,7 +87,7 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
   m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
-  m_MergeCompression(QcepSettingsSaverWPtr(), this, "mergeCompression", 6, "Merge Compression")
+  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -170,9 +183,8 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
   enum {
     argInputChunks = 10,
+    argVersion,
     argInputDataset,
-    argMaskDataset,
-    argAnglesDataset,
     argOutputDims,
     argOutputChunks,
     argOutputDataset,
@@ -183,23 +195,26 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argMergeOutput
   };
 
+  int option_index = 0;
+
   while (1) {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
-      {"version", no_argument, 0, 'v'},
+      {"version", no_argument, 0, argVersion},
+      {"verbosity", optional_argument, 0, 'v'},
       {"threads", required_argument, 0, 'j'},
       {"input", required_argument, 0, 'i'},
       {"inputchunks", required_argument, 0, argInputChunks},
       {"inputdataset", required_argument, 0, argInputDataset},
       {"mask", required_argument, 0, 'm'},
-      {"maskdataset", required_argument, 0, argMaskDataset},
       {"angles", required_argument, 0, 'a'},
-      {"anglesdataset", required_argument, 0, argAnglesDataset},
+      {"weights", required_argument, 0, 'w'},
       {"output", required_argument, 0, 'o'},
       {"outputdims", required_argument, 0, argOutputDims},
       {"outputchunks", required_argument, 0, argOutputChunks},
       {"outputdataset", required_argument, 0, argOutputDataset},
-      {"normalization", optional_argument, 0, 'N'},
+      {"normalization", required_argument, 0, 'N'},
+      {"compression", required_argument, 0, 'z'},
       {"subset", required_argument, 0, 'S'},
       {"transform", no_argument, 0, 't'},
       {"depends", no_argument, 0, 'd'},
@@ -209,7 +224,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
       {"command", required_argument, 0, 'c'},
-      {"wait", optional_argument, 0, 'w'},
       {"script", required_argument, 0, 's'},
       {"iproject", optional_argument, 0, argInputProject},
       {"oproject", optional_argument, 0, argOutputProject},
@@ -219,9 +233,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {0,0,0,0}
     };
 
-    int option_index = 0;
-
-    c = getopt_long(argc, argv, "hvj:i:m:a:o:N::S::tdxD:p:gnc:w::s:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hv::j:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -232,8 +244,16 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand("showHelp();");
       break;
 
-    case 'v':
+    case argVersion:
       startupCommand("showVersion();");
+      break;
+
+    case 'v':
+      if (optarg) {
+        set_Verbosity(atoi(optarg));
+      } else {
+        prop_Verbosity()->incValue(1);
+      }
       break;
 
     case 'j':
@@ -241,7 +261,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'i':
-      startupCommand(tr("setInputData(\"%1\");").arg(addSlashes(optarg)));
+      pushInputFile(optarg);
       break;
 
     case argInputChunks:
@@ -253,23 +273,19 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 'm':
-      startupCommand(tr("setMaskData(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
-    case argMaskDataset:
-      startupCommand(tr("setMaskDataset(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("setMask(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'a':
-      startupCommand(tr("setAnglesData(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("setAngles(\"%1\");").arg(addSlashes(optarg)));
       break;
 
-    case argAnglesDataset:
-      startupCommand(tr("setAnglesDataset(\"%1\");").arg(addSlashes(optarg)));
+    case 'w':
+      startupCommand(tr("setWeights(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'o':
-      startupCommand(tr("setOutputData(\"%1\");").arg(addSlashes(optarg)));
+      set_OutputFile(optarg);
       break;
 
     case 'S':
@@ -289,7 +305,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case 't':
-      startupCommand(tr("partialTransform(\"%1\");").arg(addSlashes(optarg)));
+      startupCommand(tr("doTransform(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'd':
@@ -302,6 +318,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'N':
       startupCommand(tr("normalization(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case 'z':
+      startupCommand(tr("compression(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case argInputProject:
@@ -328,10 +348,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("%1;").arg(optarg));
       break;
 
-    case 'w': /* wait */
-      startupCommand(tr("wait(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
     case 's': /* script file */
       startupCommand(tr("executeScriptFile(\"%1\");").arg(addSlashes(optarg)));
       break;
@@ -341,11 +357,11 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       break;
 
     case argMergeInput:
-      startupCommand(tr("mergeInput(\"%1\");").arg(addSlashes(optarg)));
+      pushInputFile(optarg);
       break;
 
     case argMergeOutput:
-      startupCommand(tr("mergeOutput(\"%1\");").arg(addSlashes(optarg)));
+      set_OutputFile(optarg);
       break;
 
     case 'D': /* change debug level */
@@ -363,6 +379,30 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     default:
       break;
     }
+  }
+
+  int first=true;
+
+  while (optind < argc) {
+    if (first) {
+      first = false;
+
+      if (strcasecmp(argv[optind], "transform") == 0) {
+        set_Mode(TransformMode);
+      } else if (strcasecmp(argv[optind], "merge") == 0) {
+        set_Mode(MergeMode);
+      } else if (strcasecmp(argv[optind], "norm") == 0) {
+        set_Mode(NormMode);
+      } else if (strcasecmp(argv[optind], "project") == 0) {
+        set_Mode(ProjectMode);
+      } else {
+        pushInputFile(argv[optind]);
+      }
+    } else {
+      pushInputFile(argv[optind]);
+    }
+
+    optind++;
   }
 #endif
 }
@@ -433,7 +473,7 @@ void CctwApplication::initialize(int &argc, char *argv[])
                                            false,
                                            "outputData",
                                            this);
-  m_OutputData              -> allocateChunks();
+  m_OutputData       -> allocateChunks();
 
   m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, this);
 
@@ -476,19 +516,22 @@ void CctwApplication::initialize(int &argc, char *argv[])
   if (get_GuiWanted()) {
     m_Window                  = new CctwqtMainWindow(this);
   }
-#endif
 
-#ifndef NO_GUI
   if (m_Window) {
     m_Window->show();
   }
 #endif
 
+  preStartup();
+
   foreach(QString cmd, get_StartupCommands()) {
     QMetaObject::invokeMethod(this, "evaluateStartupCommand", Qt::QueuedConnection, Q_ARG(QString, cmd));
   }
 
+  postStartup();
+
   if (!get_GuiWanted()) {
+    QMetaObject::invokeMethod(this, "execute", Qt::QueuedConnection);
     QMetaObject::invokeMethod(this, "quit", Qt::QueuedConnection);
   }
 }
@@ -595,12 +638,17 @@ void CctwApplication::showHelp(QString about)
 {
   printLine(tr(
               "\n"
-              "usage: %1 <options>\n"
+              "usage: %1 transform|merge|norm|project <inputs> <options>\n"
+              "\n"
+              "where inputs are one or more hdf dataset refs (in url format)\n"
+              "the file part of the URL gives the hdf/nexus file, and the 'fragment'\n"
+              "(separated by a # character) gives the hdf dataset path\n"
               "\n"
               "where options are:\n"
               "\n"
               "--help, -h                       display this text\n"
-              "--version, -v                    display version info\n"
+              "--version                        display version info\n"
+              "--verbosity[=n], -v[=n]          set verbosity to 'n', or increment it if 'n' not given\n"
               "--threads <n>, -j <n>            set number of worker threads\n"
               "--input <f>, -i <f>              specify input data (url format)\n"
               "--inputchunks <cks>              specify input chunk size (e.g. 32x32x32 or 32)\n"
@@ -609,26 +657,32 @@ void CctwApplication::showHelp(QString about)
               "--maskdataset <dsn>              specify mask dataset path\n"
               "--angles <f>, -a <f>             specify angles data (url format\n"
               "--anglesdataset <f>              specify angles dataset path\n"
+              "--weights <f>, -w <f>            specify weights data (url format)\n"
               "--output <f>, -o <f>             specify output data (url format)\n"
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
               "--outputchunks <cks>             specify output chunk size (e.g. 32x32x32 or 32)\n"
               "--outputdataset <dsn>            specify output dataset path\n"
+              "--normalization <n>, -N <n>      normalize output file(s) (0=no norm, 1=norm)\n"
+              "--compression <n>, -z <n>        compress output files (-ve = LZF, 0 = none, 1-9 = GZIP\n"
               "--subset <n/m>, -S <n/m>         specify subset of input data to operate on (or all if blank)\n"
               "--transform, -t                  transform all or part of the data\n"
               "--depends, -d                    calculate dependencies for all or part of the data\n"
               "--nodepends, -x                  clear dependencies\n"
-              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
-              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
-              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
               "--nogui, -n                      no GUI interface\n"
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
-              "--wait <msg>, -w                 wait for previous commands to finish\n"
               "--script <f>, -s <f>             run script in file <f>\n"
+              "--iproject {=n}                  project input dataset (along x=1,y=2,z=4 axes)\n"
+              "--oproject {=n}                  project output dataset (along x=1,y=2,z=4 axes)\n"
+              "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--mergein <f>                    specify an input dataset to merge (url format)\n"
               "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
+              "\n"
+              "Examples:\n"
+              "cctwcli transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
+              "cctwcli merge file1.nxs\\#/data/entry/v file2.nxs\\#/data/entry/v -o merge.nxs\\#/data/entry/v\n"
               ).arg(arguments().at(0)));
 }
 
@@ -694,7 +748,7 @@ void CctwApplication::setMaskData(QString data)
   if (m_InputData) {
     printMessage(tr("Set mask to %1").arg(data));
 
-    m_InputData->setMaskSource(data);
+    set_MaskFile(data);
   }
 }
 
@@ -705,6 +759,11 @@ void CctwApplication::setMaskDataset(QString data)
 
     m_InputData->setMaskDataset(data);
   }
+}
+
+void CctwApplication::pushInputFile(QString path)
+{
+  prop_InputFiles()->appendValue(path);
 }
 
 void CctwApplication::setAnglesData(QString data)
@@ -768,76 +827,75 @@ void CctwApplication::setSubset(QString desc)
   }
 }
 
-void CctwApplication::partialTransform(QString desc)
+void CctwApplication::transform(QString desc)
 {
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
   if (m_Transformer) {
-
     if (m_Transformer->get_UseDependencies()) {
       m_Transformer->transform();
     } else {
-      transform();
+      m_Transformer->simpleTransform();
     }
   }
 }
 
-void CctwApplication::transform()
-{
-  QVector < QFuture < void > > futures;
-  waitCompleted();
+//void CctwApplication::transform()
+//{
+//  QVector < QFuture < void > > futures;
+//  waitCompleted();
 
-  CctwIntVector3D chunks = m_InputData->chunkCount();
+//  CctwIntVector3D chunks = m_InputData->chunkCount();
 
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
+//  set_Halting(false);
+//  set_Progress(0);
+//  set_ProgressLimit(chunks.volume());
 
-  QTime startAt;
+//  QTime startAt;
 
-  startAt.start();
+//  startAt.start();
 
-  printMessage("Starting Transform");
+//  printMessage("Starting Transform");
 
-  m_InputData  -> beginTransform(true,  0);
-  m_OutputData -> beginTransform(false, 0);
+//  m_InputData  -> beginTransform(true,  0);
+//  m_OutputData -> beginTransform(false, 0);
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          goto abort;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+//  for (int z=0; z<chunks.z(); z++) {
+//    for (int y=0; y<chunks.y(); y++) {
+//      for (int x=0; x<chunks.x(); x++) {
+//        if (get_Halting()) {
+//          goto abort;
+//        } else {
+//          CctwIntVector3D idx(x,y,z);
 
-          int n = m_InputData->chunkNumberFromIndex(idx);
+//          int n = m_InputData->chunkNumberFromIndex(idx);
 
-          addWorkOutstanding(1);
+//          addWorkOutstanding(1);
 
-          futures.append(
-                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
-        }
-      }
-    }
-  }
+//          futures.append(
+//                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
+//        }
+//      }
+//    }
+//  }
 
-abort:
-  foreach (QFuture<void> f, futures) {
-    f.waitForFinished();
-    processEvents();
-  }
+//abort:
+//  foreach (QFuture<void> f, futures) {
+//    f.waitForFinished();
+//    processEvents();
+//  }
 
-  int msec = startAt.elapsed();
+//  int msec = startAt.elapsed();
 
-  m_OutputData -> flushOutputFile();
+//  m_OutputData -> flushOutputFile();
 
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
+//  m_InputData  -> endTransform();
+//  m_OutputData -> endTransform();
 
-  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
-               .arg(msec)
-               .arg(CctwDataChunk::allocatedChunkCount()));
-}
+//  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
+//               .arg(msec)
+//               .arg(CctwDataChunk::allocatedChunkCount()));
+//}
 
 void CctwApplication::partialDependencies(QString desc)
 {
@@ -1466,6 +1524,19 @@ void CctwApplication::setNormalization(QString data)
     printMessage(tr("Set normalization to %1").arg(v));
 
     m_Transformer->set_Normalization(v);
+    m_OutputData->set_Normalization(v);
+  }
+}
+
+void CctwApplication::setCompression(QString data)
+{
+  int v = data.toInt();
+
+  if (m_Transformer) {
+    printMessage(tr("Set compression to %1").arg(v));
+
+    m_Transformer->set_Compression(v);
+    m_OutputData->set_Compression(v);
   }
 }
 
@@ -1492,12 +1563,12 @@ void CctwApplication::setProjectOutput(QString dir)
 
 void CctwApplication::mergeInput(QString path)
 {
-  m_MergeInputs.append(path);
+  pushInputFile(path);
 }
 
 void CctwApplication::mergeOutput(QString path)
 {
-  m_MergeOutput = path;
+  setOutputData(path);
 
   QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
 
@@ -1505,6 +1576,20 @@ void CctwApplication::mergeOutput(QString path)
     CctwThread::msleep(100);
     processEvents(QEventLoop::ExcludeUserInputEvents);
   }
+}
+
+void CctwApplication::runTransform()
+{
+  m_InputData->setDataSource(get_InputFiles().at(0));
+  m_InputData->setMaskSource(get_MaskFile());
+  m_InputData->setAnglesSource(get_AnglesFile());
+  m_InputData->setWeightsSource(get_WeightsFile());
+
+  autoOutputFile(".nxs");
+
+  m_OutputData->setDataSource(get_OutputFile());
+
+  transform("");
 }
 
 void CctwApplication::runMerge()
@@ -1516,12 +1601,12 @@ void CctwApplication::runMerge()
   CctwIntVector3D hdfChunkSize(0,0,0);
   CctwIntVector3D dims(0,0,0);
 
-  if (m_MergeInputs.count() < 1) {
+  if (get_InputFiles().count() < 1) {
     printMessage("No merge inputs given");
     goto exit;
   }
 
-  foreach(QString path, m_MergeInputs) {
+  foreach(QString path, get_InputFiles()) {
     CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, NULL);
 
     if (inputFile) {
@@ -1550,18 +1635,24 @@ void CctwApplication::runMerge()
 
     if (inputFile->dimensions() != dims) {
       printMessage("Input datasets do not have the same dimensions");
+      goto exit;
     }
+
+    inputFile->setChunkSize(hdfChunkSize);
   }
 
-  outputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, m_MergeOutput, NULL);
-  outputFile->setDataSource(m_MergeOutput);
-  outputFile->set_HDFChunkSize(hdfChunkSize);
-  outputFile->set_Compression(get_MergeCompression());
-  outputFile->setDimensions(dims);
-  outputFile->setChunkSize(hdfChunkSize);
+  autoOutputFile(".mrg.nxs#/entry/data");
+  autoChunkSizes();
 
-  if (outputFile->openOutputFile()) {
-    int nchunks = outputFile->chunkCount().volume();
+  m_OutputData->setDataSource(get_OutputFile());
+  m_OutputData->set_HDFChunkSize(hdfChunkSize);
+  m_OutputData->set_Compression(m_Transformer->get_Compression());
+  m_OutputData->setDimensions(dims);
+  m_OutputData->setChunkSize(hdfChunkSize);
+  m_OutputData->set_Normalization(m_Transformer->get_Normalization());
+
+  if (m_OutputData->openOutputFile()) {
+    int nchunks = m_OutputData->chunkCount().volume();
 
     set_Progress(0);
     set_ProgressLimit(nchunks);
@@ -1571,15 +1662,15 @@ void CctwApplication::runMerge()
 
       foreach(CctwChunkedData* inputFile, inputFiles) {
         CctwDataChunk *inChunk = inputFile->readChunk(i);
-        outputFile->mergeChunk(inChunk);
+        m_OutputData->mergeChunk(inChunk);
 
         delete inChunk;
       }
 
-      outputFile->writeChunk(i);
+      m_OutputData->writeChunk(i);
     }
   } else {
-    printMessage(tr("Could not open %1 for output").arg(m_MergeOutput));
+    printMessage(tr("Could not open %1 for output").arg(get_OutputFile()));
     goto exit;
   }
 
@@ -1590,6 +1681,182 @@ exit:
       delete inputFile;
     }
   }
+}
 
-  delete outputFile;
+void CctwApplication::runNorm()
+{
+  runMerge();
+}
+
+void CctwApplication::runProject()
+{
+  m_InputData->setDataSource(get_InputFiles().at(0));
+
+  if (m_Transformer) {
+    m_Transformer->inputProject(get_OutputFile(), 7);
+  }
+}
+
+void CctwApplication::executeTransform()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw transform needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runTransform);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeMerge()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() < 1) {
+    printMessage(tr("cctw merge needs 1 or more input files, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runMerge);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeNorm()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw norm needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runNorm);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeProject()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 1) {
+    printMessage(tr("cctw project needs exactly 1 input file, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runProject);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::execute()
+{
+  int m = get_Mode();
+
+  switch (m) {
+  case 0:
+    break;
+
+  case TransformMode:
+    executeTransform();
+    break;
+
+  case MergeMode:
+    executeMerge();
+    break;
+
+  case NormMode:
+    executeNorm();
+    break;
+
+  case ProjectMode:
+    executeProject();
+    break;
+  }
+
+//  printMessage(tr("Mode : %1").arg(m));
+
+//  foreach (QString s, get_InputFiles()) {
+//    printMessage(tr("File: \"%1\"").arg(s));
+//  }
+}
+
+void CctwApplication::preStartup()
+{
+  int m = get_Mode();
+
+  if (m == TransformMode) {
+    m_InputData -> setDataSource(get_InputFiles().at(0));
+    m_OutputData -> setDataSource(get_OutputFile());
+  }
+
+  if (m == MergeMode) {
+    m_OutputData->set_Normalization(0);
+  }
+
+  if (m == NormMode) {
+    m_OutputData->set_Normalization(1);
+  }
+}
+
+void CctwApplication::postStartup()
+{
+}
+
+void CctwApplication::autoOutputFile(QString suffix)
+{
+  if (get_OutputFile().length() == 0) {
+    QString commonBase = "";
+    int first = true;
+
+    foreach(QString f, get_InputFiles()) {
+      QUrl u(f);
+      QString fn = u.fileName();
+      QFileInfo fi(fn);
+      QString bn = fi.completeBaseName();
+
+      if (first) {
+        commonBase = bn;
+        first = false;
+      } else {
+        QString a;
+
+        for (int i=0; i<bn.length(); i++) {
+          if (commonBase[i] == bn[i]) {
+            a.append(bn[i]);
+          } else break;
+        }
+
+        if (a.length() >= 1) {
+          commonBase = a;
+        }
+      }
+
+      printMessage(tr("Common basename %1").arg(commonBase));
+    }
+
+    QString res = commonBase + suffix;
+
+    set_OutputFile(res);
+  }
+}
+
+void CctwApplication::autoChunkSizes()
+{
 }
