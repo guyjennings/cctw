@@ -5,49 +5,23 @@ file project<"project">;
 file project_mrg<"project_mfg">;
 file project[];
 
-xf1-0.nxs: bfap00.pars
-	rm -rf xf1-0.nxs
-	${CCTW} transform --script bfap00.pars \
-	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
-	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask \
-	-c inputData.chunkSize=[94,106,114] \
-	--output xf1-0.nxs\#/entry/data/v \
-	--compression 2 \
-	--normalization 0 \
-	--subset 0/4
+typedef nxs    file;
+typedef xf_nxs file;
+typedef pars   file;
 
-xf1-1.nxs: bfap00.pars
-	rm -rf xf1-1.nxs
-	${CCTW} transform --script bfap00.pars \
-	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
-	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask \
-	-c inputData.chunkSize=[94,106,114] \
-	--output xf1-1.nxs\#/entry/data/v \
-	--compression 2 \
-	--normalization 0 \
-	--subset 1/4
+xf_nxs xf1[];
 
-xf1-2.nxs: bfap00.pars
-	rm -rf xf1-2.nxs
-	${CCTW} transform --script bfap00.pars \
-	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
-	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask \
-	-c inputData.chunkSize=[94,106,114] \
-	--output xf1-2.nxs\#/entry/data/v \
-	--compression 2 \
-	--normalization 0 \
-	--subset 2/4
-
-xf1-3.nxs: bfap00.pars
-	rm -rf xf1-3.nxs
-	${CCTW} transform --script bfap00.pars \
-	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
-	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask \
-	-c inputData.chunkSize=[94,106,114] \
-	--output xf1-3.nxs\#/entry/data/v \
-	--compression 2 \
-	--normalization 0 \
-	--subset 3/4
+app (xf_nxs xf) cctw_transform(nxs n, string dataset, pars p, string mask, int i)
+{
+  // rm -rf xf1-0.nxs
+  CCTW "transform" "--script" p (n+"#"+dataset)
+    "--mask" mask
+    "-c" "inputData.chunkSize=[94,106,114]"
+    "--output" xf // xf1-0.nxs\#/entry/data/v
+    "--compression"   "2"
+    "--normalization" "0"
+    "--subset" (toint(i)+"/4")
+}
 
 xf1-mrg.nxs: xf1-0.nxs xf1-1.nxs xf1-2.nxs xf1-3.nxs
 	rm -rf xf1-mrg.nxs
