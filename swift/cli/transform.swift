@@ -11,13 +11,13 @@ typedef pars   file;
 
 xf_nxs xf1[];
 
-app (xf_nxs xf) cctw_transform(nxs data, string dataset, pars p, string mask, int i)
+app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, pars p, string mask, int i)
 {
   // rm -rf xf1-0.nxs
-  CCTW "transform" "--script" p (filename(data)+"#"+dataset)
+  CCTW "transform" "--script" p (filename(data)+"#"+dataset_in)
     "--mask" mask
     "-c" "inputData.chunkSize=[94,106,114]"
-    "--output" (filename(xf)+"#/entry/data/v")
+    "--output" (filename(xf)+"#"+dataset_out)
     "--compression"   "2"
     "--normalization" "0"
     "--subset" (toint(i)+"/4")
@@ -27,22 +27,23 @@ nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_
 pars p = input("bfap00.pars");
 mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask";
 n = 4;
+// Parallel loop
 foreach i in [0:n-1]
 {
   xf_nxs xf = cctw_transform(data, "/f1/data/v", mask, i);
   xf1[i] = xf; 
 }
 
-xf1-mrg.nxs: xf1-0.nxs xf1-1.nxs xf1-2.nxs xf1-3.nxs
-	rm -rf xf1-mrg.nxs
-	${CCTW} merge \
-	xf1-0.nxs\#/entry/data/v \
-	xf1-1.nxs\#/entry/data/v \
-	xf1-2.nxs\#/entry/data/v \
-	xf1-3.nxs\#/entry/data/v \
-	--normalization 0 \
-	--compression 2 \
-	-o xf1-mrg.nxs\#/entry/data/v
+app (nxs mrg) cctw_merge(xf_nxs[] data, string dataset)
+{
+  // rm -rf xf1-mrg.nxs
+  CCTW "merge" data dataset
+    "--normalization" "0"
+    "--compression"   "2"
+    "-o" (filename(mrg)+"#"+dataset);
+}
+
+file xf1_mrg<"xf1-mrg.nxs"> = cctw_merge(xf1);
 
 xf1-mrg-norm.nxs: xf1-mrg.nxs
 	rm -rf xf1-mrg-norm.nxs
