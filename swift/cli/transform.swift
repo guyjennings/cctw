@@ -11,16 +11,26 @@ typedef pars   file;
 
 xf_nxs xf1[];
 
-app (xf_nxs xf) cctw_transform(nxs n, string dataset, pars p, string mask, int i)
+app (xf_nxs xf) cctw_transform(nxs data, string dataset, pars p, string mask, int i)
 {
   // rm -rf xf1-0.nxs
-  CCTW "transform" "--script" p (n+"#"+dataset)
+  CCTW "transform" "--script" p (filename(data)+"#"+dataset)
     "--mask" mask
     "-c" "inputData.chunkSize=[94,106,114]"
-    "--output" xf // xf1-0.nxs\#/entry/data/v
+    "--output" (filename(xf)+"#/entry/data/v")
     "--compression"   "2"
     "--normalization" "0"
     "--subset" (toint(i)+"/4")
+}
+
+nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
+pars p = input("bfap00.pars");
+mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask";
+n = 4;
+foreach i in [0:n-1]
+{
+  xf_nxs xf = cctw_transform(data, "/f1/data/v", mask, i);
+  xf1[i] = xf; 
 }
 
 xf1-mrg.nxs: xf1-0.nxs xf1-1.nxs xf1-2.nxs xf1-3.nxs
