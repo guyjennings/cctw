@@ -3,7 +3,7 @@ global const string CCTW = "../../cctw-release-5.2/bin/cctw";
 // all:
 file project<"project">;
 file project_mrg<"project_mfg">;
-file project[];
+file projects[];
 
 typedef nxs    file;
 typedef xf_nxs file;
@@ -20,23 +20,23 @@ app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string datase
     "--output" (filename(xf)+"#"+dataset_out)
     "--compression"   "2"
     "--normalization" "0"
-    "--subset" (toint(subset)+"/4")
+    "--subset" (toString(subset)+"/4")
 }
 
 nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
 pars p = input("bfap00.pars");
-mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask";
+mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs#/entry/mask";
 dataset_in = "/f1/data/v";
 dataset_out = "/entry/data/v";
 n = 4;
 // Parallel loop
 foreach i in [0:n-1]
 {
-  xf_nxs xf = cctw_transform(data, dataset_in, dataset_out, mask, i);
+  xf_nxs xf = cctw_transform_subset(data, dataset_in, dataset_out, p, mask, i);
   xf1[i] = xf; 
 }
 
-app (nxs mrg) cctw_merge(xf_nxs[] data, string dataset)
+app (nxs mrg) cctw_merge(xf_nxs data[], string dataset)
 {
   // rm -rf xf1-mrg.nxs
   CCTW "merge" data dataset
@@ -45,7 +45,7 @@ app (nxs mrg) cctw_merge(xf_nxs[] data, string dataset)
     "-o" (filename(mrg)+"#"+dataset);
 }
 
-file xf1_mrg<"xf1-mrg.nxs"> = cctw_merge(xf1);
+file xf1_mrg<"xf1-mrg.nxs"> = cctw_merge(xf1, dataset_out);
 
 app (nxs norm) cctw_norm(nxs data, string dataset)
 {
@@ -54,9 +54,9 @@ app (nxs norm) cctw_norm(nxs data, string dataset)
     "-o" (filename(norm)+"#"+dataset);
 }
 
-nxs xf1_mrg_norm<"xf1-mrg-norm.nxs"> = cctw_norm(xf1_mrg);
+nxs xf1_mrg_norm<"xf1-mrg-norm.nxs"> = cctw_norm(xf1_mrg, dataset_out);
 
-app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, pars p, string mask, int subset)
+app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, pars p, string mask)
 {
   // rm -rf xf1-0.nxs
   CCTW "transform" "--script" p (filename(data)+"#"+dataset_in)
@@ -70,7 +70,9 @@ app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, 
 nxs xf1_nxs<"xf1.nxs"> = cctw_transform(data, dataset_in, dataset_out, p, mask);
 
 file xf1_norm<"xf1-norm.nxs"> = cctw_norm(xf1_nxs, dataset_out);
-  
+
+#if 0 
+
 project-0: xf1-0.nxs
 	rm -rf xf1-0.[xyz].tif*
 	${CCTW} project xf1-0.nxs\#/entry/data/v -o xf1-0
@@ -99,3 +101,4 @@ project-mrg: xf1-mrg-norm.nxs
 clean:
 	rm -rf xf1*
 
+#endif
