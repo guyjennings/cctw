@@ -11,7 +11,7 @@ typedef pars   file;
 
 xf_nxs xf1[];
 
-app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, pars p, string mask, int i)
+app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string dataset_out, pars p, string mask, int subset)
 {
   // rm -rf xf1-0.nxs
   CCTW "transform" "--script" p (filename(data)+"#"+dataset_in)
@@ -20,7 +20,7 @@ app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, 
     "--output" (filename(xf)+"#"+dataset_out)
     "--compression"   "2"
     "--normalization" "0"
-    "--subset" (toint(i)+"/4")
+    "--subset" (toint(subset)+"/4")
 }
 
 nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
@@ -54,16 +54,18 @@ app (nxs norm) cctw_norm(nxs data, string dataset)
 
 nxs xf1_mrg_norm<"xf1-mrg-norm.nxs"> = cctw_norm(xf1_mrg);
 
-                        
-xf1.nxs: bfap00.pars
-	rm -rf xf1.nxs
-	${CCTW} transform --script bfap00.pars \
-	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
-	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask \
-	-c inputData.chunkSize=[94,106,114] \
-	-o xf1.nxs\#/entry/data/v \
-	-z2 \
-	-N0
+app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, pars p, string mask, int subset)
+{
+  // rm -rf xf1-0.nxs
+  CCTW "transform" "--script" p (filename(data)+"#"+dataset_in)
+    "--mask" mask
+    "-c" "inputData.chunkSize=[94,106,114]"
+    "--output" (filename(xf)+"#"+dataset_out)
+    "--compression"   "2"
+    "--normalization" "0"
+}
+
+nxs xf1_nxs<"xf1.nxs"> = cctw_transform(data, dataset_in, dataset_out, p, mask)
 
 xf1-norm.nxs: xf1.nxs
 	rm -rf xf1-norm.nxs
