@@ -45,12 +45,16 @@ app (nxs mrg) cctw_merge(xf_nxs[] data, string dataset)
 
 file xf1_mrg<"xf1-mrg.nxs"> = cctw_merge(xf1);
 
-xf1-mrg-norm.nxs: xf1-mrg.nxs
-	rm -rf xf1-mrg-norm.nxs
-	${CCTW} norm \
-	xf1-mrg.nxs\#/entry/data/v \
-	-o xf1-mrg-norm.nxs\#/entry/data/v
+app (nxs norm) cctw_norm(nxs data, string dataset)
+{
+  // rm -rf xf1-mrg-norm.nxs
+  CCTW "norm" (filename(data)+"#"+dataset)
+    "-o" (filename(norm)+"#"+dataset);
+}
 
+nxs xf1_mrg_norm<"xf1-mrg-norm.nxs"> = cctw_norm(xf1_mrg);
+
+                        
 xf1.nxs: bfap00.pars
 	rm -rf xf1.nxs
 	${CCTW} transform --script bfap00.pars \
