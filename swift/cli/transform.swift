@@ -26,11 +26,13 @@ app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string datase
 nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
 pars p = input("bfap00.pars");
 mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs\#/entry/mask";
+dataset_in = "/f1/data/v";
+dataset_out = "/entry/data/v";
 n = 4;
 // Parallel loop
 foreach i in [0:n-1]
 {
-  xf_nxs xf = cctw_transform(data, "/f1/data/v", mask, i);
+  xf_nxs xf = cctw_transform(data, dataset_in, dataset_out, mask, i);
   xf1[i] = xf; 
 }
 
@@ -65,13 +67,10 @@ app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, 
     "--normalization" "0"
 }
 
-nxs xf1_nxs<"xf1.nxs"> = cctw_transform(data, dataset_in, dataset_out, p, mask)
+nxs xf1_nxs<"xf1.nxs"> = cctw_transform(data, dataset_in, dataset_out, p, mask);
 
-xf1-norm.nxs: xf1.nxs
-	rm -rf xf1-norm.nxs
-	${CCTW} norm xf1.nxs\#/entry/data/v \
-	-o xf1-norm.nxs\#/entry/data/v
-
+file xf1_norm<"xf1-norm.nxs"> = cctw_norm(xf1_nxs, dataset_out);
+  
 project-0: xf1-0.nxs
 	rm -rf xf1-0.[xyz].tif*
 	${CCTW} project xf1-0.nxs\#/entry/data/v -o xf1-0
