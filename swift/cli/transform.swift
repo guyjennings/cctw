@@ -1,11 +1,19 @@
+
+typedef nxs file;
+
+#ifdef DRYRUN
+global const string CCTW = "./cctw-dryrun.sh";
+nxs data = input("bfap00_170K.nxs");
+#else
 global const string CCTW = "../../cctw-release-5.2/bin/cctw";
+nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
+#endif
 
 // all:
 file project<"project">;
 file project_mrg<"project_mfg">;
 file projects[];
 
-typedef nxs    file;
 typedef xf_nxs file;
 typedef pars   file;
 
@@ -23,7 +31,6 @@ app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string datase
     "--subset" (toString(subset)+"/4")
 }
 
-nxs data = input("/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs");
 pars parameters = input("bfap00.pars");
 mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs#/entry/mask";
 dataset_in = "/f1/data/v";
