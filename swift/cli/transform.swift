@@ -33,7 +33,7 @@ n = 4;
 foreach i in [0:n-1]
 {
   xf_nxs xf = cctw_transform_subset(data, dataset_in, dataset_out, parameters, mask, i);
-  xf1[i] = xf; 
+  xf1[i] = xf;
 }
 
 app (nxs mrg) cctw_merge(xf_nxs data[], string dataset)
@@ -85,16 +85,11 @@ foreach i in [0:n-1]
   projection p<"project-%i"%i> = cctw_project(xf1[i], dataset_out);
 }
 
+projection xf1_prj<"xf1"> = cctw_project(xf1_norm, dataset_out);
+
+projection xf1_mrg_prj<"xf1-mrg"> = cctw_project(xf1_mrg_norm, dataset_out);
+
 #if 0
-
-project: xf1-norm.nxs
-	rm -rf xf1.[xyz].tif*
-	${CCTW} project xf1-norm.nxs\#/entry/data/v -o xf1
-
-project-mrg: xf1-mrg-norm.nxs
-	rm -rf xf1-mrg.[xyz].tif*
-	${CCTW} project xf1-mrg-norm.nxs\#/entry/data/v -o xf1-mrg
-
 
 clean:
 	rm -rf xf1*
