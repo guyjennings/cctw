@@ -88,10 +88,3 @@ foreach i in [0:n-1]
 projection xf1_prj<"xf1"> = cctw_project(xf1_norm, dataset_out);
 
 projection xf1_mrg_prj<"xf1-mrg"> = cctw_project(xf1_mrg_norm, dataset_out);
-
-#if 0
-
-clean:
-	rm -rf xf1*
-
-#endif
