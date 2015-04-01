@@ -1,4 +1,6 @@
 
+import sys;
+
 typedef nxs file;
 
 #ifdef DRYRUN
@@ -19,7 +21,7 @@ typedef pars   file;
 
 xf_nxs xf1[];
 
-app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string dataset_out, pars p, string mask, int subset)
+app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string dataset_out, pars p, string mask, int subset, int n)
 {
   // rm -rf xf1-0.nxs
   CCTW "transform" "--script" p (filename(data)+"#"+dataset_in)
@@ -28,18 +30,19 @@ app (xf_nxs xf) cctw_transform_subset(nxs data, string dataset_in, string datase
     "--output" (filename(xf)+"#"+dataset_out)
     "--compression"   "2"
     "--normalization" "0"
-    "--subset" (toString(subset)+"/4")
+    "--subset" ("%i/%i"%(subset,n))
 }
 
 pars parameters = input("bfap00.pars");
 mask = "/home/bessrc/sharedbigdata/data1/osborn-2014-1/pilatus_mask.nxs#/entry/mask";
 dataset_in = "/f1/data/v";
 dataset_out = "/entry/data/v";
-n = 4;
+// n = 4;
+n = toint(argv("n"));
 // Parallel loop
 foreach i in [0:n-1]
 {
-  xf_nxs xf = cctw_transform_subset(data, dataset_in, dataset_out, parameters, mask, i);
+  xf_nxs xf<"xf-%i.nxs"%i> = cctw_transform_subset(data, dataset_in, dataset_out, parameters, mask, i, n);
   xf1[i] = xf;
 }
 
@@ -77,21 +80,3 @@ app (xf_nxs xf) cctw_transform(nxs data, string dataset_in, string dataset_out, 
 nxs xf1_nxs<"xf1.nxs"> = cctw_transform(data, dataset_in, dataset_out, parameters, mask);
 
 nxs xf1_norm<"xf1-norm.nxs"> = cctw_norm(xf1_nxs, dataset_out);
-
-typedef projection file;
-
-app (projection o) cctw_project(nxs data, string dataset)
-{
-  // rm -rf xf1-0.[xyz].tif*
-  CCTW "project" (filename(data)+"#"+dataset)
-    "-o" o;
-}
-
-foreach i in [0:n-1]
-{
-  projection p<"project-%i"%i> = cctw_project(xf1[i], dataset_out);
-}
-
-projection xf1_prj<"xf1"> = cctw_project(xf1_norm, dataset_out);
-
-projection xf1_mrg_prj<"xf1-mrg"> = cctw_project(xf1_mrg_norm, dataset_out);
