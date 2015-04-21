@@ -723,7 +723,7 @@ bool CctwChunkedData::checkInputFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openInputFile(true);
-  closeInputFile(true);
+  closeInputFile();
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -743,6 +743,16 @@ bool CctwChunkedData::openInputFile(bool quietly)
 
   QString fileName    = get_DataFileName();
   QString dataSetName = get_DataSetName();
+
+  if (fileName.length() == 0) {
+    printMessage("Input file name is empty");
+    return false;
+  }
+
+  if (dataSetName.length() == 0) {
+    printMessage("Input dataset name is empty");
+    return false;
+  }
 
   if (!quietly) {
     printMessage(tr("About to open input file: %1 dataset: %2")
@@ -896,7 +906,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
 
       CctwIntVector3D hdfChunkSize = get_HDFChunkSize();
 
-      printMessage(tr("Dimensions %1, HDF Chunk size %2, Input chunk size %3, Chunk counts %4")
+      printMessage(tr("Input dimensions %1, HDF Chunk size %2, Input chunk size %3, Chunk counts %4")
                    .arg(get_Dimensions().toString())
                    .arg(hdfChunkSize.toString())
                    .arg(get_ChunkSize().toString())
@@ -924,7 +934,7 @@ bool CctwChunkedData::openInputFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeInputFile(bool quietly)
+void CctwChunkedData::closeInputFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -956,9 +966,7 @@ void CctwChunkedData::closeInputFile(bool quietly)
     m_FileId = -1;
   }
 
-  if (!quietly) {
-    printMessage("Closed input file");
-  }
+  printMessage("Closed input file");
 }
 
 #if NEXUS_ENABLED == 1
@@ -1013,6 +1021,16 @@ bool CctwChunkedData::openOutputFile()
 
   QString fileName = get_DataFileName();
   QString dataSetName = get_DataSetName();
+
+  if (fileName.length() == 0) {
+    printMessage("Output file name is empty");
+    return false;
+  }
+
+  if (dataSetName.length() == 0) {
+    printMessage("Output dataset name is empty");
+    return false;
+  }
 
   printMessage(tr("About to open output file: %1 dataset: %2")
                 .arg(fileName).arg(dataSetName));
@@ -1353,7 +1371,7 @@ bool CctwChunkedData::checkMaskFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openMaskFile(true);
-  closeMaskFile(true);
+  closeMaskFile();
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -1375,14 +1393,14 @@ bool CctwChunkedData::openMaskFile(bool quietly)
   QString dataSetName = get_MaskDataSetName();
   QString inputFile   = get_DataFileName();
 
-  if (!quietly) {
-    printMessage(tr("About to open mask input file: %1 dataset: %2")
-                  .arg(fileName).arg(dataSetName));
-  }
-
   if (dataSetName.length()==0) {
     printMessage(tr("No dataset name given for mask file, skipping"));
     return true;
+  }
+
+  if (!quietly) {
+    printMessage(tr("About to open mask input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
   }
 
   QFileInfo f(fileName);
@@ -1401,9 +1419,11 @@ bool CctwChunkedData::openMaskFile(bool quietly)
     }
 
     if (fileName.length() == 0) { // No file name given?
+      printMessage("No mask file name");
       fileId = m_FileId;
       sameFile = true;
     } else if (fileName == inputFile) { // In same file as input data?
+      printMessage("Mask file same as input file");
       fileId = m_FileId;
       sameFile = true;
     } else {
@@ -1457,7 +1477,7 @@ bool CctwChunkedData::openMaskFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeMaskFile(bool quietly)
+void CctwChunkedData::closeMaskFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -1477,7 +1497,7 @@ void CctwChunkedData::closeMaskFile(bool quietly)
     m_MaskSameFile = false;
   }
 
-  if (!quietly) {
+  if (qcepDebug(DEBUG_APP)) {
     printMessage("Closed mask input file");
   }
 }
@@ -1544,6 +1564,12 @@ bool CctwChunkedData::readMaskFile()
     }
 
     closeMaskFile();
+  } else {
+    res = false;
+  }
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("CctwChunkedData::readMaskFile returns %1").arg(res));
   }
 
   return res;
@@ -1560,7 +1586,7 @@ bool CctwChunkedData::checkAnglesFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openAnglesFile(true);
-  closeAnglesFile(true);
+  closeAnglesFile();
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -1582,14 +1608,14 @@ bool CctwChunkedData::openAnglesFile(bool quietly)
   QString dataSetName = get_AnglesDataSetName();
   QString inputFile   = get_DataFileName();
 
-  if (!quietly) {
-    printMessage(tr("About to open angles input file: %1 dataset: %2")
-                  .arg(fileName).arg(dataSetName));
-  }
-
   if (dataSetName.length()==0) {
     printMessage(tr("No dataset name given for angles file, skipping"));
     return true;
+  }
+
+  if (!quietly) {
+    printMessage(tr("About to open angles input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
   }
 
   QFileInfo f(fileName);
@@ -1664,7 +1690,7 @@ bool CctwChunkedData::openAnglesFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeAnglesFile(bool quietly)
+void CctwChunkedData::closeAnglesFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -1684,7 +1710,7 @@ void CctwChunkedData::closeAnglesFile(bool quietly)
     m_AnglesSameFile = false;
   }
 
-  if (!quietly) {
+  if (qcepDebug(DEBUG_APP)) {
     printMessage("Closed Angles file");
   }
 }
@@ -1733,6 +1759,12 @@ bool CctwChunkedData::readAnglesFile()
     }
 
     closeAnglesFile();
+  } else {
+    res = false;
+  }
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("CctwChunkedData::readAnglesFile returns %1").arg(res));
   }
 
   return res;
@@ -1749,7 +1781,7 @@ bool CctwChunkedData::checkWeightsFile()
   H5Eset_auto(H5E_DEFAULT, NULL, NULL);
 
   bool res = openWeightsFile(true);
-  closeWeightsFile(true);
+  closeWeightsFile();
 
   /* Restore previous error handler */
   H5Eset_auto(H5E_DEFAULT, old_func, old_client_data);
@@ -1771,14 +1803,14 @@ bool CctwChunkedData::openWeightsFile(bool quietly)
   QString dataSetName = get_WeightsDataSetName();
   QString inputFile   = get_DataFileName();
 
-  if (!quietly) {
-    printMessage(tr("About to open Weights input file: %1 dataset: %2")
-                  .arg(fileName).arg(dataSetName));
-  }
-
   if (dataSetName.length()==0) {
     printMessage(tr("No dataset name given for weights file, skipping"));
     return true;
+  }
+
+  if (!quietly) {
+    printMessage(tr("About to open Weights input file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
   }
 
   QFileInfo f(fileName);
@@ -1853,7 +1885,7 @@ bool CctwChunkedData::openWeightsFile(bool quietly)
   return true;
 }
 
-void CctwChunkedData::closeWeightsFile(bool quietly)
+void CctwChunkedData::closeWeightsFile()
 {
   QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -1873,7 +1905,7 @@ void CctwChunkedData::closeWeightsFile(bool quietly)
     m_WeightsSameFile = false;
   }
 
-  if (!quietly) {
+  if (qcepDebug(DEBUG_APP)) {
     printMessage("Closed Weights file");
   }
 }
@@ -1922,6 +1954,12 @@ bool CctwChunkedData::readWeightsFile()
     }
 
     closeWeightsFile();
+  } else {
+    res = false;
+  }
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("CctwChunkedData::readWeightsFile returns %1").arg(res));
   }
 
   return res;
@@ -2167,13 +2205,13 @@ bool CctwChunkedData::beginTransform(bool isInput, int transformOptions)
   if (m_IsInput) {
     if (openInputFile()) {
 
-      printMessage("Reading mask data");
+//      printMessage("Reading mask data");
       if (readMaskFile()) {
 
-        printMessage("Reading angles data");
+//        printMessage("Reading angles data");
         if (readAnglesFile()) {
 
-          printMessage("Reading weights data");
+//          printMessage("Reading weights data");
           if (readWeightsFile()) {
             res = true;
           }

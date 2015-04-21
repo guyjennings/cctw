@@ -105,22 +105,22 @@ public slots:
   bool                openInputNeXusFile();
   void                flushOutputFile();
   void                closeOutputFile();
-  void                closeInputFile(bool quietly = false);
+  void                closeInputFile();
   void                closeInputNeXusFile();
 
   bool                checkMaskFile();
   bool                openMaskFile(bool quietly = false);
-  void                closeMaskFile(bool quietly = false);
+  void                closeMaskFile();
   bool                readMaskFile();
 
   bool                checkAnglesFile();
   bool                openAnglesFile(bool quietly = false);
-  void                closeAnglesFile(bool quietly = false);
+  void                closeAnglesFile();
   bool                readAnglesFile();
 
   bool                checkWeightsFile();
   bool                openWeightsFile(bool quietly = false);
-  void                closeWeightsFile(bool quietly = false);
+  void                closeWeightsFile();
   bool                readWeightsFile();
 
 private slots:
