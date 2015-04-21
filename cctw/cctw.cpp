@@ -15,5 +15,5 @@ int main(int argc, char *argv[])
 
   int res = app->exec();
 
-  return res;
+  return app->get_ExitStatus();
 }

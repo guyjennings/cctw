@@ -463,6 +463,7 @@ void CctwTransformer::transform()
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
+    m_Application->set_ExitStatus(0);
   }
 
   QTime startAt;
@@ -546,11 +547,13 @@ void CctwTransformer::transform()
       m_OutputData -> endTransform();
     } else {
       printMessage("Failed to open output data");
+      m_Application->set_ExitStatus(1);
     }
 
     m_InputData  -> endTransform();
   } else {
     printMessage("Failed to open input data");
+    m_Application->set_ExitStatus(1);
   }
 
   if (m_Application->get_Verbosity() >= 1) {
@@ -568,6 +571,7 @@ void CctwTransformer::simpleTransform()
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
+    m_Application->set_ExitStatus(0);
   }
 
   int msec;
@@ -644,11 +648,13 @@ abort:
       m_OutputData -> endTransform();
     } else {
       printMessage("Failed to open output data");
+      m_Application->set_ExitStatus(1);
     }
 
     m_InputData  -> endTransform();
   } else {
     printMessage("Failed to open input data");
+    m_Application->set_ExitStatus(1);
   }
 
   if (m_Application->get_Verbosity() >= 1) {

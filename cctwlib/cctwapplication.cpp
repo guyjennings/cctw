@@ -87,7 +87,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
   m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
-  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity")
+  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity"),
+  m_ExitStatus(QcepSettingsSaverWPtr(), this, "exitStatus", 0, "Exit Status")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
