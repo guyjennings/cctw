@@ -1,0 +1,34 @@
+def nxrs_sync_test(expos,srcpath,destpath) '{
+  pilatus_exptime(expos-0.003)
+  pilatus_expperiod(expos)
+  pilatus_nexpframe(1)
+  pilatus_nimages(4000)
+  nxrs_sync_begin(srcpath,destpath)
+  pilatus_exposure(sprintf("%s/%s", srcpath, "f1/f1scan.cbf"))
+  pilatus_wait()
+  pilatus_exposure(sprintf("%s/%s", srcpath, "f2/f2scan.cbf"))
+  pilatus_wait()
+  nxrs_sync_end(srcpath)
+}'
+
+def nxrs_sync_begin(srcdir,destdir,subdir) '{
+  printf("SYNC BEGIN\n")
+  pilatus_ssh(sprintf("mkdir -pv %s/%s\n",srcdir,subdir))
+  pilatus_ssh(sprintf("/home/det/wait-for-space \"%s/%s\" %d\n", srcdir, subdir, 4000*3000))
+  eval(sprintf("u mkdir -p %s", subdir))
+  eval(sprintf("newfile %s/scan.spec", subdir))
+}'
+
+def nxrs_sync_end(srcdir,destdir,subdir) '{
+  printf("SYNC END\n")
+  pilatus_ssh(sprintf("touch %s/%s/done.txt", srcdir, subdir))
+  pilatus_ssh(sprintf("/home/det/cbf-move  \"%s/%s/\" \"%s/%s/\" &\n", srcdir, subdir, destdir, subdir))
+}'
+
+def pilatus_ssh(cmd) '{
+  printf("ssh det@s11id-pilatus %s", cmd)
+  unix(sprintf("ssh det@s11id-pilatus %s", cmd))
+}'
+
+
+
