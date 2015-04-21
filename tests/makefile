@@ -12,6 +12,15 @@ testmask:  bfap00.pars
 	--normalization 0 \
 	--subset 0/100
 
+testnomask:  bfap00.pars
+	rm -rf testnomask.nxs
+	${CCTW} transform --script bfap00.pars \
+	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
+	--output testnomask.nxs\#/entry/data/v \
+	--compression 2 \
+	--normalization 0 \
+	--subset 0/100
+
 xf1-0.nxs: bfap00.pars
 	rm -rf xf1-0.nxs
 	${CCTW} transform --script bfap00.pars \

@@ -96,7 +96,7 @@ public slots:
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();
 
-  void                beginTransform(bool isInput, int transformOptions);
+  bool                beginTransform(bool isInput, int transformOptions);
   void                endTransform();
 
   bool                openOutputFile();
@@ -213,14 +213,17 @@ private:
   hid_t               m_Dataset2Id;
   hid_t               m_Dataspace2Id;
 
+  bool                m_MaskSameFile; // If mask is in input data file
   hid_t               m_MaskFileId;
   hid_t               m_MaskDatasetId;
   hid_t               m_MaskDataspaceId;
 
+  bool                m_AnglesSameFile; // If angles are in input data file
   hid_t               m_AnglesFileId;
   hid_t               m_AnglesDatasetId;
   hid_t               m_AnglesDataspaceId;
 
+  bool                m_WeightsSameFile; // If weights are in input data file
   hid_t               m_WeightsFileId;
   hid_t               m_WeightsDatasetId;
   hid_t               m_WeightsDataspaceId;
