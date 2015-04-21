@@ -2,6 +2,16 @@ CCTW=../../cctw-release-5.2/bin/cctw
 
 all:	project project-mrg project-0 project-1 project-2 project-3
 
+testmask:  bfap00.pars
+	rm -rf testmask.nxs
+	${CCTW} transform --script bfap00.pars \
+	/home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/data/v \
+	--mask /home/bessrc/sharedbigdata/data1/osborn-2014-1/bfap00/kt0012a_11/bfap00_170K.nxs\#/f1/mask \
+	--output testmask.nxs\#/entry/data/v \
+	--compression 2 \
+	--normalization 0 \
+	--subset 0/100
+
 xf1-0.nxs: bfap00.pars
 	rm -rf xf1-0.nxs
 	${CCTW} transform --script bfap00.pars \
