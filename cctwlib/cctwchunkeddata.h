@@ -129,6 +129,8 @@ private slots:
   void                onAnglesChanged();
 
 protected:
+  CctwApplication    *m_Application;
+
   QVector< CctwDataChunk* >  m_DataChunks;
   /** Is this a NeXus file? */
   bool                 m_IsNeXus;

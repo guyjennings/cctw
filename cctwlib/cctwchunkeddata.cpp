@@ -22,6 +22,7 @@ CctwChunkedData::CctwChunkedData
    QString          name,
    QObject         *parent)
   :CctwObject(name, parent),
+    m_Application(application),
     m_IsNeXus(false),
     m_DimensionsCache(dim),
     m_ChunkSizeCache(chunkSize),
@@ -1353,10 +1354,14 @@ void CctwChunkedData::closeOutputFile()
 
 void CctwChunkedData::flushOutputFile()
 {
-  printMessage("Writing output file...");
+  printMessage("\rWriting output file...");
+
+  m_Application->set_Progress(0);
+  m_Application->set_ProgressLimit(m_DataChunks.count());
 
   for (int i=0; i<m_DataChunks.count(); i++) {
     writeChunk(i);
+    m_Application->prop_Progress()->incValue(1);
   }
 }
 

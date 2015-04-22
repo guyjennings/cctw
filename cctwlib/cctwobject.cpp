@@ -13,19 +13,27 @@ CctwObject::CctwObject(QString name, QObject *parent) :
 
 void CctwObject::printLine(QString line)
 {
+#ifdef NO_GUI
+  printf("%s\n", qPrintable(line));
+#else
   if (parent()) {
     QMetaObject::invokeMethod( parent(), "printLine", Q_ARG(QString, line));
   }
+#endif
 }
 
 void CctwObject::printMessage(QString msg, QDateTime dt)
 {
+#ifdef NO_GUI
+  printf("%s\n", qPrintable(msg));
+#else
   if (parent()) {
     QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
   } else {
     printf("MESSAGE: %s %s\n",
            qPrintable(dt.toString("hh:mm:ss")), qPrintable(msg));
   }
+#endif
 }
 
 void CctwObject::writeSettings(QSettings *set, QString section)

@@ -125,7 +125,13 @@ void CctwApplication::onProgress(int prg)
   if (m_LastProgress.fetchAndStoreOrdered(prog) != prog) {
 #ifdef NO_GUI
     if ((prog % 5 == 0)) {
-      printMessage(tr("%1% completed").arg(prog));
+//      printMessage(tr("%1% completed").arg(prog));
+      printf("\r%d%% completed", prog);
+      fflush(stdout);
+      if (prog==100) {
+        printf("\n");
+        fflush(stdout);
+      }
     }
 #else
     if (m_Window == NULL && (prog % 5 == 0)) {
