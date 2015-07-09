@@ -51,7 +51,8 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
   m_Compression(m_Application->saver(), this, "compression", 2, "Compression level for output data"),
   m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
-  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform")
+  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform"),
+  m_Skipped(QcepSettingsSaverWPtr(), this, "skipped", 0, "Number of skipped pixels")
 {
 }
 
@@ -453,6 +454,8 @@ void CctwTransformer::transformChunkData(int chunkId,
                  .arg(nskipped)
                  );
   }
+
+  m_Skipped.incValue(nskipped);
 }
 
 void CctwTransformer::transform()
@@ -470,7 +473,9 @@ void CctwTransformer::transform()
 
   startAt.start();
 
-  if (m_Application->get_Verbosity() >= 1) {
+  set_Skipped(0);
+
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage("Starting Transform");
   }
 
@@ -556,10 +561,12 @@ void CctwTransformer::transform()
     m_Application->set_ExitStatus(1);
   }
 
-  if (m_Application->get_Verbosity() >= 1) {
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
                  .arg(get_WallTime())
                  .arg(CctwDataChunk::allocatedChunkCount()));
+
+    printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
   }
 }
 
@@ -593,7 +600,9 @@ void CctwTransformer::simpleTransform()
 
       startAt.start();
 
-      if (m_Application->get_Verbosity() >= 1) {
+      set_Skipped(0);
+
+      if (m_Application->get_Verbosity() >= 0) {
         printMessage("Starting Transform");
       }
 
@@ -657,10 +666,12 @@ abort:
     m_Application->set_ExitStatus(1);
   }
 
-  if (m_Application->get_Verbosity() >= 1) {
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
                  .arg(msec)
                  .arg(CctwDataChunk::allocatedChunkCount()));
+
+    printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
   }
 }
 

@@ -2,6 +2,15 @@ CCTW=../../cctw-release-5.2/bin/cctw
 
 all:	project project-mrg project-0 project-1 project-2 project-3
 
+testsinglemask:
+	rm -rf testsinglemask.nxs
+	${CCTW} transform --script bfap00.pars \
+	/home/bessrc/sharedbigdata/data2/osborn-2015-1/lsmo54/hz1_048c2_1/lsmo54_100K.nxs\#/f1/data/data \
+	--mask \#/f1/instrument/detector/pixel_mask \
+	--output testsinglemask.nxs\#/entry/data/v \
+	--compression 2 \
+	--normalization 0
+	
 testmask:  bfap00.pars
 	rm -rf testmask.nxs
 	${CCTW} transform --script bfap00.pars \
@@ -29,6 +38,7 @@ xf1-0.nxs: bfap00.pars
 	-c inputData.chunkSize=[94,106,114] \
 	--output xf1-0.nxs\#/entry/data/v \
 	--compression 2 \
+	--verbosity=1 \
 	--normalization 0 \
 	--subset 0/4
 
