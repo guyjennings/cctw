@@ -567,6 +567,7 @@ void CctwApplication::printMessage(QString msg, QDateTime dt)
 {
 #ifdef NO_GUI
   printf("%s\n", qPrintable(msg));
+  fflush(stdout);
 #else
   if (m_Window) {
     m_Window->printMessage(msg, dt);
