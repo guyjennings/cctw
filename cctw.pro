@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-  cache()
-}
+#greaterThan(QT_MAJOR_VERSION, 4) {
+#  cache()
+#}
 
 
 include(cctw-version.pri)

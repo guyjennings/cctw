@@ -2,7 +2,7 @@ TEMPLATE = app
 
 include(../cctw-version.pri)
 
-QT += core script
+QT += script
 
 TARGET = cctw
 
