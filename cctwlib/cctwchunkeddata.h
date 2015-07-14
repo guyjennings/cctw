@@ -96,7 +96,7 @@ public slots:
   void                mergeChunk(CctwDataChunk *chunk);
   void                clearMergeCounters();
 
-  void                beginTransform(bool isInput, int transformOptions);
+  bool                beginTransform(bool isInput, int transformOptions);
   void                endTransform();
 
   bool                openOutputFile();
@@ -105,22 +105,22 @@ public slots:
   bool                openInputNeXusFile();
   void                flushOutputFile();
   void                closeOutputFile();
-  void                closeInputFile(bool quietly = false);
+  void                closeInputFile();
   void                closeInputNeXusFile();
 
   bool                checkMaskFile();
   bool                openMaskFile(bool quietly = false);
-  void                closeMaskFile(bool quietly = false);
+  void                closeMaskFile();
   bool                readMaskFile();
 
   bool                checkAnglesFile();
   bool                openAnglesFile(bool quietly = false);
-  void                closeAnglesFile(bool quietly = false);
+  void                closeAnglesFile();
   bool                readAnglesFile();
 
   bool                checkWeightsFile();
   bool                openWeightsFile(bool quietly = false);
-  void                closeWeightsFile(bool quietly = false);
+  void                closeWeightsFile();
   bool                readWeightsFile();
 
 private slots:
@@ -129,6 +129,8 @@ private slots:
   void                onAnglesChanged();
 
 protected:
+  CctwApplication    *m_Application;
+
   QVector< CctwDataChunk* >  m_DataChunks;
   /** Is this a NeXus file? */
   bool                 m_IsNeXus;
@@ -213,14 +215,17 @@ private:
   hid_t               m_Dataset2Id;
   hid_t               m_Dataspace2Id;
 
+  bool                m_MaskSameFile; // If mask is in input data file
   hid_t               m_MaskFileId;
   hid_t               m_MaskDatasetId;
   hid_t               m_MaskDataspaceId;
 
+  bool                m_AnglesSameFile; // If angles are in input data file
   hid_t               m_AnglesFileId;
   hid_t               m_AnglesDatasetId;
   hid_t               m_AnglesDataspaceId;
 
+  bool                m_WeightsSameFile; // If weights are in input data file
   hid_t               m_WeightsFileId;
   hid_t               m_WeightsDatasetId;
   hid_t               m_WeightsDataspaceId;

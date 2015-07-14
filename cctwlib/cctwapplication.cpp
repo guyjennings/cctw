@@ -87,7 +87,8 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
   m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
   m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
-  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity")
+  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity"),
+  m_ExitStatus(QcepSettingsSaverWPtr(), this, "exitStatus", 0, "Exit Status")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
@@ -124,7 +125,13 @@ void CctwApplication::onProgress(int prg)
   if (m_LastProgress.fetchAndStoreOrdered(prog) != prog) {
 #ifdef NO_GUI
     if ((prog % 5 == 0)) {
-      printMessage(tr("%1% completed").arg(prog));
+//      printMessage(tr("%1% completed").arg(prog));
+      printf("\r%d%% completed", prog);
+      fflush(stdout);
+      if (prog==100) {
+        printf("\n");
+        fflush(stdout);
+      }
     }
 #else
     if (m_Window == NULL && (prog % 5 == 0)) {
@@ -560,6 +567,7 @@ void CctwApplication::printMessage(QString msg, QDateTime dt)
 {
 #ifdef NO_GUI
   printf("%s\n", qPrintable(msg));
+  fflush(stdout);
 #else
   if (m_Window) {
     m_Window->printMessage(msg, dt);

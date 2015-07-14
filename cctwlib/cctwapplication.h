@@ -261,6 +261,9 @@ public:
 
   Q_PROPERTY(int verbosity READ get_Verbosity WRITE set_Verbosity STORED false)
   QCEP_INTEGER_PROPERTY(Verbosity)
+
+  Q_PROPERTY(int exitStatus READ get_ExitStatus WRITE set_ExitStatus STORED false)
+  QCEP_INTEGER_PROPERTY(ExitStatus)
 };
 
 extern QcepSettingsSaverPtr g_Saver;

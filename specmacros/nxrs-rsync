@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# specify source and destination directories - note, must have trailing '/' !!
+
+SRC=/home/bessrc/data/osborn-2015-1/
+DST=bessrc@nxrs.msd.anl.gov:/home/bessrc/sharedbigdata/data2/osborn-2015-1/
+
+rsync -e ssh -v -x --ignore-existing -a $SRC $DST

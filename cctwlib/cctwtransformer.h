@@ -131,6 +131,9 @@ public:
 
   Q_PROPERTY(int useDependencies READ get_UseDependencies WRITE set_UseDependencies STORED false)
   QCEP_INTEGER_PROPERTY(UseDependencies)
+
+  Q_PROPERTY(int skipped READ get_Skipped WRITE set_Skipped STORED false)
+  QCEP_INTEGER_PROPERTY(Skipped)
 };
 
 #endif // CCTWTRANSFORMER_H

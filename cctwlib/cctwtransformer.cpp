@@ -51,7 +51,8 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
   m_Compression(m_Application->saver(), this, "compression", 2, "Compression level for output data"),
   m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
-  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform")
+  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform"),
+  m_Skipped(QcepSettingsSaverWPtr(), this, "skipped", 0, "Number of skipped pixels")
 {
 }
 
@@ -453,6 +454,8 @@ void CctwTransformer::transformChunkData(int chunkId,
                  .arg(nskipped)
                  );
   }
+
+  m_Skipped.incValue(nskipped);
 }
 
 void CctwTransformer::transform()
@@ -463,93 +466,107 @@ void CctwTransformer::transform()
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
+    m_Application->set_ExitStatus(0);
   }
 
   QTime startAt;
 
   startAt.start();
 
-  if (m_Application->get_Verbosity() >= 1) {
+  set_Skipped(0);
+
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage("Starting Transform");
   }
 
-  m_InputData  -> beginTransform(true,  get_TransformOptions());
-  m_OutputData -> beginTransform(false, get_TransformOptions());
+  if (m_InputData  -> beginTransform(true,  get_TransformOptions())) {
+    if (m_OutputData -> beginTransform(false, get_TransformOptions())) {
 
-  m_InputData  -> clearMergeCounters();
-  m_OutputData -> clearMergeCounters();
+      m_InputData  -> clearMergeCounters();
+      m_OutputData -> clearMergeCounters();
 
-  CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
+      CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
 
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
+      CctwIntVector3D chunks = m_OutputData->chunkCount();
 
-  QVector < int > inputChunks;
+      QVector < int > inputChunks;
 
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
+      for (int z=0; z<chunks.z(); z++) {
+        for (int y=0; y<chunks.y(); y++) {
+          for (int x=0; x<chunks.x(); x++) {
+            CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
 
-        if (chunk) {
-          int n = chunk->dependencyCount();
+            if (chunk) {
+              int n = chunk->dependencyCount();
 
-          for (int i=0; i<n; i++) {
-            int ckidx = chunk->dependency(i);
+              for (int i=0; i<n; i++) {
+                int ckidx = chunk->dependency(i);
 
-            if (!inputChunks.contains(ckidx)) {
-              inputChunks.append(ckidx);
+                if (!inputChunks.contains(ckidx)) {
+                  inputChunks.append(ckidx);
+                }
+              }
             }
           }
         }
       }
-    }
-  }
 
-  if (m_Application->get_Verbosity() >= 2) {
-    printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
-  }
+      if (m_Application->get_Verbosity() >= 2) {
+        printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
+      }
 
-  if ((get_TransformOptions() & 2)) {
-    if (m_Application->get_Verbosity() >= 2) {
-      printMessage("Sorting input chunk list into input order");
-    }
+      if ((get_TransformOptions() & 2)) {
+        if (m_Application->get_Verbosity() >= 2) {
+          printMessage("Sorting input chunk list into input order");
+        }
 
-    qSort(inputChunks.begin(), inputChunks.end());
-  }
+        qSort(inputChunks.begin(), inputChunks.end());
+      }
 
-  if (m_Application) {
-    m_Application->set_ProgressLimit(inputChunks.count());
-  }
+      if (m_Application) {
+        m_Application->set_ProgressLimit(inputChunks.count());
+      }
 
-  foreach(int ckidx, inputChunks) {
-    if (m_Application) {
-      m_Application->addWorkOutstanding(1);
-    }
+      foreach(int ckidx, inputChunks) {
+        if (m_Application) {
+          m_Application->addWorkOutstanding(1);
+        }
 
-    if ((get_TransformOptions() & 1) == 0) {
-      futures.append(
-        QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx));
+        if ((get_TransformOptions() & 1) == 0) {
+          futures.append(
+                QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx));
+        } else {
+          runTransformChunkNumber(ckidx);
+        }
+      }
+
+      foreach (QFuture<void> f, futures) {
+        f.waitForFinished();
+        if (m_Application) {
+          m_Application->processEvents();
+        }
+      }
+
+      set_WallTime(startAt.elapsed()/1000.0);
+
+      m_OutputData -> endTransform();
     } else {
-      runTransformChunkNumber(ckidx);
+      printMessage("Failed to open output data");
+      m_Application->set_ExitStatus(1);
     }
+
+    m_InputData  -> endTransform();
+  } else {
+    printMessage("Failed to open input data");
+    m_Application->set_ExitStatus(1);
   }
 
-  foreach (QFuture<void> f, futures) {
-    f.waitForFinished();
-    if (m_Application) {
-      m_Application->processEvents();
-    }
-  }
-
-  set_WallTime(startAt.elapsed()/1000.0);
-
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
-
-  if (m_Application->get_Verbosity() >= 1) {
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
                  .arg(get_WallTime())
                  .arg(CctwDataChunk::allocatedChunkCount()));
+
+    printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
   }
 }
 
@@ -561,84 +578,100 @@ void CctwTransformer::simpleTransform()
     m_Application->waitCompleted();
     m_Application->set_Progress(0);
     m_Application->set_Halting(false);
+    m_Application->set_ExitStatus(0);
   }
 
-  m_InputData  -> beginTransform(true,  0);
-  m_OutputData -> beginTransform(false, 0);
+  int msec;
 
-  parseSubset();
+  if (m_InputData  -> beginTransform(true,  0)) {
+    if (m_OutputData -> beginTransform(false, 0)) {
 
-  CctwIntVector3D chunkStart = m_SubsetStart;
-  CctwIntVector3D chunkEnd   = m_SubsetEnd;
-  CctwIntVector3D nChunks    = chunkEnd - chunkStart;
+      parseSubset();
 
-  if (m_Application) {
-    m_Application->set_ProgressLimit(nChunks.volume());
-  }
+      CctwIntVector3D chunkStart = m_SubsetStart;
+      CctwIntVector3D chunkEnd   = m_SubsetEnd;
+      CctwIntVector3D nChunks    = chunkEnd - chunkStart;
 
-  QTime startAt;
+      if (m_Application) {
+        m_Application->set_ProgressLimit(nChunks.volume());
+      }
 
-  startAt.start();
+      QTime startAt;
 
-  if (m_Application->get_Verbosity() >= 1) {
-    printMessage("Starting Transform");
-  }
+      startAt.start();
 
-  if (m_Application->get_Verbosity() >= 2) {
-    printMessage(tr("Input Dimensions %1, Output Dimensions %2")
-                 .arg(m_InputData->dimensions().toString())
-                 .arg(m_OutputData->dimensions().toString()));
-    printMessage(tr("Input Chunk Size %1, Output Chunk Size %2")
-                 .arg(m_InputData->chunkSize().toString())
-                 .arg(m_OutputData->chunkSize().toString()));
-    printMessage(tr("Input Chunk Count %1, Output Chunk Count %2")
-                 .arg(m_InputData->chunkCount().toString())
-                 .arg(m_OutputData->chunkCount().toString()));
-    printMessage(tr("Input HDF Chunk Size %1, Output HDF Chunk Size %2")
-                 .arg(m_InputData->get_HDFChunkSize().toString())
-                 .arg(m_OutputData->get_HDFChunkSize().toString()));
-  }
+      set_Skipped(0);
 
-  for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
-    for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {
-      for (int x=chunkStart.x(); x<chunkEnd.x(); x++) {
-        if (m_Application && m_Application->get_Halting()) {
-          goto abort;
-        } else {
-          CctwIntVector3D idx(x,y,z);
+      if (m_Application->get_Verbosity() >= 0) {
+        printMessage("Starting Transform");
+      }
 
-          int n = m_InputData->chunkNumberFromIndex(idx);
+      if (m_Application->get_Verbosity() >= 2) {
+        printMessage(tr("Input Dimensions %1, Output Dimensions %2")
+                     .arg(m_InputData->dimensions().toString())
+                     .arg(m_OutputData->dimensions().toString()));
+        printMessage(tr("Input Chunk Size %1, Output Chunk Size %2")
+                     .arg(m_InputData->chunkSize().toString())
+                     .arg(m_OutputData->chunkSize().toString()));
+        printMessage(tr("Input Chunk Count %1, Output Chunk Count %2")
+                     .arg(m_InputData->chunkCount().toString())
+                     .arg(m_OutputData->chunkCount().toString()));
+        printMessage(tr("Input HDF Chunk Size %1, Output HDF Chunk Size %2")
+                     .arg(m_InputData->get_HDFChunkSize().toString())
+                     .arg(m_OutputData->get_HDFChunkSize().toString()));
+      }
 
-          if (m_Application) {
-            m_Application->addWorkOutstanding(1);
+      for (int z=chunkStart.z(); z<chunkEnd.z(); z++) {
+        for (int y=chunkStart.y(); y<chunkEnd.y(); y++) {
+          for (int x=chunkStart.x(); x<chunkEnd.x(); x++) {
+            if (m_Application && m_Application->get_Halting()) {
+              goto abort;
+            } else {
+              CctwIntVector3D idx(x,y,z);
+
+              int n = m_InputData->chunkNumberFromIndex(idx);
+
+              if (m_Application) {
+                m_Application->addWorkOutstanding(1);
+              }
+
+              futures.append(
+                    QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, n));
+            }
           }
-
-          futures.append(
-                QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, n));
         }
       }
-    }
-  }
 
 abort:
-  foreach (QFuture<void> f, futures) {
-    f.waitForFinished();
-    if (m_Application) {
-      m_Application->processEvents();
+      foreach (QFuture<void> f, futures) {
+        f.waitForFinished();
+        if (m_Application) {
+          m_Application->processEvents();
+        }
+      }
+
+      msec = startAt.elapsed();
+
+      m_OutputData -> flushOutputFile();
+
+      m_OutputData -> endTransform();
+    } else {
+      printMessage("Failed to open output data");
+      m_Application->set_ExitStatus(1);
     }
+
+    m_InputData  -> endTransform();
+  } else {
+    printMessage("Failed to open input data");
+    m_Application->set_ExitStatus(1);
   }
 
-  int msec = startAt.elapsed();
-
-  m_OutputData -> flushOutputFile();
-
-  m_InputData  -> endTransform();
-  m_OutputData -> endTransform();
-
-  if (m_Application->get_Verbosity() >= 1) {
+  if (m_Application->get_Verbosity() >= 0) {
     printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
                  .arg(msec)
                  .arg(CctwDataChunk::allocatedChunkCount()));
+
+    printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
   }
 }
 
