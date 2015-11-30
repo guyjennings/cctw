@@ -31,6 +31,10 @@ private:
   static QScriptValue setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setMaskFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setAnglesFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setOmegaFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setTwoThetaFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setPhiFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setChiFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setWeightsFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDataFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOutputDimsFunc(QScriptContext *context, QScriptEngine *engine);

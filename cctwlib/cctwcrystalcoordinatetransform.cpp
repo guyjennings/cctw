@@ -9,14 +9,14 @@ CctwCrystalCoordinateTransform::CctwCrystalCoordinateTransform(CctwCrystalCoordi
   m_Angles(angles)
 {
   updateFromParameters();
-  setCurrentFrame(0.0);
 }
 
 void CctwCrystalCoordinateTransform::updateFromParameters()
 {
-  m_TwoThetaAngle = m_Parms->twoThetaNom() + m_Parms->twoThetaCorrection();
-  m_PhiAngle      = m_Parms->phiNom() + m_Parms->phiCorrection();
-  m_ChiAngle      = m_Parms->chiNom() + m_Parms->chiCorrection();
+  m_OmegaAngle    = m_Parms->omegaAngle(0.0);
+  m_TwoThetaAngle = m_Parms->twoThetaAngle(0.0); // + m_Parms->twoThetaCorrection();
+  m_PhiAngle      = m_Parms->phiAngle(0.0);      // + m_Parms->phiCorrection();
+  m_ChiAngle      = m_Parms->chiAngle(0.0);      // + m_Parms->chiCorrection();
 
   m_GridBasisInv  = m_Parms->gridBasis().inverted();
 
@@ -38,14 +38,19 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
   if (frame != m_CurrentFrame) {
     m_CurrentFrame = frame;
 
-    if (m_Angles == NULL) {
-      m_OmegaAngle = frame*m_Parms->omegaStep() + m_Parms->omegaCorrection();
-    } else {
-      int f0 = ::floor(frame);
-      int f1 = f0+1;
-      double df = frame-f0;
-      m_OmegaAngle = m_Angles[f0]+df*(m_Angles[f1]-m_Angles[f0]);
-    }
+    m_OmegaAngle    = m_Parms->omegaAngle(frame);
+    m_TwoThetaAngle = m_Parms->twoThetaAngle(frame);
+    m_PhiAngle      = m_Parms->phiAngle(frame);
+    m_ChiAngle      = m_Parms->chiAngle(frame);
+
+    //    if (m_Angles == NULL) {
+//      m_OmegaAngle = frame*m_Parms->omegaStep() + m_Parms->omegaCorrection();
+//    } else {
+//      int f0 = ::floor(frame);
+//      int f1 = f0+1;
+//      double df = frame-f0;
+//      m_OmegaAngle = m_Angles[f0]+df*(m_Angles[f1]-m_Angles[f0]);
+//    }
 
     CctwDoubleMatrix3x3 dimat = CctwDoubleMatrix3x3::identity();
 

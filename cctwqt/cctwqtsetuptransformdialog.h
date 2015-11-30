@@ -21,12 +21,6 @@ public:
 public slots:
   void accept();
 
-private slots:
-  void updateTwoTheta();
-  void updateOmega();
-  void updateChi();
-  void updatePhi();
-
 private:
   void copyParametersToDialog();
   void copyDialogToParameters();

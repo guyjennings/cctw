@@ -14,18 +14,6 @@ CctwqtSetupTransformDialog::CctwqtSetupTransformDialog(CctwApplication *app, Cct
 
   setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(ui->m_TwoThetaCorrection, SIGNAL(valueChanged(double)), this, SLOT(updateTwoTheta()));
-  connect(ui->m_TwoThetaNom, SIGNAL(valueChanged(double)), this, SLOT(updateTwoTheta()));
-
-  connect(ui->m_OmegaCorrection, SIGNAL(valueChanged(double)), this, SLOT(updateOmega()));
-  connect(ui->m_OmegaStep, SIGNAL(valueChanged(double)), this, SLOT(updateOmega()));
-
-  connect(ui->m_ChiCorrection, SIGNAL(valueChanged(double)), this, SLOT(updateChi()));
-  connect(ui->m_ChiNom, SIGNAL(valueChanged(double)), this, SLOT(updateChi()));
-
-  connect(ui->m_PhiCorrection, SIGNAL(valueChanged(double)), this, SLOT(updatePhi()));
-  connect(ui->m_PhiNom, SIGNAL(valueChanged(double)), this, SLOT(updatePhi()));
-
   copyParametersToDialog();
 }
 
@@ -106,17 +94,25 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_OrientErrorDetYaw->setValue(rad2deg(parms->orientErrorDetYaw()));
   ui->m_OrientErrorGonPitch->setValue(rad2deg(parms->orientErrorGonPitch()));
 
+  ui->m_TwoTheta->setText(parms->twoTheta());
   ui->m_TwoThetaCorrection->setValue(rad2deg(parms->twoThetaCorrection()));
   ui->m_TwoThetaNom->setValue(rad2deg(parms->twoThetaNom()));
+  ui->m_TwoThetaStep->setValue(rad2deg(parms->twoThetaStep()));
 
+  ui->m_Omega->setText(parms->omega());
   ui->m_OmegaCorrection->setValue(rad2deg(parms->omegaCorrection()));
+  ui->m_OmegaNom->setValue(rad2deg(parms->omegaNom()));
   ui->m_OmegaStep->setValue(rad2deg(parms->omegaStep()));
 
+  ui->m_Chi->setText(parms->chi());
   ui->m_ChiCorrection->setValue(rad2deg(parms->chiCorrection()));
   ui->m_ChiNom->setValue(rad2deg(parms->chiNom()));
+  ui->m_ChiStep->setValue(rad2deg(parms->chiStep()));
 
+  ui->m_Phi->setText(parms->phi());
   ui->m_PhiCorrection->setValue(rad2deg(parms->phiCorrection()));
   ui->m_PhiNom->setValue(rad2deg(parms->phiNom()));
+  ui->m_PhiStep->setValue(rad2deg(parms->phiStep()));
 
   CctwDoubleVector3D gridOrigin = parms->gridOrigin();
 
@@ -147,26 +143,6 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_GridOffsetX->setValue(gridOffset.x());
   ui->m_GridOffsetY->setValue(gridOffset.y());
   ui->m_GridOffsetZ->setValue(gridOffset.z());
-}
-
-void CctwqtSetupTransformDialog::updateTwoTheta()
-{
-  ui->m_TwoThetaAngle->setValue(ui->m_TwoThetaNom->value() + ui->m_TwoThetaCorrection->value());
-}
-
-void CctwqtSetupTransformDialog::updateOmega()
-{
-  ui->m_OmegaInitial->setValue(ui->m_OmegaCorrection->value());
-}
-
-void CctwqtSetupTransformDialog::updateChi()
-{
-  ui->m_ChiAngle->setValue(ui->m_ChiNom->value() + ui->m_ChiCorrection->value());
-}
-
-void CctwqtSetupTransformDialog::updatePhi()
-{
-  ui->m_PhiAngle->setValue(ui->m_PhiNom->value() + ui->m_PhiCorrection->value());
 }
 
 void CctwqtSetupTransformDialog::copyDialogToParameters()
@@ -242,15 +218,23 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
 
   parms->setTwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
   parms->setTwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));
+  parms->setTwoThetaStep(deg2rad(ui->m_TwoThetaStep->value()));
+  parms->setTwoTheta(ui->m_TwoTheta->text());
 
   parms->setOmegaCorrection(deg2rad(ui->m_OmegaCorrection->value()));
+  parms->setOmegaNom(deg2rad(ui->m_OmegaNom->value()));
   parms->setOmegaStep(deg2rad(ui->m_OmegaStep->value()));
+  parms->setOmega(ui->m_Omega->text());
 
   parms->setChiCorrection(deg2rad(ui->m_ChiCorrection->value()));
   parms->setChiNom(deg2rad(ui->m_ChiNom->value()));
+  parms->setChiStep(deg2rad(ui->m_ChiStep->value()));
+  parms->setChi(ui->m_Chi->text());
 
   parms->setPhiCorrection(deg2rad(ui->m_PhiCorrection->value()));
   parms->setPhiNom(deg2rad(ui->m_PhiNom->value()));
+  parms->setPhiStep(deg2rad(ui->m_PhiStep->value()));
+  parms->setPhi(ui->m_Phi->text());
 
   CctwDoubleVector3D gridOrigin;
 

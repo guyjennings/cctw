@@ -22,6 +22,10 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
   globalObject().setProperty("setMask", newFunction(setMaskFunc));
   globalObject().setProperty("setAngles", newFunction(setAnglesFunc));
+  globalObject().setProperty("setOmega", newFunction(setOmegaFunc));
+  globalObject().setProperty("setTwoTheta", newFunction(setTwoThetaFunc));
+  globalObject().setProperty("setPhi", newFunction(setPhiFunc));
+  globalObject().setProperty("setChi", newFunction(setChiFunc));
   globalObject().setProperty("setWeights", newFunction(setWeightsFunc));
   globalObject().setProperty("setOutputData",  newFunction(setOutputDataFunc));
   globalObject().setProperty("setOutputDims",  newFunction(setOutputDimsFunc));
@@ -362,6 +366,111 @@ QScriptValue CctwScriptEngine::setAnglesFunc(QScriptContext *context, QScriptEng
 
   return QScriptValue(engine, "");
 }
+
+QScriptValue CctwScriptEngine::setOmegaFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setOmega(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setTwoThetaFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setTwoTheta(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setChiFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setChi(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setPhiFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->setPhi(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
 
 QScriptValue CctwScriptEngine::setWeightsFunc(QScriptContext *context, QScriptEngine *engine)
 {

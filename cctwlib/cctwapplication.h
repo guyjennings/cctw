@@ -85,6 +85,11 @@ public slots:
   void setOutputChunks(QString data);
   void setOutputDataset(QString data);
 
+  void setOmega(QString data);
+  void setTwoTheta(QString data);
+  void setChi(QString data);
+  void setPhi(QString data);
+
   void setSubset(QString desc);
   void transform(QString desc);
   void partialDependencies(QString desc);

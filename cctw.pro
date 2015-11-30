@@ -12,12 +12,13 @@
 include(cctw-version.pri)
 
 TEMPLATE = subdirs
-BUILD_CCTWQT:  SUBDIRS  = cctwqt
+BUILD_CCTWQT:   SUBDIRS  = cctwqt
 
 unix {
-BUILD_CCTWLIB: SUBDIRS += cctwlib
-BUILD_CCTWTCL: SUBDIRS += cctwtcl
-BUILD_CCTWCLI: SUBDIRS += cctw
+BUILD_CCTWLIB:  SUBDIRS += cctwlib
+BUILD_CCTWTCL:  SUBDIRS += cctwtcl
+BUILD_CCTWCLI:  SUBDIRS += cctw
+BUILD_CCTWTEST: SUBDIRS += cctwtest
 }
 
 #unix:!macx {

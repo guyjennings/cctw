@@ -32,3 +32,6 @@ include(../submodules/qceplib/qceplib-mar345.pri)
 include(../cctwlib/cctwlib.pri)
 
 include(cctw.pri)
+
+SUBDIRS += \
+    ../cctwtest/cctwtest.pro

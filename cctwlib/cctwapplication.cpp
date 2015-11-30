@@ -199,7 +199,11 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argOutputProject,
     argProjectOutput,
     argMergeInput,
-    argMergeOutput
+    argMergeOutput,
+    argOmega,
+    argTwoTheta,
+    argPhi,
+    argChi
   };
 
   int option_index = 0;
@@ -215,6 +219,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"inputdataset", required_argument, 0, argInputDataset},
       {"mask", required_argument, 0, 'm'},
       {"angles", required_argument, 0, 'a'},
+      {"omega", required_argument, 0, argOmega},
+      {"twotheta", required_argument, 0, argTwoTheta},
+      {"phi", required_argument, 0, argPhi},
+      {"chi", required_argument, 0, argChi},
       {"weights", required_argument, 0, 'w'},
       {"output", required_argument, 0, 'o'},
       {"outputdims", required_argument, 0, argOutputDims},
@@ -285,6 +293,22 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 'a':
       startupCommand(tr("setAngles(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argOmega:
+      startupCommand(tr("setOmega(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argTwoTheta:
+      startupCommand(tr("setTwoTheta(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argPhi:
+      startupCommand(tr("setPhi(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argChi:
+      startupCommand(tr("setChi(\"%1\");").arg(addSlashes(optarg)));
       break;
 
     case 'w':
@@ -665,6 +689,10 @@ void CctwApplication::showHelp(QString about)
               "--maskdataset <dsn>              specify mask dataset path\n"
               "--angles <f>, -a <f>             specify angles data (url format\n"
               "--anglesdataset <f>              specify angles dataset path\n"
+              "--omega <angs>                   specify omega angles (url-angles format\n"
+              "--twotheta <angs>                specify two theta angles (url-angles format\n"
+              "--chi <angs>                     specify chi angles (url-angles format\n"
+              "--phi <angs>                     specify phi angles (url-angles format\n"
               "--weights <f>, -w <f>            specify weights data (url format)\n"
               "--output <f>, -o <f>             specify output data (url format)\n"
               "--outputdims <dims>              specify output dimensions (e.g. 2048x2048x2048 or 2048)\n"
@@ -687,6 +715,13 @@ void CctwApplication::showHelp(QString about)
               "--projectout <p>                 prefix for projected output files (add .x.tif, .y.tif or .z.tif)\n"
               "--mergein <f>                    specify an input dataset to merge (url format)\n"
               "--mergeout <f>                   merge (previously specified) datasets into output (url format)\n"
+              "\n"
+              "Where <angs> may be:\n"
+              "A single numeric value           set the angle to the given value\n"
+              "A comma separated number pair    set starting angle and step\n"
+//              "A ref to an HDF scalar value     set the angle to the value\n"
+//              "A ref to an HDF group containing 'start' and 'step' - set start and step accordingly\n"
+              "A ref to an HDF array            set angles to values from array\n"
               "\n"
               "Examples:\n"
               "cctwcli transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
@@ -845,6 +880,42 @@ void CctwApplication::transform(QString desc)
     } else {
       m_Transformer->simpleTransform();
     }
+  }
+}
+
+void CctwApplication::setOmega(QString data)
+{
+  if(m_Parameters) {
+    printMessage(tr("Set Omega Values to %1").arg(data));
+
+    m_Parameters->setOmega(data);
+  }
+}
+
+void CctwApplication::setTwoTheta(QString data)
+{
+  if(m_Parameters) {
+    printMessage(tr("Set Two Theta Values to %1").arg(data));
+
+    m_Parameters->setTwoTheta(data);
+  }
+}
+
+void CctwApplication::setPhi(QString data)
+{
+  if(m_Parameters) {
+    printMessage(tr("Set Phi Values to %1").arg(data));
+
+    m_Parameters->setPhi(data);
+  }
+}
+
+void CctwApplication::setChi(QString data)
+{
+  if(m_Parameters) {
+    printMessage(tr("Set Chi Values to %1").arg(data));
+
+    m_Parameters->setChi(data);
   }
 }
 
