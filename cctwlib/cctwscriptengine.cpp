@@ -48,6 +48,12 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   qScriptRegisterMetaType(this, CctwDoubleMatrix3x3Property::toScriptValue, CctwDoubleMatrix3x3Property::fromScriptValue);
   qScriptRegisterMetaType(this, CctwUnitCellProperty::toScriptValue, CctwUnitCellProperty::fromScriptValue);
 //  qScriptRegisterMetaType(this, CctwScriptEngine::QObjectToScriptValue, CctwScriptEngine::QObjectFromScriptValue);
+
+  qRegisterMetaType< QVector<int> >("QVector<int>");
+  qRegisterMetaType< QVector<double> >("QVector<double>");
+
+  qScriptRegisterSequenceMetaType< QVector<int> >(this);
+  qScriptRegisterSequenceMetaType< QVector<double> >(this);
 }
 
 CctwApplication* CctwScriptEngine::application() const

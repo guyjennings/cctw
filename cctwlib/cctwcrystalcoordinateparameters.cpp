@@ -10,6 +10,30 @@
 
 CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QString name, QObject *parent) :
   CctwObject(name, parent),
+  m_TwoTheta(QcepSettingsSaverWPtr(), this, "twoTheta", "", "twoTheta spec"),
+  m_TwoThetaCorrection(QcepSettingsSaverWPtr(), this, "twoThetaCorrection", 0.0, "twoTheta correction"),
+  m_TwoThetaNom(QcepSettingsSaverWPtr(), this, "twoThetaNom", 0.0, "twoTheta nominal (start)"),
+  m_TwoThetaStep(QcepSettingsSaverWPtr(), this, "twoThetaStep", 0.0, "twoTheta step"),
+  m_TwoThetaAngles(QcepSettingsSaverWPtr(), this, "twoThetaAngles", QcepDoubleVector(), "twoTheta Angles"),
+
+  m_Omega(QcepSettingsSaverWPtr(), this, "omega", "", "omega spec"),
+  m_OmegaCorrection(QcepSettingsSaverWPtr(), this, "omegaCorrection", 0.0, "omega correction"),
+  m_OmegaNom(QcepSettingsSaverWPtr(), this, "omegaNom", 0.0, "omega nominal (start)"),
+  m_OmegaStep(QcepSettingsSaverWPtr(), this, "omegaStep", 0.0, "omega step"),
+  m_OmegaAngles(QcepSettingsSaverWPtr(), this, "omegaAngles", QcepDoubleVector(), "omega Angles"),
+
+  m_Chi(QcepSettingsSaverWPtr(), this, "chi", "", "chi spec"),
+  m_ChiCorrection(QcepSettingsSaverWPtr(), this, "chiCorrection", 0.0, "chi correction"),
+  m_ChiNom(QcepSettingsSaverWPtr(), this, "chiNom", 0.0, "chi nominal (start)"),
+  m_ChiStep(QcepSettingsSaverWPtr(), this, "chiStep", 0.0, "chi step"),
+  m_ChiAngles(QcepSettingsSaverWPtr(), this, "chiAngles", QcepDoubleVector(), "chi Angles"),
+
+  m_Phi(QcepSettingsSaverWPtr(), this, "phi", "", "phi spec"),
+  m_PhiCorrection(QcepSettingsSaverWPtr(), this, "phiCorrection", 0.0, "phi correction"),
+  m_PhiNom(QcepSettingsSaverWPtr(), this, "phiNom", 0.0, "phi nominal (start)"),
+  m_PhiStep(QcepSettingsSaverWPtr(), this, "phiStep", 0.0, "phi step"),
+  m_PhiAngles(QcepSettingsSaverWPtr(), this, "phiAngles", QcepDoubleVector(), "phi Angles"),
+
   m_ExtraFlip(QcepSettingsSaverWPtr(), this, "extraFlip", 1, "Extra Flip on input x->(2048-y), y->(2048-x)")
 {
   setDefaults();
@@ -41,30 +65,6 @@ void CctwCrystalCoordinateParameters::setDefaults()
   setOrientErrorDetYaw(-0.000361);
   setOrientErrorGonPitch(-0.000000);
 
-  setTwoTheta("");
-  setTwoThetaCorrection(0.0);
-  setTwoThetaNom(0.0);
-  setTwoThetaStep(0.0);
-  setTwoThetaAngles(QcepDoubleVector());
-
-  setOmega("");
-  setOmegaCorrection(0.003777);
-  setOmegaNom(0);
-  setOmegaStep(0.008727);
-  setOmegaAngles(QcepDoubleVector());
-
-  setChi("");
-  setChiCorrection(-0.005531);
-  setChiNom(0.0);
-  setChiStep(0.0);
-  setChiAngles(QcepDoubleVector());
-
-  setPhi("");
-  setPhiCorrection(0.0);
-  setPhiNom(0.0);
-  setPhiStep(0.0);
-  setPhiAngles(QcepDoubleVector());
-
   setGridOrigin(CctwDoubleVector3D(1.5, -0.5, 0.0));
   setGridBasis(CctwDoubleMatrix3x3(1.0, 0.0, 0.0,
                                    0.0, 0.5, 0.5,
@@ -95,36 +95,10 @@ double CctwCrystalCoordinateParameters::orientErrorDetRoll() const { return m_Or
 double CctwCrystalCoordinateParameters::orientErrorDetYaw() const { return m_OrientErrorDetYaw; }
 double CctwCrystalCoordinateParameters::orientErrorGonPitch() const { return m_OrientErrorGonPitch; }
 
-QString CctwCrystalCoordinateParameters::twoTheta() const { return m_TwoTheta; }
-double CctwCrystalCoordinateParameters::twoThetaCorrection() const { return m_TwoThetaCorrection; }
-double CctwCrystalCoordinateParameters::twoThetaNom() const { return m_TwoThetaNom; }
-double CctwCrystalCoordinateParameters::twoThetaStep() const { return m_TwoThetaStep; }
-QcepDoubleVector CctwCrystalCoordinateParameters::twoThetaAngles() const { return m_TwoThetaAngles; }
-
-QString CctwCrystalCoordinateParameters::omega() const { return m_Omega; }
-double CctwCrystalCoordinateParameters::omegaCorrection() const { return m_OmegaCorrection; }
-double CctwCrystalCoordinateParameters::omegaNom() const { return m_OmegaNom; }
-double CctwCrystalCoordinateParameters::omegaStep() const { return m_OmegaStep; }
-QcepDoubleVector CctwCrystalCoordinateParameters::omegaAngles() const { return m_OmegaAngles; }
-
-QString CctwCrystalCoordinateParameters::chi() const { return m_Chi; }
-double CctwCrystalCoordinateParameters::chiCorrection() const { return m_ChiCorrection; }
-double CctwCrystalCoordinateParameters::chiNom() const { return m_ChiNom; }
-double CctwCrystalCoordinateParameters::chiStep() const { return m_ChiStep; }
-QcepDoubleVector CctwCrystalCoordinateParameters::chiAngles() const { return m_ChiAngles; }
-
-QString CctwCrystalCoordinateParameters::phi() const { return m_Phi; }
-double CctwCrystalCoordinateParameters::phiCorrection() const { return m_PhiCorrection; }
-double CctwCrystalCoordinateParameters::phiNom() const { return m_PhiNom; }
-double CctwCrystalCoordinateParameters::phiStep() const { return m_PhiStep; }
-QcepDoubleVector CctwCrystalCoordinateParameters::phiAngles() const { return m_PhiAngles; }
-
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridOrigin() const { return m_GridOrigin; }
 CctwDoubleMatrix3x3 CctwCrystalCoordinateParameters::gridBasis() const { return m_GridBasis; }
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridDim() const { return m_GridDim; }
 CctwDoubleVector3D  CctwCrystalCoordinateParameters::gridOffset() const { return m_GridOffset; }
-
-//int CctwCrystalCoordinateParameters::extraFlip() const { return m_ExtraFlip; }
 
 void CctwCrystalCoordinateParameters::setPixelSize(double sz) { m_PixelSize = sz; }
 void CctwCrystalCoordinateParameters::setWavelength(double wv) { m_Wavelength = wv; }
@@ -146,67 +120,47 @@ void CctwCrystalCoordinateParameters::setOrientErrorDetYaw(double x) { m_OrientE
 void CctwCrystalCoordinateParameters::setOrientErrorGonPitch(double x) { m_OrientErrorGonPitch = x; }
 
 void CctwCrystalCoordinateParameters::setTwoTheta(const QString tth) {
-  m_TwoTheta = tth;
+  set_TwoTheta(tth);
 
-  parseAngleArgument(m_TwoTheta,"twoTheta", &m_TwoThetaCorrection, &m_TwoThetaNom, &m_TwoThetaStep, &m_TwoThetaAngles);
+  parseAngleArgument(tth,"twoTheta", &m_TwoThetaCorrection, &m_TwoThetaNom, &m_TwoThetaStep, &m_TwoThetaAngles);
 }
-
-void CctwCrystalCoordinateParameters::setTwoThetaCorrection(const double tthc) { m_TwoThetaCorrection = tthc; }
-void CctwCrystalCoordinateParameters::setTwoThetaNom(const double tthn) { m_TwoThetaNom = tthn; }
-void CctwCrystalCoordinateParameters::setTwoThetaStep(const double tths) { m_TwoThetaStep = tths; }
-void CctwCrystalCoordinateParameters::setTwoThetaAngles(const QcepDoubleVector angs) { m_TwoThetaAngles = angs; }
 
 double CctwCrystalCoordinateParameters::twoThetaAngle(double frame)
 {
-  return interpolateAngle(frame, m_TwoThetaCorrection, m_TwoThetaNom, m_TwoThetaStep, m_TwoThetaAngles);
+  return interpolateAngle(frame, &m_TwoThetaCorrection, &m_TwoThetaNom, &m_TwoThetaStep, &m_TwoThetaAngles);
 }
 
 void CctwCrystalCoordinateParameters::setOmega(const QString omg) {
-  m_Omega = omg;
+  set_Omega(omg);
 
-  parseAngleArgument(m_Omega, "omega", &m_OmegaCorrection, &m_OmegaNom, &m_OmegaStep, &m_OmegaAngles);
+  parseAngleArgument(omg, "omega", &m_OmegaCorrection, &m_OmegaNom, &m_OmegaStep, &m_OmegaAngles);
 }
-
-void CctwCrystalCoordinateParameters::setOmegaCorrection(const double omgc) { m_OmegaCorrection = omgc; }
-void CctwCrystalCoordinateParameters::setOmegaNom(const double omgn) { m_OmegaNom = omgn; }
-void CctwCrystalCoordinateParameters::setOmegaStep(const double omgs) { m_OmegaStep = omgs; }
-void CctwCrystalCoordinateParameters::setOmegaAngles(const QcepDoubleVector angs) { m_OmegaAngles = angs; }
 
 double CctwCrystalCoordinateParameters::omegaAngle(double frame)
 {
-  return interpolateAngle(frame, m_OmegaCorrection, m_OmegaNom, m_OmegaStep, m_OmegaAngles);
+  return interpolateAngle(frame, &m_OmegaCorrection, &m_OmegaNom, &m_OmegaStep, &m_OmegaAngles);
 }
 
 void CctwCrystalCoordinateParameters::setChi(const QString chi) {
-  m_Chi = chi;
+  set_Chi(chi);
 
-  parseAngleArgument(m_Chi, "chi", &m_ChiCorrection, &m_ChiNom, &m_ChiStep, &m_ChiAngles);
+  parseAngleArgument(chi, "chi", &m_ChiCorrection, &m_ChiNom, &m_ChiStep, &m_ChiAngles);
 }
-
-void CctwCrystalCoordinateParameters::setChiCorrection(const double chic) { m_ChiCorrection = chic; }
-void CctwCrystalCoordinateParameters::setChiNom(const double chin) { m_ChiNom = chin; }
-void CctwCrystalCoordinateParameters::setChiStep(const double chis) { m_ChiStep = chis; }
-void CctwCrystalCoordinateParameters::setChiAngles(const QcepDoubleVector angs) { m_ChiAngles = angs; }
 
 double CctwCrystalCoordinateParameters::chiAngle(double frame)
 {
-  return interpolateAngle(frame, m_ChiCorrection, m_ChiNom, m_ChiStep, m_ChiAngles);
+  return interpolateAngle(frame, &m_ChiCorrection, &m_ChiNom, &m_ChiStep, prop_ChiAngles());
 }
 
 void CctwCrystalCoordinateParameters::setPhi(const QString phi) {
-  m_Phi = phi;
+  set_Phi(phi);
 
-  parseAngleArgument(m_Phi, "phi", &m_PhiCorrection, &m_PhiNom, &m_PhiStep, &m_PhiAngles);
+  parseAngleArgument(phi, "phi", &m_PhiCorrection, &m_PhiNom, &m_PhiStep, &m_PhiAngles);
 }
-
-void CctwCrystalCoordinateParameters::setPhiCorrection(const double phic) { m_PhiCorrection = phic; }
-void CctwCrystalCoordinateParameters::setPhiNom(const double phin) { m_PhiNom = phin; }
-void CctwCrystalCoordinateParameters::setPhiStep(const double phis) { m_PhiStep = phis; }
-void CctwCrystalCoordinateParameters::setPhiAngles(const QcepDoubleVector angs) { m_PhiAngles = angs; }
 
 double CctwCrystalCoordinateParameters::phiAngle(double frame)
 {
-  return interpolateAngle(frame, m_PhiCorrection, m_PhiNom, m_PhiStep, m_PhiAngles);
+  return interpolateAngle(frame, &m_PhiCorrection, &m_PhiNom, &m_PhiStep, &m_PhiAngles);
 }
 
 void CctwCrystalCoordinateParameters::setGridOrigin(CctwDoubleVector3D org) { m_GridOrigin = org; }
@@ -219,27 +173,30 @@ void CctwCrystalCoordinateParameters::setGridOffset(CctwDoubleVector3D off) { m_
 void CctwCrystalCoordinateParameters::parseAngleArgument(
     const QString arg,
     const QString angleName,
-    double *corr,
-    double *start,
-    double *step,
-    QcepDoubleVector *angs)
+    QcepDoubleProperty *corr,
+    QcepDoubleProperty *start,
+    QcepDoubleProperty *step,
+    QcepDoubleVectorProperty *angs)
 {
   QUrl url(arg);
   QString fileName    = "";
   QString dataSetName = "";
+  QcepDoubleVector a;
 
   if (arg.length()) {
 
-    printMessage(tr("%1.parseAngleArgument(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(arg)));
+    if (qcepDebug(DEBUG_APP)) {
+      printMessage(tr("%1.parseAngleArgument(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(arg)));
 
-    printMessage(tr("scheme:   %1").arg(url.scheme()));
-    printMessage(tr("host:     %1").arg(url.host()));
-    printMessage(tr("path:     %1").arg(url.path()));
-    printMessage(tr("filename: %1").arg(url.fileName()));
+      printMessage(tr("scheme:   %1").arg(url.scheme()));
+      printMessage(tr("host:     %1").arg(url.host()));
+      printMessage(tr("path:     %1").arg(url.path()));
+      printMessage(tr("filename: %1").arg(url.fileName()));
 #if QT_VERSION >= 0x050000
-    printMessage(tr("query:    %1").arg(url.query()));
+      printMessage(tr("query:    %1").arg(url.query()));
 #endif
-    printMessage(tr("fragment: %1").arg(url.fragment()));
+      printMessage(tr("fragment: %1").arg(url.fragment()));
+    }
 
 #if QT_VERSION >= 0x050000
     if (url.hasQuery()) {
@@ -258,49 +215,48 @@ void CctwCrystalCoordinateParameters::parseAngleArgument(
       if (qry.hasQueryItem("start") && start) {
         QString chunkSize = qry.queryItemValue("start");
 
-        *start = chunkSize.toDouble();
-        printMessage(tr("Start At %1").arg(*start));
+        start->setValue(chunkSize.toDouble());
+        printMessage(tr("%1 start at %2").arg(angleName).arg(start->value()));
       }
 
       if (qry.hasQueryItem("nom") && start) {
         QString s = qry.queryItemValue("nom");
 
-        *start = s.toDouble();
-        printMessage(tr("Start At %1").arg(*start));
+        start->setValue(s.toDouble());
+        printMessage(tr("%1 start At %2").arg(angleName).arg(start->value()));
       }
 
       if (qry.hasQueryItem("step") && step) {
         QString s      = qry.queryItemValue("step");
 
-        *step = s.toDouble();
-        printMessage(tr("Step By %1").arg(*step));
+        step->setValue(s.toDouble());
+        printMessage(tr("%1 step by %2").arg(angleName).arg(step->value()));
       }
     }
   }
 #endif
 
-  QRegExp n1("[-+]?[0-9]*.?[0-9]+(?:[eE][-+]?[0-9]+)?");
-  QRegExp n2("([-+]?[0-9]*.?[0-9]+(?:[eE][-+]?[0-9]+)?),([-+]?[0-9]*.?[0-9]+(?:[eE][-+]?[0-9]+)?)");
+  QRegExp n1("[-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?");
+  QRegExp n2("([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?),([-+]?[0-9]*\\.?[0-9]+(?:[eE][-+]?[0-9]+)?)");
 
   if (n1.exactMatch(arg)) { // One number...
     if (start) {
-      *start = arg.toDouble();
-      printMessage(tr("Single Value %1").arg(*start));
+      start->setValue(arg.toDouble());
+      printMessage(tr("%1 angle = %2").arg(angleName).arg(start->value()));
     }
   } else if (n2.exactMatch(arg)) { // Two numbers...
-    printMessage(tr("Matched two numbers : count %1").arg(n2.captureCount()));
-
+    if (qcepDebug(DEBUG_APP)) {
+      printMessage(tr("Matched two numbers : count %1").arg(n2.captureCount()));
+    }
     if (start && n2.captureCount()==2) {
-      *start = n2.cap(1).toDouble();
-      printMessage(tr("Start At %1").arg(*start));
+      start->setValue(n2.cap(1).toDouble());
+      printMessage(tr("%1 start at %2").arg(angleName).arg(start->value()));
     }
     if (step && n2.captureCount()==2) {
-      *step = n2.cap(2).toDouble();
-      printMessage(tr("Step By %1").arg(*step));
+      step->setValue(n2.cap(2).toDouble());
+      printMessage(tr("%1 step by %2").arg(angleName).arg(step->value()));
     }
   } else if (url.path().length() >= 1){
-    printMessage("Full URL decode for angles not yet implemented\n");
-
     fileName    = url.path();
     dataSetName = url.fragment();
 
@@ -355,16 +311,16 @@ void CctwCrystalCoordinateParameters::parseAngleArgument(
       if (angs == NULL)
         throw tr("Angles argument not given");
 
-      angs->resize(dims[0]);
+      a.resize(dims[0]);
 
       hid_t memspace_id = -1;
       hsize_t offset[1], count[1], stride[1], block[1];
       offset[0] = 0;
-      count[0]  = angs->size();
+      count[0]  = a.size();
       stride[0] = 1;
       block[0]  = 1;
 
-      double *angles = angs->data();
+      double *angles = a.data();
 
       memspace_id = H5Screate_simple(1, count, NULL);
 
@@ -380,6 +336,10 @@ void CctwCrystalCoordinateParameters::parseAngleArgument(
 
       if (rderr < 0)
         throw tr("Error reading %1 angles, rderr = %2").arg(angleName).arg(rderr);
+
+      if (angs) {
+        angs->setValue(a);
+      }
     }
 
     catch (QString &msg)
@@ -393,23 +353,26 @@ void CctwCrystalCoordinateParameters::parseAngleArgument(
   }
 }
 
-double CctwCrystalCoordinateParameters::interpolateAngle(
-    double frame,
-    double corr,
-    double start,
-    double step,
-    QcepDoubleVector angs)
+double CctwCrystalCoordinateParameters::interpolateAngle(double frame,
+    QcepDoubleProperty *corr,
+    QcepDoubleProperty *start,
+    QcepDoubleProperty *step,
+    QcepDoubleVectorProperty *angs)
 {
   double res;
 
-  if (angs.length() == 0) {
-    res = start + frame*step + corr;
+  QcepDoubleVector a;
+
+  if (angs) a=angs->value();
+
+  if (a.length() == 0) {
+    res = start->value() + frame*step->value() + corr->value();
   } else {
     int f0 = ::floor(frame);
     int f1 = f0+1;
     double df = frame-f0;
 
-    res = corr + angs.value(f0)+df*(angs.value(f1) - angs.value(f0));
+    res = corr->value() + a.value(f0)+df*(a.value(f1) - a.value(f0));
   }
 
   return res;

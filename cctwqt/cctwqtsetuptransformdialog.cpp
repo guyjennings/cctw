@@ -94,25 +94,25 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_OrientErrorDetYaw->setValue(rad2deg(parms->orientErrorDetYaw()));
   ui->m_OrientErrorGonPitch->setValue(rad2deg(parms->orientErrorGonPitch()));
 
-  ui->m_TwoTheta->setText(parms->twoTheta());
-  ui->m_TwoThetaCorrection->setValue(rad2deg(parms->twoThetaCorrection()));
-  ui->m_TwoThetaNom->setValue(rad2deg(parms->twoThetaNom()));
-  ui->m_TwoThetaStep->setValue(rad2deg(parms->twoThetaStep()));
+  ui->m_TwoTheta->setText(parms->get_TwoTheta());
+  ui->m_TwoThetaCorrection->setValue(rad2deg(parms->get_TwoThetaCorrection()));
+  ui->m_TwoThetaNom->setValue(rad2deg(parms->get_TwoThetaNom()));
+  ui->m_TwoThetaStep->setValue(rad2deg(parms->get_TwoThetaStep()));
 
-  ui->m_Omega->setText(parms->omega());
-  ui->m_OmegaCorrection->setValue(rad2deg(parms->omegaCorrection()));
-  ui->m_OmegaNom->setValue(rad2deg(parms->omegaNom()));
-  ui->m_OmegaStep->setValue(rad2deg(parms->omegaStep()));
+  ui->m_Omega->setText(parms->get_Omega());
+  ui->m_OmegaCorrection->setValue(rad2deg(parms->get_OmegaCorrection()));
+  ui->m_OmegaNom->setValue(rad2deg(parms->get_OmegaNom()));
+  ui->m_OmegaStep->setValue(rad2deg(parms->get_OmegaStep()));
 
-  ui->m_Chi->setText(parms->chi());
-  ui->m_ChiCorrection->setValue(rad2deg(parms->chiCorrection()));
-  ui->m_ChiNom->setValue(rad2deg(parms->chiNom()));
-  ui->m_ChiStep->setValue(rad2deg(parms->chiStep()));
+  ui->m_Chi->setText(parms->get_Chi());
+  ui->m_ChiCorrection->setValue(rad2deg(parms->get_ChiCorrection()));
+  ui->m_ChiNom->setValue(rad2deg(parms->get_ChiNom()));
+  ui->m_ChiStep->setValue(rad2deg(parms->get_ChiStep()));
 
-  ui->m_Phi->setText(parms->phi());
-  ui->m_PhiCorrection->setValue(rad2deg(parms->phiCorrection()));
-  ui->m_PhiNom->setValue(rad2deg(parms->phiNom()));
-  ui->m_PhiStep->setValue(rad2deg(parms->phiStep()));
+  ui->m_Phi->setText(parms->get_Phi());
+  ui->m_PhiCorrection->setValue(rad2deg(parms->get_PhiCorrection()));
+  ui->m_PhiNom->setValue(rad2deg(parms->get_PhiNom()));
+  ui->m_PhiStep->setValue(rad2deg(parms->get_PhiStep()));
 
   CctwDoubleVector3D gridOrigin = parms->gridOrigin();
 
@@ -216,24 +216,24 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   parms->setOrientErrorDetYaw(deg2rad(ui->m_OrientErrorDetYaw->value()));
   parms->setOrientErrorGonPitch(deg2rad(ui->m_OrientErrorGonPitch->value()));
 
-  parms->setTwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
-  parms->setTwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));
-  parms->setTwoThetaStep(deg2rad(ui->m_TwoThetaStep->value()));
+  parms->set_TwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
+  parms->set_TwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));
+  parms->set_TwoThetaStep(deg2rad(ui->m_TwoThetaStep->value()));
   parms->setTwoTheta(ui->m_TwoTheta->text());
 
-  parms->setOmegaCorrection(deg2rad(ui->m_OmegaCorrection->value()));
-  parms->setOmegaNom(deg2rad(ui->m_OmegaNom->value()));
-  parms->setOmegaStep(deg2rad(ui->m_OmegaStep->value()));
+  parms->set_OmegaCorrection(deg2rad(ui->m_OmegaCorrection->value()));
+  parms->set_OmegaNom(deg2rad(ui->m_OmegaNom->value()));
+  parms->set_OmegaStep(deg2rad(ui->m_OmegaStep->value()));
   parms->setOmega(ui->m_Omega->text());
 
-  parms->setChiCorrection(deg2rad(ui->m_ChiCorrection->value()));
-  parms->setChiNom(deg2rad(ui->m_ChiNom->value()));
-  parms->setChiStep(deg2rad(ui->m_ChiStep->value()));
+  parms->set_ChiCorrection(deg2rad(ui->m_ChiCorrection->value()));
+  parms->set_ChiNom(deg2rad(ui->m_ChiNom->value()));
+  parms->set_ChiStep(deg2rad(ui->m_ChiStep->value()));
   parms->setChi(ui->m_Chi->text());
 
-  parms->setPhiCorrection(deg2rad(ui->m_PhiCorrection->value()));
-  parms->setPhiNom(deg2rad(ui->m_PhiNom->value()));
-  parms->setPhiStep(deg2rad(ui->m_PhiStep->value()));
+  parms->set_PhiCorrection(deg2rad(ui->m_PhiCorrection->value()));
+  parms->set_PhiNom(deg2rad(ui->m_PhiNom->value()));
+  parms->set_PhiStep(deg2rad(ui->m_PhiStep->value()));
   parms->setPhi(ui->m_Phi->text());
 
   CctwDoubleVector3D gridOrigin;
