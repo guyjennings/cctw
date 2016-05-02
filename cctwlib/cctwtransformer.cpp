@@ -51,7 +51,6 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
   m_Compression(m_Application->saver(), this, "compression", 2, "Compression level for output data"),
   m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
-  m_UseDependencies(QcepSettingsSaverWPtr(), this, "useDependencies", 0, "Use dependencies in transform"),
   m_Skipped(QcepSettingsSaverWPtr(), this, "skipped", 0, "Number of skipped pixels")
 {
 }
@@ -82,50 +81,6 @@ void CctwTransformer::runTransformChunkNumber(int n)
     int nchunks = m_InputData->chunkCount().volume();
 
 //    m_Application->printMessage(tr("Chunk %1/%2 transform complete").arg(n).arg(nchunks));
-  }
-}
-
-
-void CctwTransformer::saveDependencies(QString path)
-{
-  QFile f(path);
-
-  if (f.open(QFile::WriteOnly | QFile::Truncate)) {
-    QTextStream s(&f);
-
-    int nchunk = m_InputData->chunkCount().volume();
-
-    for (int i=0; i<nchunk; i++) {
-      CctwDataChunk *chunk = m_InputData->chunk(i);
-
-      chunk->sortDependencies();
-
-      int n = chunk->dependencyCount();
-
-      for (int j=0; j<n; j++) {
-        int o = chunk->dependency(j);
-
-        s << i << "\t" << o << endl;
-      }
-    }
-  }
-}
-
-void CctwTransformer::loadDependencies(QString path)
-{
-  clearDependencies(1);
-
-  QFile f(path);
-
-  if (f.open(QFile::ReadOnly)) {
-    QTextStream s(&f);
-    int i,o;
-
-    while (!s.atEnd()) {
-      s >> i >> o;
-
-      addDependency(i, o);
-    }
   }
 }
 
@@ -297,11 +252,6 @@ void CctwTransformer::transformChunkNumber(int chunkId)
 //                       .arg(outputChunks.count())
 //                       .arg(chunkId));
 
-    if (inputChunk->dependencyCount() && inputChunk->dependencyCount() != outputChunks.count()) {
-      printMessage(tr("Discrepancy between numbers of merged chunks : dependencyCount() = %1, chunks.count() = %2")
-                   .arg(inputChunk->dependencyCount()).arg(outputChunks.count()));
-    }
-
     foreach(CctwDataChunk *outputChunk, outputChunks) {
       m_OutputData->mergeChunk(outputChunk);
 
@@ -469,118 +419,6 @@ void CctwTransformer::transform()
     m_Application->set_ExitStatus(0);
   }
 
-  QTime startAt;
-
-  startAt.start();
-
-  set_Skipped(0);
-
-  if (m_Application->get_Verbosity() >= 0) {
-    printMessage("Starting Transform");
-  }
-
-  if (m_InputData  -> beginTransform(true,  get_TransformOptions())) {
-    if (m_OutputData -> beginTransform(false, get_TransformOptions())) {
-
-      m_InputData  -> clearMergeCounters();
-      m_OutputData -> clearMergeCounters();
-
-      CctwDataChunk::resetAllocationLimits(get_BlocksLimit());
-
-      CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-      QVector < int > inputChunks;
-
-      for (int z=0; z<chunks.z(); z++) {
-        for (int y=0; y<chunks.y(); y++) {
-          for (int x=0; x<chunks.x(); x++) {
-            CctwDataChunk *chunk = m_OutputData->chunk(CctwIntVector3D(x,y,z));
-
-            if (chunk) {
-              int n = chunk->dependencyCount();
-
-              for (int i=0; i<n; i++) {
-                int ckidx = chunk->dependency(i);
-
-                if (!inputChunks.contains(ckidx)) {
-                  inputChunks.append(ckidx);
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (m_Application->get_Verbosity() >= 2) {
-        printMessage(tr("%1 chunks of input data needed").arg(inputChunks.count()));
-      }
-
-      if ((get_TransformOptions() & 2)) {
-        if (m_Application->get_Verbosity() >= 2) {
-          printMessage("Sorting input chunk list into input order");
-        }
-
-        qSort(inputChunks.begin(), inputChunks.end());
-      }
-
-      if (m_Application) {
-        m_Application->set_ProgressLimit(inputChunks.count());
-      }
-
-      foreach(int ckidx, inputChunks) {
-        if (m_Application) {
-          m_Application->addWorkOutstanding(1);
-        }
-
-        if ((get_TransformOptions() & 1) == 0) {
-          futures.append(
-                QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, ckidx));
-        } else {
-          runTransformChunkNumber(ckidx);
-        }
-      }
-
-      foreach (QFuture<void> f, futures) {
-        f.waitForFinished();
-        if (m_Application) {
-          m_Application->processEvents();
-        }
-      }
-
-      set_WallTime(startAt.elapsed()/1000.0);
-
-      m_OutputData -> endTransform();
-    } else {
-      printMessage("Failed to open output data");
-      m_Application->set_ExitStatus(1);
-    }
-
-    m_InputData  -> endTransform();
-  } else {
-    printMessage("Failed to open input data");
-    m_Application->set_ExitStatus(1);
-  }
-
-  if (m_Application->get_Verbosity() >= 0) {
-    printMessage(tr("Transform complete after %1 sec, %2 chunks still allocated")
-                 .arg(get_WallTime())
-                 .arg(CctwDataChunk::allocatedChunkCount()));
-
-    printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
-  }
-}
-
-void CctwTransformer::simpleTransform()
-{
-  QVector < QFuture < void > > futures;
-
-  if (m_Application) {
-    m_Application->waitCompleted();
-    m_Application->set_Progress(0);
-    m_Application->set_Halting(false);
-    m_Application->set_ExitStatus(0);
-  }
-
   int msec;
 
   if (m_InputData  -> beginTransform(true,  0)) {
@@ -673,114 +511,6 @@ abort:
 
     printMessage(tr("%1 pixels skipped by mask").arg(get_Skipped()));
   }
-}
-
-void CctwTransformer::checkTransform()
-{
-  int chunks = m_OutputData->chunkCount().volume();
-
-  for (int i = 0; i<chunks; i++) {
-    CctwDataChunk *chunk = m_OutputData->chunk(i);
-
-    if (chunk) {
-      if (chunk->dependencyCount() != chunk->mergeCount()) {
-        printMessage(tr("Anomaly in chunk [%1] : deps %2, merge %3")
-                     .arg(i)
-                     .arg(chunk->dependencyCount())
-                     .arg(chunk->mergeCount()));
-      }
-
-      if (chunk->dataPointer()) {
-        printMessage(tr("Chunk [%1] still has allocated data").arg(i));
-      }
-
-      if (chunk->weightsPointer()) {
-        printMessage(tr("Chunk [%1] still has allocated weights").arg(i));
-      }
-    }
-  }
-}
-
-QcepIntList CctwTransformer::dependencies(int n)
-{
-  QcepDoubleVector anglesvec = m_InputData->get_Angles();
-  double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
-
-  CctwCrystalCoordinateTransform transform(m_Application->parameters(), tr("transform-%1").arg(n), angs, NULL);
-
-  CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
-
-  int lastChunkIndex = -1;
-
-  CctwDataChunk   *chunk = m_InputData->chunk(n);
-
-  QList<int>      outputChunks;
-  QcepIntList     result;
-
-  if (chunk) {
-    CctwIntVector3D chStart = chunk->chunkStart();
-    CctwIntVector3D chSize  = chunk->chunkSize();
-    CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-
-    if (m_InputData->containsChunk(idx.x(), idx.y(), idx.z())) {
-      for (int z=0; z<chSize.z(); z++) {
-        for (int y=0; y<chSize.y(); y++) {
-          for (int x=0; x<chSize.x(); x++) {
-            CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x,y,z);
-            CctwDoubleVector3D xfmcoord = transform.forward(coords);
-            CctwIntVector3D pixels(xfmcoord);
-
-            if (m_OutputData->containsPixel(pixels)) {
-              int opchunk = m_OutputData->chunkContaining(pixels);
-
-              if (opchunk != lastChunkIndex) {
-                lastChunkIndex = opchunk;
-
-                if (!outputChunks.contains(lastChunkIndex)) {
-                  outputChunks.append(opchunk);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  foreach(int chk, outputChunks) {
-    result.append(chk);
-  }
-
-  qSort(result);
-
-  return result;
-}
-
-QList<CctwIntVector3D> CctwTransformer::dependencies(int cx, int cy, int cz)
-{
-  QcepIntList deps = dependencies(m_InputData->chunkNumberFromIndex(CctwIntVector3D(cx,cy,cz)));
-
-  QList<CctwIntVector3D> res;
-
-  foreach(int dep, deps) {
-    res.append(m_OutputData->chunkIndexFromNumber(dep));
-  }
-
-  return res;
-}
-
-void CctwTransformer::clearDependencies(int use)
-{
-  m_InputData->clearDependencies();
-  m_OutputData->clearDependencies();
-
-  set_UseDependencies(use);
-}
-
-void CctwTransformer::addDependency(int f, int t)
-{
-  m_InputData->addDependency(f, t);
-  m_OutputData->addDependency(t, f);
 }
 
 #ifdef WANT_ANALYSIS_COMMANDS

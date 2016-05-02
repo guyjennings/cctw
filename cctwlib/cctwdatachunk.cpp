@@ -61,10 +61,6 @@ CctwIntVector3D CctwDataChunk::calculateChunkSize()
 
 CctwDataChunk::~CctwDataChunk()
 {
-  if (dependencyCount()) {
-    printMessage("Deleting chunk with deps");
-  }
-
   if (m_OwnData) {
     releaseBuffer(m_ChunkData);
     releaseBuffer(m_ChunkWeights);
@@ -306,62 +302,6 @@ int CctwDataChunk::index() const
   return m_ChunkIndex;
 }
 
-void CctwDataChunk::clearDependencies()
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  m_Dependencies.resize(0);
-}
-
-void CctwDataChunk::sortDependencies()
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  qSort(m_Dependencies.begin(), m_Dependencies.end());
-}
-
-int  CctwDataChunk::dependencyCount() const
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  return m_Dependencies.count();
-}
-
-int CctwDataChunk::dependency(int n) const
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  return m_Dependencies.value(n);
-}
-
-void CctwDataChunk::addDependency(int dep)
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  if (!m_Dependencies.contains(dep)) {
-//    printMessage(tr("Added dependency from chunk [%1,%2,%3] to chunk [%4,%5,%6]")
-//                 .arg(m_ChunkIndex.x()).arg(m_ChunkIndex.y()).arg(m_ChunkIndex.z())
-//                 .arg(dep.x()).arg(dep.y()).arg(dep.z()));
-
-    m_Dependencies.append(dep);
-  }
-}
-
-void CctwDataChunk::reportDependencies()
-{
-  QMutexLocker lock(&m_DependenciesLock);
-
-  QString msg(tr("[%1] ->").arg(m_ChunkIndex));
-
-  sortDependencies();
-
-  foreach (int dep, m_Dependencies) {
-    msg += tr(" [%1]").arg(dep);
-  }
-
-  printMessage(msg);
-}
-
 void CctwDataChunk::mergeData(CctwChunkedData::MergeDataType *id,
                               CctwChunkedData::MergeDataType *iw,
                               int n)
@@ -456,22 +396,10 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
 
     incMergeCounters();
 
-    if (mergeCount() == dependencyCount()) {
-//      printMessage(tr("Output chunk [%1] completed")
-//                   .arg(index()));
-
-      if (m_Data) {
-        m_Data->writeChunk(index());
-        m_Data->incChunksWritten(1);
-        m_Data->incChunksHeld(-1);
-      }
-    } else if (mergeCount() == 1) {
+    if (mergeCount() == 1) {
       if (m_Data) {
         m_Data->incChunksHeld(1);
       }
-    } else if (mergeCount() > dependencyCount() && dependencyCount()) {
-      printMessage(tr("Exceeded expected number of merges for chunk [%1] %2 > %3")
-                   .arg(index()).arg(mergeCount()).arg(dependencyCount()));
     }
   }
 }

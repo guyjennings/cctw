@@ -46,17 +46,24 @@ public slots:
   void doCheckDataFile(QString path);
   void doBrowseInputDataset(QString entry);
   void doCheckDataset(QString name);
+
+  void doBrowse2DMaskFile();
+  void doCheck2DMaskFile(QString path);
+  void doBrowse2DMaskDataset(QString entry);
+  void doCheck2DMaskDataset(QString name);
+
+  void doBrowse3DMaskFile();
+  void doCheck3DMaskFile(QString path);
+  void doBrowse3DMaskDataset(QString entry);
+  void doCheck3DMaskDataset(QString name);
+
   void doSetupOutput();
   void doSetupTransform();
   void doTransform();
-  void doCheckTransform();
+//  void doCheckTransform();
   void doHalt();
   void doLoadSettings();
   void doSaveSettings();
-  void doSaveDependencies();
-  void doLoadDependencies();
-  void reportInputDependencies();
-  void reportOutputDependencies();
   void onProgressUpdate();
   void doAnalyzePEMetaData();
   void doAnalyzeSpecDataFile();
@@ -77,7 +84,6 @@ public slots:
 private:
   bool wantToClose();
   void closeEvent (QCloseEvent * event);
-  void reportDependencies(CctwChunkedData *data, QString title);
 public:
   Ui::CctwqtMainWindow       *ui;
 

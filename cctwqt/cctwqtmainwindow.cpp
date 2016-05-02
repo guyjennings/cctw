@@ -48,26 +48,10 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_ActionPerformTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
   connect(ui->m_TransformButton, SIGNAL(clicked()), this, SLOT(doTransform()));
 
-  connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
-  connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
+//  connect(ui->m_ActionCheckTransform, SIGNAL(triggered()), this, SLOT(doCheckTransform()));
+//  connect(ui->m_CheckTransformButton, SIGNAL(clicked()), this, SLOT(doCheckTransform()));
 
   connect(ui->m_HaltButton, SIGNAL(clicked()), this, SLOT(doHalt()));
-
-  connect(ui->m_ActionDependencies, SIGNAL(triggered()), m_Application, SLOT(calculateDependencies()));
-  connect(ui->m_DependenciesButton, SIGNAL(clicked()), m_Application, SLOT(calculateDependencies()));
-
-  connect(ui->m_ActionReportInputDependencies, SIGNAL(triggered()), this, SLOT(reportInputDependencies()));
-  connect(ui->m_ReportInputDepsButton, SIGNAL(clicked()), this, SLOT(reportInputDependencies()));
-
-  connect(ui->m_ActionReportOutputDependencies, SIGNAL(triggered()), this, SLOT(reportOutputDependencies()));
-  connect(ui->m_ReportOutputDepsButton, SIGNAL(clicked()), this, SLOT(reportOutputDependencies()));
-
-  connect(ui->m_ActionSaveDependencies, SIGNAL(triggered()), this, SLOT(doSaveDependencies()));
-  connect(ui->m_SaveDepsButton, SIGNAL(clicked()), this, SLOT(doSaveDependencies()));
-
-  connect(ui->m_ActionLoadDependencies, SIGNAL(triggered()), this, SLOT(doLoadDependencies()));
-  connect(ui->m_LoadDepsButton, SIGNAL(clicked()), this, SLOT(doLoadDependencies()));
-
 
 #ifdef WANT_IMPORT_COMMANDS
   connect(ui->m_ActionCheckImportedData, SIGNAL(triggered()), this, SLOT(doCheckImportedData()));
@@ -125,6 +109,11 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
     inputData->prop_DataSetName()->linkTo(ui->m_InputDataSetName);
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
+    inputData->prop_MaskDataFileName()->linkTo(ui->m_Input2DMaskFileName);
+    inputData->prop_MaskDataSetName()->linkTo(ui->m_Input2DMaskDataSetName);
+    inputData->prop_Mask3DDataFileName()->linkTo(ui->m_Input3DMaskFileName);
+    inputData->prop_Mask3DDataSetName()->linkTo(ui->m_Input3DMaskDataSetName);
+
     inputData->prop_Compression()->linkTo(ui->m_InputCompression);
     inputData->prop_ChunksRead()->linkTo(ui->m_ChunksRead);
 
@@ -149,6 +138,16 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_InputDataFileName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataFile(QString)));
   connect(ui->m_BrowseInputDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowseInputDataset(QString)));
   connect(ui->m_InputDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheckDataset(QString)));
+
+  connect(ui->m_Browse2DMaskFile, SIGNAL(clicked()), this, SLOT(doBrowse2DMaskFile()));
+  connect(ui->m_Input2DMaskFileName, SIGNAL(textChanged(QString)), this, SLOT(doCheck2DMaskFile(QString)));
+  connect(ui->m_Browse2DMaskDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowse2DMaskDataset(QString)));
+  connect(ui->m_Input2DMaskDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheck2DMaskDataset(QString)));
+
+  connect(ui->m_Browse3DMaskFile, SIGNAL(clicked()), this, SLOT(doBrowse3DMaskFile()));
+  connect(ui->m_Input3DMaskFileName, SIGNAL(textChanged(QString)), this, SLOT(doCheck3DMaskFile(QString)));
+  connect(ui->m_Browse3DMaskDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowse3DMaskDataset(QString)));
+  connect(ui->m_Input3DMaskDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheck3DMaskDataset(QString)));
 
   CctwChunkedData *outputData = app->m_OutputData;
 
@@ -354,7 +353,7 @@ static herr_t iterate_objects(hid_t o_id,
   return 0;
 }
 
-static QStringList iterateHDF5datasets(QString path)
+static QStringList iterateHDF5datasets(QString path, int rank)
 {
   /* Save old error handler */
   H5E_auto2_t  old_func;
@@ -390,7 +389,7 @@ void CctwqtMainWindow::doCheckDataFile(QString path)
 //    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataFile(\"%1\")").arg(path));
 //  }
 
-  QStringList paths = iterateHDF5datasets(path);
+  QStringList paths = iterateHDF5datasets(path,3);
 
   ui->m_BrowseInputDataset->clear();
   ui->m_BrowseInputDataset->addItem("");
@@ -411,6 +410,68 @@ void CctwqtMainWindow::doCheckDataset(QString name)
 //  if (m_Window) {
 //    m_Window->printMessage(tr("CctwqtMainWindow::doCheckDataset(\"%1\")").arg(name));
 //  }
+}
+
+void CctwqtMainWindow::doBrowse2DMaskFile()
+{
+  CctwChunkedData *inputData = m_Application->m_InputData;
+
+  if (inputData) {
+    QString path = QFileDialog::getOpenFileName(this, "Input File",
+                                                inputData->get_MaskDataFileName());
+
+    if (path.length() > 0) {
+      inputData->set_MaskDataFileName(path);
+    }
+  }
+}
+
+void CctwqtMainWindow::doCheck2DMaskFile(QString path)
+{
+  QStringList paths = iterateHDF5datasets(path,2);
+
+  ui->m_Browse2DMaskDataset->clear();
+  ui->m_Browse2DMaskDataset->addItem("");
+  ui->m_Browse2DMaskDataset->addItems(paths);
+}
+
+void CctwqtMainWindow::doBrowse2DMaskDataset(QString entry)
+{
+}
+
+void CctwqtMainWindow::doCheck2DMaskDataset(QString name)
+{
+}
+
+void CctwqtMainWindow::doBrowse3DMaskFile()
+{
+  CctwChunkedData *inputData = m_Application->m_InputData;
+
+  if (inputData) {
+    QString path = QFileDialog::getOpenFileName(this, "Input File",
+                                                inputData->get_Mask3DDataFileName());
+
+    if (path.length() > 0) {
+      inputData->set_Mask3DDataFileName(path);
+    }
+  }
+}
+
+void CctwqtMainWindow::doCheck3DMaskFile(QString path)
+{
+  QStringList paths = iterateHDF5datasets(path,3);
+
+  ui->m_Browse3DMaskDataset->clear();
+  ui->m_Browse3DMaskDataset->addItem("");
+  ui->m_Browse3DMaskDataset->addItems(paths);
+}
+
+void CctwqtMainWindow::doBrowse3DMaskDataset(QString entry)
+{
+}
+
+void CctwqtMainWindow::doCheck3DMaskDataset(QString name)
+{
 }
 
 void CctwqtMainWindow::doSetupOutput()
@@ -440,10 +501,10 @@ void CctwqtMainWindow::doTransform()
   QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform);
 }
 
-void CctwqtMainWindow::doCheckTransform()
-{
-  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
-}
+//void CctwqtMainWindow::doCheckTransform()
+//{
+//  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::checkTransform);
+//}
 
 void CctwqtMainWindow::doHalt()
 {
@@ -481,97 +542,6 @@ void CctwqtMainWindow::doLoadSettings()
     m_Application->readSettings(path);
     m_Application->set_SettingsPath(path);
   }
-}
-
-void CctwqtMainWindow::doSaveDependencies()
-{
-  QString path = QFileDialog::getSaveFileName(this, "Save Dependencies in...",
-                                              m_Application->get_DependenciesPath());
-
-  if (path.length()) {
-    m_Application->set_DependenciesPath(path);
-    m_Application->saveDependencies(path);
-  }
-}
-
-void CctwqtMainWindow::doLoadDependencies()
-{
-  QString path = QFileDialog::getOpenFileName(this, "Load Dependencies from...",
-                                              m_Application->get_DependenciesPath());
-
-  if (path.length()) {
-    m_Application->set_DependenciesPath(path);
-    m_Application->loadDependencies(path);
-  }
-}
-
-void CctwqtMainWindow::reportDependencies(CctwChunkedData *data, QString title)
-{
-  if (data) {
-    int maxdeps = 0;
-    int ndeps   = 0;
-    int sumdeps = 0;
-    int nchnk   = data->chunkCount().volume();
-
-    for (int i=0; i < nchnk; i++) {
-      CctwDataChunk *chunk = data->chunk(i);
-
-      if (chunk) {
-        int ct = chunk->dependencyCount();
-
-        if (ct >= 1) {
-          ndeps++;
-        }
-
-        if (ct > maxdeps) {
-          maxdeps = ct;
-        }
-
-        sumdeps += ct;
-      }
-    }
-
-    ui->m_DependenciesTable->clear();
-    ui->m_DependenciesTable->setRowCount(ndeps + 3);
-    ui->m_DependenciesTable->setColumnCount((maxdeps+1)>4 ? (maxdeps+1):4);
-
-    ui->m_DependenciesTable->setItem(0, 0, new QTableWidgetItem(title));
-    ui->m_DependenciesTable->setItem(1, 0, new QTableWidgetItem(tr("%1 Deps").arg(ndeps)));
-    ui->m_DependenciesTable->setItem(1, 1, new QTableWidgetItem(tr("%1 Max").arg(maxdeps)));
-    ui->m_DependenciesTable->setItem(1, 2, new QTableWidgetItem(tr("%1 Sum").arg(sumdeps)));
-    ui->m_DependenciesTable->setItem(1, 3, new QTableWidgetItem(tr("%1 Avg").arg(double(sumdeps)/double(nchnk))));
-    ui->m_DependenciesTable->setItem(1, 4, new QTableWidgetItem(tr("%1 Avg-NZ").arg(double(sumdeps)/double(ndeps))));
-
-    int r = 0;
-
-    for (int i=0; i < nchnk; i++) {
-      CctwDataChunk *chunk = data->chunk(i);
-
-      if (chunk) {
-        int ct = chunk->dependencyCount();
-
-        if (ct >= 1) {
-          ui->m_DependenciesTable->setItem(r+3, 0, new QTableWidgetItem(tr("%1->[%2]").arg(i).arg(ct)));
-
-          for (int i=0; i<ct; i++) {
-            ui->m_DependenciesTable->setItem(r+3, 1+i, new QTableWidgetItem(tr("%1").arg(chunk->dependency(i))));
-          }
-
-          r++;
-        }
-      }
-    }
-  }
-}
-
-void CctwqtMainWindow::reportInputDependencies()
-{
-  reportDependencies(m_Application->m_InputData, "Input Dependencies");
-}
-
-void CctwqtMainWindow::reportOutputDependencies()
-{
-  reportDependencies(m_Application->m_OutputData, "Output Dependencies");
 }
 
 void CctwqtMainWindow::doAnalyzePEMetaData()

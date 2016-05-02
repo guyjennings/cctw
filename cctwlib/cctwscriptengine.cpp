@@ -21,6 +21,7 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setInputChunks",  newFunction(setInputChunksFunc));
   globalObject().setProperty("setInputDataset",  newFunction(setInputDatasetFunc));
   globalObject().setProperty("setMask", newFunction(setMaskFunc));
+  globalObject().setProperty("setMask3D", newFunction(setMask3DFunc));
   globalObject().setProperty("setAngles", newFunction(setAnglesFunc));
   globalObject().setProperty("setOmega", newFunction(setOmegaFunc));
   globalObject().setProperty("setTwoTheta", newFunction(setTwoThetaFunc));
@@ -33,8 +34,6 @@ CctwScriptEngine::CctwScriptEngine(CctwApplication *app, QObject *parent) :
   globalObject().setProperty("setOutputDataset",  newFunction(setOutputDatasetFunc));
   globalObject().setProperty("setSubset", newFunction(setSubsetFunc));
   globalObject().setProperty("doTransform",  newFunction(transformFunc));
-  globalObject().setProperty("dependencies",  newFunction(dependenciesFunc));
-  globalObject().setProperty("noDependencies",  newFunction(noDependenciesFunc));
   globalObject().setProperty("normalization",  newFunction(normalizationFunc));
   globalObject().setProperty("compression",  newFunction(compressionFunc));
   globalObject().setProperty("inputProject",  newFunction(inputProjectFunc));
@@ -341,6 +340,32 @@ QScriptValue CctwScriptEngine::setMaskFunc(QScriptContext *context, QScriptEngin
 
     if (app) {
       app->set_MaskFile(msg);
+    }
+  }
+
+  return QScriptValue(engine, "");
+}
+
+QScriptValue CctwScriptEngine::setMask3DFunc(QScriptContext *context, QScriptEngine *engine)
+{
+  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
+
+  if (eng) {
+    int nArgs = context->argumentCount();
+    QString msg;
+
+    for (int i=0; i<nArgs; i++) {
+      if (i != 0) {
+        msg += " ";
+      }
+
+      msg += context -> argument(i).toString();
+    }
+
+    CctwApplication *app = eng->application();
+
+    if (app) {
+      app->set_Mask3DFile(msg);
     }
   }
 
@@ -654,58 +679,6 @@ QScriptValue CctwScriptEngine::setSubsetFunc(QScriptContext *context, QScriptEng
 
     if (app) {
       app->setSubset(msg);
-    }
-  }
-
-  return QScriptValue(engine, "");
-}
-
-QScriptValue CctwScriptEngine::dependenciesFunc(QScriptContext *context, QScriptEngine *engine)
-{
-  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
-
-  if (eng) {
-    int nArgs = context->argumentCount();
-    QString msg;
-
-    for (int i=0; i<nArgs; i++) {
-      if (i != 0) {
-        msg += " ";
-      }
-
-      msg += context -> argument(i).toString();
-    }
-
-    CctwApplication *app = eng->application();
-
-    if (app) {
-      app->partialDependencies(msg);
-    }
-  }
-
-  return QScriptValue(engine, "");
-}
-
-QScriptValue CctwScriptEngine::noDependenciesFunc(QScriptContext *context, QScriptEngine *engine)
-{
-  CctwScriptEngine *eng = qobject_cast<CctwScriptEngine*>(engine);
-
-  if (eng) {
-    int nArgs = context->argumentCount();
-    QString msg;
-
-    for (int i=0; i<nArgs; i++) {
-      if (i != 0) {
-        msg += " ";
-      }
-
-      msg += context -> argument(i).toString();
-    }
-
-    CctwApplication *app = eng->application();
-
-    if (app) {
-      app->noDependencies();
     }
   }
 

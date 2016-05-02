@@ -54,7 +54,7 @@
       </property>
       <widget class="QTabWidget" name="m_ParametersTabs">
        <property name="currentIndex">
-        <number>4</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="m_ImportTab">
         <attribute name="title">
@@ -227,157 +227,14 @@
          <string>Input</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_51">
            <property name="text">
-            <string>Input Data File:</string>
+            <string>2D Mask Dataset Name:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="3">
-          <widget class="QPushButton" name="m_BrowseInputFile">
-           <property name="text">
-            <string>Browse Input File...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Input Dataset Name:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLabel" name="label_25">
-           <property name="text">
-            <string>X</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QLabel" name="label_26">
-           <property name="text">
-            <string>Y</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QLabel" name="label_27">
-           <property name="text">
-            <string>Z</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>Input Dimensions:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QSpinBox" name="m_InputDimensionsX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QSpinBox" name="m_InputDimensionsY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="3">
-          <widget class="QSpinBox" name="m_InputDimensionsZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Transform Chunk Size:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QSpinBox" name="m_InputChunkX">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in X</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QSpinBox" name="m_InputChunkY">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="3">
-          <widget class="QSpinBox" name="m_InputChunkZ">
-           <property name="toolTip">
-            <string>Output HDF Chunk Size in Z</string>
-           </property>
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>999999</number>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_18">
-           <property name="text">
-            <string>Transform Chunk Count:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
+         <item row="11" column="1">
           <widget class="QSpinBox" name="m_InputCountX">
            <property name="toolTip">
             <string>Output HDF Chunk Size in X</string>
@@ -396,26 +253,118 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="2">
-          <widget class="QSpinBox" name="m_InputCountY">
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_52">
+           <property name="text">
+            <string>3D Mask File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="2">
+          <widget class="QSpinBox" name="m_InputDimensionsY">
            <property name="toolTip">
             <string>Output HDF Chunk Size in Y</string>
            </property>
-           <property name="frame">
-            <bool>false</bool>
-           </property>
            <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="buttonSymbols">
-            <enum>QAbstractSpinBox::NoButtons</enum>
+            <bool>false</bool>
            </property>
            <property name="maximum">
             <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="8" column="3">
+         <item row="8" column="1">
+          <widget class="QLabel" name="label_25">
+           <property name="text">
+            <string>X</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_InputDataSetName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1">
+          <widget class="QSpinBox" name="m_InputHDFChunkX">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in X</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0" colspan="4">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>508</width>
+             <height>516</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Input Dataset Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="2">
+          <widget class="QSpinBox" name="m_InputHDFChunkY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Input HDF Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_50">
+           <property name="text">
+            <string>2D Mask File:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>Transform Chunk Count:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="m_BrowseInputFile">
+           <property name="text">
+            <string>Browse Input File...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="3">
           <widget class="QSpinBox" name="m_InputCountZ">
            <property name="toolTip">
             <string>Output HDF Chunk Size in Z</string>
@@ -434,15 +383,18 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_12">
+         <item row="8" column="2">
+          <widget class="QLabel" name="label_26">
            <property name="text">
-            <string>Input HDF Chunk Size:</string>
+            <string>Y</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="9" column="1">
-          <widget class="QSpinBox" name="m_InputHDFChunkX">
+          <widget class="QSpinBox" name="m_InputDimensionsX">
            <property name="toolTip">
             <string>Output HDF Chunk Size in X</string>
            </property>
@@ -454,10 +406,17 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="2">
-          <widget class="QSpinBox" name="m_InputHDFChunkY">
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Transform Chunk Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QSpinBox" name="m_InputChunkX">
            <property name="toolTip">
-            <string>Output HDF Chunk Size in Y</string>
+            <string>Output HDF Chunk Size in X</string>
            </property>
            <property name="readOnly">
             <bool>false</bool>
@@ -468,7 +427,7 @@
           </widget>
          </item>
          <item row="9" column="3">
-          <widget class="QSpinBox" name="m_InputHDFChunkZ">
+          <widget class="QSpinBox" name="m_InputDimensionsZ">
            <property name="toolTip">
             <string>Output HDF Chunk Size in Z</string>
            </property>
@@ -480,14 +439,34 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Input Compression: (0=none)</string>
+         <item row="10" column="2">
+          <widget class="QSpinBox" name="m_InputChunkY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
+         <item row="0" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_InputDataFileName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="2">
+          <widget class="QCheckBox" name="m_ExtraFlip">
+           <property name="text">
+            <string>'Extra' flip on input?</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1">
           <widget class="QSpinBox" name="m_InputCompression">
            <property name="toolTip">
             <string>Output HDF Chunk Size in X</string>
@@ -500,42 +479,139 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="2">
-          <widget class="QCheckBox" name="m_ExtraFlip">
+         <item row="12" column="3">
+          <widget class="QSpinBox" name="m_InputHDFChunkZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>'Extra' flip on input?</string>
+            <string>Input Data File:</string>
            </property>
           </widget>
          </item>
-         <item row="11" column="0" colspan="4">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+         <item row="8" column="3">
+          <widget class="QLabel" name="label_27">
+           <property name="text">
+            <string>Z</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>508</width>
-             <height>516</height>
-            </size>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
-          </spacer>
+          </widget>
          </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QLineEdit" name="m_InputDataFileName">
+         <item row="11" column="2">
+          <widget class="QSpinBox" name="m_InputCountY">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Y</string>
+           </property>
+           <property name="frame">
+            <bool>false</bool>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="buttonSymbols">
+            <enum>QAbstractSpinBox::NoButtons</enum>
+           </property>
+           <property name="maximum">
+            <number>999999</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Input Dimensions:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="3">
+          <widget class="QSpinBox" name="m_InputChunkZ">
+           <property name="toolTip">
+            <string>Output HDF Chunk Size in Z</string>
+           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="3">
-          <widget class="QLineEdit" name="m_InputDataSetName">
-           <property name="readOnly">
-            <bool>false</bool>
+           <property name="maximum">
+            <number>999999</number>
            </property>
           </widget>
          </item>
-         <item row="3" column="3">
+         <item row="2" column="3">
           <widget class="QComboBox" name="m_BrowseInputDataset"/>
+         </item>
+         <item row="13" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Input Compression: (0=none)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_53">
+           <property name="text">
+            <string>3D Mask Dataset Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_Input2DMaskFileName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_Input2DMaskDataSetName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_Input3DMaskFileName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1" colspan="2">
+          <widget class="QLineEdit" name="m_Input3DMaskDataSetName">
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QPushButton" name="m_Browse2DMaskFile">
+           <property name="text">
+            <string>Browse 2D Mask File...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="3">
+          <widget class="QPushButton" name="m_Browse3DMaskFile">
+           <property name="text">
+            <string>Browse 3D Mask File...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QComboBox" name="m_Browse3DMaskDataset"/>
+         </item>
+         <item row="5" column="3">
+          <widget class="QComboBox" name="m_Browse2DMaskDataset"/>
          </item>
         </layout>
        </widget>
@@ -900,64 +976,6 @@
            </property>
            <property name="maximum">
             <number>999999</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="m_DependenciesTab">
-        <attribute name="title">
-         <string>Dependencies</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_9">
-         <item row="1" column="5">
-          <widget class="QPushButton" name="m_DependenciesButton">
-           <property name="text">
-            <string>Dependencies</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <spacer name="horizontalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>253</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="3">
-          <widget class="QPushButton" name="m_SaveDepsButton">
-           <property name="text">
-            <string>Save Deps...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QPushButton" name="m_LoadDepsButton">
-           <property name="text">
-            <string>Load Deps...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="m_ReportOutputDepsButton">
-           <property name="text">
-            <string>Report Output Deps</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="6">
-          <widget class="QTableWidget" name="m_DependenciesTable"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="m_ReportInputDepsButton">
-           <property name="text">
-            <string>Report Input Deps</string>
            </property>
           </widget>
          </item>
@@ -1788,12 +1806,12 @@
      <x>0</x>
      <y>0</y>
      <width>1383</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="m_FileMenu">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
     <addaction name="m_ActionLoadSettings"/>
     <addaction name="m_ActionSaveSettings"/>
@@ -1807,29 +1825,19 @@
    </widget>
    <widget class="QMenu" name="m_TransformMenu">
     <property name="title">
-     <string>Transform</string>
+     <string>T&amp;ransform</string>
     </property>
     <addaction name="m_ActionSetupOutputData"/>
     <addaction name="m_ActionSetupTransform"/>
-    <addaction name="m_ActionPerformTransform"/>
     <addaction name="m_ActionCheckTransform"/>
+    <addaction name="m_ActionPerformTransform"/>
     <addaction name="m_ActionProjectBrowse"/>
     <addaction name="m_ActionProjectInput"/>
     <addaction name="m_ActionProjectOutput"/>
    </widget>
-   <widget class="QMenu" name="m_DependenciesMenu">
-    <property name="title">
-     <string>Dependencies</string>
-    </property>
-    <addaction name="m_ActionDependencies"/>
-    <addaction name="m_ActionLoadDependencies"/>
-    <addaction name="m_ActionSaveDependencies"/>
-    <addaction name="m_ActionReportInputDependencies"/>
-    <addaction name="m_ActionReportOutputDependencies"/>
-   </widget>
    <widget class="QMenu" name="m_AnalysisMenu">
     <property name="title">
-     <string>Analysis</string>
+     <string>A&amp;nalysis</string>
     </property>
     <addaction name="m_ActionAnalyzePEMetaData"/>
     <addaction name="m_ActionAnalyseSpecDataFile"/>
@@ -1840,13 +1848,12 @@
    </widget>
    <addaction name="m_FileMenu"/>
    <addaction name="m_TransformMenu"/>
-   <addaction name="m_DependenciesMenu"/>
    <addaction name="m_AnalysisMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="m_ActionSaveSettings">
    <property name="text">
-    <string>Save Settings...</string>
+    <string>&amp;Save Settings...</string>
    </property>
    <property name="toolTip">
     <string>Save Settings in file</string>
@@ -1854,7 +1861,7 @@
   </action>
   <action name="m_ActionLoadSettings">
    <property name="text">
-    <string>Load Settings...</string>
+    <string>&amp;Load Settings...</string>
    </property>
    <property name="toolTip">
     <string>Load Settings from file</string>
@@ -1862,47 +1869,15 @@
   </action>
   <action name="m_ActionQuit">
    <property name="text">
-    <string>Quit...</string>
+    <string>&amp;Quit...</string>
    </property>
    <property name="toolTip">
     <string>Quit from program</string>
    </property>
   </action>
-  <action name="m_ActionDependencies">
-   <property name="text">
-    <string>Calculate Dependencies</string>
-   </property>
-   <property name="toolTip">
-    <string>Calculate Dependencies</string>
-   </property>
-  </action>
-  <action name="m_ActionLoadDependencies">
-   <property name="text">
-    <string>Load Dependencies...</string>
-   </property>
-   <property name="toolTip">
-    <string>Load Dependencies from file</string>
-   </property>
-  </action>
-  <action name="m_ActionSaveDependencies">
-   <property name="text">
-    <string>Save Dependencies...</string>
-   </property>
-   <property name="toolTip">
-    <string>Save Dependencies to file...</string>
-   </property>
-  </action>
-  <action name="m_ActionReportInputDependencies">
-   <property name="text">
-    <string>Report Input Dependencies</string>
-   </property>
-   <property name="toolTip">
-    <string>Report on Input Dependencies</string>
-   </property>
-  </action>
   <action name="m_ActionAnalyzePEMetaData">
    <property name="text">
-    <string>Analyze PE MetaData...</string>
+    <string>&amp;Analyze PE MetaData...</string>
    </property>
    <property name="toolTip">
     <string>Analyze PE MetaData</string>
@@ -1910,12 +1885,12 @@
   </action>
   <action name="m_ActionAnalyseSpecDataFile">
    <property name="text">
-    <string>Analyze spec data file...</string>
+    <string>Analyze spec data &amp;file...</string>
    </property>
   </action>
   <action name="m_ActionCompareTwoHDF5">
    <property name="text">
-    <string>Compare two HDF5 Datasets...</string>
+    <string>Compare two &amp;HDF5 Datasets...</string>
    </property>
    <property name="toolTip">
     <string>Compare two HDF5 datasets</string>
@@ -1923,7 +1898,7 @@
   </action>
   <action name="m_ActionCheckImportedData">
    <property name="text">
-    <string>Check Imported Data...</string>
+    <string>&amp;Check Imported Data...</string>
    </property>
    <property name="toolTip">
     <string>Check recently imported data</string>
@@ -1931,7 +1906,7 @@
   </action>
   <action name="m_ActionSetupDataImport">
    <property name="text">
-    <string>Importing Data...</string>
+    <string>&amp;Importing Data...</string>
    </property>
    <property name="toolTip">
     <string>Setup data import options...</string>
@@ -1939,7 +1914,7 @@
   </action>
   <action name="m_ActionImportData">
    <property name="text">
-    <string>Import Data...</string>
+    <string>Import &amp;Data...</string>
    </property>
    <property name="toolTip">
     <string>Import data from detctor images</string>
@@ -1947,7 +1922,7 @@
   </action>
   <action name="m_ActionSetupTransform">
    <property name="text">
-    <string>Setup Transform...</string>
+    <string>S&amp;etup Transform...</string>
    </property>
    <property name="toolTip">
     <string>Setup Transform Parameters</string>
@@ -1955,35 +1930,22 @@
   </action>
   <action name="m_ActionSaveCurrentSettings">
    <property name="text">
-    <string>Save Current Settings</string>
+    <string>Save &amp;Current Settings</string>
    </property>
   </action>
   <action name="m_ActionSetupOutputData">
    <property name="text">
-    <string>Setup Output Data...</string>
-   </property>
-  </action>
-  <action name="m_ActionPerformTransform">
-   <property name="text">
-    <string>Transform Data</string>
+    <string>&amp;Setup Output Data...</string>
    </property>
   </action>
   <action name="m_ActionCheckTransform">
    <property name="text">
-    <string>Check Transform</string>
-   </property>
-  </action>
-  <action name="m_ActionReportOutputDependencies">
-   <property name="text">
-    <string>Report Output Dependencies</string>
-   </property>
-   <property name="toolTip">
-    <string>Report on Output Dependencies</string>
+    <string>&amp;Check Transform</string>
    </property>
   </action>
   <action name="m_ActionProjectInput">
    <property name="text">
-    <string>Project Input Dataset</string>
+    <string>&amp;Project Input Dataset</string>
    </property>
    <property name="toolTip">
     <string>Project Input Dataset</string>
@@ -1991,7 +1953,7 @@
   </action>
   <action name="m_ActionProjectOutput">
    <property name="text">
-    <string>Project Output Dataset</string>
+    <string>Project &amp;Output Dataset</string>
    </property>
    <property name="toolTip">
     <string>Project Output Dataset</string>
@@ -1999,7 +1961,7 @@
   </action>
   <action name="m_ActionProjectBrowse">
    <property name="text">
-    <string>Browse Projection Destination</string>
+    <string>&amp;Browse Projection Destination</string>
    </property>
    <property name="toolTip">
     <string>Browse Projection Destination</string>
@@ -2007,7 +1969,12 @@
   </action>
   <action name="m_ActionExecuteScriptFile">
    <property name="text">
-    <string>Execute Script File...</string>
+    <string>&amp;Execute Script File...</string>
+   </property>
+  </action>
+  <action name="m_ActionPerformTransform">
+   <property name="text">
+    <string>Perform Transform...</string>
    </property>
   </action>
  </widget>
@@ -2036,8 +2003,6 @@
   <tabstop>m_TestGridX</tabstop>
   <tabstop>m_TestGridY</tabstop>
   <tabstop>m_TestGridZ</tabstop>
-  <tabstop>m_InputDataFileName</tabstop>
-  <tabstop>m_InputDataSetName</tabstop>
   <tabstop>m_InputDimensionsX</tabstop>
   <tabstop>m_InputDimensionsY</tabstop>
   <tabstop>m_InputDimensionsZ</tabstop>
@@ -2076,9 +2041,6 @@
   <tabstop>m_OutputDataFileName</tabstop>
   <tabstop>m_OutputDataSetName</tabstop>
   <tabstop>m_SetupOutputButton</tabstop>
-  <tabstop>m_SaveDepsButton</tabstop>
-  <tabstop>m_LoadDepsButton</tabstop>
-  <tabstop>m_DependenciesButton</tabstop>
   <tabstop>m_ImportOutputDataset</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>

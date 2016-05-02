@@ -60,6 +60,7 @@ public slots:
   virtual void        setDataset(QString desc);
   virtual void        setMaskSource(QString desc);
   virtual void        setMaskDataset(QString desc);
+  virtual void        setMask3DSource(QString desc);
   virtual void        setAnglesSource(QString desc);
   virtual void        setAnglesDataset(QString desc);
   virtual void        setWeightsSource(QString desc);
@@ -81,9 +82,6 @@ public slots:
 
   CctwIntVector3D     chunkIndexFromNumber(int n);
   int                 chunkNumberFromIndex(CctwIntVector3D chunkIdx);
-
-  void                clearDependencies();
-  void                addDependency(int f, int t);
 
   CctwDataChunk      *chunk(int n);
   CctwDataChunk      *chunk(CctwIntVector3D idx);
@@ -159,6 +157,12 @@ private:
   Q_PROPERTY(QcepIntVector mask READ get_Mask WRITE set_Mask STORED false)
   QCEP_INTEGER_VECTOR_PROPERTY(Mask)
 
+  Q_PROPERTY(QString mask3DDataFileName READ get_Mask3DDataFileName WRITE set_Mask3DDataFileName)
+  QCEP_STRING_PROPERTY(Mask3DDataFileName)
+
+  Q_PROPERTY(QString mask3DDataSetName READ get_Mask3DDataSetName WRITE set_Mask3DDataSetName)
+  QCEP_STRING_PROPERTY(Mask3DDataSetName)
+
   Q_PROPERTY(QString anglesDataFileName READ get_AnglesDataFileName WRITE set_AnglesDataFileName)
   QCEP_STRING_PROPERTY(AnglesDataFileName)
 
@@ -219,6 +223,11 @@ private:
   hid_t               m_MaskFileId;
   hid_t               m_MaskDatasetId;
   hid_t               m_MaskDataspaceId;
+
+  bool                m_Mask3DSameFile; // If 3d-mask is in input data file
+  hid_t               m_Mask3DFileId;
+  hid_t               m_Mask3DDatasetId;
+  hid_t               m_Mask3DDataspaceId;
 
   bool                m_AnglesSameFile; // If angles are in input data file
   hid_t               m_AnglesFileId;

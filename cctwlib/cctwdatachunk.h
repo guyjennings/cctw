@@ -45,14 +45,6 @@ public slots:
   CctwIntVector3D chunkSize();
   void setChunkSize(CctwIntVector3D size);
 
-  void clearDependencies();
-  void addDependency(int dep);
-  void sortDependencies();
-  int dependencyCount() const;
-  int dependency(int n) const;
-
-  void reportDependencies();
-
   int index() const;
   void mergeChunk(CctwDataChunk *c);
   void clearMergeCounters();
@@ -91,8 +83,6 @@ private:
   int                                        m_Normalized;
   int                                        m_DataWritten;
   int                                        m_WeightsWritten;
-  QVector< int >                             m_Dependencies;
-  mutable QMutex                             m_DependenciesLock;
   QMutex                                     m_MergeLock;
   int                                        m_MergeCounter;
   QList< CctwChunkedData::MergeDataType* >   m_MergeData;

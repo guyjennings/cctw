@@ -92,8 +92,6 @@ public slots:
 
   void setSubset(QString desc);
   void transform(QString desc);
-  void partialDependencies(QString desc);
-  void noDependencies();
 
   void mergeInput(QString path);
   void mergeOutput(QString path);
@@ -103,8 +101,6 @@ public slots:
   void runNorm();
   void runProject();
 
-//  void transform();
-
   void setNormalization(QString data);
   void setCompression(QString data);
 
@@ -112,24 +108,7 @@ public slots:
   void outputProject(int axes);
   void setProjectOutput(QString dir);
 
-  void calculateDependencies();
-  void calculateChunkDependencies(int n);
-
-  void saveDependencies(QString path);
-  void loadDependencies(QString path);
-
-  void reportDependencies();
-
   void doAboutToQuit();
-
-  void reportInputDependencies();
-  void reportInputDependencies(CctwIntVector3D idx);
-
-  void reportOutputDependencies();
-  void reportOutputDependencies(CctwIntVector3D idx);
-
-  void reportInputChunkCounts();
-  void reportOutputChunkCounts();
 
   void analyzePEMetaData(QString path);
   void analyzeSpecDataFile(QString path);
@@ -143,9 +122,6 @@ public slots:
 
   int inputChunkCount();
   int outputChunkCount();
-
-  QcepIntList dependencies(int chunkId);
-  QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
 
   void testing();
 
@@ -201,11 +177,7 @@ public:
   CctwPEIngressCommand               *m_PEIngressCommand;
   QcepSettingsSaverPtr                m_Saver;
 
-//  QStringList                         m_MergeInputs;
-//  QString                             m_MergeOutput;
-
 private:
-  QAtomicInt                          m_DependencyCounter;
   QAtomicInt                          m_WorkOutstanding;
   QAtomicInt                          m_LastProgress;
 
@@ -228,6 +200,9 @@ public:
   Q_PROPERTY(QString maskFile READ get_MaskFile WRITE set_MaskFile STORED false)
   QCEP_STRING_PROPERTY(MaskFile)
 
+  Q_PROPERTY(QString mask3DFile READ get_Mask3DFile WRITE set_Mask3DFile STORED false)
+  QCEP_STRING_PROPERTY(Mask3DFile)
+
   Q_PROPERTY(QString anglesFile READ get_AnglesFile WRITE set_AnglesFile STORED false)
   QCEP_STRING_PROPERTY(AnglesFile)
 
@@ -245,9 +220,6 @@ public:
 
   Q_PROPERTY(int progressLimit READ get_ProgressLimit WRITE set_ProgressLimit STORED false)
   QCEP_INTEGER_PROPERTY(ProgressLimit)
-
-  Q_PROPERTY(QString dependenciesPath READ get_DependenciesPath WRITE set_DependenciesPath)
-  QCEP_STRING_PROPERTY(DependenciesPath)
 
   Q_PROPERTY(QString settingsPath READ get_SettingsPath WRITE set_SettingsPath)
   QCEP_STRING_PROPERTY(SettingsPath)

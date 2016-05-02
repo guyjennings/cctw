@@ -32,6 +32,8 @@ CctwChunkedData::CctwChunkedData
     m_MaskDataFileName(application->saver(), this, "maskDataFileName", "", "Mask Data File Name"),
     m_MaskDataSetName(application->saver(), this, "maskDataSetName", "", "Mask Dataset Name"),
     m_Mask(QcepSettingsSaverWPtr(), this, "mask", QcepIntVector(), "Mask Image"),
+    m_Mask3DDataFileName(application->saver(), this, "mask3DDataFileName", "", "3D-Mask Data File Name"),
+    m_Mask3DDataSetName(application->saver(), this, "mask3DDataSetName", "", "3D-Mask Dataset Name"),
     m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
     m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
     m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
@@ -403,6 +405,58 @@ void CctwChunkedData::setMaskSource(QString desc)
 #endif
 }
 
+void CctwChunkedData::setMask3DSource(QString desc)
+{
+  QUrl url(desc);
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("%1.setMask3DSource(\"%2\")").arg(get_Name()).arg(CctwApplication::addSlashes(desc)));
+
+    printMessage(tr("scheme:   %1").arg(url.scheme()));
+    printMessage(tr("host:     %1").arg(url.host()));
+    printMessage(tr("path:     %1").arg(url.path()));
+    printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+    printMessage(tr("query:    %1").arg(url.query()));
+#endif
+    printMessage(tr("fragment: %1").arg(url.fragment()));
+  }
+
+  set_Mask3DDataFileName(url.path());
+  set_Mask3DDataSetName(url.fragment());
+
+#if QT_VERSION >= 0x050000
+  if (url.hasQuery()) {
+    QUrlQuery qry(url);
+
+    QList <QPair <QString, QString> > l = qry.queryItems();
+
+    QPair<QString, QString> v;
+    foreach (v, l) {
+      if (qcepDebug(DEBUG_APP)) {
+        printMessage(tr(" key:     %1").arg(v.first));
+        printMessage(tr(" val:     %1").arg(v.second));
+      }
+    }
+
+//    if (qry.hasQueryItem("size")) {
+//      QString chunkSize = qry.queryItemValue("size");
+//      setChunks(chunkSize);
+//    }
+
+//    if (qry.hasQueryItem("dim")) {
+//      QString dims      = qry.queryItemValue("dim");
+//      setDims(dims);
+//    }
+
+    if (qry.hasQueryItem("dataset")) {
+      QString dset      = qry.queryItemValue("dataset");
+      set_Mask3DDataSetName(dset);
+    }
+  }
+#endif
+}
+
 void CctwChunkedData::setMaskDataset(QString desc)
 {
   set_MaskDataSetName(desc);
@@ -602,22 +656,6 @@ CctwIntVector3D CctwChunkedData::chunkIndexFromNumber(int n)
     return CctwIntVector3D(x,y,z);
   } else {
     return CctwIntVector3D(-1,-1,-1);
-  }
-}
-
-void CctwChunkedData::clearDependencies()
-{
-  foreach(CctwDataChunk* p, m_DataChunks) {
-    if (p) {
-      p->clearDependencies();
-    }
-  }
-}
-
-void CctwChunkedData::addDependency(int f, int t)
-{
-  if (f >= 0 && f < m_DataChunks.count()) {
-    chunk(f) -> addDependency(t);
   }
 }
 

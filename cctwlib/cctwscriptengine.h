@@ -30,6 +30,7 @@ private:
   static QScriptValue setInputChunksFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setInputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setMaskFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue setMask3DFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setAnglesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setOmegaFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setTwoThetaFunc(QScriptContext *context, QScriptEngine *engine);
@@ -42,8 +43,6 @@ private:
   static QScriptValue setOutputDatasetFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue transformFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue setSubsetFunc(QScriptContext *context, QScriptEngine *engine);
-  static QScriptValue dependenciesFunc(QScriptContext *context, QScriptEngine *engine);
-  static QScriptValue noDependenciesFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue normalizationFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue compressionFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue inputProjectFunc(QScriptContext *context, QScriptEngine *engine);

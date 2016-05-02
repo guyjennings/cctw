@@ -75,13 +75,13 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_InputFiles(QcepSettingsSaverWPtr(), this, "inputFiles", QcepStringList(), "Input files"),
   m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
   m_MaskFile(QcepSettingsSaverWPtr(), this, "maskFile", "", "Mask file"),
+  m_Mask3DFile(QcepSettingsSaverWPtr(), this, "mask3DFile", "", "3D-Mask file"),
   m_AnglesFile(QcepSettingsSaverWPtr(), this, "anglesFile", "", "Angles File"),
   m_WeightsFile(QcepSettingsSaverWPtr(), this, "weightsFile", "", "Weights File"),
   m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
   m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
   m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
   m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
-  m_DependenciesPath(m_Saver, this, "dependenciesPath", "", "Dependencies saved in"),
   m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
   m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
   m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
@@ -218,6 +218,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"inputchunks", required_argument, 0, argInputChunks},
       {"inputdataset", required_argument, 0, argInputDataset},
       {"mask", required_argument, 0, 'm'},
+      {"mask3d", required_argument, 0, 'M'},
       {"angles", required_argument, 0, 'a'},
       {"omega", required_argument, 0, argOmega},
       {"twotheta", required_argument, 0, argTwoTheta},
@@ -232,8 +233,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"compression", required_argument, 0, 'z'},
       {"subset", required_argument, 0, 'S'},
       {"transform", no_argument, 0, 't'},
-      {"depends", no_argument, 0, 'd'},
-      {"nodepends", no_argument, 0, 'x'},
       {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
       {"gui", no_argument, 0, 'g'},
@@ -291,6 +290,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("setMask(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case 'M':
+      startupCommand(tr("setMask3D(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
     case 'a':
       startupCommand(tr("setAngles(\"%1\");").arg(addSlashes(optarg)));
       break;
@@ -337,14 +340,6 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
 
     case 't':
       startupCommand(tr("doTransform(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
-    case 'd':
-      startupCommand(tr("partialDependencies(\"%1\");").arg(addSlashes(optarg)));
-      break;
-
-    case 'x':
-      startupCommand(tr("noDependencies();"));
       break;
 
     case 'N':
@@ -702,8 +697,6 @@ void CctwApplication::showHelp(QString about)
               "--compression <n>, -z <n>        compress output files (-ve = LZF, 0 = none, 1-9 = GZIP\n"
               "--subset <n/m>, -S <n/m>         specify subset of input data to operate on (or all if blank)\n"
               "--transform, -t                  transform all or part of the data\n"
-              "--depends, -d                    calculate dependencies for all or part of the data\n"
-              "--nodepends, -x                  clear dependencies\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
               "--gui, -g                        use GUI interface if available\n"
@@ -875,11 +868,7 @@ void CctwApplication::transform(QString desc)
 //  printMessage(tr("Partial transform of %1").arg(desc));
 
   if (m_Transformer) {
-    if (m_Transformer->get_UseDependencies()) {
-      m_Transformer->transform();
-    } else {
-      m_Transformer->simpleTransform();
-    }
+    m_Transformer->transform();
   }
 }
 
@@ -916,77 +905,6 @@ void CctwApplication::setChi(QString data)
     printMessage(tr("Set Chi Values to %1").arg(data));
 
     m_Parameters->setChi(data);
-  }
-}
-
-//void CctwApplication::transform()
-//{
-//  QVector < QFuture < void > > futures;
-//  waitCompleted();
-
-//  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-//  set_Halting(false);
-//  set_Progress(0);
-//  set_ProgressLimit(chunks.volume());
-
-//  QTime startAt;
-
-//  startAt.start();
-
-//  printMessage("Starting Transform");
-
-//  m_InputData  -> beginTransform(true,  0);
-//  m_OutputData -> beginTransform(false, 0);
-
-//  for (int z=0; z<chunks.z(); z++) {
-//    for (int y=0; y<chunks.y(); y++) {
-//      for (int x=0; x<chunks.x(); x++) {
-//        if (get_Halting()) {
-//          goto abort;
-//        } else {
-//          CctwIntVector3D idx(x,y,z);
-
-//          int n = m_InputData->chunkNumberFromIndex(idx);
-
-//          addWorkOutstanding(1);
-
-//          futures.append(
-//                QtConcurrent::run(m_Transformer, &CctwTransformer::runTransformChunkNumber, n));
-//        }
-//      }
-//    }
-//  }
-
-//abort:
-//  foreach (QFuture<void> f, futures) {
-//    f.waitForFinished();
-//    processEvents();
-//  }
-
-//  int msec = startAt.elapsed();
-
-//  m_OutputData -> flushOutputFile();
-
-//  m_InputData  -> endTransform();
-//  m_OutputData -> endTransform();
-
-//  printMessage(tr("Transform complete after %1 msec, %2 chunks still allocated")
-//               .arg(msec)
-//               .arg(CctwDataChunk::allocatedChunkCount()));
-//}
-
-void CctwApplication::partialDependencies(QString desc)
-{
-//  printMessage(tr("Partial dependencies of %1").arg(desc));
-
-  calculateDependencies();
-}
-
-void CctwApplication::noDependencies()
-{
-  if (m_Transformer) {
-    m_Transformer->clearDependencies(0);
   }
 }
 
@@ -1152,369 +1070,6 @@ QString CctwApplication::settingsScript()
   return res;
 }
 
-void CctwApplication::calculateChunkDependencies(int n)
-{
-  if (!get_Halting()) {
-    QcepDoubleVector anglesvec = m_InputData->get_Angles();
-    double *angs = (anglesvec.count()<=0 ? NULL : anglesvec.data());
-
-    CctwCrystalCoordinateTransform transform(m_Parameters, tr("transform-%1").arg(n), angs, NULL);
-
-    //    printMessage(tr("Calculate Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
-
-    CctwDataChunk  *chunk   = m_InputData->chunk(n);
-
-    if (chunk) {
-      CctwIntVector3D chStart = chunk->chunkStart();
-      CctwIntVector3D chSize  = chunk->chunkSize();
-      CctwDoubleVector3D dblStart(chStart.x(), chStart.y(), chStart.z());
-      int lastChunk = -1;
-
-      int osx = m_Transformer->get_OversampleX();
-      int osy = m_Transformer->get_OversampleY();
-      int osz = m_Transformer->get_OversampleZ();
-
-      double osxstp = osx >= 1 ? 1.0/osx : 0;
-      double osystp = osy >= 1 ? 1.0/osy : 0;
-      double oszstp = osz >= 1 ? 1.0/osz : 0;
-
-      for (int z=0; z<chSize.z(); z++) {
-        for (int oz=0; oz<osz; oz++) {
-          for (int y=0; y<chSize.y(); y++) {
-            for (int oy=0; oy<osy; oy++) {
-              for (int x=0; x<chSize.x(); x++) {
-                for (int ox=0; ox<osx; ox++) {
-                  CctwDoubleVector3D coords = dblStart+CctwDoubleVector3D(x+ox*osxstp, y+oy*osystp, z+oz*oszstp);
-
-                  CctwDoubleVector3D xfmcoord = transform.forward(coords);
-
-                  CctwIntVector3D    pixels(xfmcoord);
-
-                  if (m_OutputData->containsPixel(pixels)) {
-                    int opchunk  = m_OutputData->chunkContaining(pixels);
-
-                    if (opchunk != lastChunk) {
-                      lastChunk = opchunk;
-                      //              m_InputData->addDependency(n, opchunk);
-                      //              m_OutputData->addDependency(opchunk, n);
-                      m_Transformer->addDependency(n, opchunk);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-//    printMessage(tr("Finished Chunk Dependencies for chunk [%1,%2,%3]").arg(idx.x()).arg(idx.y()).arg(idx.z()));
-
-    m_DependencyCounter.fetchAndAddOrdered(-1);
-  } else {
-    m_DependencyCounter.fetchAndStoreOrdered(0);
-  }
-
-  prop_Progress()->incValue(1);
-
-  workCompleted(1);
-}
-
-void CctwApplication::calculateDependencies()
-{
-  QVector < QFuture < void > > futures;
-  waitCompleted();
-
-//  m_InputData->clearDependencies();
-//  m_OutputData->clearDependencies();
-
-  m_Transformer->clearDependencies(1);
-
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  QTime startAt;
-
-  startAt.start();
-
-  printMessage("Starting calculate dependencies");
-
-  m_DependencyCounter.fetchAndStoreOrdered(0);
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-//        while ((!get_Halting()) && (m_DependencyCounter.fetchAndAddOrdered(0) > 32)) {
-////          CctwqtThread::msleep(10);
-//          processEvents();
-//        }
-
-        if (get_Halting()) {
-          m_DependencyCounter.fetchAndStoreOrdered(0);
-          goto abort;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-          int n = m_InputData->chunkNumberFromIndex(idx);
-
-          m_DependencyCounter.fetchAndAddOrdered(1);
-
-          addWorkOutstanding(1);
-          futures.append(
-                QtConcurrent::run(this, &CctwApplication::calculateChunkDependencies, n));
-//          calculateChunkDependencies(idx);
-        }
-      }
-    }
-  }
-
-abort:
-  while (m_DependencyCounter.fetchAndAddOrdered(0) > 0) {
-    CctwThread::msleep(10);
-    processEvents();
-  }
-
-  foreach (QFuture<void> f, futures) {
-    f.waitForFinished();
-    processEvents();
-  }
-
-//  m_Transformer -> completedDependencies();
-
-  int msec = startAt.elapsed();
-
-  printMessage(tr("finished calculate dependencies after %1 msec").arg(msec));
-}
-
-void CctwApplication::saveDependencies(QString path)
-{
-  if (m_Transformer) {
-    m_Transformer->saveDependencies(path);
-  }
-}
-
-void CctwApplication::loadDependencies(QString path)
-{
-  if (m_Transformer) {
-    m_Transformer->loadDependencies(path);
-  }
-}
-
-void CctwApplication::reportDependencies()
-{
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  set_Halting(false);
-
-  printMessage(tr("Check mapping"));
-
-  for (int n=0; n<chunks.volume(); n++) {
-    if (get_Halting()) {
-      break;
-    } else {
-      CctwIntVector3D idx = m_InputData->chunkIndexFromNumber(n);
-      int nn = m_InputData->chunkNumberFromIndex(idx);
-
-      if (nn != n) {
-        printMessage(tr("Problem: %1 => [%2,%3,%4] => %5").arg(n).arg(idx.x()).arg(idx.y()).arg(idx.z()).arg(nn));
-      }
-    }
-  }
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-          int n = m_InputData->chunkNumberFromIndex(idx);
-          CctwIntVector3D idx2 = m_InputData->chunkIndexFromNumber(n);
-
-          if (idx != idx2) {
-            printMessage(tr("Problem: [%1,%2,%3] => %4 => [%5,%6,%7]")
-                         .arg(idx.x()).arg(idx.y()).arg(idx.z())
-                         .arg(n)
-                         .arg(idx2.x()).arg(idx2.y()).arg(idx2.z()));
-          }
-        }
-      }
-    }
-  }
-
-  printMessage(tr("Input Data Dependencies"));
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          CctwDataChunk *chunk = m_InputData -> chunk(idx);
-
-          if (chunk) {
-            chunk->reportDependencies();
-          }
-        }
-      }
-    }
-  }
-}
-
-void CctwApplication::reportOutputDependencies()
-{
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          reportOutputDependencies(idx);
-        }
-      }
-    }
-  }
-}
-
-void CctwApplication::reportOutputDependencies(CctwIntVector3D idx)
-{
-  CctwDataChunk *chunk = m_OutputData->chunk(idx);
-
-  if (chunk) {
-    chunk->reportDependencies();
-  }
-}
-
-void CctwApplication::reportInputDependencies()
-{
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          reportInputDependencies(idx);
-        }
-      }
-    }
-  }
-}
-
-void CctwApplication::reportInputDependencies(CctwIntVector3D idx)
-{
-  CctwDataChunk *chunk = m_InputData->chunk(idx);
-
-  if (chunk) {
-    chunk->reportDependencies();
-  }
-}
-
-void CctwApplication::reportInputChunkCounts()
-{
-  CctwIntVector3D chunks = m_InputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      QString aLine;
-
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          CctwDataChunk *chunk = m_InputData->chunk(idx);
-
-          if (chunk) {
-            int nDeps = chunk->dependencyCount();
-
-            if (nDeps > 9) {
-              aLine += "*";
-            } else if (nDeps >= 1) {
-              aLine += tr("%1").arg(nDeps);
-            } else {
-              aLine += "0";
-            }
-          } else {
-            aLine += "0";
-          }
-        }
-      }
-
-      printMessage(aLine);
-    }
-
-    printMessage("");
-  }
-}
-
-void CctwApplication::reportOutputChunkCounts()
-{
-  CctwIntVector3D chunks = m_OutputData->chunkCount();
-
-  set_Halting(false);
-  set_Progress(0);
-  set_ProgressLimit(chunks.volume());
-
-  for (int z=0; z<chunks.z(); z++) {
-    for (int y=0; y<chunks.y(); y++) {
-      QString aLine;
-
-      for (int x=0; x<chunks.x(); x++) {
-        if (get_Halting()) {
-          break;
-        } else {
-          CctwIntVector3D idx(x,y,z);
-
-          CctwDataChunk *chunk = m_OutputData->chunk(idx);
-
-          if (chunk) {
-            int nDeps = chunk->dependencyCount();
-
-            if (nDeps > 9) {
-              aLine += "*";
-            } else if (nDeps >= 1) {
-              aLine += tr("%1").arg(nDeps);
-            } else {
-              aLine += "0";
-            }
-          } else {
-            aLine += "0";
-          }
-        }
-      }
-
-      printMessage(aLine);
-    }
-
-    printMessage("");
-  }
-}
-
 CctwCrystalCoordinateParameters *CctwApplication::parameters() const
 {
   return m_Parameters;
@@ -1541,16 +1096,6 @@ void CctwApplication::waitCompleted()
 int  CctwApplication::workOutstanding()
 {
   return m_WorkOutstanding.fetchAndAddOrdered(0);
-}
-
-QcepIntList CctwApplication::dependencies(int chunkIdx)
-{
-  return m_Transformer->dependencies(chunkIdx);
-}
-
-QList<CctwIntVector3D> CctwApplication::dependencies(int cx, int cy, int cz)
-{
-  return m_Transformer->dependencies(cx, cy, cz);
 }
 
 void CctwApplication::analyzePEMetaData(QString path)
@@ -1661,6 +1206,7 @@ void CctwApplication::runTransform()
 {
   m_InputData->setDataSource(get_InputFiles().at(0));
   m_InputData->setMaskSource(get_MaskFile());
+  m_InputData->setMask3DSource(get_Mask3DFile());
   m_InputData->setAnglesSource(get_AnglesFile());
   m_InputData->setWeightsSource(get_WeightsFile());
 

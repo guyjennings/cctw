@@ -27,23 +27,13 @@ public:
 
 public slots:
   void transform();
-  void simpleTransform();
-  void checkTransform();
-
-  void saveDependencies(QString path);
-  void loadDependencies(QString path);
-
-  QcepIntList dependencies(int n);
-  QList<CctwIntVector3D> dependencies(int cx, int cy, int cz);
+//  void checkTransform();
 
   void runTransformChunkNumber(int n);
   void transformChunkNumber(int chunkId);
   void transformChunkData(int chunkId,
                           CctwDataChunk *inputChunk,
                           QMap<int, CctwDataChunk*> &outputChunks);
-
-  void clearDependencies(int use);
-  void addDependency(int f, int t);
 
 #ifdef WANT_ANALYSIS_COMMANDS
   void inputProject(QString path, int axes);
@@ -128,9 +118,6 @@ public:
 
   Q_PROPERTY(QString subset READ get_Subset WRITE set_Subset STORED false)
   QCEP_STRING_PROPERTY(Subset)
-
-  Q_PROPERTY(int useDependencies READ get_UseDependencies WRITE set_UseDependencies STORED false)
-  QCEP_INTEGER_PROPERTY(UseDependencies)
 
   Q_PROPERTY(int skipped READ get_Skipped WRITE set_Skipped STORED false)
   QCEP_INTEGER_PROPERTY(Skipped)
