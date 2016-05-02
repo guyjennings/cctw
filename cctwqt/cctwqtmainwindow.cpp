@@ -325,10 +325,13 @@ void CctwqtMainWindow::doBrowseInputFile()
                                                 inputData->get_DataFileName());
 
     if (path.length() > 0) {
-      inputData->set_DataFileName(path);
+      ui->m_InputDataFileName->setText(path);
+//      inputData->set_DataFileName(path);
     }
   }
 }
+
+static int s_Nd;
 
 static herr_t iterate_objects(hid_t o_id,
                               const char *name,
@@ -340,7 +343,11 @@ static herr_t iterate_objects(hid_t o_id,
   if (object_info) {
     switch (object_info->type) {
     case H5O_TYPE_DATASET:
-      if (op_data) {
+      hid_t ds = H5Dopen(o_id, name, H5P_DEFAULT);
+      hid_t sp = H5Dget_space(ds);
+      int   nd = H5Sget_simple_extent_ndims(sp);
+
+      if (op_data && (nd == s_Nd)) {
         QStringList *sl = (QStringList*)(op_data);
 
         if (sl) {
@@ -355,6 +362,8 @@ static herr_t iterate_objects(hid_t o_id,
 
 static QStringList iterateHDF5datasets(QString path, int rank)
 {
+  s_Nd = rank;
+
   /* Save old error handler */
   H5E_auto2_t  old_func;
   void *old_client_data;
@@ -421,7 +430,8 @@ void CctwqtMainWindow::doBrowse2DMaskFile()
                                                 inputData->get_MaskDataFileName());
 
     if (path.length() > 0) {
-      inputData->set_MaskDataFileName(path);
+      ui->m_Input2DMaskFileName->setText(path);
+//      inputData->set_MaskDataFileName(path);
     }
   }
 }
@@ -437,6 +447,7 @@ void CctwqtMainWindow::doCheck2DMaskFile(QString path)
 
 void CctwqtMainWindow::doBrowse2DMaskDataset(QString entry)
 {
+  ui->m_Input2DMaskDataSetName->setText(entry);
 }
 
 void CctwqtMainWindow::doCheck2DMaskDataset(QString name)
@@ -452,7 +463,8 @@ void CctwqtMainWindow::doBrowse3DMaskFile()
                                                 inputData->get_Mask3DDataFileName());
 
     if (path.length() > 0) {
-      inputData->set_Mask3DDataFileName(path);
+      ui->m_Input3DMaskFileName->setText(path);
+//      inputData->set_Mask3DDataFileName(path);
     }
   }
 }
@@ -468,6 +480,7 @@ void CctwqtMainWindow::doCheck3DMaskFile(QString path)
 
 void CctwqtMainWindow::doBrowse3DMaskDataset(QString entry)
 {
+  ui->m_Input3DMaskDataSetName->setText(entry);
 }
 
 void CctwqtMainWindow::doCheck3DMaskDataset(QString name)
