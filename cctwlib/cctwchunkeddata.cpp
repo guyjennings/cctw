@@ -2203,7 +2203,7 @@ bool CctwChunkedData::readWeightsFile()
 CctwDataChunk *CctwChunkedData::readChunk(int n)
 {
   CctwDataChunk *chk = NULL;
-  if (openInputFile() && openMask3DFile()) {
+  if (openInputFile()) {
 
     QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
