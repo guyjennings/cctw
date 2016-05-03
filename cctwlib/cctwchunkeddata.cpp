@@ -2,6 +2,7 @@
 #include "cctwdatachunk.h"
 #include "cctwapplication.h"
 #include <QDir>
+
 #include "lzf_filter.h"
 
 
@@ -50,6 +51,7 @@ CctwChunkedData::CctwChunkedData
     m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
     m_ChunksHeld(QcepSettingsSaverWPtr(), this, "chunksHeld", 0, "Chunks held on output"),
     m_ChunksHeldMax(QcepSettingsSaverWPtr(), this, "chunksHeldMax", 0, "Max Chunks held on output"),
+    m_Mask3DDimensions(QcepSettingsSaverWPtr(), this, "mask3DDimensions", CctwIntVector3D(0,0,0), "3D Mask Dimensions"),
     m_IsInput(isInput),
     m_TransformOptions(0),
     m_FileId(-1),
@@ -61,6 +63,9 @@ CctwChunkedData::CctwChunkedData
     m_MaskFileId(-1),
     m_MaskDatasetId(-1),
     m_MaskDataspaceId(-1),
+    m_Mask3DFileId(-1),
+    m_Mask3DDatasetId(-1),
+    m_Mask3DDataspaceId(-1),
     m_AnglesSameFile(false),
     m_AnglesFileId(-1),
     m_AnglesDatasetId(-1),
@@ -810,18 +815,23 @@ bool CctwChunkedData::openInputFile(bool quietly)
 
   try
   {
-    if (!f.exists())
+    if (!f.exists()) {
       throw tr("File %1 does not exist").arg(fileName);
-    if (H5Fis_hdf5(qPrintable(fileName)) <= 0)
+    }
+
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
       throw tr("File %1 exists but is not an hdf file").arg(fileName);
+    }
 
     fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDONLY, H5P_DEFAULT);
-    if (fileId < 0)
+    if (fileId < 0) {
       throw tr("File %1 could not be opened").arg(fileName);
+    }
 
     objId = H5Oopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
-    if (objId <= 0)
+    if (objId <= 0) {
       throw tr("Could not open data object!");
+    }
 
     H5O_info_t info;
     if (H5Oget_info(objId, &info) < 0) {
@@ -835,27 +845,32 @@ bool CctwChunkedData::openInputFile(bool quietly)
       // Input descriptor names a dataset - normalized data...
 
       dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
-      if (dsetId <= 0)
+      if (dsetId <= 0) {
         throw tr("Could not open dataset!");
+      }
 
       dspcId = H5Dget_space(dsetId);
-      if (dspcId < 0)
+      if (dspcId < 0) {
         throw tr("Could not get dataspace of existing dataset");
+      }
 
       hsize_t dims[3];
       int ndims = H5Sget_simple_extent_ndims(dspcId);
-      if (ndims != 3)
+      if (ndims != 3) {
         throw tr("Dataspace is not 3-dimensional");
+      }
 
       int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
-      if (ndims2 != 3)
+      if (ndims2 != 3) {
         throw tr("Could not get dataspace dimensions");
+      }
 
       setDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
       plist = H5Dget_create_plist(dsetId);
 
-      if (plist < 0)
+      if (plist < 0) {
         throw tr("Could not get dataset create plist");
+      }
 
       hsize_t cksz[3];
       if (H5Pget_chunk(plist, 3, cksz) < 0) {
@@ -929,6 +944,8 @@ bool CctwChunkedData::openInputFile(bool quietly)
 
         set_Normalization(0);
       }
+    } else {
+      throw tr("Input dataset is wrong type");
     }
 
     m_FileId      = fileId;
@@ -1618,6 +1635,151 @@ bool CctwChunkedData::readMaskFile()
   return res;
 }
 
+bool CctwChunkedData::openMask3DFile(bool quietly)
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_Mask3DFileId >= 0) {
+    return true;
+  }
+
+  QString fileName = get_Mask3DDataFileName();
+  QString dataSetName = get_Mask3DDataSetName();
+
+  if (fileName.length() == 0 && dataSetName.length() == 0) {
+    return true;
+  }
+
+  if (fileName.length() == 0) {
+    fileName = get_DataFileName();
+  }
+
+  if (fileName.length() == 0) {
+    printMessage("3D Mask File name is empty");
+    return false;
+  }
+
+  if (dataSetName.length() == 0) {
+    printMessage("3D Mask dataset name is empty");
+    return false;
+  }
+
+  if (!quietly) {
+    printMessage(tr("About to open 3D mask file: %1 dataset: %2")
+                  .arg(fileName).arg(dataSetName));
+  }
+
+  QFileInfo f(fileName);
+
+  hid_t fileId = -1;
+  hid_t objId  = -1;
+  hid_t dsetId = -1;
+  hid_t dspcId = -1;
+  hid_t plist  = -1;
+
+  try
+  {
+    if (!f.exists()) {
+      throw tr("3D Mask File %1 does not exist").arg(fileName);
+    }
+
+    if (H5Fis_hdf5(qPrintable(fileName)) <= 0) {
+      throw tr("3D Mask File %1 exists but is not an hdf file").arg(fileName);
+    }
+
+    fileId = H5Fopen(qPrintable(fileName), H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (fileId < 0) {
+      throw tr("3D Mask File %1 could not be opened").arg(fileName);
+    }
+
+    objId = H5Oopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+    if (objId <= 0) {
+      throw tr("Could not open 3D mask data object");
+    }
+
+    H5O_info_t info;
+    if (H5Oget_info(objId, &info) < 0) {
+      throw tr("Could not get 3d mask object info");
+    }
+
+    H5Oclose(objId);
+    objId = -1;
+
+    if (info.type == H5O_TYPE_DATASET) {
+      dsetId = H5Dopen(fileId, qPrintable(dataSetName), H5P_DEFAULT);
+      if (dsetId <= 0) {
+        throw tr("Could not open 3d mask dataset");
+      }
+
+      dspcId = H5Dget_space(dsetId);
+      if (dspcId < 0) {
+        throw tr("Could not get dataspace of existing 3d mask dataset");
+      }
+
+      int ndims = H5Sget_simple_extent_ndims(dspcId);
+      if (ndims != 3) {
+        throw tr("3D Mask dataspace is not 3-dimensional");
+      }
+
+      hsize_t dims[3];
+      int ndims2 = H5Sget_simple_extent_dims(dspcId, dims, NULL);
+      if (ndims2 != 3) {
+        throw tr("Could not get 3d mask dataspace dimensions");
+      }
+
+      set_Mask3DDimensions(CctwIntVector3D(dims[2], dims[1], dims[0]));
+    } else {
+      throw tr("3D mask dataset is wrong type");
+    }
+
+    m_Mask3DFileId      = fileId;
+    m_Mask3DDatasetId   = dsetId;
+    m_Mask3DDataspaceId = dspcId;
+
+    if (!quietly) {
+      printMessage(tr("Opened 3D mask file \"%1\" OK, DS \"%2\", DSID %3")
+                   .arg(fileName).arg(dataSetName).arg(m_Mask3DDatasetId));
+    }
+  }
+
+  catch (QString &msg)
+  {
+    if (!quietly) {
+      printMessage(tr("CctwChunkedData::openMask3DFile failed fileId=%1, dsetId=%2, dspcId=%3")
+                   .arg(fileId).arg(dsetId).arg(dspcId));
+      printMessage(msg);
+    }
+
+    if (dspcId >= 0) H5Sclose(dspcId);
+    if (dsetId >= 0) H5Dclose(dsetId);
+    if (fileId >= 0) H5Fclose(fileId);
+
+    return false;
+  }
+
+  return true;
+}
+
+void CctwChunkedData::closeMask3DFile()
+{
+  QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
+
+  if (m_Mask3DDataspaceId >= 0) {
+    H5Sclose(m_Mask3DDataspaceId);
+    m_Mask3DDataspaceId = -1;
+  }
+
+  if (m_Mask3DDatasetId >= 0) {
+    H5Dclose(m_Mask3DDatasetId);
+    m_Mask3DDatasetId = -1;
+  }
+
+  if (m_Mask3DFileId >= 0) {
+    H5Fclose(m_Mask3DFileId);
+    m_Mask3DFileId = -1;
+  }
+}
+
 bool CctwChunkedData::checkAnglesFile()
 {
   /* Save old error handler */
@@ -2041,7 +2203,7 @@ bool CctwChunkedData::readWeightsFile()
 CctwDataChunk *CctwChunkedData::readChunk(int n)
 {
   CctwDataChunk *chk = NULL;
-  if (openInputFile()) {
+  if (openInputFile() && openMask3DFile()) {
 
     QcepMutexLocker lock(__FILE__, __LINE__, &m_FileAccessMutex);
 
@@ -2089,6 +2251,11 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
 
         CctwChunkedData::MergeDataType *chunkData = chk->dataPointer();
         CctwChunkedData::MergeDataType *weightData = chk->weightsPointer();
+        char *maskData = NULL;
+
+        if (m_Mask3DDataspaceId >= 0) {
+          maskData = new char[sz.volume()];
+        }
 
         if (chunkData == NULL) {
           printMessage(tr("Anomaly reading chunk %1, data == NULL").arg(n));
@@ -2123,6 +2290,22 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
             }
           }
 
+          if ((m_Mask3DDataspaceId >= 0) && (m_Mask3DDatasetId >= 0)) {
+            herr_t selerr = H5Sselect_hyperslab(m_Mask3DDataspaceId, H5S_SELECT_SET, offset, stride,count, block);
+            if (selerr < 0) {
+              printMessage(tr("ERROR: select_hyperslab failed!"));
+            }
+
+            herr_t rderr = H5Dread(m_Mask3DDatasetId, H5T_NATIVE_CHAR, memspace_id, m_Mask3DDataspaceId, H5P_DEFAULT, maskData);
+
+            if (selerr || rderr) {
+              printMessage(tr("Error reading mask chunk %1, selerr = %2, rderr = %3")
+                           .arg(n)
+                           .arg(selerr)
+                           .arg(rderr));
+            }
+          }
+
           H5Sclose(memspace_id);
         }
 
@@ -2130,6 +2313,14 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
           if (weightData && chunkData) {
             int s = sz.volume();
             
+            if (maskData) {
+              for (int i=0; i<s; i++) {
+                if (maskData[i]) {
+                  chunkData[i] = qQNaN();
+                }
+              }
+            }
+
             for (int i=0; i<s; i++) {
               if (chunkData[i] == chunkData[i]) { // Test for NaN
                 weightData[i] = 1;
@@ -2139,6 +2330,8 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
             }
           }
         }
+
+        delete maskData;
       }
     }
   }
@@ -2247,22 +2440,29 @@ bool CctwChunkedData::beginTransform(bool isInput, int transformOptions)
 
   if (m_IsInput) {
     if (openInputFile()) {
-
-//      printMessage("Reading mask data");
+      //      printMessage("Reading mask data");
       if (readMaskFile()) {
-
-//        printMessage("Reading angles data");
-        if (readAnglesFile()) {
-
-//          printMessage("Reading weights data");
-          if (readWeightsFile()) {
-            res = true;
+        //        printMessage("Reading 3D mask data");
+        if (openMask3DFile()) {
+          //        printMessage("Reading angles data");
+          if (readAnglesFile()) {
+            //          printMessage("Reading weights data");
+            if (readWeightsFile()) {
+              res = true;
+            }
           }
         }
       }
     }
   } else {
     res = openOutputFile();
+  }
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("Begin transform: ds %1, ds2 %2, m3d %3")
+                 .arg(m_DataspaceId)
+                 .arg(m_Dataspace2Id)
+                 .arg(m_Mask3DDataspaceId));
   }
 
   return res;
@@ -2274,6 +2474,7 @@ void CctwChunkedData::endTransform()
 
   if (m_IsInput) {
     closeInputFile();
+    closeMask3DFile();
   } else {
     closeOutputFile();
   }

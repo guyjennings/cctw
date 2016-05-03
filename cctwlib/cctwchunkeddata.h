@@ -111,6 +111,9 @@ public slots:
   void                closeMaskFile();
   bool                readMaskFile();
 
+  bool                openMask3DFile(bool quietly = false);
+  void                closeMask3DFile();
+
   bool                checkAnglesFile();
   bool                openAnglesFile(bool quietly = false);
   void                closeAnglesFile();
@@ -211,6 +214,9 @@ private:
   Q_PROPERTY(int chunksHeldMax READ get_ChunksHeldMax WRITE set_ChunksHeldMax STORED false)
   QCEP_INTEGER_PROPERTY(ChunksHeldMax)
 
+  Q_PROPERTY(CctwIntVector3D mask3DDimensions READ get_Mask3DDimensions WRITE set_Mask3DDimensions STORED false)
+  CCTW_INTVECTOR3D_PROPERTY(Mask3DDimensions)
+
   bool                m_IsInput;
   int                 m_TransformOptions;
   hid_t               m_FileId;
@@ -224,7 +230,6 @@ private:
   hid_t               m_MaskDatasetId;
   hid_t               m_MaskDataspaceId;
 
-  bool                m_Mask3DSameFile; // If 3d-mask is in input data file
   hid_t               m_Mask3DFileId;
   hid_t               m_Mask3DDatasetId;
   hid_t               m_Mask3DDataspaceId;

@@ -77,6 +77,8 @@ public slots:
   void setMaskData(QString data);
   void setMaskDataset(QString data);
 
+  void setMask3DData(QString data);
+
   void setAnglesData(QString data);
   void setAnglesDataset(QString data);
 

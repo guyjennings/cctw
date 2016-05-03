@@ -247,7 +247,7 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {0,0,0,0}
     };
 
-    c = getopt_long(argc, argv, "hv::j:i:m:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
+    c = getopt_long(argc, argv, "hv::j:i:m:M:a:o:N:S:tdxD:p:gnc:w::s:z:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -394,7 +394,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {
         char *a = optarg;
         int lvl = atoi(a);
-        set_Debug(lvl);
+        printf("set debug level to %d\n", lvl);
+        if (g_DebugLevel) {
+          g_DebugLevel->setDebugLevel(lvl);
+        }
       }
       break;
 
@@ -682,6 +685,7 @@ void CctwApplication::showHelp(QString about)
               "--inputdataset <dsn>             specify input dataset path\n"
               "--mask <f>, -m <f>               specify mask data (url format)\n"
               "--maskdataset <dsn>              specify mask dataset path\n"
+              "--mask3d <f>, -M <f>             specify 3D mask data (url format)\n"
               "--angles <f>, -a <f>             specify angles data (url format\n"
               "--anglesdataset <f>              specify angles dataset path\n"
               "--omega <angs>                   specify omega angles (url-angles format\n"
@@ -795,6 +799,13 @@ void CctwApplication::setMaskDataset(QString data)
 
     m_InputData->setMaskDataset(data);
   }
+}
+
+void CctwApplication::setMask3DData(QString data)
+{
+  printMessage(tr("Set 3D mask to %1").arg(data));
+
+  set_Mask3DFile(data);
 }
 
 void CctwApplication::pushInputFile(QString path)

@@ -365,7 +365,7 @@ QScriptValue CctwScriptEngine::setMask3DFunc(QScriptContext *context, QScriptEng
     CctwApplication *app = eng->application();
 
     if (app) {
-      app->set_Mask3DFile(msg);
+      app->setMask3DData(msg);
     }
   }
 
