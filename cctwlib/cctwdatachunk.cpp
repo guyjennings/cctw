@@ -17,7 +17,8 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
   m_DataWritten(0),
   m_WeightsWritten(0),
   m_MergeCounter(0),
-  m_OwnData(true)
+  m_OwnData(true),
+  m_SkippedPixels(0)
 {
   g_ChunkCount.fetchAndAddOrdered(1);
 }
@@ -483,4 +484,14 @@ void CctwDataChunk::normalizeChunk()
   }
 
   m_Normalized = true;
+}
+
+int CctwDataChunk::getSkippedPixels()
+{
+  return m_SkippedPixels;
+}
+
+void CctwDataChunk::setSkippedPixels(int n)
+{
+  m_SkippedPixels = n;
 }

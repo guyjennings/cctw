@@ -242,6 +242,7 @@ void CctwTransformer::transformChunkNumber(int chunkId)
   QMap<int, CctwDataChunk*> outputChunks;
 
   if (inputChunk) {
+    int nSkipped = inputChunk->getSkippedPixels();
 
     transformChunkData(chunkId, inputChunk, outputChunks);
 
@@ -259,6 +260,8 @@ void CctwTransformer::transformChunkNumber(int chunkId)
     }
 
     m_InputData->releaseChunkData(chunkId);
+
+    prop_Skipped()->incValue(nSkipped);
   } else {
     printMessage(tr("Could not read chunk: %1").arg(chunkId));
 //    exit(1);

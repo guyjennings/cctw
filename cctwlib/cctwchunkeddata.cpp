@@ -2309,18 +2309,27 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
           H5Sclose(memspace_id);
         }
 
+        int nskipped=0;
+        int s = sz.volume();
+
+        if (maskData && chunkData) {
+          for (int i=0; i<s; i++) {
+            if (maskData[i]) {
+              chunkData[i] = qQNaN();
+            }
+          }
+        }
+
+        if (chunkData) {
+          for (int i=0; i<s; i++) {
+            if (chunkData[i] != chunkData[i]) { // Test for NaN
+              nskipped++;
+            }
+          }
+        }
+
         if (m_Dataspace2Id < 0) {
           if (weightData && chunkData) {
-            int s = sz.volume();
-            
-            if (maskData) {
-              for (int i=0; i<s; i++) {
-                if (maskData[i]) {
-                  chunkData[i] = qQNaN();
-                }
-              }
-            }
-
             for (int i=0; i<s; i++) {
               if (chunkData[i] == chunkData[i]) { // Test for NaN
                 weightData[i] = 1;
@@ -2332,6 +2341,8 @@ CctwDataChunk *CctwChunkedData::readChunk(int n)
         }
 
         delete maskData;
+
+        chk->setSkippedPixels(nskipped);
       }
     }
   }

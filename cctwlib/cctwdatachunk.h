@@ -67,6 +67,9 @@ public slots:
 
   static int allocatedChunkCount();
 
+  int getSkippedPixels();
+  void setSkippedPixels(int n);
+
 private:
   CctwChunkedData::MergeDataType *allocateBuffer();
   void releaseBuffer(CctwChunkedData::MergeDataType *);
@@ -89,6 +92,7 @@ private:
   QList< CctwChunkedData::MergeDataType* >   m_MergeWeights;
   /** True iff this object owns the chunk memory */
   bool                                       m_OwnData;
+  int                                        m_SkippedPixels;
 };
 
 #endif // CCTWDATACHUNK_H
