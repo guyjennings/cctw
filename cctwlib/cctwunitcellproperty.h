@@ -8,18 +8,16 @@ class CctwUnitCellProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
-                                  QObject *parent,
-                                  const char *name,
-                                  CctwUnitCell value,
-                                  QString toolTip);
+  explicit CctwUnitCellProperty(QcepObject *parent,
+                                const char *name,
+                                CctwUnitCell value,
+                                QString toolTip);
 
-  explicit CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
-                                  QObject *parent,
-                                  const char *name,
-                                  double a, double b, double c,
-                                  double alpha, double beta, double gamma,
-                                  QString toolTip);
+  explicit CctwUnitCellProperty(QcepObject *parent,
+                                const char *name,
+                                double a, double b, double c,
+                                double alpha, double beta, double gamma,
+                                QString toolTip);
 
   CctwUnitCell value() const;
   CctwUnitCell defaultValue() const;

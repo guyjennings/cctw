@@ -7,7 +7,7 @@ class CctwLinearFitter : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwLinearFitter(QString name, QObject *parent = 0);
+  explicit CctwLinearFitter(QString name, QcepObjectWPtr parent);
   
 signals:
   

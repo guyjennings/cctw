@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-class CctwComparer;
+#include "cctwcomparer-ptr.h"
 class CctwqtMainWindow;
 
 namespace Ui {
@@ -15,7 +15,7 @@ class CctwqtSetupCompareDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwComparer *data);
+  explicit CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwComparerPtr data);
   ~CctwqtSetupCompareDialog();
 
 public slots:
@@ -26,7 +26,7 @@ public slots:
 private:
   Ui::CctwqtSetupCompareDialog *ui;
   CctwqtMainWindow   *m_Window;
-  CctwComparer    *m_Data;
+  CctwComparerPtr     m_Data;
 };
 
 #endif // CCTWQTSETUPCOMPAREDIALOG_H

@@ -2,15 +2,15 @@
 #include "cctwapplication.h"
 #include "cctwinputdatah5.h"
 
-CctwComparer::CctwComparer(CctwApplication *application, QString name, QObject *parent) :
+CctwComparer::CctwComparer(CctwApplication *application, QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
   m_Application(application),
-  m_FilePath1(m_Application->saver(), this, "filePath1", "", "Path to 1st file"),
-  m_Dataset1(m_Application->saver(), this, "dataset1", "data", "Name of dataset within 1st file"),
-  m_FilePath2(m_Application->saver(), this, "filePath2", "", "Path to 2nd file"),
-  m_Dataset2(m_Application->saver(), this, "dataset2", "data", "Name of dataset within 2nd file"),
-  m_CompareRigorously(m_Application->saver(), this, "compareRigorously", false, "Perform rigorous compare (every element) of imported data"),
-  m_CompareApproximately(m_Application->saver(), this, "compareApproximately", true, "Perform approximate compare (about 30 seconds) of imported data")
+  m_FilePath1(this, "filePath1", "", "Path to 1st file"),
+  m_Dataset1(this, "dataset1", "data", "Name of dataset within 1st file"),
+  m_FilePath2(this, "filePath2", "", "Path to 2nd file"),
+  m_Dataset2(this, "dataset2", "data", "Name of dataset within 2nd file"),
+  m_CompareRigorously(this, "compareRigorously", false, "Perform rigorous compare (every element) of imported data"),
+  m_CompareApproximately(this, "compareApproximately", true, "Perform approximate compare (about 30 seconds) of imported data")
 {
 }
 
@@ -45,8 +45,8 @@ void CctwComparer::compareDatasetsApproximately()
 {
   printMessage("Compare datasets approximately");
 
-  CctwInputDataH5 d1(get_FilePath1(), get_Dataset1(), "d1", this);
-  CctwInputDataH5 d2(get_FilePath2(), get_Dataset2(), "d2", this);
+  CctwInputDataH5 d1(get_FilePath1(), get_Dataset1(), "d1", sharedFromThis());
+  CctwInputDataH5 d2(get_FilePath2(), get_Dataset2(), "d2", sharedFromThis());
 
   CctwIntVector3D dim1 = d1.dimensions();
   CctwIntVector3D dim2 = d2.dimensions();

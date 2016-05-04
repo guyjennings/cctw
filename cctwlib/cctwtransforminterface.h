@@ -8,7 +8,7 @@ class CctwTransformInterface : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwTransformInterface(QString name, QObject *parent);
+  CctwTransformInterface(QString name, QcepObjectWPtr parent);
 
 public slots:
 

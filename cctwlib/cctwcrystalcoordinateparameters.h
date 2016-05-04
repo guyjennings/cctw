@@ -11,7 +11,7 @@ class CctwCrystalCoordinateParameters : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwCrystalCoordinateParameters(QString name, QObject *parent);
+  CctwCrystalCoordinateParameters(QString name, QcepObjectWPtr parent);
 
 signals:
   void parametersChanged();

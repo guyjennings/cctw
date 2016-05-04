@@ -11,7 +11,7 @@ class CctwqtTransformTester : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwqtTransformTester(CctwqtMainWindow *w, CctwCrystalCoordinateParameters *p, QObject *parent);
+  explicit CctwqtTransformTester(CctwqtMainWindow *w, CctwCrystalCoordinateParameters *p, QcepObjectWPtr parent);
 
 signals:
 

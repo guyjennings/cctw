@@ -8,8 +8,8 @@ class CctwDoubleVector3DProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip);
-  explicit CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, double x, double y, double z, QString toolTip);
+  explicit CctwDoubleVector3DProperty(QcepObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip);
+  explicit CctwDoubleVector3DProperty(QcepObject *parent, const char *name, double x, double y, double z, QString toolTip);
 
   CctwDoubleVector3D value() const;
   CctwDoubleVector3D defaultValue() const;

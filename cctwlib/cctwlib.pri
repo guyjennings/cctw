@@ -26,6 +26,7 @@ SOURCES += \
     $${PWD}/cctwdatachunk.cpp \
     $${PWD}/cctwlinearfitter.cpp \
     $${PWD}/cctwpeingresscommand.cpp \
+    $${PWD}/cctwapplicationproxy.cpp \
     $${PWD}/cctwapplication.cpp \
     $${PWD}/cctwimporter.cpp \
     $${PWD}/cctwcomparer.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     $${PWD}/cctwdebug.h \
+    $${PWD}/cctwobject-ptr.h \
     $${PWD}/cctwobject.h \
     $${PWD}/cctwthread.h \
     $${PWD}/cctwscriptengine.h \
@@ -48,14 +50,19 @@ HEADERS += \
     $${PWD}/cctwvector3d.h \
     $${PWD}/cctwmatrix3x3.h \
     $${PWD}/cctwcrystalcoordinatetransform.h \
+    $${PWD}/cctwchunkeddata-ptr.h \
     $${PWD}/cctwchunkeddata.h \
     $${PWD}/cctwunitcell.h \
     $${PWD}/cctwcrystalcoordinateparameters.h \
+    $${PWD}/cctwdatachunk-ptr.h \
     $${PWD}/cctwdatachunk.h \
     $${PWD}/cctwlinearfitter.h \
     $${PWD}/cctwpeingresscommand.h \
+    $${PWD}/cctwapplicationproxy-ptr.h \
+    $${PWD}/cctwapplicationproxy.h \
     $${PWD}/cctwapplication.h \
     $${PWD}/cctwimporter.h \
+    $${PWD}/cctwcomparer-ptr.h \
     $${PWD}/cctwcomparer.h \
     $${PWD}/cctwinputdatah5.h \
     $${PWD}/lzf/lzf_filter.h \

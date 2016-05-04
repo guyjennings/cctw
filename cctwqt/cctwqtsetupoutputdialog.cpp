@@ -4,7 +4,7 @@
 #include <QFileDialog>
 #include "cctwapplication.h"
 
-CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwChunkedData *data) :
+CctwqtSetupOutputDialog::CctwqtSetupOutputDialog(CctwqtMainWindow *parent, CctwChunkedDataPtr data) :
   QDialog(parent),
   ui(new Ui::CctwqtSetupOutputDialog),
   m_Window(parent),

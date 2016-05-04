@@ -5,7 +5,7 @@
 
 static QAtomicInt g_ChunkCount;
 
-CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QObject *parent) :
+CctwDataChunk::CctwDataChunk(CctwChunkedDataWPtr data, int index, QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
   m_Data(data),
   m_ChunkIndex(index),
@@ -26,8 +26,10 @@ CctwDataChunk::CctwDataChunk(CctwChunkedData *data, int index, QString name, QOb
 CctwIntVector3D CctwDataChunk::calculateChunkStart()
 {
 //  printMessage(tr("calculateChunkStart(): %1").arg(m_ChunkIndex));
-  if (m_Data) {
-    return m_Data -> chunkStart(m_ChunkIndex);
+  CctwChunkedDataPtr data(m_Data);
+
+  if (data) {
+    return data -> chunkStart(m_ChunkIndex);
   } else {
     printMessage(tr("Chunk %1, m_Data == NULL").arg(m_ChunkIndex));
     return CctwIntVector3D(0,0,0);
@@ -36,10 +38,12 @@ CctwIntVector3D CctwDataChunk::calculateChunkStart()
 
 CctwIntVector3D CctwDataChunk::calculateChunkSize()
 {
-  if (m_Data) {
-    CctwIntVector3D chksize = m_Data->chunkSize();
-    CctwIntVector3D chkend = m_ChunkStart + chksize;
-    CctwIntVector3D dim    = m_Data->dimensions();
+  CctwChunkedDataPtr data(m_Data);
+
+  if (data) {
+    CctwIntVector3D chksize = data->chunkSize();
+    CctwIntVector3D chkend  = m_ChunkStart + chksize;
+    CctwIntVector3D dim     = data->dimensions();
 
     if (chkend.x() > dim.x()) {
       chksize.x() = dim.x() - m_ChunkStart.x();
@@ -398,8 +402,10 @@ void CctwDataChunk::mergeChunk(CctwDataChunk *c)
     incMergeCounters();
 
     if (mergeCount() == 1) {
-      if (m_Data) {
-        m_Data->incChunksHeld(1);
+      CctwChunkedDataPtr data(m_Data);
+
+      if (data) {
+        data->incChunksHeld(1);
       }
     }
   }

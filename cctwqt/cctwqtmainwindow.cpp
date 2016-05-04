@@ -13,6 +13,7 @@
 #include "qwt_symbol.h"
 #include "QtConcurrentRun"
 #include "cctwdatachunk.h"
+#include "cctwapplicationproxy.h"
 
 CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   QMainWindow(parent),
@@ -102,7 +103,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   ui->m_FileMenu->removeAction(ui->m_ActionImportData);
 #endif
 
-  CctwChunkedData *inputData = app->m_InputData;
+  CctwChunkedDataPtr inputData = app->m_InputData;
 
   if (inputData) {
     inputData->prop_DataFileName()->linkTo(ui->m_InputDataFileName);
@@ -149,7 +150,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
   connect(ui->m_Browse3DMaskDataset, SIGNAL(currentIndexChanged(QString)), this, SLOT(doBrowse3DMaskDataset(QString)));
   connect(ui->m_Input3DMaskDataSetName, SIGNAL(textChanged(QString)), this, SLOT(doCheck3DMaskDataset(QString)));
 
-  CctwChunkedData *outputData = app->m_OutputData;
+  CctwChunkedDataPtr outputData = app->m_OutputData;
 
   if (outputData) {
     outputData->prop_DataFileName()->linkTo(ui->m_OutputDataFileName);
@@ -231,7 +232,7 @@ CctwqtMainWindow::CctwqtMainWindow(CctwApplication *app, QWidget *parent) :
 
   ui->m_CctwGraph -> insertLegend(m_Legend, QwtPlot::BottomLegend);
 
-  m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, this);
+  m_TransformTester = new CctwqtTransformTester(this, app->m_Parameters, m_Application->proxy());
 }
 
 CctwqtMainWindow::~CctwqtMainWindow()
@@ -318,7 +319,7 @@ void CctwqtMainWindow::doImport()
 
 void CctwqtMainWindow::doBrowseInputFile()
 {
-  CctwChunkedData *inputData = m_Application->m_InputData;
+  CctwChunkedDataPtr inputData = m_Application->m_InputData;
 
   if (inputData) {
     QString path = QFileDialog::getOpenFileName(this, "Input File",
@@ -423,7 +424,7 @@ void CctwqtMainWindow::doCheckDataset(QString name)
 
 void CctwqtMainWindow::doBrowse2DMaskFile()
 {
-  CctwChunkedData *inputData = m_Application->m_InputData;
+  CctwChunkedDataPtr inputData = m_Application->m_InputData;
 
   if (inputData) {
     QString path = QFileDialog::getOpenFileName(this, "Input File",
@@ -456,7 +457,7 @@ void CctwqtMainWindow::doCheck2DMaskDataset(QString name)
 
 void CctwqtMainWindow::doBrowse3DMaskFile()
 {
-  CctwChunkedData *inputData = m_Application->m_InputData;
+  CctwChunkedDataPtr inputData = m_Application->m_InputData;
 
   if (inputData) {
     QString path = QFileDialog::getOpenFileName(this, "Input File",

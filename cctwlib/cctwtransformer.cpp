@@ -4,6 +4,7 @@
 #include <math.h>
 #include "cctwmatrix3x3.h"
 #include "cctwapplication.h"
+#include "cctwapplicationproxy.h"
 #include <QtConcurrentRun>
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
@@ -19,12 +20,12 @@
 #include "qcepimagedata.h"
 #endif
 
-CctwTransformer::CctwTransformer(CctwApplication        *application,
-                                 CctwChunkedData *input,
-                                 CctwChunkedData *output,
+CctwTransformer::CctwTransformer(CctwApplication *application,
+                                 CctwChunkedDataPtr input,
+                                 CctwChunkedDataPtr output,
                                  CctwTransformInterface *xform,
-                                 /*int osx, int osy, int osz, */QString name, QObject *parent) :
-  CctwObject(name, parent),
+                                 QString name) :
+  CctwObject(name, application->proxy()),
   m_Application(application),
   m_InputData(input),
   m_OutputData(output),
@@ -38,20 +39,20 @@ CctwTransformer::CctwTransformer(CctwApplication        *application,
   m_WeightX(NULL),
   m_WeightY(NULL),
   m_WeightZ(NULL),
-  m_WallTime(QcepSettingsSaverWPtr(), this, "wallTime", 0, "Wall Time of last command"),
-  m_BlocksLimit(m_Application->saver(), this, "blocksLimit", 1000, "Blocks Limit"),
-  m_TransformOptions(m_Application->saver(), this, "transformOptions", 0, "Transform Options"),
-  m_OversampleX(m_Application->saver(), this, "oversampleX", 1, "Oversampling along X"),
-  m_OversampleY(m_Application->saver(), this, "oversampleY", 1, "Oversampling along Y"),
-  m_OversampleZ(m_Application->saver(), this, "oversampleZ", 1, "Oversampling along Z"),
-  m_ProjectX(m_Application->saver(), this, "projectX", true, "Project along X"),
-  m_ProjectY(m_Application->saver(), this, "projectY", true, "Project along Y"),
-  m_ProjectZ(m_Application->saver(), this, "projectZ", true, "Project along Z"),
-  m_ProjectDestination(m_Application->saver(), this, "projectDestination", "", "Output path for projected images"),
-  m_Normalization(m_Application->saver(), this, "normalization", 1, "Normalize output data?"),
-  m_Compression(m_Application->saver(), this, "compression", 2, "Compression level for output data"),
-  m_Subset(QcepSettingsSaverWPtr(), this, "subset", "", "Subset specifier"),
-  m_Skipped(QcepSettingsSaverWPtr(), this, "skipped", 0, "Number of skipped pixels")
+  m_WallTime(this, "wallTime", 0, "Wall Time of last command"),
+  m_BlocksLimit(this, "blocksLimit", 1000, "Blocks Limit"),
+  m_TransformOptions(this, "transformOptions", 0, "Transform Options"),
+  m_OversampleX(this, "oversampleX", 1, "Oversampling along X"),
+  m_OversampleY(this, "oversampleY", 1, "Oversampling along Y"),
+  m_OversampleZ(this, "oversampleZ", 1, "Oversampling along Z"),
+  m_ProjectX(this, "projectX", true, "Project along X"),
+  m_ProjectY(this, "projectY", true, "Project along Y"),
+  m_ProjectZ(this, "projectZ", true, "Project along Z"),
+  m_ProjectDestination(this, "projectDestination", "", "Output path for projected images"),
+  m_Normalization(this, "normalization", 1, "Normalize output data?"),
+  m_Compression(this, "compression", 2, "Compression level for output data"),
+  m_Subset(this, "subset", "", "Subset specifier"),
+  m_Skipped(this, "skipped", 0, "Number of skipped pixels")
 {
 }
 
@@ -84,7 +85,7 @@ void CctwTransformer::runTransformChunkNumber(int n)
   }
 }
 
-bool CctwTransformer::parseSubset(CctwChunkedData *data)
+bool CctwTransformer::parseSubset(CctwChunkedDataPtr data)
 {
   if (data == NULL) data = m_InputData;
 
@@ -299,7 +300,7 @@ void CctwTransformer::transformChunkData(int chunkId,
   CctwCrystalCoordinateTransform transform(m_Application->parameters(),
                                            tr("transform-%1").arg(chunkId),
                                            angs,
-                                           NULL);
+                                           sharedFromThis());
 
   CctwDataChunk *lastChunk = NULL;
 
@@ -358,7 +359,7 @@ void CctwTransformer::transformChunkData(int chunkId,
 
                         CctwDataChunk *chunk =
                             new CctwDataChunk(m_OutputData, lastChunkIndex,
-                                              tr("chunk-%1").arg(lastChunkIndex), NULL);
+                                              tr("chunk-%1").arg(lastChunkIndex), sharedFromThis());
 
                         if (chunk) {
                           chunk->allocateData();
@@ -427,7 +428,7 @@ void CctwTransformer::transform()
   if (m_InputData  -> beginTransform(true,  0)) {
     if (m_OutputData -> beginTransform(false, 0)) {
 
-      parseSubset();
+      parseSubset(m_InputData);
 
       CctwIntVector3D chunkStart = m_SubsetStart;
       CctwIntVector3D chunkEnd   = m_SubsetEnd;
@@ -528,7 +529,7 @@ void CctwTransformer::outputProject(QString path, int axes)
   projectDataset(path, m_OutputData, axes);
 }
 
-void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes)
+void CctwTransformer::projectDatasetChunk(CctwChunkedDataPtr data, int i, int axes)
 {
   if (m_Application && !m_Application->get_Halting()) {
     CctwDataChunk *chunk = data->readChunk(i);
@@ -545,18 +546,18 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
       QcepImageData<double> *wgtx = NULL, *wgty = NULL, *wgtz = NULL;
 
       if (axes & 1) {
-        imgx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
-        wgtx = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.y(), chSize.z());
+        imgx = new QcepDoubleImageData(sharedFromThis(), "imgx", chSize.y(), chSize.z(), 0);
+        wgtx = new QcepDoubleImageData(sharedFromThis(), "wgtx", chSize.y(), chSize.z(), 0);
       }
 
       if (axes & 2) {
-        imgy = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
-        wgty = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.z());
+        imgy = new QcepDoubleImageData(sharedFromThis(), "imgy", chSize.x(), chSize.z(), 0);
+        wgty = new QcepDoubleImageData(sharedFromThis(), "wgty", chSize.x(), chSize.z(), 0);
       }
 
       if (axes & 4) {
-        imgz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
-        wgtz = new QcepImageData<double>(QcepSettingsSaverWPtr(), chSize.x(), chSize.y());
+        imgz = new QcepDoubleImageData(sharedFromThis(), "imgz", chSize.x(), chSize.y(), 0);
+        wgtz = new QcepDoubleImageData(sharedFromThis(), "wgtz", chSize.x(), chSize.y(), 0);
       }
 
       double mindata = chunk->data(0,0,0);
@@ -685,7 +686,7 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedData *data, int i, int axes
   }
 }
 
-void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int axes)
+void CctwTransformer::projectDataset(QString path, CctwChunkedDataPtr data, int axes)
 {
   if (data  && data->openInputFile()) {
     QVector < QFuture < void > > futures;
@@ -723,26 +724,26 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedData *data, int ax
     delete m_WeightZ;
 
     if (px) {
-      m_ImageX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
-      m_WeightX = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.y(), dims.z());
+      m_ImageX  = new QcepDoubleImageData(sharedFromThis(), "m_ImageX",  dims.y(), dims.z(), 0);
+      m_WeightX = new QcepDoubleImageData(sharedFromThis(), "m_WeightX", dims.y(), dims.z(), 0);
     } else {
-      m_ImageX = NULL;
+      m_ImageX  = NULL;
       m_WeightX = NULL;
     }
 
     if (py) {
-      m_ImageY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
-      m_WeightY = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.z());
+      m_ImageY  = new QcepDoubleImageData(sharedFromThis(), "m_ImageY",  dims.x(), dims.z(), 0);
+      m_WeightY = new QcepDoubleImageData(sharedFromThis(), "m_WeightY", dims.x(), dims.z(), 0);
     } else {
-      m_ImageY = NULL;
+      m_ImageY  = NULL;
       m_WeightY = NULL;
     }
 
     if (pz) {
-      m_ImageZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
-      m_WeightZ = new QcepImageData<double>(QcepSettingsSaverWPtr(), dims.x(), dims.y());
+      m_ImageZ  = new QcepDoubleImageData(sharedFromThis(), "m_ImageZ",  dims.x(), dims.y(), 0);
+      m_WeightZ = new QcepDoubleImageData(sharedFromThis(), "m_WeightZ", dims.x(), dims.y(), 0);
     } else {
-      m_ImageZ = NULL;
+      m_ImageZ  = NULL;
       m_WeightZ = NULL;
     }
 

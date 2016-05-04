@@ -3,26 +3,24 @@
 #include "qcepdebug.h"
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
+#include "qcepobject.h"
 
-CctwUnitCellProperty::CctwUnitCellProperty(QcepSettingsSaverWPtr saver,
-    QObject *parent,
+CctwUnitCellProperty::CctwUnitCellProperty(QcepObject *parent,
     const char *name,
     CctwUnitCell value,
     QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+  QcepProperty(parent, name, toolTip),
   m_Default(value),
   m_Value(value)
 {
 }
 
-CctwUnitCellProperty::CctwUnitCellProperty(
-    QcepSettingsSaverWPtr saver,
-    QObject *parent,
+CctwUnitCellProperty::CctwUnitCellProperty(QcepObject *parent,
     const char *name,
     double a, double b, double c,
     double alpha, double beta, double gamma,
     QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+  QcepProperty(parent, name, toolTip),
   m_Default(CctwUnitCell(a,b,c,alpha,beta,gamma)),
   m_Value(CctwUnitCell(a,b,c,alpha,beta,gamma))
 {
@@ -90,10 +88,8 @@ void CctwUnitCellProperty::setValue(CctwUnitCell val)
 
     m_Value = val;
 
-    QcepSettingsSaverPtr saver(m_Saver);
-
-    if (saver) {
-      saver->changed(this);
+    if (m_Parent) {
+      m_Parent->propertyChanged(this);
     }
 
     emit valueChanged(m_Value, incIndex(1));

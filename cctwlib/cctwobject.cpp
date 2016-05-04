@@ -3,56 +3,55 @@
 #include "cctwapplication.h"
 #include <QMetaProperty>
 #include "cctwunitcell.h"
+#include "qcepobject.h"
 
-CctwObject::CctwObject(QString name, QObject *parent) :
-  QObject(parent),
-  m_ObjectNamer(this, name),
-  m_Name(QcepSettingsSaverWPtr(), this, "name", name, "Object Name")
+CctwObject::CctwObject(QString name, QcepObjectWPtr parent) :
+  QcepObject(name, parent)
 {
 }
 
-void CctwObject::printLine(QString line)
-{
-#ifdef NO_GUI
-  printf("%s\n", qPrintable(line));
-#else
-  if (parent()) {
-    QMetaObject::invokeMethod( parent(), "printLine", Q_ARG(QString, line));
-  }
-#endif
-}
+//void CctwObject::printLine(QString line)
+//{
+//#ifdef NO_GUI
+//  printf("%s\n", qPrintable(line));
+//#else
+//  if (parent()) {
+//    QMetaObject::invokeMethod( parent(), "printLine", Q_ARG(QString, line));
+//  }
+//#endif
+//}
 
-void CctwObject::printMessage(QString msg, QDateTime dt)
-{
-#ifdef NO_GUI
-  printf("%s\n", qPrintable(msg));
-#else
-  if (parent()) {
-    QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
-  } else {
-    printf("MESSAGE: %s %s\n",
-           qPrintable(dt.toString("hh:mm:ss")), qPrintable(msg));
-  }
-#endif
-}
+//void CctwObject::printMessage(QString msg, QDateTime dt)
+//{
+//#ifdef NO_GUI
+//  printf("%s\n", qPrintable(msg));
+//#else
+//  if (parent()) {
+//    QMetaObject::invokeMethod( parent(), "printMessage", Q_ARG(QString, msg), Q_ARG(QDateTime, dt));
+//  } else {
+//    printf("MESSAGE: %s %s\n",
+//           qPrintable(dt.toString("hh:mm:ss")), qPrintable(msg));
+//  }
+//#endif
+//}
 
-void CctwObject::writeSettings(QSettings *set, QString section)
-{
-  const QMetaObject *meta = metaObject();
+//void CctwObject::writeSettings(QSettings *set, QString section)
+//{
+//  const QMetaObject *meta = metaObject();
 
-  while (meta) {
-    QcepProperty::writeSettings(this, meta, section, set);
+//  while (meta) {
+//    QcepProperty::writeSettings(this, meta, section, set);
 
-    meta = meta->superClass();
+//    meta = meta->superClass();
 
-    if (meta == &QObject::staticMetaObject) break;
-  }
-}
+//    if (meta == &QObject::staticMetaObject) break;
+//  }
+//}
 
-void CctwObject::readSettings(QSettings *set, QString section)
-{
-  QcepProperty::readSettings(this, metaObject(), section, set);
-}
+//void CctwObject::readSettings(QSettings *set, QString section)
+//{
+//  QcepProperty::readSettings(this, metaObject(), section, set);
+//}
 
 QString CctwObject::scriptValueLiteral(QVariant v)
 {

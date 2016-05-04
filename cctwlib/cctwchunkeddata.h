@@ -26,7 +26,7 @@ public:
                            CctwIntVector3D chunkSize,    // Chunk size
                            bool isInput,                 // is it an input
                            QString name,
-                           QObject *parent);
+                           QcepObjectWPtr parent);
   void allocateChunks();
 
   typedef float MergeDataType;

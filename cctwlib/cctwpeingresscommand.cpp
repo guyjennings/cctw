@@ -10,7 +10,7 @@
 #include <QFile>
 #include <math.h>
 
-CctwPEIngressCommand::CctwPEIngressCommand(CctwApplication *app, QString name, QObject *parent) :
+CctwPEIngressCommand::CctwPEIngressCommand(CctwApplication *app, QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
   m_Application(app)
 {
@@ -35,10 +35,10 @@ void CctwPEIngressCommand::analyzeSpecDataFile(QString path)
   QVector<double> xData, y1Data, y2Data, y3Data, y4Data;
 
   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    QSharedPointer<CctwLinearFitter> fit1(new CctwLinearFitter("fit1"));
-    QSharedPointer<CctwLinearFitter> fit2(new CctwLinearFitter("fit2"));
-    QSharedPointer<CctwLinearFitter> fit3(new CctwLinearFitter("fit3"));
-    QSharedPointer<CctwLinearFitter> fit4(new CctwLinearFitter("fit4"));
+    QSharedPointer<CctwLinearFitter> fit1(new CctwLinearFitter("fit1", sharedFromThis()));
+    QSharedPointer<CctwLinearFitter> fit2(new CctwLinearFitter("fit2", sharedFromThis()));
+    QSharedPointer<CctwLinearFitter> fit3(new CctwLinearFitter("fit3", sharedFromThis()));
+    QSharedPointer<CctwLinearFitter> fit4(new CctwLinearFitter("fit4", sharedFromThis()));
 
     int ncols = 0;
     int line1 = true;

@@ -14,7 +14,8 @@
 #include "cctwunitcellproperty.h"
 #include "cctwthread.h"
 #include "cctwdatachunk.h"
-
+#include "cctwapplicationproxy.h"
+#include "cctwcomparer.h"
 #ifdef WANT_IMPORT_COMMANDS
 #include "qcepimagedataformatcbf.h"
 #include "qcepimagedataformatmar345.h"
@@ -64,39 +65,33 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   m_Transformer(NULL),
   m_ScriptEngine(NULL),
   m_PEIngressCommand(NULL),
-#ifdef NO_GUI
-  m_Saver(NULL),
-#else
-  m_Saver(new QcepSettingsSaver(this)),
-#endif
-  m_GuiWanted(QcepSettingsSaverWPtr(), this, "guiWanted", true, "Is GUI wanted?"),
-  m_Mode(QcepSettingsSaverWPtr(), this, "mode", 0, "Operation mode"),
-  m_StartupCommands(QcepSettingsSaverWPtr(), this, "startupCommands", QcepStringList(), "Startup commands"),
-  m_InputFiles(QcepSettingsSaverWPtr(), this, "inputFiles", QcepStringList(), "Input files"),
-  m_OutputFile(QcepSettingsSaverWPtr(), this, "outputFile", "", "Output file"),
-  m_MaskFile(QcepSettingsSaverWPtr(), this, "maskFile", "", "Mask file"),
-  m_Mask3DFile(QcepSettingsSaverWPtr(), this, "mask3DFile", "", "3D-Mask file"),
-  m_AnglesFile(QcepSettingsSaverWPtr(), this, "anglesFile", "", "Angles File"),
-  m_WeightsFile(QcepSettingsSaverWPtr(), this, "weightsFile", "", "Weights File"),
-  m_Debug(m_Saver, this, "debug", 0, "Debug Level"),
-  m_Halting(QcepSettingsSaverWPtr(), this, "halting", false, "Set to halt operation in progress"),
-  m_Progress(QcepSettingsSaverWPtr(), this, "progress", 0, "Progress completed"),
-  m_ProgressLimit(QcepSettingsSaverWPtr(), this, "progressLimit", 100, "Progress limit"),
-  m_SettingsPath(m_Saver, this, "settingsPath", "", "Settings saved in"),
-  m_ScriptPath(m_Saver, this, "scriptPath", "", "Execute script from"),
-  m_SpecDataFilePath(m_Saver, this, "specDataFilePath", "", "Pathname of spec data file"),
-  m_MpiRank(QcepSettingsSaverWPtr(), this, "mpiRank", 0, "MPI Rank of process"),
-  m_MpiSize(QcepSettingsSaverWPtr(), this, "mpiSize", -1, "MPI Size"),
-  m_Verbosity(QcepSettingsSaverWPtr(), this, "verbosity", 0, "Output Verbosity"),
-  m_ExitStatus(QcepSettingsSaverWPtr(), this, "exitStatus", 0, "Exit Status")
+  m_Proxy(new CctwApplicationProxy("proxy", this)),
+  m_GuiWanted(m_Proxy.data(), "guiWanted", true, "Is GUI wanted?"),
+  m_Mode(m_Proxy.data(), "mode", 0, "Operation mode"),
+  m_StartupCommands(m_Proxy.data(), "startupCommands", QcepStringList(), "Startup commands"),
+  m_InputFiles(m_Proxy.data(), "inputFiles", QcepStringList(), "Input files"),
+  m_OutputFile(m_Proxy.data(), "outputFile", "", "Output file"),
+  m_MaskFile(m_Proxy.data(), "maskFile", "", "Mask file"),
+  m_Mask3DFile(m_Proxy.data(), "mask3DFile", "", "3D-Mask file"),
+  m_AnglesFile(m_Proxy.data(), "anglesFile", "", "Angles File"),
+  m_WeightsFile(m_Proxy.data(), "weightsFile", "", "Weights File"),
+  m_Debug(m_Proxy.data(), "debug", 0, "Debug Level"),
+  m_Halting(m_Proxy.data(), "halting", false, "Set to halt operation in progress"),
+  m_Progress(m_Proxy.data(), "progress", 0, "Progress completed"),
+  m_ProgressLimit(m_Proxy.data(), "progressLimit", 100, "Progress limit"),
+  m_SettingsPath(m_Proxy.data(), "settingsPath", "", "Settings saved in"),
+  m_ScriptPath(m_Proxy.data(), "scriptPath", "", "Execute script from"),
+  m_SpecDataFilePath(m_Proxy.data(), "specDataFilePath", "", "Pathname of spec data file"),
+  m_MpiRank(m_Proxy.data(), "mpiRank", 0, "MPI Rank of process"),
+  m_MpiSize(m_Proxy.data(), "mpiSize", -1, "MPI Size"),
+  m_Verbosity(m_Proxy.data(), "verbosity", 0, "Output Verbosity"),
+  m_ExitStatus(m_Proxy.data(), "exitStatus", 0, "Exit Status")
 {
   QcepProperty::registerMetaTypes();
   CctwDoubleMatrix3x3Property::registerMetaTypes();
   CctwDoubleVector3DProperty::registerMetaTypes();
   CctwIntVector3DProperty::registerMetaTypes();
   CctwUnitCellProperty::registerMetaTypes();
-
-  g_Saver = m_Saver;
 
   connect(prop_Debug(), SIGNAL(valueChanged(int,int)), this, SLOT(onDebugChanged(int)));
   connect(prop_Progress(), SIGNAL(valueChanged(int,int)), this, SLOT(onProgress(int)));
@@ -106,9 +101,9 @@ CctwApplication::CctwApplication(int &argc, char *argv[])
   register_lzf();
 }
 
-QcepSettingsSaverWPtr CctwApplication::saver() const
+CctwApplicationProxyWPtr CctwApplication::proxy()
 {
-  return m_Saver;
+  return m_Proxy;
 }
 
 void CctwApplication::onDebugChanged(int dbg)
@@ -481,39 +476,38 @@ void CctwApplication::initialize(int &argc, char *argv[])
   decodeCommandLineArgs(argc, argv);
 
 #ifdef WANT_IMPORT_COMMANDS
-  m_ImportData       = new CctwImporter(this, "importData", this);
+  m_ImportData       = new CctwImporter(this, "importData", m_Proxy);
 #endif
 
-  m_CompareData      = new CctwComparer(this, "compareData", this);
+  m_CompareData      = CctwComparerPtr(new CctwComparer(this, "compareData", m_Proxy));
 
-  m_Parameters       = new CctwCrystalCoordinateParameters("parameters", this);
+  m_Parameters       = new CctwCrystalCoordinateParameters("parameters", m_Proxy);
 
-  m_InputData        = new CctwChunkedData(this,
-                                           CctwIntVector3D(256,256,256),
-                                           CctwIntVector3D(32, 32, 32),
-                                            true,
-                                           "inputData",
-                                           this);
+  m_InputData        = CctwChunkedDataPtr(new CctwChunkedData(this,
+                                                              CctwIntVector3D(256,256,256),
+                                                              CctwIntVector3D(32, 32, 32),
+                                                              true,
+                                                              "inputData",
+                                                              m_Proxy));
   m_InputData        -> allocateChunks();
 
-  m_OutputData       = new CctwChunkedData(this,
-                                           CctwIntVector3D(256,256,256),
-                                           CctwIntVector3D(32, 32, 32),
-                                           false,
-                                           "outputData",
-                                           this);
+  m_OutputData       = CctwChunkedDataPtr(new CctwChunkedData(this,
+                                                              CctwIntVector3D(256,256,256),
+                                                              CctwIntVector3D(32, 32, 32),
+                                                              false,
+                                                              "outputData",
+                                                              m_Proxy));
   m_OutputData       -> allocateChunks();
 
-  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, this);
+  m_Transform        = new CctwCrystalCoordinateTransform(m_Parameters, "transform", NULL, m_Proxy);
 
   m_Transformer      = new CctwTransformer(this,
                                            m_InputData,
                                            m_OutputData,
                                            m_Transform, /*1, 1, 1,*/
-                                           "transformer",
-                                           this);
+                                           "transformer");
 
-  m_PEIngressCommand = new CctwPEIngressCommand(this, "peingress", this);
+  m_PEIngressCommand = new CctwPEIngressCommand(this, "peingress", m_Proxy);
 
   m_ScriptEngine     = new CctwScriptEngine(this, this);
 
@@ -521,9 +515,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
   m_ScriptEngine->globalObject().setProperty("importData", m_ScriptEngine->newQObject(m_ImportData));
 #endif
 
-  m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData));
-  m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData));
-  m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData));
+  m_ScriptEngine->globalObject().setProperty("compareData", m_ScriptEngine->newQObject(m_CompareData.data()));
+  m_ScriptEngine->globalObject().setProperty("inputData", m_ScriptEngine->newQObject(m_InputData.data()));
+  m_ScriptEngine->globalObject().setProperty("outputData", m_ScriptEngine->newQObject(m_OutputData.data()));
   m_ScriptEngine->globalObject().setProperty("parameters", m_ScriptEngine->newQObject(m_Parameters));
   m_ScriptEngine->globalObject().setProperty("transform", m_ScriptEngine->newQObject(m_Transform));
   m_ScriptEngine->globalObject().setProperty("transformer", m_ScriptEngine->newQObject(m_Transformer));
@@ -535,9 +529,9 @@ void CctwApplication::initialize(int &argc, char *argv[])
   readSettings();
 #endif
 
-  if (m_Saver) {
-    m_Saver->start();
-  }
+//  if (m_Saver) {
+//    m_Saver->start();
+//  }
 
 #ifdef NO_GUI
   set_GuiWanted(false);
@@ -1243,7 +1237,7 @@ void CctwApplication::runMerge()
   }
 
   foreach(QString path, get_InputFiles()) {
-    CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, NULL);
+    CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, m_Proxy);
 
     if (inputFile) {
       inputFile->setDataSource(path);

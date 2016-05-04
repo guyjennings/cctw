@@ -27,6 +27,7 @@ release {
   QMAKE_CXXFLAGS       += -O2
 }
 
+include(../submodules/qceplib/qceplib-qwt.pri)
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-szip.pri)
 include(../submodules/qceplib/qceplib-zlib.pri)

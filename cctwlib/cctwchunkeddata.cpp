@@ -21,37 +21,37 @@ CctwChunkedData::CctwChunkedData
    CctwIntVector3D  chunkSize,
    bool             isInput,
    QString          name,
-   QObject         *parent)
+   QcepObjectWPtr   parent)
   :CctwObject(name, parent),
     m_Application(application),
     m_IsNeXus(false),
     m_DimensionsCache(dim),
     m_ChunkSizeCache(chunkSize),
     m_ChunkCountCache((dim-CctwIntVector3D(1,1,1))/chunkSize + CctwIntVector3D(1,1,1)),
-    m_DataFileName(application->saver(), this, "dataFileName", "input.h5", "HDF5 Data File Name"),
-    m_DataSetName(application->saver(), this, "dataSetName", "data", "HDF5 Dataset name"),
-    m_MaskDataFileName(application->saver(), this, "maskDataFileName", "", "Mask Data File Name"),
-    m_MaskDataSetName(application->saver(), this, "maskDataSetName", "", "Mask Dataset Name"),
-    m_Mask(QcepSettingsSaverWPtr(), this, "mask", QcepIntVector(), "Mask Image"),
-    m_Mask3DDataFileName(application->saver(), this, "mask3DDataFileName", "", "3D-Mask Data File Name"),
-    m_Mask3DDataSetName(application->saver(), this, "mask3DDataSetName", "", "3D-Mask Dataset Name"),
-    m_AnglesDataFileName(application->saver(), this, "anglesDataFileName", "", "Angles Data File Name"),
-    m_AnglesDataSetName(application->saver(), this, "anglesDataSetName", "", "Angles Dataset Name"),
-    m_Angles(QcepSettingsSaverWPtr(), this, "angles", QcepDoubleVector(), "Angles"),
-    m_WeightsDataFileName(application->saver(), this, "weightsDataFileName", "", "Weights Data File Name"),
-    m_WeightsDataSetName(application->saver(), this, "weightsDataSetName", "", "Weights Dataset Name"),
-    m_Weights(QcepSettingsSaverWPtr(), this, "weights", QcepDoubleVector(), "Weights"),
-    m_Dimensions(application->saver(), this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
-    m_ChunkSize(application->saver(), this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
-    m_ChunkCount(QcepSettingsSaverWPtr(), this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
-    m_Compression(application->saver(), this, "compression", 0, "Compression Level"),
-    m_Normalization(QcepSettingsSaverWPtr(), this, "normalization", 1, "Normalization"),
-    m_HDFChunkSize(application->saver(), this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
-    m_ChunksRead(QcepSettingsSaverWPtr(), this, "chunksRead", 0, "Chunks read from input"),
-    m_ChunksWritten(QcepSettingsSaverWPtr(), this, "chunksWritten", 0, "Chunks written to output"),
-    m_ChunksHeld(QcepSettingsSaverWPtr(), this, "chunksHeld", 0, "Chunks held on output"),
-    m_ChunksHeldMax(QcepSettingsSaverWPtr(), this, "chunksHeldMax", 0, "Max Chunks held on output"),
-    m_Mask3DDimensions(QcepSettingsSaverWPtr(), this, "mask3DDimensions", CctwIntVector3D(0,0,0), "3D Mask Dimensions"),
+    m_DataFileName(this, "dataFileName", "input.h5", "HDF5 Data File Name"),
+    m_DataSetName(this, "dataSetName", "data", "HDF5 Dataset name"),
+    m_MaskDataFileName(this, "maskDataFileName", "", "Mask Data File Name"),
+    m_MaskDataSetName(this, "maskDataSetName", "", "Mask Dataset Name"),
+    m_Mask(this, "mask", QcepIntVector(), "Mask Image"),
+    m_Mask3DDataFileName(this, "mask3DDataFileName", "", "3D-Mask Data File Name"),
+    m_Mask3DDataSetName(this, "mask3DDataSetName", "", "3D-Mask Dataset Name"),
+    m_AnglesDataFileName(this, "anglesDataFileName", "", "Angles Data File Name"),
+    m_AnglesDataSetName(this, "anglesDataSetName", "", "Angles Dataset Name"),
+    m_Angles(this, "angles", QcepDoubleVector(), "Angles"),
+    m_WeightsDataFileName(this, "weightsDataFileName", "", "Weights Data File Name"),
+    m_WeightsDataSetName(this, "weightsDataSetName", "", "Weights Dataset Name"),
+    m_Weights(this, "weights", QcepDoubleVector(), "Weights"),
+    m_Dimensions(this, "dimensions", m_DimensionsCache, "Dataset Dimensions"),
+    m_ChunkSize(this, "chunkSize", m_ChunkSizeCache, "Chunk Size"),
+    m_ChunkCount(this, "chunkCount", m_ChunkCountCache, "Chunk Count"),
+    m_Compression(this, "compression", 0, "Compression Level"),
+    m_Normalization(this, "normalization", 1, "Normalization"),
+    m_HDFChunkSize(this, "hdfChunkSize", CctwIntVector3D(0,0,0), "HDF File Chunk Size"),
+    m_ChunksRead(this, "chunksRead", 0, "Chunks read from input"),
+    m_ChunksWritten(this, "chunksWritten", 0, "Chunks written to output"),
+    m_ChunksHeld(this, "chunksHeld", 0, "Chunks held on output"),
+    m_ChunksHeldMax(this, "chunksHeldMax", 0, "Max Chunks held on output"),
+    m_Mask3DDimensions(this, "mask3DDimensions", CctwIntVector3D(0,0,0), "3D Mask Dimensions"),
     m_IsInput(isInput),
     m_TransformOptions(0),
     m_FileId(-1),
@@ -672,7 +672,9 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
     CctwDataChunk *chunk = m_DataChunks[n];
 
     if (chunk == NULL) {
-      chunk = new CctwDataChunk(this, n, tr("Chunk-%1").arg(n), NULL);
+      CctwChunkedDataWPtr myself = qSharedPointerDynamicCast<CctwChunkedData>(sharedFromThis());
+
+      chunk = new CctwDataChunk(myself, n, tr("Chunk-%1").arg(n), sharedFromThis());
 
       if (parent()) {
         chunk->moveToThread(parent()->thread());

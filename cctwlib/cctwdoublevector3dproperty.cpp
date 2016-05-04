@@ -4,16 +4,17 @@
 #include "qcepsettingssaver.h"
 #include <QScriptEngine>
 #include <stdio.h>
+#include "qcepobject.h"
 
-CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
+  QcepProperty(parent, name, toolTip),
   m_Default(value),
   m_Value(value)
 {
 }
 
-CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSettingsSaverWPtr saver, QObject *parent, const char *name, double x, double y, double z, QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepObject *parent, const char *name, double x, double y, double z, QString toolTip) :
+  QcepProperty(parent, name, toolTip),
   m_Default(CctwDoubleVector3D(x,y,z)),
   m_Value(CctwDoubleVector3D(x,y,z))
 {
@@ -122,10 +123,8 @@ void CctwDoubleVector3DProperty::setValue(CctwDoubleVector3D val)
 
     m_Value = val;
 
-    QcepSettingsSaverPtr saver(m_Saver);
-
-    if (saver) {
-      saver->changed(this);
+    if (m_Parent) {
+      m_Parent->propertyChanged(this);
     }
 
     emit valueChanged(m_Value, newIndex);

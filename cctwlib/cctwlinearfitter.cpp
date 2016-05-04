@@ -1,6 +1,6 @@
 #include "cctwlinearfitter.h"
 
-CctwLinearFitter::CctwLinearFitter(QString name, QObject *parent) :
+CctwLinearFitter::CctwLinearFitter(QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent)
 {
   startNewFit();

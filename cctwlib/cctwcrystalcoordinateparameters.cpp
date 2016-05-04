@@ -8,33 +8,33 @@
 
 #include <QRegExp>
 
-CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QString name, QObject *parent) :
+CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
-  m_TwoTheta(QcepSettingsSaverWPtr(), this, "twoTheta", "", "twoTheta spec"),
-  m_TwoThetaCorrection(QcepSettingsSaverWPtr(), this, "twoThetaCorrection", 0.0, "twoTheta correction"),
-  m_TwoThetaNom(QcepSettingsSaverWPtr(), this, "twoThetaNom", 0.0, "twoTheta nominal (start)"),
-  m_TwoThetaStep(QcepSettingsSaverWPtr(), this, "twoThetaStep", 0.0, "twoTheta step"),
-  m_TwoThetaAngles(QcepSettingsSaverWPtr(), this, "twoThetaAngles", QcepDoubleVector(), "twoTheta Angles"),
+  m_TwoTheta(this, "twoTheta", "", "twoTheta spec"),
+  m_TwoThetaCorrection(this, "twoThetaCorrection", 0.0, "twoTheta correction"),
+  m_TwoThetaNom(this, "twoThetaNom", 0.0, "twoTheta nominal (start)"),
+  m_TwoThetaStep(this, "twoThetaStep", 0.0, "twoTheta step"),
+  m_TwoThetaAngles(this, "twoThetaAngles", QcepDoubleVector(), "twoTheta Angles"),
 
-  m_Omega(QcepSettingsSaverWPtr(), this, "omega", "", "omega spec"),
-  m_OmegaCorrection(QcepSettingsSaverWPtr(), this, "omegaCorrection", 0.0, "omega correction"),
-  m_OmegaNom(QcepSettingsSaverWPtr(), this, "omegaNom", 0.0, "omega nominal (start)"),
-  m_OmegaStep(QcepSettingsSaverWPtr(), this, "omegaStep", 0.0, "omega step"),
-  m_OmegaAngles(QcepSettingsSaverWPtr(), this, "omegaAngles", QcepDoubleVector(), "omega Angles"),
+  m_Omega(this, "omega", "", "omega spec"),
+  m_OmegaCorrection(this, "omegaCorrection", 0.0, "omega correction"),
+  m_OmegaNom(this, "omegaNom", 0.0, "omega nominal (start)"),
+  m_OmegaStep(this, "omegaStep", 0.0, "omega step"),
+  m_OmegaAngles(this, "omegaAngles", QcepDoubleVector(), "omega Angles"),
 
-  m_Chi(QcepSettingsSaverWPtr(), this, "chi", "", "chi spec"),
-  m_ChiCorrection(QcepSettingsSaverWPtr(), this, "chiCorrection", 0.0, "chi correction"),
-  m_ChiNom(QcepSettingsSaverWPtr(), this, "chiNom", 0.0, "chi nominal (start)"),
-  m_ChiStep(QcepSettingsSaverWPtr(), this, "chiStep", 0.0, "chi step"),
-  m_ChiAngles(QcepSettingsSaverWPtr(), this, "chiAngles", QcepDoubleVector(), "chi Angles"),
+  m_Chi(this, "chi", "", "chi spec"),
+  m_ChiCorrection(this, "chiCorrection", 0.0, "chi correction"),
+  m_ChiNom(this, "chiNom", 0.0, "chi nominal (start)"),
+  m_ChiStep(this, "chiStep", 0.0, "chi step"),
+  m_ChiAngles(this, "chiAngles", QcepDoubleVector(), "chi Angles"),
 
-  m_Phi(QcepSettingsSaverWPtr(), this, "phi", "", "phi spec"),
-  m_PhiCorrection(QcepSettingsSaverWPtr(), this, "phiCorrection", 0.0, "phi correction"),
-  m_PhiNom(QcepSettingsSaverWPtr(), this, "phiNom", 0.0, "phi nominal (start)"),
-  m_PhiStep(QcepSettingsSaverWPtr(), this, "phiStep", 0.0, "phi step"),
-  m_PhiAngles(QcepSettingsSaverWPtr(), this, "phiAngles", QcepDoubleVector(), "phi Angles"),
+  m_Phi(this, "phi", "", "phi spec"),
+  m_PhiCorrection(this, "phiCorrection", 0.0, "phi correction"),
+  m_PhiNom(this, "phiNom", 0.0, "phi nominal (start)"),
+  m_PhiStep(this, "phiStep", 0.0, "phi step"),
+  m_PhiAngles(this, "phiAngles", QcepDoubleVector(), "phi Angles"),
 
-  m_ExtraFlip(QcepSettingsSaverWPtr(), this, "extraFlip", 1, "Extra Flip on input x->(2048-y), y->(2048-x)")
+  m_ExtraFlip(this, "extraFlip", 1, "Extra Flip on input x->(2048-y), y->(2048-x)")
 {
   setDefaults();
 }

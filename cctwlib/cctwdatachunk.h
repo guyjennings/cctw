@@ -6,16 +6,17 @@
 #include <QMutex>
 #include <QVector>
 #include <QList>
+#include "cctwchunkeddata-ptr.h"
 #include "cctwchunkeddata.h"
 
 class CctwDataChunk : public CctwObject
 {
   Q_OBJECT
 public:
-  CctwDataChunk(CctwChunkedData *data,
+  CctwDataChunk(CctwChunkedDataWPtr data,
                 int index,
                 QString name,
-                QObject *parent);
+                QcepObjectWPtr parent);
 
   virtual ~CctwDataChunk();
 
@@ -77,7 +78,7 @@ private:
   CctwIntVector3D calculateChunkSize();
 
 private:
-  CctwChunkedData                           *m_Data;
+  CctwChunkedDataWPtr                        m_Data;
   int                                        m_ChunkIndex;
   CctwIntVector3D                            m_ChunkStart;
   CctwIntVector3D                            m_ChunkSize;

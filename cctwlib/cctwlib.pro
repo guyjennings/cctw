@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 DEFINES += CCTW_VERSION=\"$$VERSION\"
 DEFINES += NO_GUI
 
+include(../submodules/qceplib/qceplib-qwt.pri)
 include(../submodules/qceplib/qceplib-base.pri)
 include(../submodules/qceplib/qceplib-szip.pri)
 include(../submodules/qceplib/qceplib-zlib.pri)

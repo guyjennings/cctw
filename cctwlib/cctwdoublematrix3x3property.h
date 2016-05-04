@@ -8,9 +8,9 @@ class CctwDoubleMatrix3x3Property : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
+  explicit CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
                                          CctwDoubleMatrix3x3 value, QString toolTip);
-  explicit CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
+  explicit CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
                                          double r0c0, double r0c1, double r0c2,
                                          double r1c0, double r1c1, double r1c2,
                                          double r2c0, double r2c1, double r2c2,

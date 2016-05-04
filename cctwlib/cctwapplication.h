@@ -10,8 +10,6 @@
 #include "cctwtransformer.h"
 #include "cctwcrystalcoordinateparameters.h"
 #include "cctwcrystalcoordinatetransform.h"
-#include "qcepsettingssaver-ptr.h"
-#include "qcepsettingssaver.h"
 #include "qcepobjectnamer.h"
 #include "cctwpeingresscommand.h"
 
@@ -19,7 +17,8 @@
 #include "cctwimporter.h"
 #endif
 
-#include "cctwcomparer.h"
+#include "cctwcomparer-ptr.h"
+#include "cctwapplicationproxy-ptr.h"
 
 class CctwqtMainWindow;
 class CctwScriptEngine;
@@ -40,6 +39,8 @@ class CctwApplication
 public:
   explicit CctwApplication(int &argc, char *argv[]);
   void initialize(int &argc, char *argv[]);
+
+  CctwApplicationProxyWPtr proxy();
 
 signals:
 
@@ -132,8 +133,6 @@ public:
   void plotCurves(QwtPlotCurve *c1, QwtPlotCurve *c2, QwtPlotCurve *c3, QwtPlotCurve *c4);
 #endif
 
-  QcepSettingsSaverWPtr saver() const;
-
   QScriptValue evaluate(QString cmd);
   void printHDF5errors();
 
@@ -170,18 +169,19 @@ public:
 #ifdef WANT_IMPORT_COMMANDS
   CctwImporter                       *m_ImportData;
 #endif
-  CctwComparer                       *m_CompareData;
-  CctwChunkedData                    *m_InputData;
-  CctwChunkedData                    *m_OutputData;
+  CctwComparerPtr                     m_CompareData;
+  CctwChunkedDataPtr                  m_InputData;
+  CctwChunkedDataPtr                  m_OutputData;
   CctwCrystalCoordinateTransform     *m_Transform;
   CctwTransformer                    *m_Transformer;
   CctwScriptEngine                   *m_ScriptEngine;
   CctwPEIngressCommand               *m_PEIngressCommand;
-  QcepSettingsSaverPtr                m_Saver;
 
 private:
   QAtomicInt                          m_WorkOutstanding;
   QAtomicInt                          m_LastProgress;
+
+  CctwApplicationProxyPtr             m_Proxy;
 
 public:
   Q_PROPERTY(bool guiWanted READ get_GuiWanted WRITE set_GuiWanted STORED false)

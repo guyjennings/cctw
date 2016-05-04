@@ -9,7 +9,7 @@ class CctwComparer : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwComparer(CctwApplication *application, QString name, QObject *parent = 0);
+  explicit CctwComparer(CctwApplication *application, QString name, QcepObjectWPtr parent);
   virtual ~CctwComparer();
 
 signals:

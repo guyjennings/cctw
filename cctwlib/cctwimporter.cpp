@@ -5,7 +5,7 @@
 #include "qcepmutexlocker.h"
 #include "cctwinputdatah5.h"
 
-CctwImporter::CctwImporter(CctwApplication *application, QString name, QObject *parent) :
+CctwImporter::CctwImporter(CctwApplication *application, QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
   m_Application(application),
   m_BacklogSemaphore(8),
@@ -15,22 +15,22 @@ CctwImporter::CctwImporter(CctwApplication *application, QString name, QObject *
   m_DataspaceId(-1),
   m_InputBuffer(NULL),
   m_InputBufferCount(0),
-  m_DarkImage(new QcepImageData<double>(QcepSettingsSaverWPtr(),0,0)),
-  m_DataFormat(m_Application->saver(), this, "dataFormat", 0, "Imported data format (0=auto)"),
-  m_DarkImagePath(m_Application->saver(), this, "darkImagePath", "", "Dark image path"),
-  m_ImagePaths(m_Application->saver(), this, "imagePaths", QcepStringList(), "Imported image paths"),
-  m_ImageDirectory(m_Application->saver(), this, "imageDirectory", "", "Image directory"),
-  m_ImagePattern(m_Application->saver(), this, "imagePattern", "", "Image pattern"),
-  m_OutputPath(m_Application->saver(), this, "outputPath", "./output.h5", "Destination for imported data"),
-  m_OutputDataset(m_Application->saver(), this, "outputDataset", "/data", "Destination Dataset for imported data"),
-  m_ChunkSize(m_Application->saver(), this, "chunkSize", CctwIntVector3D(32,32,32), "output chunk size"),
-  m_Compression(m_Application->saver(), this, "compression", 0, "output compression type"),
-  m_XDimension(QcepSettingsSaverWPtr(), this, "xDimension", 0, "X Dimension of output"),
-  m_YDimension(QcepSettingsSaverWPtr(), this, "yDimension", 0, "Y Dimension of output"),
-  m_ZDimension(QcepSettingsSaverWPtr(), this, "zDimension", 0, "Z Dimension of output"),
-  m_InputDataBuffering(m_Application->saver(), this, "inputDataBuffering", 0, "Input Data Buffering"),
-  m_CheckRigorously(m_Application->saver(), this, "checkRigorously", false, "Perform rigorous check (every element) of imported data"),
-  m_CheckApproximately(m_Application->saver(), this, "checkApproximately", true, "Perform approximate check (about 30 seconds) of imported data")
+  m_DarkImage(new QcepDoubleImageData(sharedFromThis(), "dark", 0,0, 0)),
+  m_DataFormat(this, "dataFormat", 0, "Imported data format (0=auto)"),
+  m_DarkImagePath(this, "darkImagePath", "", "Dark image path"),
+  m_ImagePaths(this, "imagePaths", QcepStringList(), "Imported image paths"),
+  m_ImageDirectory(this, "imageDirectory", "", "Image directory"),
+  m_ImagePattern(this, "imagePattern", "", "Image pattern"),
+  m_OutputPath(this, "outputPath", "./output.h5", "Destination for imported data"),
+  m_OutputDataset(this, "outputDataset", "/data", "Destination Dataset for imported data"),
+  m_ChunkSize(this, "chunkSize", CctwIntVector3D(32,32,32), "output chunk size"),
+  m_Compression(this, "compression", 0, "output compression type"),
+  m_XDimension(this, "xDimension", 0, "X Dimension of output"),
+  m_YDimension(this, "yDimension", 0, "Y Dimension of output"),
+  m_ZDimension(this, "zDimension", 0, "Z Dimension of output"),
+  m_InputDataBuffering(this, "inputDataBuffering", 0, "Input Data Buffering"),
+  m_CheckRigorously(this, "checkRigorously", false, "Perform rigorous check (every element) of imported data"),
+  m_CheckApproximately(this, "checkApproximately", true, "Perform approximate check (about 30 seconds) of imported data")
 {
 }
 
@@ -371,14 +371,14 @@ void CctwImporter::importDataFrame(int num, QString path)
   if (m_Application && !m_Application->get_Halting()) {
     if (path.length() > 0) {
 
-      QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+      QcepDoubleImageData m(sharedFromThis(), "import", 0, 0, 0);
 
       if (m.readImage(path)) {
         m.loadMetaData();
 
         printMessage(tr("Imported frame %1 from %2").arg(num).arg(path));
 
-        m.subtractDark(m_DarkImage);
+        m.subtractDark<double>(m_DarkImage);
 
         set_XDimension(m.get_Width());
         set_YDimension(m.get_Height());
@@ -433,14 +433,14 @@ void CctwImporter::readDataFrameToBuffer(int i, int nb, QString path)
   if (m_Application && !m_Application->get_Halting()) {
     if (path.length() > 0) {
 
-      QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+      QcepDoubleImageData m(sharedFromThis(), "buffer", 0, 0, 0);
 
       if (m.readImage(path)) {
         m.loadMetaData();
 
         printMessage(tr("Imported frame %1 from %2").arg(i).arg(path));
 
-        m.subtractDark(m_DarkImage);
+        m.subtractDark<double>(m_DarkImage);
 
         if (m_InputBuffer == NULL) {
           set_XDimension(m.get_Width());
@@ -542,7 +542,7 @@ void CctwImporter::checkImportedData()
 
 void CctwImporter::checkImportedDataRigorously()
 {
-  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
+  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", sharedFromThis());
 
   printMessage("Checking imported data rigorously...");
 }
@@ -554,7 +554,7 @@ static int randomIndex(int n)
 
 void CctwImporter::checkImportedDataApproximately()
 {
-  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", this);
+  CctwInputDataH5 data(get_OutputPath(), get_OutputDataset(), "h5import", sharedFromThis());
 
   printMessage("Checking imported data approximately...");
 
@@ -566,11 +566,11 @@ void CctwImporter::checkImportedDataApproximately()
   int n=0;
 
   for (int nz = 0; nz<5; nz++) {
-    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+    QcepDoubleImageData m(sharedFromThis(), "check", 0, 0, 0);
 
     if (m.readImage(inp.filePath(paths[nz]))) {
       m.loadMetaData();
-      m.subtractDark(m_DarkImage);
+      m.subtractDark<double>(m_DarkImage);
 
       for  (int nx = 0; nx<5; nx++) {
         for (int ny = 0; ny<5; ny++) {
@@ -587,12 +587,12 @@ void CctwImporter::checkImportedDataApproximately()
   while (startAt.elapsed() < 60*1000 && !m_Application->get_Halting() && n < 100) {
     int nz = randomIndex(data.dimensions().z());
 
-    QcepImageData<double> m(QcepSettingsSaverWPtr(), 0, 0);
+    QcepDoubleImageData m(sharedFromThis(), "check", 0, 0, 0);
 
     if (m.readImage(inp.filePath(paths[nz]))) {
       m.loadMetaData();
 
-      m.subtractDark(m_DarkImage);
+      m.subtractDark<double>(m_DarkImage);
 
       for (int i=0; i<100 && !m_Application->get_Halting() && n < 100; i++) {
         int nx = randomIndex(data.dimensions().x());

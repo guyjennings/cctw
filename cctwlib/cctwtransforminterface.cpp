@@ -1,6 +1,7 @@
 #include "cctwtransforminterface.h"
+#include "qcepobject.h"
 
-CctwTransformInterface::CctwTransformInterface(QString name, QObject *parent) :
+CctwTransformInterface::CctwTransformInterface(QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent)
 {
 }

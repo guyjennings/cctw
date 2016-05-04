@@ -3,8 +3,9 @@
 #include "cctwqtmainwindow.h"
 #include <QFileDialog>
 #include <QtConcurrentRun>
+#include "cctwcomparer.h"
 
-CctwqtSetupCompareDialog::CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwComparer *data) :
+CctwqtSetupCompareDialog::CctwqtSetupCompareDialog(CctwqtMainWindow *parent, CctwComparerPtr data) :
   QDialog(parent),
   ui(new Ui::CctwqtSetupCompareDialog),
   m_Window(parent),
@@ -47,7 +48,7 @@ void CctwqtSetupCompareDialog::accept()
     m_Data->set_CompareApproximately(ui->m_CompareApproximately->isChecked());
   }
 
-  QtConcurrent::run(m_Data, &CctwComparer::compareDatasets);
+  QtConcurrent::run(m_Data.data(), &CctwComparer::compareDatasets);
 //  QMetaObject::invokeMethod(m_Data, "compareDatasets");
 
   QDialog::accept();

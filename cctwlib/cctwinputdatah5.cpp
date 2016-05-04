@@ -1,7 +1,7 @@
 #include "cctwinputdatah5.h"
 #include <QFileInfo>
 
-CctwInputDataH5::CctwInputDataH5(QString filePath, QString datasetName, QString name, CctwObject *parent) :
+CctwInputDataH5::CctwInputDataH5(QString filePath, QString datasetName, QString name, QcepObjectWPtr parent) :
   CctwObject(name, parent),
   m_InputFilePath(filePath),
   m_DatasetName(datasetName),

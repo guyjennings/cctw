@@ -2,7 +2,8 @@
 #define CCTWTRANSFORMER_H
 
 #include "cctwobject.h"
-#include "cctwchunkeddata.h"
+#include "cctwchunkeddata-ptr.h"
+#include "cctwdatachunk-ptr.h"
 #include "cctwtransforminterface.h"
 #include <QUrl>
 
@@ -16,12 +17,10 @@ class CctwTransformer : public CctwObject
   Q_OBJECT
 public:
   CctwTransformer(CctwApplication        *application,
-                  CctwChunkedData        *input,    // The input data
-                  CctwChunkedData        *output,  // The output data
+                  CctwChunkedDataPtr     input,    // The input data
+                  CctwChunkedDataPtr     output,  // The output data
                   CctwTransformInterface *xform,    // The transform
-//                  int osx, int osy, int osz,        // Oversampling factors
-                  QString name,
-                  QObject *parent);
+                  QString                name);
 
   virtual ~CctwTransformer();
 
@@ -48,16 +47,16 @@ private:
   void markInputChunkNeeded(CctwIntVector3D idx);
 
 #ifdef WANT_ANALYSIS_COMMANDS
-  void projectDatasetChunk(CctwChunkedData *data, int chunk, int axes);
-  void projectDataset(QString path, CctwChunkedData *data, int axes);
+  void projectDatasetChunk(CctwChunkedDataPtr data, int chunk, int axes);
+  void projectDataset(QString path, CctwChunkedDataPtr data, int axes);
 #endif
 
-  bool parseSubset(CctwChunkedData *data = NULL);
+  bool parseSubset(CctwChunkedDataPtr data);
 
 private:
   CctwApplication         *m_Application;
-  CctwChunkedData         *m_InputData;
-  CctwChunkedData         *m_OutputData;
+  CctwChunkedDataPtr       m_InputData;
+  CctwChunkedDataPtr       m_OutputData;
   CctwTransformInterface  *m_Transform;
 
   QMutex                   m_LockX;

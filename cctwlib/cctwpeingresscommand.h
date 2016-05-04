@@ -10,7 +10,7 @@ class CctwPEIngressCommand : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwPEIngressCommand(CctwApplication *app, QString name, QObject *parent);
+  explicit CctwPEIngressCommand(CctwApplication *app, QString name, QcepObjectWPtr parent);
 
 public slots:
   void testSlot();

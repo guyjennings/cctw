@@ -4,12 +4,13 @@
 #include "cctwobject.h"
 #include "hdf5.h"
 #include "cctwvector3d.h"
+#include "cctwobject-ptr.h"
 
 class CctwInputDataH5 : public CctwObject
 {
   Q_OBJECT
 public:
-  explicit CctwInputDataH5(QString filePath, QString datasetName, QString name, CctwObject *parent);
+  explicit CctwInputDataH5(QString filePath, QString datasetName, QString name, QcepObjectWPtr parent);
 
 signals:
 

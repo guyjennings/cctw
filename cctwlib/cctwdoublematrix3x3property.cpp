@@ -1,25 +1,24 @@
 #include "cctwdoublematrix3x3property.h"
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
-#include "qcepsettingssaver.h"
 #include <QScriptEngine>
 #include <stdio.h>
+#include "qcepobject.h"
 
-CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver,
-                                                             QObject *parent, const char *name,
-                                                             CctwDoubleMatrix3x3 value, QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
+                                                         CctwDoubleMatrix3x3 value, QString toolTip) :
+  QcepProperty(parent, name, toolTip),
   m_Default(value),
   m_Value(value)
 {
 }
 
-CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSettingsSaverWPtr saver, QObject *parent, const char *name,
-                                             double r0c0, double r0c1, double r0c2,
-                                             double r1c0, double r1c1, double r1c2,
-                                             double r2c0, double r2c1, double r2c2,
-                                             QString toolTip) :
-  QcepProperty(saver, parent, name, toolTip),
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
+                                                         double r0c0, double r0c1, double r0c2,
+                                                         double r1c0, double r1c1, double r1c2,
+                                                         double r2c0, double r2c1, double r2c2,
+                                                         QString toolTip) :
+  QcepProperty(parent, name, toolTip),
   m_Default(),
   m_Value()
 {
@@ -148,10 +147,8 @@ void CctwDoubleMatrix3x3Property::setValue(CctwDoubleMatrix3x3 val)
 
     m_Value = val;
 
-    QcepSettingsSaverPtr saver(m_Saver);
-
-    if (saver) {
-      saver->changed(this);
+    if (m_Parent) {
+      m_Parent->propertyChanged(this);
     }
 
     emit valueChanged(m_Value, newIndex);
