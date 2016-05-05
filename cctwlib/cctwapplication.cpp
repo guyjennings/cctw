@@ -715,9 +715,9 @@ void CctwApplication::showHelp(QString about)
               "A ref to an HDF array            set angles to values from array\n"
               "\n"
               "Examples:\n"
-              "cctwcli transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
-              "cctwcli merge file1.nxs\\#/data/entry/v file2.nxs\\#/data/entry/v -o merge.nxs\\#/data/entry/v\n"
-              ).arg(arguments().at(0)));
+              "%2 transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
+              "%3 merge file1.nxs\\#/data/entry/v file2.nxs\\#/data/entry/v -o merge.nxs\\#/data/entry/v\n"
+              ).arg(arguments().at(0)).arg(arguments().at(0)).arg(arguments().at(0)));
 }
 
 void CctwApplication::showVersion()
