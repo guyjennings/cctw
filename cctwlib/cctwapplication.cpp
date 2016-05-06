@@ -1224,20 +1224,18 @@ void CctwApplication::runTransform()
 
 void CctwApplication::runMerge()
 {
-  QVector < CctwChunkedData* > inputFiles;
-
-  CctwChunkedData* outputFile = NULL;
+  QVector < CctwChunkedDataPtr > inputFiles;
 
   CctwIntVector3D hdfChunkSize(0,0,0);
   CctwIntVector3D dims(0,0,0);
 
   if (get_InputFiles().count() < 1) {
     printMessage("No merge inputs given");
-    goto exit;
+    return;
   }
 
   foreach(QString path, get_InputFiles()) {
-    CctwChunkedData* inputFile = new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, m_Proxy);
+    CctwChunkedDataPtr inputFile = CctwChunkedDataPtr(new CctwChunkedData(this, CctwIntVector3D(0,0,0), CctwIntVector3D(10,10,10), true, path, m_Proxy));
 
     if (inputFile) {
       inputFile->setDataSource(path);
@@ -1245,9 +1243,8 @@ void CctwApplication::runMerge()
         printMessage(tr("Opened %1 successfully").arg(path));
         inputFile->setChunkSize(inputFile->get_HDFChunkSize());
       } else {
-        delete inputFile;
         printMessage(tr("Failed to open %1").arg(path));
-        goto exit;
+        return;
       }
     }
 
@@ -1257,15 +1254,15 @@ void CctwApplication::runMerge()
   hdfChunkSize = inputFiles[0]->get_HDFChunkSize();
   dims         = inputFiles[0]->dimensions();
 
-  foreach(CctwChunkedData* inputFile, inputFiles) {
+  foreach(CctwChunkedDataPtr inputFile, inputFiles) {
     if (inputFile->get_HDFChunkSize() != hdfChunkSize) {
       printMessage("Input datasets do not have the same HDF chunk sizes");
-      goto exit;
+      return;
     }
 
     if (inputFile->dimensions() != dims) {
       printMessage("Input datasets do not have the same dimensions");
-      goto exit;
+      return;
     }
 
     inputFile->setChunkSize(hdfChunkSize);
@@ -1290,26 +1287,24 @@ void CctwApplication::runMerge()
     for (int i=0; i<nchunks; i++) {
       set_Progress(i);
 
-      foreach(CctwChunkedData* inputFile, inputFiles) {
-        CctwDataChunk *inChunk = inputFile->readChunk(i);
-        m_OutputData->mergeChunk(inChunk);
+      foreach(CctwChunkedDataPtr inputFile, inputFiles) {
+        if (inputFile) {
+          CctwDataChunk *inChunk = inputFile->readChunk(i);
+          if (inChunk) {
+            m_OutputData->mergeChunk(inChunk);
 
-        delete inChunk;
+            inChunk->deallocateData();
+            inChunk->deallocateWeights();
+          }
+        }
       }
 
       m_OutputData->writeChunk(i);
     }
+
+    m_OutputData->closeOutputFile();
   } else {
     printMessage(tr("Could not open %1 for output").arg(get_OutputFile()));
-    goto exit;
-  }
-
-exit:
-
-  foreach(CctwChunkedData* inputFile, inputFiles) {
-    if (inputFile) {
-      delete inputFile;
-    }
   }
 }
 

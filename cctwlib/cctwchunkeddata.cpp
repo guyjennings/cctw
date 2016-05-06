@@ -676,10 +676,10 @@ CctwDataChunk *CctwChunkedData::chunk(int n)
 
       chunk = new CctwDataChunk(myself, n, tr("Chunk-%1").arg(n), sharedFromThis());
 
-      if (parent()) {
-        chunk->moveToThread(parent()->thread());
-        chunk->setParent(parent());
-      }
+//      if (parent()) {
+//        chunk->moveToThread(parent()->thread());
+//        chunk->setParent(parent());
+//      }
 
       m_DataChunks[n] = chunk;
     }
