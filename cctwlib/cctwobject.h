@@ -5,9 +5,9 @@
 #include <QSettings>
 #include "qcepproperty.h"
 #include "qcepobjectnamer.h"
-#include "qcepobject.h"
+#include "qcepserializableobject.h"
 
-class CctwObject : public QcepObject
+class CctwObject : public QcepSerializableObject
 {
   Q_OBJECT
 public:

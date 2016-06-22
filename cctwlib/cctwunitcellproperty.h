@@ -8,12 +8,12 @@ class CctwUnitCellProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwUnitCellProperty(QcepObject *parent,
+  explicit CctwUnitCellProperty(QcepSerializableObject *parent,
                                 const char *name,
                                 CctwUnitCell value,
                                 QString toolTip);
 
-  explicit CctwUnitCellProperty(QcepObject *parent,
+  explicit CctwUnitCellProperty(QcepSerializableObject *parent,
                                 const char *name,
                                 double a, double b, double c,
                                 double alpha, double beta, double gamma,

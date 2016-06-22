@@ -9,8 +9,8 @@ class CctwIntVector3DProperty : public QcepProperty
 {
   Q_OBJECT
 public:
-  explicit CctwIntVector3DProperty(QcepObject *parent, const char *name, CctwIntVector3D value, QString toolTip);
-  explicit CctwIntVector3DProperty(QcepObject *parent, const char *name, int x, int y, int z, QString toolTip);
+  explicit CctwIntVector3DProperty(QcepSerializableObject *parent, const char *name, CctwIntVector3D value, QString toolTip);
+  explicit CctwIntVector3DProperty(QcepSerializableObject *parent, const char *name, int x, int y, int z, QString toolTip);
 
   CctwIntVector3D value() const;
   CctwIntVector3D defaultValue() const;

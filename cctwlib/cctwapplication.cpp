@@ -5,7 +5,6 @@
 #include "cctwscriptengine.h"
 #include "qcepproperty.h"
 #include "cctwdebug.h"
-#include "qcepsettingssaver.h"
 #include <QtConcurrentRun>
 #include <QFile>
 #include "cctwintvector3dproperty.h"
@@ -28,8 +27,6 @@
 #ifdef Q_OS_UNIX
 #include "getopt.h"
 #endif
-
-QcepSettingsSaverPtr g_Saver;
 
 #ifdef WANT_IMPORT_COMMANDS
 QcepImageDataFormatCBF<double> cbfImg("cbf");
@@ -931,7 +928,7 @@ void CctwApplication::readSettings(QString path)
 
 void CctwApplication::readSettings(QSettings *settings)
 {
-  QcepProperty::readSettings(this, &staticMetaObject, "cctw", settings, true);
+  QcepProperty::readSettings(this, settings, "cctw");
 
   if (m_Parameters) {
     m_Parameters->readSettings(settings, "parameters");
@@ -999,7 +996,7 @@ void CctwApplication::writeSettings(QString path)
 
 void CctwApplication::writeSettings(QSettings *settings)
 {
-  QcepProperty::writeSettings(this, &staticMetaObject, "cctw", settings, true);
+  QcepProperty::writeSettings(this, settings, "cctw");
 
   if (m_Parameters) {
     m_Parameters->writeSettings(settings, "parameters");

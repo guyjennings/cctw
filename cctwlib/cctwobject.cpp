@@ -6,8 +6,9 @@
 #include "qcepobject.h"
 
 CctwObject::CctwObject(QString name, QcepObjectWPtr parent) :
-  QcepObject(name, parent)
+  QcepSerializableObject(name)
 {
+  setParentPtr(parent);
 }
 
 //void CctwObject::printLine(QString line)

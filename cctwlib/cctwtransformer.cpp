@@ -546,18 +546,18 @@ void CctwTransformer::projectDatasetChunk(CctwChunkedDataPtr data, int i, int ax
       QcepImageData<double> *wgtx = NULL, *wgty = NULL, *wgtz = NULL;
 
       if (axes & 1) {
-        imgx = new QcepDoubleImageData(sharedFromThis(), "imgx", chSize.y(), chSize.z(), 0);
-        wgtx = new QcepDoubleImageData(sharedFromThis(), "wgtx", chSize.y(), chSize.z(), 0);
+        imgx = new QcepDoubleImageData("imgx", chSize.y(), chSize.z(), 0);
+        wgtx = new QcepDoubleImageData("wgtx", chSize.y(), chSize.z(), 0);
       }
 
       if (axes & 2) {
-        imgy = new QcepDoubleImageData(sharedFromThis(), "imgy", chSize.x(), chSize.z(), 0);
-        wgty = new QcepDoubleImageData(sharedFromThis(), "wgty", chSize.x(), chSize.z(), 0);
+        imgy = new QcepDoubleImageData("imgy", chSize.x(), chSize.z(), 0);
+        wgty = new QcepDoubleImageData("wgty", chSize.x(), chSize.z(), 0);
       }
 
       if (axes & 4) {
-        imgz = new QcepDoubleImageData(sharedFromThis(), "imgz", chSize.x(), chSize.y(), 0);
-        wgtz = new QcepDoubleImageData(sharedFromThis(), "wgtz", chSize.x(), chSize.y(), 0);
+        imgz = new QcepDoubleImageData("imgz", chSize.x(), chSize.y(), 0);
+        wgtz = new QcepDoubleImageData("wgtz", chSize.x(), chSize.y(), 0);
       }
 
       double mindata = chunk->data(0,0,0);
@@ -724,24 +724,24 @@ void CctwTransformer::projectDataset(QString path, CctwChunkedDataPtr data, int 
     delete m_WeightZ;
 
     if (px) {
-      m_ImageX  = new QcepDoubleImageData(sharedFromThis(), "m_ImageX",  dims.y(), dims.z(), 0);
-      m_WeightX = new QcepDoubleImageData(sharedFromThis(), "m_WeightX", dims.y(), dims.z(), 0);
+      m_ImageX  = new QcepDoubleImageData("m_ImageX",  dims.y(), dims.z(), 0);
+      m_WeightX = new QcepDoubleImageData("m_WeightX", dims.y(), dims.z(), 0);
     } else {
       m_ImageX  = NULL;
       m_WeightX = NULL;
     }
 
     if (py) {
-      m_ImageY  = new QcepDoubleImageData(sharedFromThis(), "m_ImageY",  dims.x(), dims.z(), 0);
-      m_WeightY = new QcepDoubleImageData(sharedFromThis(), "m_WeightY", dims.x(), dims.z(), 0);
+      m_ImageY  = new QcepDoubleImageData("m_ImageY",  dims.x(), dims.z(), 0);
+      m_WeightY = new QcepDoubleImageData("m_WeightY", dims.x(), dims.z(), 0);
     } else {
       m_ImageY  = NULL;
       m_WeightY = NULL;
     }
 
     if (pz) {
-      m_ImageZ  = new QcepDoubleImageData(sharedFromThis(), "m_ImageZ",  dims.x(), dims.y(), 0);
-      m_WeightZ = new QcepDoubleImageData(sharedFromThis(), "m_WeightZ", dims.x(), dims.y(), 0);
+      m_ImageZ  = new QcepDoubleImageData("m_ImageZ",  dims.x(), dims.y(), 0);
+      m_WeightZ = new QcepDoubleImageData("m_WeightZ", dims.x(), dims.y(), 0);
     } else {
       m_ImageZ  = NULL;
       m_WeightZ = NULL;

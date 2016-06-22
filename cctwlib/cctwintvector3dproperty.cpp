@@ -4,15 +4,16 @@
 #include <QScriptEngine>
 #include <stdio.h>
 #include "qcepobject.h"
+#include "qcepserializableobject.h"
 
-CctwIntVector3DProperty::CctwIntVector3DProperty(QcepObject *parent, const char *name, CctwIntVector3D value, QString toolTip) :
+CctwIntVector3DProperty::CctwIntVector3DProperty(QcepSerializableObject *parent, const char *name, CctwIntVector3D value, QString toolTip) :
   QcepProperty(parent, name, toolTip),
   m_Default(value),
   m_Value(value)
 {
 }
 
-CctwIntVector3DProperty::CctwIntVector3DProperty(QcepObject *parent, const char *name, int x, int y, int z, QString toolTip) :
+CctwIntVector3DProperty::CctwIntVector3DProperty(QcepSerializableObject *parent, const char *name, int x, int y, int z, QString toolTip) :
   QcepProperty(parent, name, toolTip),
   m_Default(CctwIntVector3D(x,y,z)),
   m_Value(CctwIntVector3D(x,y,z))

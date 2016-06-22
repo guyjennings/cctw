@@ -15,7 +15,7 @@ CctwImporter::CctwImporter(CctwApplication *application, QString name, QcepObjec
   m_DataspaceId(-1),
   m_InputBuffer(NULL),
   m_InputBufferCount(0),
-  m_DarkImage(new QcepDoubleImageData(sharedFromThis(), "dark", 0,0, 0)),
+  m_DarkImage(new QcepDoubleImageData("dark", 0,0, 0)),
   m_DataFormat(this, "dataFormat", 0, "Imported data format (0=auto)"),
   m_DarkImagePath(this, "darkImagePath", "", "Dark image path"),
   m_ImagePaths(this, "imagePaths", QcepStringList(), "Imported image paths"),
@@ -371,7 +371,7 @@ void CctwImporter::importDataFrame(int num, QString path)
   if (m_Application && !m_Application->get_Halting()) {
     if (path.length() > 0) {
 
-      QcepDoubleImageData m(sharedFromThis(), "import", 0, 0, 0);
+      QcepDoubleImageData m("import", 0, 0, 0);
 
       if (m.readImage(path)) {
         m.loadMetaData();
@@ -433,7 +433,7 @@ void CctwImporter::readDataFrameToBuffer(int i, int nb, QString path)
   if (m_Application && !m_Application->get_Halting()) {
     if (path.length() > 0) {
 
-      QcepDoubleImageData m(sharedFromThis(), "buffer", 0, 0, 0);
+      QcepDoubleImageData m("buffer", 0, 0, 0);
 
       if (m.readImage(path)) {
         m.loadMetaData();
@@ -566,7 +566,7 @@ void CctwImporter::checkImportedDataApproximately()
   int n=0;
 
   for (int nz = 0; nz<5; nz++) {
-    QcepDoubleImageData m(sharedFromThis(), "check", 0, 0, 0);
+    QcepDoubleImageData m("check", 0, 0, 0);
 
     if (m.readImage(inp.filePath(paths[nz]))) {
       m.loadMetaData();
@@ -587,7 +587,7 @@ void CctwImporter::checkImportedDataApproximately()
   while (startAt.elapsed() < 60*1000 && !m_Application->get_Halting() && n < 100) {
     int nz = randomIndex(data.dimensions().z());
 
-    QcepDoubleImageData m(sharedFromThis(), "check", 0, 0, 0);
+    QcepDoubleImageData m("check", 0, 0, 0);
 
     if (m.readImage(inp.filePath(paths[nz]))) {
       m.loadMetaData();

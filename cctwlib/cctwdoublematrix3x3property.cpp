@@ -4,8 +4,9 @@
 #include <QScriptEngine>
 #include <stdio.h>
 #include "qcepobject.h"
+#include "qcepserializableobject.h"
 
-CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSerializableObject *parent, const char *name,
                                                          CctwDoubleMatrix3x3 value, QString toolTip) :
   QcepProperty(parent, name, toolTip),
   m_Default(value),
@@ -13,7 +14,7 @@ CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepObject *parent, con
 {
 }
 
-CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepObject *parent, const char *name,
+CctwDoubleMatrix3x3Property::CctwDoubleMatrix3x3Property(QcepSerializableObject *parent, const char *name,
                                                          double r0c0, double r0c1, double r0c2,
                                                          double r1c0, double r1c1, double r1c2,
                                                          double r2c0, double r2c1, double r2c2,

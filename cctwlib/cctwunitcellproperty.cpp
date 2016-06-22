@@ -1,11 +1,11 @@
 #include "cctwunitcellproperty.h"
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
-#include "qcepsettingssaver.h"
 #include <QScriptEngine>
 #include "qcepobject.h"
+#include "qcepserializableobject.h"
 
-CctwUnitCellProperty::CctwUnitCellProperty(QcepObject *parent,
+CctwUnitCellProperty::CctwUnitCellProperty(QcepSerializableObject *parent,
     const char *name,
     CctwUnitCell value,
     QString toolTip) :
@@ -15,7 +15,7 @@ CctwUnitCellProperty::CctwUnitCellProperty(QcepObject *parent,
 {
 }
 
-CctwUnitCellProperty::CctwUnitCellProperty(QcepObject *parent,
+CctwUnitCellProperty::CctwUnitCellProperty(QcepSerializableObject *parent,
     const char *name,
     double a, double b, double c,
     double alpha, double beta, double gamma,

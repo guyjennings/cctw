@@ -1,19 +1,19 @@
 #include "cctwdoublevector3dproperty.h"
 #include "qcepmutexlocker.h"
 #include "qcepdebug.h"
-#include "qcepsettingssaver.h"
 #include <QScriptEngine>
 #include <stdio.h>
 #include "qcepobject.h"
+#include "qcepserializableobject.h"
 
-CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
+CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSerializableObject *parent, const char *name, CctwDoubleVector3D value, QString toolTip) :
   QcepProperty(parent, name, toolTip),
   m_Default(value),
   m_Value(value)
 {
 }
 
-CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepObject *parent, const char *name, double x, double y, double z, QString toolTip) :
+CctwDoubleVector3DProperty::CctwDoubleVector3DProperty(QcepSerializableObject *parent, const char *name, double x, double y, double z, QString toolTip) :
   QcepProperty(parent, name, toolTip),
   m_Default(CctwDoubleVector3D(x,y,z)),
   m_Value(CctwDoubleVector3D(x,y,z))

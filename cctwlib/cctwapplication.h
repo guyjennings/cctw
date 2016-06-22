@@ -245,6 +245,4 @@ public:
   QCEP_INTEGER_PROPERTY(ExitStatus)
 };
 
-extern QcepSettingsSaverPtr g_Saver;
-
 #endif // CCTWAPPLICATION_H
