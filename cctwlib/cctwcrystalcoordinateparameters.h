@@ -226,6 +226,9 @@ public:
 
   Q_PROPERTY(bool extraFlip                  READ get_ExtraFlip          WRITE set_ExtraFlip           NOTIFY parametersChanged)
   QCEP_BOOLEAN_PROPERTY(ExtraFlip)
+
+  Q_PROPERTY(bool useGonPitchError           READ get_UseGonPitchError   WRITE set_UseGonPitchError    NOTIFY parametersChanged)
+  QCEP_BOOLEAN_PROPERTY(UseGonPitchError)
 };
 
 #endif // CCTWCRYSTALCOORDINATEPARAMETERS_H

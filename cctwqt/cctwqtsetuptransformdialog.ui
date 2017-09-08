@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>953</width>
-    <height>582</height>
+    <width>983</width>
+    <height>774</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -214,54 +214,8 @@
        <string>Goniometer</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="13" column="0">
-        <widget class="QLabel" name="label_73">
-         <property name="text">
-          <string>Step</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="2">
-        <widget class="QLabel" name="label_42">
-         <property name="text">
-          <string>Correction</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QDoubleSpinBox" name="m_TwoThetaNom">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QLabel" name="label_31">
-         <property name="text">
-          <string>Correction</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_29">
+       <item row="16" column="0">
+        <widget class="QLabel" name="label_76">
          <property name="text">
           <string>Nominal (Start)</string>
          </property>
@@ -270,82 +224,8 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="0">
-        <widget class="QLabel" name="label_33">
-         <property name="text">
-          <string>Step</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="3">
-        <widget class="QDoubleSpinBox" name="m_PhiCorrection">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="1">
-        <widget class="QDoubleSpinBox" name="m_PhiNom">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="3">
-        <widget class="QDoubleSpinBox" name="m_ChiCorrection">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1">
-        <widget class="QDoubleSpinBox" name="m_OmegaStep">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="2">
-        <widget class="QLabel" name="label_39">
+       <item row="10" column="2">
+        <widget class="QLabel" name="label_34">
          <property name="text">
           <string>Correction</string>
          </property>
@@ -354,69 +234,7 @@
          </property>
         </widget>
        </item>
-       <item row="17" column="0" colspan="4">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>318</width>
-           <height>22</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="6" column="3">
-        <widget class="QDoubleSpinBox" name="m_TwoThetaCorrection">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="1">
-        <widget class="QDoubleSpinBox" name="m_ChiNom">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="label_44">
-         <property name="text">
-          <string>Orientation Errors</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_24">
-         <property name="text">
-          <string>Detector Pitch :</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="label_27">
          <property name="text">
           <string>Goniometer Pitch:</string>
@@ -426,44 +244,11 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>Detector Roll:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
+       <item row="12" column="1" colspan="3">
+        <widget class="QLineEdit" name="m_Chi"/>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_26">
-         <property name="text">
-          <string>Detector Yaw:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QDoubleSpinBox" name="m_OrientErrorDetPitch">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QDoubleSpinBox" name="m_OrientErrorDetRoll">
+       <item row="16" column="3">
+        <widget class="QDoubleSpinBox" name="m_PhiCorrection">
          <property name="decimals">
           <number>6</number>
          </property>
@@ -494,15 +279,161 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2" colspan="2">
-        <widget class="QLabel" name="label_45">
-         <property name="text">
-          <string>Sample Translation (xTrans):</string>
+       <item row="16" column="1">
+        <widget class="QDoubleSpinBox" name="m_PhiNom">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QDoubleSpinBox" name="m_OrientErrorGonPitch">
+       <item row="8" column="1">
+        <widget class="QDoubleSpinBox" name="m_TwoThetaStep">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QDoubleSpinBox" name="m_XTransX">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-100.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QDoubleSpinBox" name="m_ChiCorrection">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_26">
+         <property name="text">
+          <string>Detector Yaw:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_71">
+         <property name="text">
+          <string>Step</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="0" colspan="4">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>318</width>
+           <height>22</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="17" column="1">
+        <widget class="QDoubleSpinBox" name="m_PhiStep">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="0">
+        <widget class="QLabel" name="label_75">
+         <property name="text">
+          <string>Step</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="label_33">
+         <property name="text">
+          <string>Step</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_73">
+         <property name="text">
+          <string>Step</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="1" colspan="3">
+        <widget class="QLineEdit" name="m_Phi"/>
+       </item>
+       <item row="7" column="2">
+        <widget class="QLabel" name="label_31">
+         <property name="text">
+          <string>Correction</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="QDoubleSpinBox" name="m_OmegaCorrection">
          <property name="decimals">
           <number>6</number>
          </property>
@@ -527,8 +458,32 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QDoubleSpinBox" name="m_XTransX">
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_30">
+         <property name="text">
+          <string>Omega</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="3">
+        <widget class="QLineEdit" name="m_TwoTheta"/>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="label_44">
+         <property name="text">
+          <string>Orientation Errors</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_28">
+         <property name="text">
+          <string>Two Theta</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QDoubleSpinBox" name="m_XTransY">
          <property name="decimals">
           <number>6</number>
          </property>
@@ -550,26 +505,152 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="label_48">
+       <item row="9" column="1" colspan="3">
+        <widget class="QLineEdit" name="m_Omega"/>
+       </item>
+       <item row="13" column="2">
+        <widget class="QLabel" name="label_39">
          <property name="text">
-          <string>Z:</string>
+          <string>Correction</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QDoubleSpinBox" name="m_XTransY">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_24">
+         <property name="text">
+          <string>Detector Pitch :</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_74">
+         <property name="text">
+          <string>Nominal (Start)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QDoubleSpinBox" name="m_ChiStep">
          <property name="decimals">
           <number>6</number>
          </property>
          <property name="minimum">
-          <double>-100.000000000000000</double>
+          <double>-450.000000000000000</double>
          </property>
          <property name="maximum">
-          <double>100.000000000000000</double>
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="2">
+        <widget class="QLabel" name="label_42">
+         <property name="text">
+          <string>Correction</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="m_OrientErrorDetRoll">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QDoubleSpinBox" name="m_ChiNom">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QDoubleSpinBox" name="m_OmegaNom">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QDoubleSpinBox" name="m_OmegaStep">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QDoubleSpinBox" name="m_TwoThetaNom">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_72">
+         <property name="text">
+          <string>Nominal (Start)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -586,15 +667,8 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_30">
-         <property name="text">
-          <string>Omega</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="3">
-        <widget class="QDoubleSpinBox" name="m_OmegaCorrection">
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="m_OrientErrorDetPitch">
          <property name="decimals">
           <number>6</number>
          </property>
@@ -606,165 +680,98 @@
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="2">
-        <widget class="QLabel" name="label_34">
-         <property name="text">
-          <string>Correction</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="1">
-        <widget class="QDoubleSpinBox" name="m_ChiStep">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QDoubleSpinBox" name="m_OmegaNom">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QDoubleSpinBox" name="m_TwoThetaStep">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_72">
-         <property name="text">
-          <string>Nominal (Start)</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_71">
-         <property name="text">
-          <string>Step</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
-        <widget class="QLabel" name="label_74">
-         <property name="text">
-          <string>Nominal (Start)</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="16" column="1">
-        <widget class="QDoubleSpinBox" name="m_PhiStep">
-         <property name="decimals">
-          <number>6</number>
-         </property>
-         <property name="minimum">
-          <double>-450.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>450.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.100000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="16" column="0">
-        <widget class="QLabel" name="label_75">
-         <property name="text">
-          <string>Step</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item row="15" column="0">
-        <widget class="QLabel" name="label_76">
-         <property name="text">
-          <string>Nominal (Start)</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_28">
-         <property name="text">
-          <string>Two Theta</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1" colspan="3">
-        <widget class="QLineEdit" name="m_TwoTheta"/>
-       </item>
-       <item row="8" column="1" colspan="3">
-        <widget class="QLineEdit" name="m_Omega"/>
-       </item>
-       <item row="11" column="0">
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>Chi</string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="1" colspan="3">
-        <widget class="QLineEdit" name="m_Chi"/>
-       </item>
-       <item row="14" column="0">
         <widget class="QLabel" name="label_40">
          <property name="text">
           <string>Phi</string>
          </property>
         </widget>
        </item>
-       <item row="14" column="1" colspan="3">
-        <widget class="QLineEdit" name="m_Phi"/>
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_36">
+         <property name="text">
+          <string>Chi</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QLabel" name="label_45">
+         <property name="text">
+          <string>Sample Translation (xTrans):</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_48">
+         <property name="text">
+          <string>Z:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="QDoubleSpinBox" name="m_TwoThetaCorrection">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_29">
+         <property name="text">
+          <string>Nominal (Start)</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>Detector Roll:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QDoubleSpinBox" name="m_OrientErrorGonPitch">
+         <property name="decimals">
+          <number>6</number>
+         </property>
+         <property name="minimum">
+          <double>-450.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>450.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QCheckBox" name="m_UseGonPitchError">
+         <property name="text">
+          <string>Use Goniometer Pitch Error</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

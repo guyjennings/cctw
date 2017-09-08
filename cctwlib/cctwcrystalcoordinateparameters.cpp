@@ -34,7 +34,8 @@ CctwCrystalCoordinateParameters::CctwCrystalCoordinateParameters(QString name, Q
   m_PhiStep(this, "phiStep", 0.0, "phi step"),
   m_PhiAngles(this, "phiAngles", QcepDoubleVector(), "phi Angles"),
 
-  m_ExtraFlip(this, "extraFlip", 1, "Extra Flip on input x->(2048-y), y->(2048-x)")
+  m_ExtraFlip(this, "extraFlip", 1, "Extra Flip on input x->(2048-y), y->(2048-x)"),
+  m_UseGonPitchError(this, "useGonPitchError", false, "Use Goniometer Pitch Error")
 {
   setDefaults();
 }
@@ -74,6 +75,7 @@ void CctwCrystalCoordinateParameters::setDefaults()
   setGridOffset(CctwDoubleVector3D(1024,1024,1024));
 
   set_ExtraFlip(1);
+  set_UseGonPitchError(0);
 }
 
 double CctwCrystalCoordinateParameters::pixelSize() const { return m_PixelSize; }

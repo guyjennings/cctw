@@ -93,6 +93,7 @@ void CctwqtSetupTransformDialog::copyParametersToDialog()
   ui->m_OrientErrorDetRoll->setValue(rad2deg(parms->orientErrorDetRoll()));
   ui->m_OrientErrorDetYaw->setValue(rad2deg(parms->orientErrorDetYaw()));
   ui->m_OrientErrorGonPitch->setValue(rad2deg(parms->orientErrorGonPitch()));
+  ui->m_UseGonPitchError->setChecked(parms->get_UseGonPitchError());
 
   ui->m_TwoTheta->setText(parms->get_TwoTheta());
   ui->m_TwoThetaCorrection->setValue(rad2deg(parms->get_TwoThetaCorrection()));
@@ -215,6 +216,7 @@ void CctwqtSetupTransformDialog::copyDialogToParameters()
   parms->setOrientErrorDetRoll(deg2rad(ui->m_OrientErrorDetRoll->value()));
   parms->setOrientErrorDetYaw(deg2rad(ui->m_OrientErrorDetYaw->value()));
   parms->setOrientErrorGonPitch(deg2rad(ui->m_OrientErrorGonPitch->value()));
+  parms->set_UseGonPitchError(ui->m_UseGonPitchError->isChecked());
 
   parms->set_TwoThetaCorrection(deg2rad(ui->m_TwoThetaCorrection->value()));
   parms->set_TwoThetaNom(deg2rad(ui->m_TwoThetaNom->value()));

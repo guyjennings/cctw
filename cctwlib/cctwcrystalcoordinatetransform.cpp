@@ -57,8 +57,11 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
     dimat = CctwDoubleMatrix3x3::rotZ(m_Parms->orientErrorDetYaw())*dimat;
     dimat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorDetPitch())*dimat;
     dimat = CctwDoubleMatrix3x3::rotX(m_Parms->orientErrorDetRoll())*dimat;
-    dimat = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*dimat;
-    dimat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*dimat;
+
+    if (m_Parms->get_UseGonPitchError()) {
+      dimat = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*dimat;
+      dimat = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*dimat;
+    }
 
     m_DMatInv = dimat;
     m_DMat    = dimat.inverted();
@@ -74,8 +77,12 @@ void CctwCrystalCoordinateTransform::setCurrentFrame(double frame)
     m_GMatInv = gmat.inverted();
 
     CctwDoubleVector3D cD(m_Parms->distance(), 0, 0);
-    cD = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*cD;
-    cD = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*cD;
+
+    if (m_Parms->get_UseGonPitchError()) {
+      cD = CctwDoubleMatrix3x3::rotZ(m_TwoThetaAngle)*cD;
+      cD = CctwDoubleMatrix3x3::rotY(m_Parms->orientErrorGonPitch())*cD;
+    }
+
     CctwDoubleVector3D tVec = m_GMat*m_Parms->xTrans();
 
     cD = tVec - cD;
