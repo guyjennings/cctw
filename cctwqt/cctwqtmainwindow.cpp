@@ -512,7 +512,7 @@ void CctwqtMainWindow::doSetupTransform()
 
 void CctwqtMainWindow::doTransform()
 {
-  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform);
+  QtConcurrent::run(m_Application->m_Transformer, &CctwTransformer::transform, 0);
 }
 
 //void CctwqtMainWindow::doCheckTransform()

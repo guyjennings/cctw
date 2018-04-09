@@ -161,7 +161,7 @@ int Cctwtcl_Transform_Cmd(ClientData /*clientData*/, Tcl_Interp *interp, int obj
   // Perform the transform
   QMap<int,CctwDataChunk*> outputChunks;
 
-  g_Application->m_Transformer->transformChunkData(chunkIndex, chunkData, outputChunks);
+  g_Application->m_Transformer->transformChunkData(chunkIndex, 0, chunkData, outputChunks);
 
   printf("products: %i\n", outputChunks.size());
 

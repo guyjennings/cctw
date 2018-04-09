@@ -70,10 +70,10 @@ void CctwTransformer::readSettings(QSettings *set, QString section)
   CctwObject::readSettings(set, section);
 }
 
-void CctwTransformer::runTransformChunkNumber(int n)
+void CctwTransformer::runTransformChunkNumber(int n, int mode)
 {
   if (m_Application && !m_Application->get_Halting()) {
-    transformChunkNumber(n);
+    transformChunkNumber(n, mode);
   }
 
   if (m_Application) {
@@ -237,7 +237,7 @@ bool CctwTransformer::parseSubset(CctwChunkedDataPtr data)
   return false;
 }
 
-void CctwTransformer::transformChunkNumber(int chunkId)
+void CctwTransformer::transformChunkNumber(int chunkId, int mode)
 {
   CctwDataChunk *inputChunk = m_InputData->readChunk(chunkId);
   QMap<int, CctwDataChunk*> outputChunks;
@@ -245,7 +245,7 @@ void CctwTransformer::transformChunkNumber(int chunkId)
   if (inputChunk) {
     int nSkipped = inputChunk->getSkippedPixels();
 
-    transformChunkData(chunkId, inputChunk, outputChunks);
+    transformChunkData(chunkId, mode, inputChunk, outputChunks);
 
     inputChunk->deallocateData();
     inputChunk->deallocateWeights();
@@ -269,7 +269,7 @@ void CctwTransformer::transformChunkNumber(int chunkId)
   }
 }
 
-void CctwTransformer::transformChunkData(int chunkId,
+void CctwTransformer::transformChunkData(int chunkId, int mode,
                                          CctwDataChunk *inputChunk,
                                          QMap<int, CctwDataChunk*> &outputChunks)
 {
@@ -412,7 +412,7 @@ void CctwTransformer::transformChunkData(int chunkId,
   m_Skipped.incValue(nskipped);
 }
 
-void CctwTransformer::transform()
+void CctwTransformer::transform(int mode)
 {
   QVector < QFuture < void > > futures;
 
@@ -478,7 +478,7 @@ void CctwTransformer::transform()
               }
 
               futures.append(
-                    QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, n));
+                    QtConcurrent::run(this, &CctwTransformer::runTransformChunkNumber, n, mode));
             }
           }
         }

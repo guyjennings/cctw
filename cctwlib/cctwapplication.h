@@ -52,11 +52,19 @@ public slots:
   void evaluateCommand(QString cmd);
   void executeScriptFile(QString path);
 
+  void loadParameters(QString path);
+  void testCommand1(QString msg);
+  void testCommand2(QString msg);
+  void testCommand3(QString msg);
+
   void execute();
   void executeTransform();
   void executeMerge();
   void executeNorm();
   void executeProject();
+  void executeTest1();
+  void executeTest2();
+  void executeTest3();
 
   void showHelp(QString about);
   void showVersion();
@@ -103,6 +111,9 @@ public slots:
   void runMerge();
   void runNorm();
   void runProject();
+  void runTest1();
+  void runTest2();
+  void runTest3();
 
   void setNormalization(QString data);
   void setCompression(QString data);

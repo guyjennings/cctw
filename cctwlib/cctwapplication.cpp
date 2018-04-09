@@ -38,7 +38,10 @@ enum {
   TransformMode = 1,
   MergeMode     = 2,
   NormMode      = 3,
-  ProjectMode   = 4
+  ProjectMode   = 4,
+  Test1Mode     = 5,
+  Test2Mode     = 6,
+  Test3Mode     = 7
 };
 
 CctwApplication::CctwApplication(int &argc, char *argv[])
@@ -195,7 +198,11 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
     argOmega,
     argTwoTheta,
     argPhi,
-    argChi
+    argChi,
+    argParameters,
+    argTest1,
+    argTest2,
+    argTest3
   };
 
   int option_index = 0;
@@ -227,6 +234,10 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       {"transform", no_argument, 0, 't'},
       {"debug", required_argument, 0, 'D'},
       {"preferences", required_argument, 0, 'p'},
+      {"parameters", required_argument, 0, argParameters},
+      {"test1", no_argument, 0, argTest1},
+      {"test2", no_argument, 0, argTest2},
+      {"test3", no_argument, 0, argTest3},
       {"gui", no_argument, 0, 'g'},
       {"nogui", no_argument, 0, 'n'},
       {"command", required_argument, 0, 'c'},
@@ -374,6 +385,22 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
       startupCommand(tr("loadPreferences(\"%1\");").arg(addSlashes(optarg)));
       break;
 
+    case argParameters: /* load parameters from HDF data group */
+      startupCommand(tr("loadParameters(\"%1\");").arg(addSlashes(optarg)));
+      break;
+
+    case argTest1:     /* test command 1 */
+      startupCommand(tr("testCommand1()"));
+      break;
+
+    case argTest2:     /* test command 2 */
+      startupCommand(tr("testCommand2()"));
+      break;
+
+    case argTest3:     /* test command 3 */
+      startupCommand(tr("testCommand3()"));
+      break;
+
     case argMergeInput:
       pushInputFile(optarg);
       break;
@@ -416,6 +443,12 @@ void CctwApplication::decodeCommandLineArgsForUnix(int &argc, char *argv[])
         set_Mode(NormMode);
       } else if (strcasecmp(argv[optind], "project") == 0) {
         set_Mode(ProjectMode);
+      } else if (strcasecmp(argv[optind], "test1") == 0) {
+        set_Mode(Test1Mode);
+      } else if (strcasecmp(argv[optind], "test2") == 0) {
+        set_Mode(Test2Mode);
+      } else if (strcasecmp(argv[optind], "test3") == 0) {
+        set_Mode(Test3Mode);
       } else {
         pushInputFile(argv[optind]);
       }
@@ -659,7 +692,7 @@ void CctwApplication::showHelp(QString about)
 {
   printLine(tr(
               "\n"
-              "usage: %1 transform|merge|norm|project <inputs> <options>\n"
+              "usage: %1 transform|merge|norm|project|test1|test2|test3 <inputs> <options>\n"
               "\n"
               "where inputs are one or more hdf dataset refs (in url format)\n"
               "the file part of the URL gives the hdf/nexus file, and the 'fragment'\n"
@@ -694,6 +727,11 @@ void CctwApplication::showHelp(QString about)
               "--transform, -t                  transform all or part of the data\n"
               "--debug <n>, -D <n>              set debug level\n"
               "--preferences <f>, -p <f>        read settings from file <f>\n"
+              "--parameters <p>                 read parameters from an HDF group (url format)\n"
+              "--test1                          run test command 1\n"
+              "--test2                          run test command 2\n"
+              "--test3                          run test command 3"
+              "\n"
               "--gui, -g                        use GUI interface if available\n"
               "--nogui, -n                      no GUI interface\n"
               "--command <cmd>, -c <cmd>        execute command <cmd>\n"
@@ -714,7 +752,7 @@ void CctwApplication::showHelp(QString about)
               "Examples:\n"
               "%2 transform file1.nxs\\#/data/entry/v -o xform.nxs\\#/data/entry/v\n"
               "%3 merge file1.nxs\\#/data/entry/v file2.nxs\\#/data/entry/v -o merge.nxs\\#/data/entry/v\n"
-              ).arg(arguments().at(0)).arg(arguments().at(0)).arg(arguments().at(0)));
+              ).arg(arguments().value(0)).arg(arguments().value(0)).arg(arguments().value(0)));
 }
 
 void CctwApplication::showVersion()
@@ -1077,6 +1115,94 @@ CctwCrystalCoordinateParameters *CctwApplication::parameters() const
   return m_Parameters;
 }
 
+static herr_t groupIterator(hid_t       group,
+                            const char *name,
+                            void       *data)
+{
+  printf("Group item %s\n", name);
+
+  return 0;
+}
+
+void CctwApplication::loadParameters(QString path)
+{
+  QUrl url(path);
+
+  if (qcepDebug(DEBUG_APP)) {
+    printMessage(tr("loadParameters(\"%2\")").arg(addSlashes(path)));
+
+    printMessage(tr("scheme:   %1").arg(url.scheme()));
+    printMessage(tr("host:     %1").arg(url.host()));
+    printMessage(tr("path:     %1").arg(url.path()));
+    printMessage(tr("filename: %1").arg(url.fileName()));
+#if QT_VERSION >= 0x050000
+    printMessage(tr("query:    %1").arg(url.query()));
+#endif
+    printMessage(tr("fragment: %1").arg(url.fragment()));
+  }
+
+  QString parmFile  = url.path();
+  QString parmGroup = url.fragment();
+
+  QFileInfo f(parmFile);
+
+  hid_t fileId  = -1;
+  hid_t groupId = -1;
+
+  try {
+    if (!f.exists()) {
+      throw tr("File %1 does not exist").arg(parmFile);
+    }
+
+    if (H5Fis_hdf5(qPrintable(parmFile)) <= 0) {
+      throw tr("File %1 is not an HDF file").arg(parmFile);
+    }
+
+
+    fileId = H5Fopen(qPrintable(parmFile), H5F_ACC_RDONLY, H5P_DEFAULT);
+
+    if (fileId < 0) {
+      throw tr("File %1 could not be opened").arg(parmFile);
+    }
+
+    groupId = H5Gopen(fileId, qPrintable(parmGroup), H5P_DEFAULT);
+
+    if (groupId <= 0) {
+      throw tr("Couldn't open group %1 in file %2").arg(parmGroup).arg(parmFile);
+    }
+
+    if (H5Giterate(groupId, qPrintable(parmGroup), NULL, &groupIterator, this) < 0) {
+      throw tr("Couldn't iterate over group %1 elements in file %2").arg(parmGroup).arg(parmFile);
+    }
+  }
+
+  catch (QString &msg)
+  {
+    printMessage("Error in CctwApplication::loadParameters");
+    printMessage(msg);
+  }
+
+  if (groupId > 0) {
+    H5Gclose(groupId);
+  }
+
+  if (fileId > 0) {
+    H5Fclose(fileId);
+  }
+}
+
+void CctwApplication::testCommand1(QString msg)
+{
+}
+
+void CctwApplication::testCommand2(QString msg)
+{
+}
+
+void CctwApplication::testCommand3(QString msg)
+{
+}
+
 void CctwApplication::addWorkOutstanding(int amt)
 {
   m_WorkOutstanding.fetchAndAddOrdered(amt);
@@ -1206,7 +1332,7 @@ void CctwApplication::mergeOutput(QString path)
 
 void CctwApplication::runTransform()
 {
-  m_InputData->setDataSource(get_InputFiles().at(0));
+  m_InputData->setDataSource(get_InputFiles().value(0));
   m_InputData->setMaskSource(get_MaskFile());
   m_InputData->setMask3DSource(get_Mask3DFile());
   m_InputData->setAnglesSource(get_AnglesFile());
@@ -1312,11 +1438,46 @@ void CctwApplication::runNorm()
 
 void CctwApplication::runProject()
 {
-  m_InputData->setDataSource(get_InputFiles().at(0));
+  m_InputData->setDataSource(get_InputFiles().value(0));
 
   if (m_Transformer) {
     m_Transformer->inputProject(get_OutputFile(), 7);
   }
+}
+
+void CctwApplication::runTest1()
+{
+  QStringList inputFiles = get_InputFiles();
+
+  if (m_InputData && inputFiles.length()) {
+    m_InputData->setDataSource(get_InputFiles().value(0));
+    m_InputData->setMaskSource(get_MaskFile());
+    m_InputData->setMask3DSource(get_Mask3DFile());
+    m_InputData->setAnglesSource(get_AnglesFile());
+    m_InputData->setWeightsSource(get_WeightsFile());
+  }
+
+  if (m_OutputData) {
+    autoOutputFile(".nxs");
+
+    m_OutputData->setDataSource(get_OutputFile());
+  }
+
+  if (m_Transformer) {
+    m_Transformer->transform(1);
+  }
+
+  printMessage("cctw test1");
+}
+
+void CctwApplication::runTest2()
+{
+  printMessage("cctw test2");
+}
+
+void CctwApplication::runTest3()
+{
+  printMessage("cctw test3");
 }
 
 void CctwApplication::executeTransform()
@@ -1387,6 +1548,57 @@ void CctwApplication::executeProject()
   }
 }
 
+void CctwApplication::executeTest1()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 0) {
+    printMessage(tr("cctw test1 needs exactly 0 input files, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runTest1);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeTest2()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 0) {
+    printMessage(tr("cctw test2 needs exactly 0 input files, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runTest2);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
+void CctwApplication::executeTest3()
+{
+  QStringList f = get_InputFiles();
+
+  if (f.count() != 0) {
+    printMessage(tr("cctw test3 needs exactly 0 input files, rather than %1").arg(f.count()));
+  } else {
+
+    QFuture<void> f = QtConcurrent::run(this, &CctwApplication::runTest3);
+
+    while (!f.isFinished()) {
+      CctwThread::msleep(100);
+      processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+  }
+}
+
 void CctwApplication::execute()
 {
   int m = get_Mode();
@@ -1410,6 +1622,18 @@ void CctwApplication::execute()
   case ProjectMode:
     executeProject();
     break;
+
+  case Test1Mode:
+    executeTest1();
+    break;
+
+  case Test2Mode:
+    executeTest2();
+    break;
+
+  case Test3Mode:
+    executeTest3();
+    break;
   }
 
 //  printMessage(tr("Mode : %1").arg(m));
@@ -1424,7 +1648,7 @@ void CctwApplication::preStartup()
   int m = get_Mode();
 
   if (m == TransformMode) {
-    m_InputData -> setDataSource(get_InputFiles().at(0));
+    m_InputData -> setDataSource(get_InputFiles().value(0));
     m_OutputData -> setDataSource(get_OutputFile());
   }
 

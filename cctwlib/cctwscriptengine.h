@@ -50,6 +50,10 @@ private:
   static QScriptValue setProjectOutputFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue mergeInputFunc(QScriptContext *context, QScriptEngine *engine);
   static QScriptValue mergeOutputFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue loadParametersFunc(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue testCommand1Func(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue testCommand2Func(QScriptContext *context, QScriptEngine *engine);
+  static QScriptValue testCommand3Func(QScriptContext *context, QScriptEngine *engine);
 
 //  typedef QObject *QObjectP;
 

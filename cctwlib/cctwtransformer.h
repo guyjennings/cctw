@@ -25,12 +25,12 @@ public:
   virtual ~CctwTransformer();
 
 public slots:
-  void transform();
+  void transform(int mode=0);
 //  void checkTransform();
 
-  void runTransformChunkNumber(int n);
-  void transformChunkNumber(int chunkId);
-  void transformChunkData(int chunkId,
+  void runTransformChunkNumber(int n, int mode);
+  void transformChunkNumber(int chunkId, int mode);
+  void transformChunkData(int chunkId, int mode,
                           CctwDataChunk *inputChunk,
                           QMap<int, CctwDataChunk*> &outputChunks);
 
