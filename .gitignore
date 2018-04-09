@@ -16,4 +16,5 @@ cctwtcl/pkgIndex.tcl
 *.tif
 *.h5
 cctw-config-local.pri
+specmacros/osborn.dat
 
